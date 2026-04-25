@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eleanote | Clinical documentation and EMR workflow support</title>
-    <meta name="description" content="Eleanote is clinical documentation and EMR workflow software being built around practical physician workflows.">
+    <title>Eleanote | Physician-built ambient scribe</title>
+    <meta name="description" content="Eleanote is a physician-built ambient medical scribe for doctors who want personalized notes and flexible laptop workflows outside the EHR.">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -17,6 +17,7 @@
             --surface: #ffffff;
             --line: #d9e4e6;
             --muted: #5f6f75;
+            --gold: #b98b4b;
             --shadow: 0 24px 70px rgba(18, 52, 59, 0.12);
         }
 
@@ -43,13 +44,13 @@
 
         .site-header {
             backdrop-filter: blur(18px);
-            background: rgba(251, 250, 247, 0.92);
+            background: rgba(251, 250, 247, 0.94);
             border-bottom: 1px solid rgba(29, 102, 115, 0.16);
             left: 0;
             position: fixed;
             right: 0;
             top: 0;
-            z-index: 20;
+            z-index: 40;
         }
 
         .nav {
@@ -65,7 +66,7 @@
             align-items: center;
             color: var(--teal-dark);
             display: inline-flex;
-            gap: 0.75rem;
+            gap: 0.72rem;
             text-decoration: none;
         }
 
@@ -94,14 +95,14 @@
         .nav-links {
             align-items: center;
             display: flex;
-            gap: 1.6rem;
+            gap: 1.45rem;
             list-style: none;
         }
 
         .nav-links a {
             color: var(--muted);
             font-size: 0.92rem;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
         }
 
@@ -117,10 +118,10 @@
             border-radius: 999px;
             color: white;
             display: inline-flex;
-            font-weight: 700;
+            font-weight: 800;
             justify-content: center;
             min-height: 2.8rem;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem 1.15rem;
             text-decoration: none;
             transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
         }
@@ -187,7 +188,7 @@
         }
 
         section {
-            padding: 5.5rem 1.4rem;
+            padding: 5.6rem 1.4rem;
         }
 
         .container {
@@ -197,10 +198,10 @@
 
         .hero {
             background:
-                radial-gradient(circle at 12% 12%, rgba(29, 102, 115, 0.14), transparent 30%),
+                radial-gradient(circle at 14% 14%, rgba(29, 102, 115, 0.14), transparent 30%),
                 linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
             padding-bottom: 4.8rem;
-            padding-top: 6.3rem;
+            padding-top: 6.4rem;
         }
 
         .hero-grid {
@@ -212,25 +213,36 @@
 
         .eyebrow {
             color: var(--teal);
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 800;
             letter-spacing: 0.13em;
-            margin-bottom: 1.15rem;
+            margin-bottom: 1.05rem;
             text-transform: uppercase;
         }
 
         h1 {
             color: var(--ink);
-            font-size: clamp(2.65rem, 6vw, 5.8rem);
+            font-size: clamp(2.55rem, 5.8vw, 5.65rem);
             letter-spacing: -0.08em;
-            line-height: 0.94;
+            line-height: 0.95;
             margin-bottom: 1.45rem;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3.25rem);
+            letter-spacing: -0.06em;
+            line-height: 1.04;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            letter-spacing: -0.035em;
         }
 
         .hero-copy {
             color: var(--muted);
             font-size: clamp(1.08rem, 2vw, 1.28rem);
-            max-width: 39rem;
+            max-width: 42rem;
         }
 
         .hero-actions {
@@ -252,39 +264,201 @@
             box-shadow: none;
         }
 
-        .quiet-note {
+        .tradeoff {
+            border-left: 3px solid var(--gold);
             color: var(--muted);
-            font-size: 0.92rem;
-            margin-top: 1.25rem;
-            max-width: 35rem;
+            font-size: 0.96rem;
+            margin-top: 1.45rem;
+            max-width: 39rem;
+            padding-left: 1rem;
         }
 
-        .device {
-            background: #102f36;
-            border: 1px solid rgba(255, 255, 255, 0.26);
+        .hero-card {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(29, 102, 115, 0.16);
             border-radius: 2rem;
             box-shadow: var(--shadow);
-            padding: 0.8rem;
+            padding: clamp(1.25rem, 4vw, 2rem);
         }
 
-        .screen {
-            background: #f6f9f9;
-            border-radius: 1.45rem;
-            min-height: 31rem;
-            overflow: hidden;
+        .quote-mark {
+            color: rgba(29, 102, 115, 0.25);
+            font-size: 5rem;
+            font-weight: 800;
+            height: 2.4rem;
+            line-height: 0.8;
         }
 
-        .screen-top {
-            align-items: center;
+        .founder-quote {
+            color: var(--ink);
+            font-size: clamp(1.25rem, 2vw, 1.55rem);
+            font-weight: 700;
+            letter-spacing: -0.045em;
+            line-height: 1.18;
+            margin-bottom: 1.2rem;
+        }
+
+        .hero-card p:last-child {
+            color: var(--muted);
+        }
+
+        .cred-row {
+            border-top: 1px solid rgba(29, 102, 115, 0.14);
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 2rem;
+            padding-top: 1.2rem;
+        }
+
+        .cred-row strong {
+            color: var(--teal-dark);
+            display: block;
+            font-size: 1.35rem;
+            letter-spacing: -0.05em;
+        }
+
+        .cred-row span {
+            color: var(--muted);
+            display: block;
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+
+        .personal {
+            background: var(--surface);
+        }
+
+        .split {
+            align-items: start;
+            display: grid;
+            gap: 3rem;
+            grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.58fr);
+        }
+
+        .section-copy {
+            color: var(--muted);
+            font-size: 1.08rem;
+            margin-top: 1rem;
+            max-width: 43rem;
+        }
+
+        .plain-card {
+            background: var(--paper);
+            border: 1px solid rgba(29, 102, 115, 0.16);
+            border-radius: 1.5rem;
+            padding: 1.45rem;
+        }
+
+        .plain-card h3 {
+            color: var(--teal-dark);
+            font-size: 1.35rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .plain-card ul {
+            color: var(--muted);
+            display: grid;
+            gap: 0.7rem;
+            list-style: none;
+        }
+
+        .plain-card li {
+            border-bottom: 1px solid rgba(29, 102, 115, 0.12);
+            padding-bottom: 0.7rem;
+        }
+
+        .plain-card li:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .workflow {
+            background: linear-gradient(180deg, var(--paper), #eef6f7);
+        }
+
+        .section-heading {
+            margin-bottom: 2.5rem;
+            max-width: 790px;
+        }
+
+        .workflow-shell {
+            display: grid;
+            gap: 2.4rem;
+            grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+        }
+
+        .workflow-steps {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(29, 102, 115, 0.15);
+            border-radius: 1.35rem;
+            cursor: pointer;
+            padding: 1.35rem;
+            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+        }
+
+        .step-card.is-active {
             background: white;
+            border-color: rgba(29, 102, 115, 0.42);
+            box-shadow: 0 16px 36px rgba(18, 52, 59, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .step-label {
+            color: var(--teal);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .step-card h3 {
+            font-size: 1.35rem;
+            margin: 0.35rem 0 0.5rem;
+        }
+
+        .step-card p {
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        .demo-stage {
+            position: sticky;
+            top: 6.4rem;
+        }
+
+        .demo-laptop {
+            background: #102f36;
+            border-radius: 2rem;
+            box-shadow: var(--shadow);
+            padding: 0.75rem;
+        }
+
+        .demo-screen {
+            background: #f8fbfb;
+            border-radius: 1.35rem;
+            min-height: 34rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ehr-topbar {
+            align-items: center;
+            background: #ffffff;
             border-bottom: 1px solid var(--line);
             display: flex;
-            gap: 0.55rem;
+            gap: 0.65rem;
             justify-content: space-between;
-            padding: 1rem;
+            padding: 0.95rem 1rem;
         }
 
-        .screen-title {
+        .ehr-title {
             color: var(--teal-dark);
             font-size: 0.9rem;
             font-weight: 800;
@@ -303,240 +477,302 @@
             width: 0.55rem;
         }
 
-        .screen-body {
+        .pill {
+            align-items: center;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(29, 102, 115, 0.18);
+            border-radius: 999px;
+            box-shadow: 0 16px 38px rgba(18, 52, 59, 0.16);
+            display: flex;
+            gap: 0.75rem;
+            left: 50%;
+            min-width: min(86%, 28rem);
+            padding: 0.7rem 0.9rem;
+            position: absolute;
+            top: 4.6rem;
+            transform: translateX(-50%);
+            z-index: 8;
+        }
+
+        .pulse-dot {
+            background: #d84b4b;
+            border-radius: 50%;
+            flex: 0 0 auto;
+            height: 0.7rem;
+            width: 0.7rem;
+        }
+
+        .pill-text {
+            color: var(--ink);
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .hotkey {
+            background: var(--teal-dark);
+            border-radius: 0.55rem;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-left: auto;
+            padding: 0.35rem 0.55rem;
+            white-space: nowrap;
+        }
+
+        .ehr-body {
             display: grid;
             gap: 1rem;
-            padding: 1rem;
+            grid-template-columns: 0.66fr 1.34fr;
+            padding: 4.7rem 1rem 1rem;
         }
 
-        .patient-card,
-        .note-panel,
-        .order-card {
+        .ehr-panel {
             background: white;
             border: 1px solid var(--line);
-            border-radius: 1.1rem;
+            border-radius: 1rem;
             padding: 1rem;
         }
 
-        .patient-card {
-            display: grid;
-            gap: 0.65rem;
-        }
-
-        .label {
-            color: var(--muted);
-            font-size: 0.74rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
+        .ehr-panel h4 {
+            color: var(--teal-dark);
+            font-size: 0.86rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
             text-transform: uppercase;
         }
 
-        .line {
+        .fake-line {
             background: #dce8ea;
             border-radius: 999px;
-            display: block;
-            height: 0.62rem;
+            height: 0.64rem;
+            margin: 0.6rem 0;
+            width: 100%;
         }
 
-        .line.short {
-            width: 56%;
+        .fake-line.short {
+            width: 52%;
         }
 
-        .line.medium {
-            width: 78%;
+        .fake-line.med {
+            width: 76%;
         }
 
-        .note-panel h2 {
+        .note-area {
+            min-height: 20rem;
+        }
+
+        .typed-output,
+        .order-chip,
+        .feedback-box {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .typed-output {
+            background: #eef6f7;
+            border: 1px solid rgba(29, 102, 115, 0.12);
+            border-radius: 0.85rem;
             color: var(--ink);
-            font-size: 1.05rem;
-            margin-bottom: 0.8rem;
+            font-size: 0.92rem;
+            margin-top: 1rem;
+            padding: 0.9rem;
         }
 
-        .note-line {
-            background: #edf4f5;
-            border-radius: 999px;
-            height: 0.7rem;
-            margin: 0.55rem 0;
+        .order-list {
+            display: grid;
+            gap: 0.55rem;
+            margin-top: 1rem;
         }
 
-        .note-line:nth-child(3) {
-            width: 88%;
-        }
-
-        .note-line:nth-child(4) {
-            width: 70%;
-        }
-
-        .order-card {
+        .order-chip {
             align-items: center;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .status {
-            background: var(--teal-soft);
+            background: white;
+            border: 1px solid rgba(29, 102, 115, 0.18);
             border-radius: 999px;
             color: var(--teal-dark);
-            font-size: 0.78rem;
+            display: flex;
+            font-size: 0.86rem;
             font-weight: 800;
-            padding: 0.38rem 0.68rem;
+            gap: 0.45rem;
+            padding: 0.55rem 0.7rem;
         }
 
-        .section-heading {
-            margin-bottom: 2.5rem;
-            max-width: 760px;
+        .order-chip::before {
+            background: var(--teal);
+            border-radius: 50%;
+            content: "";
+            height: 0.45rem;
+            width: 0.45rem;
         }
 
-        .section-heading.center {
-            margin-left: auto;
-            margin-right: auto;
+        .feedback-box {
+            background: #fff7e9;
+            border: 1px solid rgba(185, 139, 75, 0.32);
+            border-radius: 0.85rem;
+            color: #654515;
+            font-size: 0.88rem;
+            margin-top: 1rem;
+            padding: 0.85rem;
+        }
+
+        .demo-caption {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-top: 1rem;
             text-align: center;
         }
 
-        h2 {
-            font-size: clamp(2rem, 4vw, 3.2rem);
-            letter-spacing: -0.06em;
-            line-height: 1.04;
-            margin-bottom: 1rem;
+        .demo-screen[data-demo="prechart"] .pill-text::after {
+            content: "Prechart copied. Summarizing recent results...";
         }
 
-        .section-heading p,
-        .large-copy {
-            color: var(--muted);
-            font-size: 1.08rem;
+        .demo-screen[data-demo="prechart"] .hotkey::after {
+            content: "F4";
         }
 
-        .walkthrough {
+        .demo-screen[data-demo="visit"] .pill-text::after {
+            content: "Recording visit. Talk normally.";
+        }
+
+        .demo-screen[data-demo="visit"] .hotkey::after {
+            content: "F6";
+        }
+
+        .demo-screen[data-demo="orders"] .pill-text::after {
+            content: "Staging labs, imaging, referrals, and medications.";
+        }
+
+        .demo-screen[data-demo="orders"] .hotkey::after {
+            content: "F7";
+        }
+
+        .demo-screen[data-demo="transfer"] .pill-text::after {
+            content: "Sending formatted note and codes to the EHR.";
+        }
+
+        .demo-screen[data-demo="transfer"] .hotkey::after {
+            content: "F8";
+        }
+
+        .demo-screen[data-demo="feedback"] .pill-text::after {
+            content: "Feedback received. Rewriting and learning preference.";
+        }
+
+        .demo-screen[data-demo="feedback"] .hotkey::after {
+            content: "F9";
+        }
+
+        .demo-screen[data-demo="prechart"] .prechart-output,
+        .demo-screen[data-demo="visit"] .visit-output,
+        .demo-screen[data-demo="transfer"] .visit-output,
+        .demo-screen[data-demo="feedback"] .visit-output,
+        .demo-screen[data-demo="feedback"] .feedback-box {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .demo-screen[data-demo="orders"] .order-chip,
+        .demo-screen[data-demo="transfer"] .order-chip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .demo-screen[data-demo="transfer"] .transfer-output,
+        .demo-screen[data-demo="feedback"] .transfer-output {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .demo-screen[data-demo="visit"] .pulse-dot,
+        .demo-screen[data-demo="orders"] .pulse-dot {
+            animation: blink 1.1s ease-in-out infinite;
+        }
+
+        .demo-screen[data-demo="transfer"] .typed-output,
+        .demo-screen[data-demo="feedback"] .typed-output,
+        .demo-screen[data-demo="prechart"] .typed-output,
+        .demo-screen[data-demo="visit"] .typed-output,
+        .demo-screen[data-demo="orders"] .order-chip {
+            transition: opacity 320ms ease, transform 320ms ease;
+        }
+
+        .model {
             background: var(--surface);
-        }
-
-        .walkthrough-grid {
-            align-items: start;
-            display: grid;
-            gap: 3rem;
-            grid-template-columns: minmax(280px, 0.86fr) minmax(0, 1.14fr);
-        }
-
-        .sticky-preview {
-            position: sticky;
-            top: 6.4rem;
-        }
-
-        .mini-device {
-            background: var(--ink);
-            border-radius: 1.55rem;
-            box-shadow: var(--shadow);
-            padding: 0.6rem;
-        }
-
-        .mini-screen {
-            background: #f7fbfb;
-            border-radius: 1.1rem;
-            padding: 1rem;
-        }
-
-        .mini-screen h3 {
-            color: var(--teal-dark);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .flow-list {
-            display: grid;
-            gap: 1.2rem;
-        }
-
-        .flow-step {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 1.35rem;
-            padding: clamp(1.2rem, 3vw, 1.7rem);
-        }
-
-        .step-number {
-            align-items: center;
-            background: var(--teal-soft);
-            border-radius: 50%;
-            color: var(--teal-dark);
-            display: inline-flex;
-            font-size: 0.86rem;
-            font-weight: 800;
-            height: 2.1rem;
-            justify-content: center;
-            margin-bottom: 1rem;
-            width: 2.1rem;
-        }
-
-        .flow-step h3 {
-            font-size: 1.45rem;
-            letter-spacing: -0.04em;
-            margin-bottom: 0.55rem;
-        }
-
-        .flow-step p {
-            color: var(--muted);
-        }
-
-        .capabilities {
-            background: linear-gradient(180deg, var(--paper), #eef6f7);
         }
 
         .card-grid {
             display: grid;
-            gap: 1.15rem;
+            gap: 1.1rem;
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
-        .capability-card {
-            background: rgba(255, 255, 255, 0.76);
+        .feature-card {
+            background: var(--paper);
             border: 1px solid rgba(29, 102, 115, 0.16);
             border-radius: 1.35rem;
-            padding: 1.5rem;
+            padding: 1.45rem;
         }
 
-        .capability-card h3 {
+        .feature-card h3 {
             color: var(--ink);
-            font-size: 1.18rem;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
+            font-size: 1.22rem;
+            margin-bottom: 0.55rem;
         }
 
-        .capability-card p {
+        .feature-card p {
             color: var(--muted);
-            font-size: 0.96rem;
+            font-size: 0.97rem;
         }
 
-        .about {
-            background: var(--surface);
+        .fit {
+            background: #102f36;
+            color: white;
         }
 
-        .about-panel {
-            background:
-                linear-gradient(135deg, rgba(29, 102, 115, 0.12), rgba(29, 102, 115, 0.03)),
-                var(--paper);
-            border: 1px solid rgba(29, 102, 115, 0.18);
-            border-radius: 2rem;
+        .fit-grid {
             display: grid;
             gap: 2rem;
-            grid-template-columns: minmax(0, 0.85fr) minmax(260px, 0.55fr);
-            padding: clamp(1.5rem, 5vw, 3rem);
+            grid-template-columns: minmax(0, 0.85fr) minmax(280px, 0.6fr);
         }
 
-        .about-panel ul {
-            color: var(--muted);
+        .fit h2 {
+            color: white;
+        }
+
+        .fit p {
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 1.08rem;
+        }
+
+        .fit-list {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1.35rem;
             display: grid;
-            gap: 0.85rem;
+            gap: 0.8rem;
             list-style: none;
+            padding: 1.4rem;
         }
 
-        .about-panel li {
-            border-bottom: 1px solid rgba(29, 102, 115, 0.14);
-            padding-bottom: 0.85rem;
+        .fit-list li {
+            color: rgba(255, 255, 255, 0.82);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .fit-list li::before {
+            background: #8fc8d0;
+            border-radius: 50%;
+            content: "";
+            height: 0.48rem;
+            left: 0;
+            position: absolute;
+            top: 0.58rem;
+            width: 0.48rem;
         }
 
         .contact {
-            background: #102f36;
-            color: white;
+            background: var(--surface);
             text-align: center;
         }
 
@@ -544,20 +780,10 @@
             max-width: 780px;
         }
 
-        .contact h2 {
-            color: white;
-        }
-
         .contact p {
-            color: rgba(255, 255, 255, 0.78);
+            color: var(--muted);
             font-size: 1.08rem;
             margin-bottom: 1.8rem;
-        }
-
-        .contact .button {
-            background: white;
-            border-color: white;
-            color: var(--teal-dark);
         }
 
         footer {
@@ -580,21 +806,20 @@
             text-decoration: none;
         }
 
+        @keyframes blink {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(216, 75, 75, 0.35);
+                opacity: 0.65;
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(216, 75, 75, 0);
+                opacity: 1;
+            }
+        }
+
         @media (prefers-reduced-motion: no-preference) {
-            .device {
+            .hero-card {
                 animation: float 7s ease-in-out infinite;
-            }
-
-            .note-line {
-                animation: pulse 2.8s ease-in-out infinite;
-            }
-
-            .note-line:nth-child(3) {
-                animation-delay: 200ms;
-            }
-
-            .note-line:nth-child(4) {
-                animation-delay: 400ms;
             }
         }
 
@@ -603,20 +828,11 @@
                 transform: translateY(0);
             }
             50% {
-                transform: translateY(-10px);
+                transform: translateY(-8px);
             }
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 0.55;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 960px) {
             .hamburger {
                 display: inline-flex;
             }
@@ -631,10 +847,6 @@
                 position: absolute;
                 right: 0;
                 top: 100%;
-            }
-
-            .nav-links ul {
-                display: grid;
             }
 
             .menu-toggle:checked ~ .nav-links {
@@ -665,12 +877,13 @@
             }
 
             .hero-grid,
-            .walkthrough-grid,
-            .about-panel {
+            .split,
+            .workflow-shell,
+            .fit-grid {
                 grid-template-columns: 1fr;
             }
 
-            .sticky-preview {
+            .demo-stage {
                 position: static;
             }
 
@@ -678,22 +891,22 @@
                 grid-template-columns: 1fr;
             }
 
-            .screen {
-                min-height: auto;
+            .demo-screen {
+                min-height: 31rem;
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .brand-wordmark {
                 font-size: 1.5rem;
             }
 
             section {
-                padding: 4.2rem 1rem;
+                padding: 4.3rem 1rem;
             }
 
             .hero {
-                padding-top: 4.7rem;
+                padding-top: 4.8rem;
             }
 
             .hero-actions {
@@ -705,13 +918,24 @@
                 width: 100%;
             }
 
-            .device {
-                border-radius: 1.3rem;
-                padding: 0.55rem;
+            .cred-row {
+                grid-template-columns: 1fr;
             }
 
-            .screen {
-                border-radius: 1rem;
+            .ehr-body {
+                grid-template-columns: 1fr;
+                padding-top: 4.8rem;
+            }
+
+            .demo-screen {
+                min-height: auto;
+            }
+
+            .pill {
+                left: 0.7rem;
+                min-width: 0;
+                right: 0.7rem;
+                transform: none;
             }
 
             .footer-inner {
@@ -731,170 +955,203 @@
             <input class="menu-toggle" id="menu-toggle" type="checkbox" aria-label="Open navigation menu">
             <label class="hamburger" for="menu-toggle" aria-label="Toggle navigation menu"><span></span></label>
             <ul class="nav-links">
-                <li><a href="#overview">Overview</a></li>
-                <li><a href="#product">Product</a></li>
-                <li><a href="#capabilities">Capabilities</a></li>
+                <li><a href="#story">Story</a></li>
+                <li><a href="#workflow">Workflow</a></li>
+                <li><a href="#model">How it works</a></li>
+                <li><a href="#fit">Who it fits</a></li>
                 <li><a class="nav-cta" href="mailto:eleanote@eleanote.ai">Contact</a></li>
             </ul>
         </nav>
     </header>
 
     <main id="top">
-        <section class="hero" id="overview">
+        <section class="hero">
             <div class="container hero-grid">
                 <div>
-                    <p class="eyebrow">Clinical documentation software in development</p>
-                    <h1>AI support for the work around the visit.</h1>
-                    <p class="hero-copy">Eleanote is being built to help clinicians turn encounter context into useful documentation and practical EMR workflow support. The focus is simple: fewer repetitive steps, clearer notes, and software that fits real clinical practice.</p>
+                    <p class="eyebrow">Ambient medical scribe for laptop-based physicians</p>
+                    <h1>A scribe built by a doctor who needed it to work.</h1>
+                    <p class="hero-copy">I built Eleanote for my own practice: an ambient scribe that learns how you like notes written, accepts feedback on every note, and helps move your work into the EHR with customizable keyboard workflows.</p>
                     <div class="hero-actions">
-                        <a class="button" href="#product">See how it works</a>
-                        <a class="button button-secondary" href="mailto:eleanote@eleanote.ai">Contact Eleanote</a>
+                        <a class="button" href="#workflow">Watch the workflow</a>
+                        <a class="button button-secondary" href="mailto:eleanote@eleanote.ai">Ask about Eleanote</a>
                     </div>
-                    <p class="quiet-note">This page is intentionally brief. If you heard about Eleanote from someone directly, it should give you the basic idea without a long sales pitch.</p>
+                    <p class="tradeoff">Eleanote does not directly integrate with the EHR. It works beside it. That means more setup, but also more control over notes, shortcuts, codes, orders, instructions, and the small repetitive steps that create cognitive drag in clinic.</p>
                 </div>
-                <div class="device" aria-label="Illustration of the Eleanote application">
-                    <div class="screen">
-                        <div class="screen-top">
-                            <div>
-                                <div class="label">Eleanote workspace</div>
-                                <div class="screen-title">Encounter summary</div>
-                            </div>
-                            <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
-                        </div>
-                        <div class="screen-body">
-                            <div class="patient-card">
-                                <div class="label">Visit context</div>
-                                <span class="line medium"></span>
-                                <span class="line"></span>
-                                <span class="line short"></span>
-                            </div>
-                            <div class="note-panel">
-                                <h2>Draft note</h2>
-                                <div class="note-line"></div>
-                                <div class="note-line"></div>
-                                <div class="note-line"></div>
-                                <div class="note-line"></div>
-                            </div>
-                            <div class="order-card">
-                                <div>
-                                    <div class="label">Suggested follow-up</div>
-                                    <strong>Review before EMR entry</strong>
-                                </div>
-                                <span class="status">Ready</span>
-                            </div>
-                        </div>
+                <aside class="hero-card" aria-label="Founder note">
+                    <div class="quote-mark">"</div>
+                    <p class="founder-quote">My goal was not to build the flashiest AI scribe. It was to build one that writes the way I want, improves when I correct it, and helps me stop clicking through the same menus all day.</p>
+                    <p>I have no sales team to feed and no marketing machinery to support. The cost is the work of building the product and using high-quality language models with enough context to preserve a detailed personal profile for each physician.</p>
+                    <div class="cred-row">
+                        <div><strong>Doctor-built</strong><span>used in real clinic</span></div>
+                        <div><strong>Personalized</strong><span>preference profile</span></div>
+                        <div><strong>Outside EHR</strong><span>more flexible setup</span></div>
                     </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="personal" id="story">
+            <div class="container split">
+                <div>
+                    <p class="eyebrow">The honest pitch</p>
+                    <h2>More personal than plug-and-play.</h2>
+                    <p class="section-copy">Eleanote is for doctors who would rather spend effort training a tool around their own workflow than accept a generic note and a rigid implementation. Each user can develop a detailed personal profile, give feedback on individual notes, and shape the output over time.</p>
+                    <p class="section-copy">That also means the product is best for physicians who are comfortable using a laptop in clinic and willing to customize. The payoff is a scribe that can become much more specific to how you practice.</p>
+                </div>
+                <div class="plain-card">
+                    <h3>What it is not</h3>
+                    <ul>
+                        <li>Not a direct EHR integration.</li>
+                        <li>Not a passive, one-size-fits-all note generator.</li>
+                        <li>Not designed around a sales demo first.</li>
+                        <li>Not a replacement for physician review or judgment.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section class="walkthrough" id="product">
+        <section class="workflow" id="workflow">
             <div class="container">
                 <div class="section-heading">
-                    <p class="eyebrow">Product walkthrough</p>
-                    <h2>Show the program, then explain the program.</h2>
-                    <p>The site can eventually scroll through real screenshots or short animations. For now, this section uses clean mockups to show the type of workflow Eleanote is meant to support.</p>
+                    <p class="eyebrow">Scroll-through workflow mockup</p>
+                    <h2>The program stays out of the way while the work gets done.</h2>
+                    <p class="section-copy">Most of the day, the physician is looking at the EHR. Eleanote can live as a small pill-shaped assistant at the top of the screen, listening for hotkeys and helping move from encounter context to note, codes, orders, and follow-up materials.</p>
                 </div>
-                <div class="walkthrough-grid">
-                    <div class="sticky-preview">
-                        <div class="mini-device">
-                            <div class="mini-screen">
-                                <h3>Workspace preview</h3>
-                                <div class="patient-card">
-                                    <div class="label">Capture</div>
-                                    <span class="line"></span>
-                                    <span class="line medium"></span>
+
+                <div class="workflow-shell">
+                    <div class="workflow-steps" aria-label="Workflow steps">
+                        <article class="step-card is-active" data-demo="prechart">
+                            <span class="step-label">Step 1</span>
+                            <h3>Prechart without opening Eleanote</h3>
+                            <p>Highlight recent results or notes in the EHR, press Ctrl+C and a hotkey, and Eleanote summarizes what matters immediately before the visit.</p>
+                        </article>
+                        <article class="step-card" data-demo="visit">
+                            <span class="step-label">Step 2</span>
+                            <h3>Talk naturally during the visit</h3>
+                            <p>Start recording from the keyboard. You can speak to the patient and also ask the scribe to summarize recent events, results, or the plan.</p>
+                        </article>
+                        <article class="step-card" data-demo="orders">
+                            <span class="step-label">Step 3</span>
+                            <h3>Stage orders while the visit is happening</h3>
+                            <p>As the assessment and plan forms, Eleanote can prepare labs, imaging, referrals, medications, indications, and follow-up timing for physician review.</p>
+                        </article>
+                        <article class="step-card" data-demo="transfer">
+                            <span class="step-label">Step 4</span>
+                            <h3>Send the work to the EHR with programmed keystrokes</h3>
+                            <p>Instead of an API integration, users can train keystroke automations that place formatted notes, diagnosis codes, and order details into the EHR.</p>
+                        </article>
+                        <article class="step-card" data-demo="feedback">
+                            <span class="step-label">Step 5</span>
+                            <h3>Correct the note and teach the system</h3>
+                            <p>If the note needs improvement, give direct feedback. Eleanote rewrites the note and updates the physician's preference profile for next time.</p>
+                        </article>
+                    </div>
+
+                    <div class="demo-stage" aria-live="polite">
+                        <div class="demo-laptop">
+                            <div class="demo-screen" id="demo-screen" data-demo="prechart">
+                                <div class="ehr-topbar">
+                                    <div>
+                                        <div class="eyebrow" style="margin: 0;">Generic EHR</div>
+                                        <div class="ehr-title">Patient chart</div>
+                                    </div>
+                                    <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
                                 </div>
-                                <div class="patient-card">
-                                    <div class="label">Draft</div>
-                                    <span class="line medium"></span>
-                                    <span class="line short"></span>
+                                <div class="pill">
+                                    <span class="pulse-dot"></span>
+                                    <span class="pill-text"></span>
+                                    <span class="hotkey"></span>
                                 </div>
-                                <div class="patient-card">
-                                    <div class="label">Review</div>
-                                    <span class="line"></span>
-                                    <span class="line short"></span>
+                                <div class="ehr-body">
+                                    <div class="ehr-panel">
+                                        <h4>Recent chart</h4>
+                                        <span class="fake-line"></span>
+                                        <span class="fake-line med"></span>
+                                        <span class="fake-line short"></span>
+                                        <span class="fake-line"></span>
+                                        <div class="typed-output prechart-output">Recent PSA trend, imaging result, medication change, and patient message summarized for pre-visit review.</div>
+                                    </div>
+                                    <div class="ehr-panel note-area">
+                                        <h4>Today&apos;s note / plan</h4>
+                                        <span class="fake-line med"></span>
+                                        <span class="fake-line"></span>
+                                        <span class="fake-line short"></span>
+                                        <div class="typed-output visit-output">Draft note appears in the physician&apos;s preferred format, ready for review and edits.</div>
+                                        <div class="order-list">
+                                            <div class="order-chip">MRI pelvis with indication</div>
+                                            <div class="order-chip">Repeat PSA in 6 months</div>
+                                            <div class="order-chip">Referral message prepared</div>
+                                        </div>
+                                        <div class="typed-output transfer-output">Formatted note, diagnosis codes, and order details are inserted using the user&apos;s programmed workflow.</div>
+                                        <div class="feedback-box">Feedback: &quot;Use my shorter assessment style and put follow-up timing in the plan.&quot; Preference saved.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flow-list">
-                        <article class="flow-step">
-                            <span class="step-number">1</span>
-                            <h3>Capture the clinical context</h3>
-                            <p>Use encounter information, dictated details, or physician input as the starting point for a structured clinical note.</p>
-                        </article>
-                        <article class="flow-step">
-                            <span class="step-number">2</span>
-                            <h3>Draft in a practical format</h3>
-                            <p>Create documentation that is meant to be reviewed, edited, and used by the clinician rather than treated as a black box.</p>
-                        </article>
-                        <article class="flow-step">
-                            <span class="step-number">3</span>
-                            <h3>Support downstream EMR tasks</h3>
-                            <p>Help organize the repetitive pieces around orders, follow-up, indications, and documentation so the physician can review before final entry.</p>
-                        </article>
+                        <p class="demo-caption">Mockup only. Real screenshots and short clips can replace this once the UI is ready.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="capabilities" id="capabilities">
+        <section class="model" id="model">
             <div class="container">
-                <div class="section-heading center">
-                    <p class="eyebrow">Capabilities</p>
-                    <h2>Built around real clinic friction.</h2>
-                    <p>These are the areas Eleanote is being developed around. The wording is intentionally plain because the product should be judged by how it works.</p>
+                <div class="section-heading">
+                    <p class="eyebrow">How Eleanote is different</p>
+                    <h2>The advantage is personalization and control.</h2>
+                    <p class="section-copy">The product is designed around a detailed physician profile, high-quality language models, and user-directed automation rather than a shallow template or a locked-down EHR integration.</p>
                 </div>
                 <div class="card-grid">
-                    <article class="capability-card">
-                        <h3>Clinical note drafting</h3>
-                        <p>Turn visit context into a draft that can be reviewed, corrected, and placed into the physician's workflow.</p>
+                    <article class="feature-card">
+                        <h3>Large personal preference profile</h3>
+                        <p>Each physician can develop a detailed profile describing note structure, phrasing, formatting, clinical preferences, and recurring workflow instructions.</p>
                     </article>
-                    <article class="capability-card">
-                        <h3>Physician preferences</h3>
-                        <p>Support the structure, phrasing, and level of detail a clinician actually wants in their documentation.</p>
+                    <article class="feature-card">
+                        <h3>Feedback on every note</h3>
+                        <p>When a note is wrong, too long, too short, or not in the right style, the physician can correct it and have the system learn from that feedback.</p>
                     </article>
-                    <article class="capability-card">
-                        <h3>EMR workflow support</h3>
-                        <p>Reduce repetitive work around orders, follow-up details, indications, and other administrative steps.</p>
+                    <article class="feature-card">
+                        <h3>Frontier model quality</h3>
+                        <p>Eleanote is built around capable language models with enough context to accommodate individualized instructions rather than forcing everyone into one output style.</p>
                     </article>
-                    <article class="capability-card">
-                        <h3>Review-first design</h3>
-                        <p>Keep the clinician in control with output that is intended to be reviewed before it is used clinically.</p>
+                    <article class="feature-card">
+                        <h3>Custom keyboard automation</h3>
+                        <p>Users can program keystrokes to move notes, formatting, codes, orders, and other generated text into the systems they already use.</p>
                     </article>
-                    <article class="capability-card">
-                        <h3>Simple interface</h3>
-                        <p>Prioritize the few screens clinicians need instead of a busy dashboard full of unused features.</p>
+                    <article class="feature-card">
+                        <h3>Chatbots throughout setup</h3>
+                        <p>Built-in assistants help users configure preferences and workflows, because the customization is powerful but does take effort.</p>
                     </article>
-                    <article class="capability-card">
-                        <h3>Development with feedback</h3>
-                        <p>Shape the product around practical physician input rather than broad marketing assumptions.</p>
+                    <article class="feature-card">
+                        <h3>Output beyond the note</h3>
+                        <p>The same system can be trained to generate patient instructions, letters to other clinicians, summaries, and other clinic-specific materials.</p>
                     </article>
                 </div>
             </div>
         </section>
 
-        <section class="about">
-            <div class="container about-panel">
+        <section class="fit" id="fit">
+            <div class="container fit-grid">
                 <div>
-                    <p class="eyebrow">Positioning</p>
-                    <h2>A serious tool, kept simple.</h2>
-                    <p class="large-copy">Eleanote is not presented here as a finished enterprise platform or a magic replacement for clinical judgment. It is a developing software product focused on making documentation and EMR-adjacent work less cumbersome for physicians.</p>
+                    <p class="eyebrow">Who it is for</p>
+                    <h2>Best for independent-minded doctors who want the tool to adapt to them.</h2>
+                    <p>Eleanote is not trying to be the easiest enterprise rollout. It is trying to be a practical, customizable scribe for physicians who want a lot of control and are willing to train the system to match their clinic.</p>
                 </div>
-                <ul>
-                    <li>No inflated time-savings promises.</li>
-                    <li>No generic AI hype language.</li>
-                    <li>Clear product explanation for people who already heard about it directly.</li>
-                    <li>Designed to add real screenshots and short demos as the product matures.</li>
+                <ul class="fit-list">
+                    <li>Physicians who use a laptop in the exam room.</li>
+                    <li>Doctors who care deeply about note style and editing time.</li>
+                    <li>Users willing to configure hotkeys and workflows.</li>
+                    <li>Clinicians frustrated by repetitive EHR clicking and menu navigation.</li>
+                    <li>People who want flexibility more than a locked-down integration.</li>
                 </ul>
             </div>
         </section>
 
         <section class="contact" id="contact">
             <div class="container">
-                <h2>Interested in Eleanote?</h2>
-                <p>For questions, early feedback, or a product walkthrough, contact the Eleanote team directly.</p>
+                <p class="eyebrow">Early users and feedback</p>
+                <h2>Interested in trying Eleanote?</h2>
+                <p>The first version is being shared directly with physicians who understand the tradeoff: more setup and training, in exchange for more personalization and control.</p>
                 <a class="button" href="mailto:eleanote@eleanote.ai">eleanote@eleanote.ai</a>
             </div>
         </section>
@@ -906,5 +1163,37 @@
             <a href="mailto:eleanote@eleanote.ai">Contact</a>
         </div>
     </footer>
+
+    <script>
+        const demoScreen = document.getElementById("demo-screen");
+        const stepCards = Array.from(document.querySelectorAll(".step-card"));
+
+        function setDemo(name) {
+            demoScreen.dataset.demo = name;
+            stepCards.forEach((card) => {
+                card.classList.toggle("is-active", card.dataset.demo === name);
+            });
+        }
+
+        stepCards.forEach((card) => {
+            card.addEventListener("click", () => setDemo(card.dataset.demo));
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            const visible = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+            if (visible) {
+                setDemo(visible.target.dataset.demo);
+            }
+        }, {
+            root: null,
+            rootMargin: "-35% 0px -40% 0px",
+            threshold: [0.2, 0.45, 0.7]
+        });
+
+        stepCards.forEach((card) => observer.observe(card));
+    </script>
 </body>
 </html>
