@@ -3,1156 +3,1501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eleanote | Physician-built ambient scribe</title>
-    <meta name="description" content="Eleanote is a physician-built ambient medical scribe for doctors who want personalized notes and flexible laptop workflows outside the EHR.">
+    <title>Eleanote — An ambient AI scribe built by a doctor.</title>
+    <meta name="description" content="Eleanote is an ambient AI scribe built by a practicing physician. It writes notes the way you want, learns from your feedback, and moves work into your EHR with customizable hotkeys.">
+    <meta name="theme-color" content="#14515c">
+    <meta property="og:title" content="Eleanote — An ambient AI scribe built by a doctor.">
+    <meta property="og:description" content="An ambient AI scribe built by a practicing physician. Writes notes the way you want, learns from your feedback, and moves work into your EHR with customizable hotkeys.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://eleanote.ai/">
+    <link rel="canonical" href="https://eleanote.ai/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
         :root {
-            --ink: #12343b;
-            --teal: #1d6673;
-            --teal-dark: #15515c;
-            --teal-soft: #e8f2f3;
-            --paper: #fbfaf7;
+            --ink: #0d2b30;
+            --teal: #14515c;
+            --teal-deep: #0e3d46;
+            --teal-soft: #e6efef;
+            --teal-faint: #f1f6f6;
+            --paper: #fafaf7;
             --surface: #ffffff;
-            --line: #d9e4e6;
-            --muted: #5f6f75;
-            --gold: #b98b4b;
-            --shadow: 0 24px 70px rgba(18, 52, 59, 0.12);
+            --line: #d8e2e3;
+            --muted: #5b6e74;
+            --gold: #a78449;
+            --shadow-sm: 0 2px 8px rgba(13, 43, 48, 0.05);
+            --shadow-md: 0 12px 32px rgba(13, 43, 48, 0.08);
+            --shadow-lg: 0 28px 64px rgba(13, 43, 48, 0.10);
+            --radius: 1.1rem;
+            --radius-lg: 1.6rem;
+            --max: 1120px;
+            --header-h: 64px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             background: var(--paper);
             color: var(--ink);
             font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 17px;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        a {
-            color: inherit;
-        }
+        a { color: inherit; }
 
+        ::selection { background: var(--teal); color: #fff; }
+
+        /* ---------- HEADER ---------- */
         .site-header {
-            backdrop-filter: blur(18px);
-            background: rgba(251, 250, 247, 0.94);
-            border-bottom: 1px solid rgba(29, 102, 115, 0.16);
-            left: 0;
             position: fixed;
-            right: 0;
-            top: 0;
-            z-index: 40;
+            top: 0; left: 0; right: 0;
+            height: var(--header-h);
+            background: rgba(250, 250, 247, 0.86);
+            backdrop-filter: saturate(160%) blur(14px);
+            -webkit-backdrop-filter: saturate(160%) blur(14px);
+            border-bottom: 1px solid rgba(13, 43, 48, 0.06);
+            z-index: 50;
         }
 
         .nav {
-            align-items: center;
-            display: flex;
-            justify-content: space-between;
+            max-width: var(--max);
             margin: 0 auto;
-            max-width: 1180px;
-            padding: 0.95rem 1.4rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.4rem;
         }
 
         .brand {
-            align-items: center;
-            color: var(--teal-dark);
             display: inline-flex;
-            gap: 0.72rem;
+            align-items: center;
+            gap: 0.55rem;
             text-decoration: none;
+            color: var(--teal-deep);
         }
 
-        .brand-icon {
-            align-items: center;
-            background: var(--surface);
-            border: 1px solid rgba(29, 102, 115, 0.16);
-            border-radius: 50%;
-            box-shadow: 0 8px 22px rgba(18, 52, 59, 0.10);
-            display: inline-flex;
+        .brand-mark {
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+            flex: 0 0 auto;
+        }
+
+        .brand-word {
             font-size: 1.35rem;
-            font-weight: 800;
-            height: 2.35rem;
-            justify-content: center;
-            letter-spacing: -0.08em;
-            line-height: 1;
-            width: 2.35rem;
+            font-weight: 600;
+            letter-spacing: -0.045em;
+            color: var(--teal-deep);
         }
 
-        .brand-wordmark {
-            font-size: 1.75rem;
-            font-weight: 700;
-            letter-spacing: -0.08em;
-        }
-
-        .nav-links {
-            align-items: center;
-            display: flex;
-            gap: 1.45rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--muted);
-            font-size: 0.92rem;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .nav-links a:hover {
-            color: var(--teal-dark);
-        }
-
-        .nav-cta,
-        .button {
-            align-items: center;
-            background: var(--teal);
-            border: 1px solid var(--teal);
+        .menu-btn {
+            -webkit-appearance: none;
+            appearance: none;
+            border: 1px solid rgba(13, 43, 48, 0.12);
+            background: var(--surface);
             border-radius: 999px;
-            color: white;
+            height: 40px;
+            padding: 0 0.95rem 0 0.85rem;
             display: inline-flex;
-            font-weight: 800;
-            justify-content: center;
-            min-height: 2.8rem;
-            padding: 0.8rem 1.15rem;
-            text-decoration: none;
-            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-        }
-
-        .nav-cta:hover,
-        .button:hover {
-            background: var(--teal-dark);
-            box-shadow: 0 16px 28px rgba(29, 102, 115, 0.18);
-            transform: translateY(-1px);
-        }
-
-        .menu-toggle {
-            height: 1px;
-            opacity: 0;
-            overflow: hidden;
-            position: absolute;
-            width: 1px;
-        }
-
-        .hamburger {
             align-items: center;
-            border: 1px solid rgba(29, 102, 115, 0.22);
-            border-radius: 999px;
+            gap: 0.55rem;
             cursor: pointer;
-            display: none;
-            height: 2.75rem;
-            justify-content: center;
-            width: 2.75rem;
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
         }
 
-        .menu-toggle:focus-visible + .hamburger {
-            box-shadow: 0 0 0 3px rgba(29, 102, 115, 0.2);
+        .menu-btn:hover {
+            border-color: rgba(13, 43, 48, 0.22);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .menu-btn:focus-visible {
             outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
         }
 
-        .hamburger span,
-        .hamburger span::before,
-        .hamburger span::after {
-            background: var(--teal-dark);
-            border-radius: 999px;
-            content: "";
-            display: block;
-            height: 2px;
+        .menu-icon {
+            position: relative;
+            width: 16px;
+            height: 12px;
+        }
+
+        .menu-icon span {
             position: absolute;
-            transition: transform 180ms ease, opacity 180ms ease;
-            width: 1.1rem;
+            left: 0;
+            right: 0;
+            height: 1.6px;
+            background: var(--ink);
+            border-radius: 999px;
+            transition: transform 220ms ease, opacity 160ms ease, top 220ms ease;
+        }
+        .menu-icon span:nth-child(1) { top: 0; }
+        .menu-icon span:nth-child(2) { top: 5px; }
+        .menu-icon span:nth-child(3) { top: 10px; }
+
+        body.menu-open .menu-icon span:nth-child(1) { top: 5px; transform: rotate(45deg); }
+        body.menu-open .menu-icon span:nth-child(2) { opacity: 0; }
+        body.menu-open .menu-icon span:nth-child(3) { top: 5px; transform: rotate(-45deg); }
+
+        /* dropdown */
+        .menu-panel {
+            position: fixed;
+            top: var(--header-h);
+            right: 1rem;
+            width: min(320px, calc(100vw - 2rem));
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 0.5rem;
+            opacity: 0;
+            transform: translateY(-6px) scale(0.98);
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 49;
         }
 
-        .hamburger span {
+        body.menu-open .menu-panel {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .menu-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 0.95rem;
+            border-radius: 0.8rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            font-size: 0.98rem;
+        }
+
+        .menu-panel a:hover { background: var(--teal-faint); color: var(--teal-deep); }
+
+        .menu-panel a span.arrow { color: var(--muted); font-weight: 400; }
+
+        .menu-panel hr {
+            border: 0;
+            height: 1px;
+            background: rgba(13, 43, 48, 0.06);
+            margin: 0.35rem 0.4rem;
+        }
+
+        /* ---------- LAYOUT ---------- */
+        main { padding-top: var(--header-h); }
+
+        section {
+            padding: 5rem 1.4rem;
             position: relative;
         }
 
-        .hamburger span::before {
-            transform: translateY(-6px);
-        }
-
-        .hamburger span::after {
-            transform: translateY(6px);
-        }
-
-        main {
-            overflow: hidden;
-            padding-top: 4.5rem;
-        }
-
-        section {
-            padding: 5.6rem 1.4rem;
-        }
-
         .container {
+            max-width: var(--max);
             margin: 0 auto;
-            max-width: 1180px;
         }
 
-        .hero {
-            background:
-                radial-gradient(circle at 14% 14%, rgba(29, 102, 115, 0.14), transparent 30%),
-                linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
-            padding-bottom: 4.8rem;
-            padding-top: 6.4rem;
-        }
-
-        .hero-grid {
-            align-items: center;
-            display: grid;
-            gap: 3.5rem;
-            grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+        .container-narrow {
+            max-width: 760px;
+            margin: 0 auto;
         }
 
         .eyebrow {
             color: var(--teal);
-            font-size: 0.8rem;
-            font-weight: 800;
-            letter-spacing: 0.13em;
-            margin-bottom: 1.05rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
+            margin-bottom: 1.1rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--ink);
+            letter-spacing: -0.02em;
         }
 
         h1 {
-            color: var(--ink);
-            font-size: clamp(2.55rem, 5.8vw, 5.65rem);
-            letter-spacing: -0.08em;
-            line-height: 0.95;
-            margin-bottom: 1.45rem;
+            font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+            line-height: 1.02;
+            letter-spacing: -0.035em;
+            font-weight: 600;
         }
 
         h2 {
-            font-size: clamp(2rem, 4vw, 3.25rem);
-            letter-spacing: -0.06em;
-            line-height: 1.04;
-            margin-bottom: 1rem;
+            font-size: clamp(1.85rem, 3.4vw, 2.6rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            font-weight: 600;
         }
 
         h3 {
-            letter-spacing: -0.035em;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.35;
         }
 
-        .hero-copy {
-            color: var(--muted);
-            font-size: clamp(1.08rem, 2vw, 1.28rem);
-            max-width: 42rem;
+        p { color: var(--muted); }
+
+        .lead {
+            font-size: clamp(1.08rem, 1.6vw, 1.22rem);
+            line-height: 1.55;
+            color: #2d4448;
+            max-width: 38rem;
+        }
+
+        /* ---------- HERO ---------- */
+        .hero {
+            padding: clamp(4rem, 9vw, 7rem) 1.4rem 4rem;
+            background:
+                radial-gradient(60% 40% at 12% 0%, rgba(20, 81, 92, 0.10), transparent 70%),
+                radial-gradient(60% 50% at 100% 30%, rgba(20, 81, 92, 0.05), transparent 70%),
+                linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+        }
+
+        .hero-inner {
+            max-width: 880px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: 999px;
+            padding: 0.4rem 0.85rem 0.4rem 0.55rem;
+            color: var(--teal-deep);
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-bottom: 1.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-label .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--teal);
+            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
+        }
+
+        .hero h1 .accent {
+            color: var(--teal-deep);
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .hero-sub {
+            margin-top: 1.4rem;
+            font-size: clamp(1.05rem, 1.55vw, 1.18rem);
+            line-height: 1.55;
+            color: #2d4448;
+            max-width: 36rem;
         }
 
         .hero-actions {
-            align-items: center;
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .button-secondary {
-            background: transparent;
-            border-color: rgba(29, 102, 115, 0.24);
-            color: var(--teal-dark);
-        }
-
-        .button-secondary:hover {
-            background: var(--teal-soft);
-            box-shadow: none;
-        }
-
-        .tradeoff {
-            border-left: 3px solid var(--gold);
-            color: var(--muted);
-            font-size: 0.96rem;
-            margin-top: 1.45rem;
-            max-width: 39rem;
-            padding-left: 1rem;
-        }
-
-        .hero-card {
-            background: rgba(255, 255, 255, 0.82);
-            border: 1px solid rgba(29, 102, 115, 0.16);
-            border-radius: 2rem;
-            box-shadow: var(--shadow);
-            padding: clamp(1.25rem, 4vw, 2rem);
-        }
-
-        .quote-mark {
-            color: rgba(29, 102, 115, 0.25);
-            font-size: 5rem;
-            font-weight: 800;
-            height: 2.4rem;
-            line-height: 0.8;
-        }
-
-        .founder-quote {
-            color: var(--ink);
-            font-size: clamp(1.25rem, 2vw, 1.55rem);
-            font-weight: 700;
-            letter-spacing: -0.045em;
-            line-height: 1.18;
-            margin-bottom: 1.2rem;
-        }
-
-        .hero-card p:last-child {
-            color: var(--muted);
-        }
-
-        .cred-row {
-            border-top: 1px solid rgba(29, 102, 115, 0.14);
-            display: grid;
-            gap: 1rem;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            margin-top: 2rem;
-            padding-top: 1.2rem;
-        }
-
-        .cred-row strong {
-            color: var(--teal-dark);
-            display: block;
-            font-size: 1.35rem;
-            letter-spacing: -0.05em;
-        }
-
-        .cred-row span {
-            color: var(--muted);
-            display: block;
-            font-size: 0.86rem;
-            font-weight: 700;
-            margin-top: 0.25rem;
-        }
-
-        .personal {
-            background: var(--surface);
-        }
-
-        .split {
-            align-items: start;
-            display: grid;
-            gap: 3rem;
-            grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.58fr);
-        }
-
-        .section-copy {
-            color: var(--muted);
-            font-size: 1.08rem;
-            margin-top: 1rem;
-            max-width: 43rem;
-        }
-
-        .plain-card {
-            background: var(--paper);
-            border: 1px solid rgba(29, 102, 115, 0.16);
-            border-radius: 1.5rem;
-            padding: 1.45rem;
-        }
-
-        .plain-card h3 {
-            color: var(--teal-dark);
-            font-size: 1.35rem;
-            margin-bottom: 0.7rem;
-        }
-
-        .plain-card ul {
-            color: var(--muted);
-            display: grid;
             gap: 0.7rem;
-            list-style: none;
+            margin-top: 2rem;
         }
 
-        .plain-card li {
-            border-bottom: 1px solid rgba(29, 102, 115, 0.12);
-            padding-bottom: 0.7rem;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            background: var(--teal-deep);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.97rem;
+            padding: 0.85rem 1.3rem;
+            border-radius: 999px;
+            border: 1px solid var(--teal-deep);
+            transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
         }
 
-        .plain-card li:last-child {
-            border-bottom: 0;
-            padding-bottom: 0;
+        .btn:hover {
+            background: var(--teal);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(14, 61, 70, 0.20);
         }
 
-        .workflow {
-            background: linear-gradient(180deg, var(--paper), #eef6f7);
+        .btn-ghost {
+            background: transparent;
+            color: var(--teal-deep);
+            border-color: rgba(14, 61, 70, 0.18);
         }
 
-        .section-heading {
-            margin-bottom: 2.5rem;
-            max-width: 790px;
+        .btn-ghost:hover {
+            background: var(--teal-faint);
+            box-shadow: none;
+            transform: none;
         }
 
-        .workflow-shell {
-            display: grid;
-            gap: 2.4rem;
-            grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
-        }
-
-        .workflow-steps {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .step-card {
-            background: rgba(255, 255, 255, 0.74);
-            border: 1px solid rgba(29, 102, 115, 0.15);
-            border-radius: 1.35rem;
-            cursor: pointer;
-            padding: 1.35rem;
-            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
-        }
-
-        .step-card.is-active {
-            background: white;
-            border-color: rgba(29, 102, 115, 0.42);
-            box-shadow: 0 16px 36px rgba(18, 52, 59, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .step-label {
-            color: var(--teal);
-            font-size: 0.76rem;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .step-card h3 {
-            font-size: 1.35rem;
-            margin: 0.35rem 0 0.5rem;
-        }
-
-        .step-card p {
+        .hero-meta {
+            margin-top: 2.4rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.3rem 2.2rem;
             color: var(--muted);
-            font-size: 0.98rem;
+            font-size: 0.92rem;
+        }
+        .hero-meta strong {
+            color: var(--ink);
+            font-weight: 600;
+            display: block;
+            font-size: 0.95rem;
         }
 
-        .demo-stage {
+        /* ---------- DEVELOPER NOTE ---------- */
+        .dev-note {
+            background: var(--surface);
+            border-top: 1px solid rgba(13, 43, 48, 0.05);
+            border-bottom: 1px solid rgba(13, 43, 48, 0.05);
+        }
+
+        .dev-note .container-narrow {
+            max-width: 720px;
+        }
+
+        .dev-note-body {
+            font-family: "Source Serif 4", Georgia, serif;
+            font-size: clamp(1.18rem, 1.8vw, 1.4rem);
+            line-height: 1.55;
+            color: var(--ink);
+            font-weight: 400;
+        }
+
+        .dev-note-body p + p { margin-top: 1rem; }
+
+        .dev-note-sig {
+            margin-top: 1.8rem;
+            color: var(--muted);
+            font-size: 0.93rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .dev-note-sig::before {
+            content: "";
+            display: block;
+            width: 2.2rem; height: 1px;
+            background: var(--teal);
+        }
+
+        /* ---------- WORKFLOW ---------- */
+        .workflow {
+            background: linear-gradient(180deg, var(--paper) 0%, #f3f7f7 100%);
+            padding-bottom: 6rem;
+        }
+
+        .workflow-head { margin-bottom: 3.5rem; max-width: 720px; }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+            gap: clamp(2rem, 5vw, 4rem);
+            align-items: start;
+        }
+
+        .workflow-stage {
             position: sticky;
-            top: 6.4rem;
+            top: calc(var(--header-h) + 2rem);
         }
 
-        .demo-laptop {
-            background: #102f36;
-            border-radius: 2rem;
-            box-shadow: var(--shadow);
+        .stage-frame {
+            background: #102a30;
+            border-radius: var(--radius-lg);
             padding: 0.75rem;
-        }
-
-        .demo-screen {
-            background: #f8fbfb;
-            border-radius: 1.35rem;
-            min-height: 34rem;
-            overflow: hidden;
+            box-shadow: var(--shadow-lg);
             position: relative;
         }
-
-        .ehr-topbar {
-            align-items: center;
-            background: #ffffff;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            gap: 0.65rem;
-            justify-content: space-between;
-            padding: 0.95rem 1rem;
-        }
-
-        .ehr-title {
-            color: var(--teal-dark);
-            font-size: 0.9rem;
-            font-weight: 800;
-        }
-
-        .dots {
-            display: flex;
-            gap: 0.35rem;
-        }
-
-        .dots span {
-            background: #c8d8db;
-            border-radius: 50%;
-            display: block;
-            height: 0.55rem;
-            width: 0.55rem;
-        }
-
-        .pill {
-            align-items: center;
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(29, 102, 115, 0.18);
-            border-radius: 999px;
-            box-shadow: 0 16px 38px rgba(18, 52, 59, 0.16);
-            display: flex;
-            gap: 0.75rem;
-            left: 50%;
-            min-width: min(86%, 28rem);
-            padding: 0.7rem 0.9rem;
+        .stage-frame::before {
+            content: "";
             position: absolute;
-            top: 4.6rem;
+            top: 0.45rem; left: 50%;
             transform: translateX(-50%);
-            z-index: 8;
+            width: 60px; height: 5px;
+            background: rgba(255,255,255,0.14);
+            border-radius: 999px;
         }
 
-        .pulse-dot {
-            background: #d84b4b;
-            border-radius: 50%;
-            flex: 0 0 auto;
-            height: 0.7rem;
-            width: 0.7rem;
+        .stage-screen {
+            background: #f6faf9;
+            border-radius: 1.2rem;
+            min-height: 28rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .pill-text {
+        .ehr-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            padding: 0.65rem 0.9rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .ehr-tabs {
+            display: flex;
+            gap: 0.4rem;
+            font-size: 0.74rem;
+        }
+        .ehr-tabs span {
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            background: var(--teal-faint);
+            color: var(--teal-deep);
+            font-weight: 600;
+        }
+        .ehr-tabs span.dim {
+            background: transparent;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* the floating dictation pill */
+        .pill {
+            position: absolute;
+            top: 3.4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255,255,255,0.97);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: 999px;
+            padding: 0.55rem 0.85rem 0.55rem 0.7rem;
+            box-shadow: 0 10px 28px rgba(13, 43, 48, 0.18), 0 1px 0 rgba(255,255,255,0.6) inset;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--ink);
-            font-size: 0.9rem;
-            font-weight: 800;
+            min-width: min(80%, 22rem);
+            z-index: 10;
         }
 
-        .hotkey {
-            background: var(--teal-dark);
-            border-radius: 0.55rem;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 800;
-            margin-left: auto;
-            padding: 0.35rem 0.55rem;
-            white-space: nowrap;
+        .pill .ind {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex: 0 0 auto;
+            transition: background 200ms ease, box-shadow 200ms ease;
+        }
+
+        .pill .pill-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .keycap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.7rem;
+            height: 1.5rem;
+            padding: 0 0.4rem;
+            border-radius: 0.4rem;
+            background: linear-gradient(180deg, #1a5e6a, #0e3d46);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-family: "Inter", sans-serif;
+            letter-spacing: 0.02em;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 -1px 0 rgba(0,0,0,0.18) inset, 0 2px 4px rgba(13, 43, 48, 0.18);
         }
 
         .ehr-body {
+            padding: 4.4rem 1rem 1rem;
             display: grid;
-            gap: 1rem;
-            grid-template-columns: 0.66fr 1.34fr;
-            padding: 4.7rem 1rem 1rem;
+            grid-template-columns: 0.65fr 1fr;
+            gap: 0.9rem;
         }
 
         .ehr-panel {
-            background: white;
+            background: #fff;
             border: 1px solid var(--line);
-            border-radius: 1rem;
-            padding: 1rem;
-        }
-
-        .ehr-panel h4 {
-            color: var(--teal-dark);
-            font-size: 0.86rem;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .fake-line {
-            background: #dce8ea;
-            border-radius: 999px;
-            height: 0.64rem;
-            margin: 0.6rem 0;
-            width: 100%;
-        }
-
-        .fake-line.short {
-            width: 52%;
-        }
-
-        .fake-line.med {
-            width: 76%;
-        }
-
-        .note-area {
-            min-height: 20rem;
-        }
-
-        .typed-output,
-        .order-chip,
-        .feedback-box {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        .typed-output {
-            background: #eef6f7;
-            border: 1px solid rgba(29, 102, 115, 0.12);
-            border-radius: 0.85rem;
-            color: var(--ink);
-            font-size: 0.92rem;
-            margin-top: 1rem;
-            padding: 0.9rem;
-        }
-
-        .order-list {
-            display: grid;
-            gap: 0.55rem;
-            margin-top: 1rem;
-        }
-
-        .order-chip {
-            align-items: center;
-            background: white;
-            border: 1px solid rgba(29, 102, 115, 0.18);
-            border-radius: 999px;
-            color: var(--teal-dark);
-            display: flex;
-            font-size: 0.86rem;
-            font-weight: 800;
-            gap: 0.45rem;
-            padding: 0.55rem 0.7rem;
-        }
-
-        .order-chip::before {
-            background: var(--teal);
-            border-radius: 50%;
-            content: "";
-            height: 0.45rem;
-            width: 0.45rem;
-        }
-
-        .feedback-box {
-            background: #fff7e9;
-            border: 1px solid rgba(185, 139, 75, 0.32);
-            border-radius: 0.85rem;
-            color: #654515;
-            font-size: 0.88rem;
-            margin-top: 1rem;
+            border-radius: 0.9rem;
             padding: 0.85rem;
-        }
-
-        .demo-caption {
-            color: var(--muted);
-            font-size: 0.92rem;
-            margin-top: 1rem;
-            text-align: center;
-        }
-
-        .demo-screen[data-demo="prechart"] .pill-text::after {
-            content: "Prechart copied. Summarizing recent results...";
-        }
-
-        .demo-screen[data-demo="prechart"] .hotkey::after {
-            content: "F4";
-        }
-
-        .demo-screen[data-demo="visit"] .pill-text::after {
-            content: "Recording visit. Talk normally.";
-        }
-
-        .demo-screen[data-demo="visit"] .hotkey::after {
-            content: "F6";
-        }
-
-        .demo-screen[data-demo="orders"] .pill-text::after {
-            content: "Staging labs, imaging, referrals, and medications.";
-        }
-
-        .demo-screen[data-demo="orders"] .hotkey::after {
-            content: "F7";
-        }
-
-        .demo-screen[data-demo="transfer"] .pill-text::after {
-            content: "Sending formatted note and codes to the EHR.";
-        }
-
-        .demo-screen[data-demo="transfer"] .hotkey::after {
-            content: "F8";
-        }
-
-        .demo-screen[data-demo="feedback"] .pill-text::after {
-            content: "Feedback received. Rewriting and learning preference.";
-        }
-
-        .demo-screen[data-demo="feedback"] .hotkey::after {
-            content: "F9";
-        }
-
-        .demo-screen[data-demo="prechart"] .prechart-output,
-        .demo-screen[data-demo="visit"] .visit-output,
-        .demo-screen[data-demo="transfer"] .visit-output,
-        .demo-screen[data-demo="feedback"] .visit-output,
-        .demo-screen[data-demo="feedback"] .feedback-box {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .demo-screen[data-demo="orders"] .order-chip,
-        .demo-screen[data-demo="transfer"] .order-chip {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .demo-screen[data-demo="transfer"] .transfer-output,
-        .demo-screen[data-demo="feedback"] .transfer-output {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .demo-screen[data-demo="visit"] .pulse-dot,
-        .demo-screen[data-demo="orders"] .pulse-dot {
-            animation: blink 1.1s ease-in-out infinite;
-        }
-
-        .demo-screen[data-demo="transfer"] .typed-output,
-        .demo-screen[data-demo="feedback"] .typed-output,
-        .demo-screen[data-demo="prechart"] .typed-output,
-        .demo-screen[data-demo="visit"] .typed-output,
-        .demo-screen[data-demo="orders"] .order-chip {
-            transition: opacity 320ms ease, transform 320ms ease;
-        }
-
-        .model {
-            background: var(--surface);
-        }
-
-        .card-grid {
-            display: grid;
-            gap: 1.1rem;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .feature-card {
-            background: var(--paper);
-            border: 1px solid rgba(29, 102, 115, 0.16);
-            border-radius: 1.35rem;
-            padding: 1.45rem;
-        }
-
-        .feature-card h3 {
-            color: var(--ink);
-            font-size: 1.22rem;
-            margin-bottom: 0.55rem;
-        }
-
-        .feature-card p {
-            color: var(--muted);
-            font-size: 0.97rem;
-        }
-
-        .fit {
-            background: #102f36;
-            color: white;
-        }
-
-        .fit-grid {
-            display: grid;
-            gap: 2rem;
-            grid-template-columns: minmax(0, 0.85fr) minmax(280px, 0.6fr);
-        }
-
-        .fit h2 {
-            color: white;
-        }
-
-        .fit p {
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 1.08rem;
-        }
-
-        .fit-list {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 1.35rem;
-            display: grid;
-            gap: 0.8rem;
-            list-style: none;
-            padding: 1.4rem;
-        }
-
-        .fit-list li {
-            color: rgba(255, 255, 255, 0.82);
-            padding-left: 1.5rem;
+            min-height: 16rem;
             position: relative;
         }
 
-        .fit-list li::before {
-            background: #8fc8d0;
-            border-radius: 50%;
-            content: "";
-            height: 0.48rem;
-            left: 0;
-            position: absolute;
-            top: 0.58rem;
-            width: 0.48rem;
+        .panel-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--teal-deep);
+            margin-bottom: 0.7rem;
         }
 
-        .contact {
+        .skl {
+            background: #e3eced;
+            border-radius: 999px;
+            height: 0.55rem;
+            margin: 0.45rem 0;
+        }
+        .skl.s { width: 50%; }
+        .skl.m { width: 78%; }
+
+        .typed {
+            font-size: 0.85rem;
+            color: var(--ink);
+            line-height: 1.5;
+        }
+        .typed b { color: var(--teal-deep); font-weight: 600; }
+
+        /* scenes */
+        .scene {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 380ms ease, transform 420ms ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+        .scene.is-active { opacity: 1; transform: none; }
+
+        /* indicator state per scene */
+        .stage-screen[data-scene="prechart"] .pill .ind,
+        .stage-screen[data-scene="visit"] .pill .ind,
+        .stage-screen[data-scene="orders"] .pill .ind,
+        .stage-screen[data-scene="feedback"] .pill .ind {
+            background: #d44a4a;
+            box-shadow: 0 0 0 4px rgba(212, 74, 74, 0.18);
+            animation: ping 1.4s ease-in-out infinite;
+        }
+        .stage-screen[data-scene="transfer"] .pill .ind {
+            background: var(--teal);
+            box-shadow: 0 0 0 4px rgba(20, 81, 92, 0.18);
+        }
+
+        @keyframes ping {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 74, 74, 0.35); }
+            50% { box-shadow: 0 0 0 7px rgba(212, 74, 74, 0); }
+        }
+
+        /* prechart scene specifics */
+        .chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--teal-faint);
+            color: var(--teal-deep);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.32rem 0.6rem;
+            border-radius: 999px;
+        }
+        .chip::before {
+            content: "";
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+
+        .summary-card {
+            margin-top: 0.7rem;
+            background: var(--teal-faint);
+            border: 1px solid rgba(20, 81, 92, 0.12);
+            border-radius: 0.7rem;
+            padding: 0.7rem 0.8rem;
+            font-size: 0.82rem;
+            color: var(--ink);
+            line-height: 1.5;
+        }
+
+        .summary-card .typing-line {
+            display: block;
+            opacity: 0;
+        }
+
+        .scene.is-active .summary-card .typing-line {
+            animation: lineIn 600ms ease forwards;
+        }
+        .scene.is-active .summary-card .typing-line:nth-child(1) { animation-delay: 250ms; }
+        .scene.is-active .summary-card .typing-line:nth-child(2) { animation-delay: 700ms; }
+        .scene.is-active .summary-card .typing-line:nth-child(3) { animation-delay: 1150ms; }
+
+        @keyframes lineIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        /* orders scene */
+        .order-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.65rem;
+            border: 1px solid var(--line);
+            border-radius: 0.55rem;
+            margin-top: 0.45rem;
+            background: #fff;
+            font-size: 0.82rem;
+            color: var(--ink);
+            opacity: 0;
+            transform: translateY(6px);
+        }
+        .order-row .tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--teal-deep);
+            background: var(--teal-faint);
+            padding: 0.18rem 0.45rem;
+            border-radius: 999px;
+        }
+        .scene.is-active .order-row { animation: lineIn 500ms ease forwards; }
+        .scene.is-active .order-row:nth-child(1) { animation-delay: 200ms; }
+        .scene.is-active .order-row:nth-child(2) { animation-delay: 500ms; }
+        .scene.is-active .order-row:nth-child(3) { animation-delay: 800ms; }
+        .scene.is-active .order-row:nth-child(4) { animation-delay: 1100ms; }
+
+        /* transfer scene typing into EHR note field */
+        .ehr-note {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 0.6rem;
+            padding: 0.7rem 0.8rem;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: var(--ink);
+            margin-top: 0.5rem;
+            min-height: 7rem;
+        }
+        .ehr-note .typed-fragment {
+            display: block;
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        .scene.is-active .ehr-note .typed-fragment {
+            animation: lineIn 500ms ease forwards;
+        }
+        .scene.is-active .ehr-note .typed-fragment:nth-child(1) { animation-delay: 200ms; }
+        .scene.is-active .ehr-note .typed-fragment:nth-child(2) { animation-delay: 700ms; }
+        .scene.is-active .ehr-note .typed-fragment:nth-child(3) { animation-delay: 1300ms; }
+        .scene.is-active .ehr-note .typed-fragment:nth-child(4) { animation-delay: 1900ms; }
+
+        .dx-row {
+            margin-top: 0.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+        .dx-row .chip { background: #fff5e2; color: #6e4d12; }
+        .dx-row .chip::before { background: var(--gold); }
+
+        /* feedback scene: shows actual program UI */
+        .program-ui {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 0.9rem;
+            padding: 0.85rem;
+            box-shadow: var(--shadow-sm);
+            margin: 0 0 0.7rem 0;
+        }
+
+        .pu-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 0.7rem;
+        }
+        .pu-head .pu-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--teal-deep);
+        }
+        .pu-head .pu-title svg { width: 16px; height: 16px; }
+        .pu-head .pu-meta {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .pu-note {
+            font-size: 0.82rem;
+            color: var(--ink);
+            line-height: 1.5;
+            background: var(--paper);
+            border-radius: 0.55rem;
+            padding: 0.6rem 0.7rem;
+        }
+        .pu-note del {
+            background: #fde2e2;
+            color: #8b2a2a;
+            text-decoration: line-through;
+            padding: 0 0.15rem;
+        }
+        .pu-note ins {
+            background: #def0e6;
+            color: #155f3a;
+            text-decoration: none;
+            padding: 0 0.15rem;
+        }
+
+        .pu-feedback {
+            margin-top: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fff8e8;
+            border: 1px solid rgba(167, 132, 73, 0.28);
+            border-radius: 999px;
+            padding: 0.45rem 0.75rem;
+            font-size: 0.8rem;
+            color: #6e4d12;
+        }
+        .pu-feedback .quote { font-style: italic; flex: 1; }
+
+        .pu-saved {
+            margin-top: 0.55rem;
+            font-size: 0.74rem;
+            color: var(--teal-deep);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .stage-caption {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.9rem;
+        }
+
+        /* steps list */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .step {
             background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.06);
+            border-radius: var(--radius);
+            padding: 1.4rem 1.4rem 1.4rem 1.6rem;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, background 180ms ease;
+        }
+
+        .step::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 1.4rem; bottom: 1.4rem;
+            width: 3px;
+            background: rgba(20, 81, 92, 0.14);
+            border-radius: 999px;
+            transition: background 180ms ease;
+        }
+
+        .step.is-active {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(20, 81, 92, 0.18);
+        }
+
+        .step.is-active::before {
+            background: var(--teal);
+        }
+
+        .step-num {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 0.45rem;
+        }
+
+        .step h3 {
+            font-size: 1.18rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            color: var(--ink);
+        }
+
+        .step p {
+            font-size: 0.97rem;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .step .keys {
+            margin-top: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        /* ---------- WHY DIFFERENT ---------- */
+        .different { background: var(--surface); }
+
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+            margin-top: 2.5rem;
+        }
+
+        .feat {
+            background: var(--paper);
+            border: 1px solid rgba(13, 43, 48, 0.06);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+        }
+
+        .feat h3 {
+            font-size: 1.08rem;
+            margin-bottom: 0.45rem;
+            color: var(--ink);
+        }
+        .feat p {
+            font-size: 0.96rem;
+            line-height: 1.55;
+        }
+        .feat .ico {
+            width: 30px; height: 30px;
+            margin-bottom: 0.85rem;
+            color: var(--teal);
+        }
+
+        /* ---------- FIT ---------- */
+        .fit { background: var(--paper); }
+
+        .fit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .fit-card {
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.06);
+            border-radius: var(--radius);
+            padding: 1.6rem;
+        }
+
+        .fit-card.bad { background: #fdfaf6; border-color: rgba(167, 132, 73, 0.18); }
+        .fit-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--teal-deep);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .fit-card.bad h3 { color: #8a6620; }
+
+        .fit-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .fit-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.96rem;
+            color: var(--ink);
+            line-height: 1.45;
+        }
+        .fit-list li svg { flex: 0 0 auto; margin-top: 3px; }
+
+        /* ---------- TRADEOFF ---------- */
+        .tradeoff-section {
+            background: linear-gradient(180deg, var(--paper) 0%, #f3f7f7 100%);
+        }
+        .tradeoff-card {
+            max-width: 760px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.06);
+            border-left: 3px solid var(--gold);
+            border-radius: var(--radius);
+            padding: 1.8rem 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .tradeoff-card .eyebrow { color: var(--gold); }
+        .tradeoff-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+        }
+        .tradeoff-card p { font-size: 1rem; line-height: 1.6; color: #2d4448; }
+
+        /* ---------- CONTACT ---------- */
+        .contact {
+            background: var(--teal-deep);
+            color: #fff;
             text-align: center;
         }
-
-        .contact .container {
-            max-width: 780px;
-        }
-
+        .contact h2 { color: #fff; }
         .contact p {
-            color: var(--muted);
-            font-size: 1.08rem;
-            margin-bottom: 1.8rem;
+            color: rgba(255, 255, 255, 0.78);
+            max-width: 38rem;
+            margin: 1rem auto 2rem;
+            font-size: 1.05rem;
+        }
+        .contact .btn {
+            background: #fff;
+            color: var(--teal-deep);
+            border-color: #fff;
+        }
+        .contact .btn:hover {
+            background: var(--teal-faint);
+            color: var(--teal-deep);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        }
+        .contact .email {
+            display: block;
+            margin-top: 1.5rem;
+            color: rgba(255,255,255,0.72);
+            font-size: 0.92rem;
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
         }
 
+        /* ---------- FOOTER ---------- */
         footer {
-            background: #0b252b;
-            color: rgba(255, 255, 255, 0.64);
-            padding: 2rem 1.4rem;
+            background: #0a2025;
+            color: rgba(255,255,255,0.55);
+            padding: 1.8rem 1.4rem;
+            font-size: 0.85rem;
         }
-
         .footer-inner {
-            align-items: center;
-            display: flex;
-            gap: 1rem;
-            justify-content: space-between;
+            max-width: var(--max);
             margin: 0 auto;
-            max-width: 1180px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
         }
+        .footer-inner a { color: rgba(255,255,255,0.78); text-decoration: none; }
 
-        .footer-inner a {
-            color: rgba(255, 255, 255, 0.82);
-            text-decoration: none;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(216, 75, 75, 0.35);
-                opacity: 0.65;
-            }
-            50% {
-                box-shadow: 0 0 0 8px rgba(216, 75, 75, 0);
-                opacity: 1;
-            }
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            .hero-card {
-                animation: float 7s ease-in-out infinite;
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        @media (max-width: 960px) {
-            .hamburger {
-                display: inline-flex;
-            }
-
-            .nav-links {
-                background: rgba(251, 250, 247, 0.98);
-                border-bottom: 1px solid rgba(29, 102, 115, 0.16);
-                box-shadow: 0 18px 36px rgba(18, 52, 59, 0.08);
-                display: none;
-                left: 0;
-                padding: 1rem 1.4rem 1.4rem;
-                position: absolute;
-                right: 0;
-                top: 100%;
-            }
-
-            .menu-toggle:checked ~ .nav-links {
-                display: grid;
-                gap: 0.9rem;
-            }
-
-            .nav-links li {
-                list-style: none;
-            }
-
-            .nav-links a,
-            .nav-cta {
-                display: flex;
-                width: 100%;
-            }
-
-            .menu-toggle:checked + .hamburger span {
-                background: transparent;
-            }
-
-            .menu-toggle:checked + .hamburger span::before {
-                transform: rotate(45deg);
-            }
-
-            .menu-toggle:checked + .hamburger span::after {
-                transform: rotate(-45deg);
-            }
-
-            .hero-grid,
-            .split,
-            .workflow-shell,
-            .fit-grid {
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 880px) {
+            section { padding: 4rem 1.25rem; }
+            .workflow-grid {
                 grid-template-columns: 1fr;
             }
-
-            .demo-stage {
-                position: static;
+            .workflow-stage {
+                position: relative;
+                top: auto;
+                order: -1;
+                margin-bottom: 1rem;
             }
-
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .demo-screen {
-                min-height: 31rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .brand-wordmark {
-                font-size: 1.5rem;
-            }
-
-            section {
-                padding: 4.3rem 1rem;
-            }
-
-            .hero {
-                padding-top: 4.8rem;
-            }
-
-            .hero-actions {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .button {
-                width: 100%;
-            }
-
-            .cred-row {
-                grid-template-columns: 1fr;
-            }
-
+            .feat-grid { grid-template-columns: 1fr; }
+            .fit-grid { grid-template-columns: 1fr; }
             .ehr-body {
                 grid-template-columns: 1fr;
-                padding-top: 4.8rem;
+                padding-top: 4.4rem;
             }
+            .ehr-panel { min-height: 8rem; }
+        }
 
-            .demo-screen {
-                min-height: auto;
-            }
+        @media (max-width: 520px) {
+            body { font-size: 16px; }
+            .hero { padding-top: 3rem; padding-bottom: 3rem; }
+            .hero-meta { gap: 1rem 1.5rem; }
+            .pill { min-width: calc(100% - 1.4rem); left: 0.7rem; right: 0.7rem; transform: none; font-size: 0.78rem; }
+            .stage-screen { min-height: 26rem; }
+            .tradeoff-card { padding: 1.4rem; }
+            .contact .btn { width: 100%; }
+        }
 
-            .pill {
-                left: 0.7rem;
-                min-width: 0;
-                right: 0.7rem;
-                transform: none;
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
-
-            .footer-inner {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
     <header class="site-header">
-        <nav class="nav" aria-label="Primary navigation">
+        <nav class="nav" aria-label="Primary">
             <a class="brand" href="#top" aria-label="Eleanote home">
-                <span class="brand-icon">e</span>
-                <span class="brand-wordmark">eleanote</span>
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#14515c"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
             </a>
-            <input class="menu-toggle" id="menu-toggle" type="checkbox" aria-label="Open navigation menu">
-            <label class="hamburger" for="menu-toggle" aria-label="Toggle navigation menu"><span></span></label>
-            <ul class="nav-links">
-                <li><a href="#story">Story</a></li>
-                <li><a href="#workflow">Workflow</a></li>
-                <li><a href="#model">How it works</a></li>
-                <li><a href="#fit">Who it fits</a></li>
-                <li><a class="nav-cta" href="mailto:eleanote@eleanote.ai">Contact</a></li>
-            </ul>
+            <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">
+                <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span>Menu</span>
+            </button>
         </nav>
+        <div class="menu-panel" id="menuPanel" role="menu" aria-label="Site menu">
+            <a href="#workflow" role="menuitem">How it works <span class="arrow">→</span></a>
+            <a href="#different" role="menuitem">What makes it different <span class="arrow">→</span></a>
+            <a href="#fit" role="menuitem">Who it's for <span class="arrow">→</span></a>
+            <a href="#tradeoff" role="menuitem">The tradeoff <span class="arrow">→</span></a>
+            <hr>
+            <a href="mailto:eleanote@eleanote.ai" role="menuitem">Get in touch <span class="arrow">→</span></a>
+        </div>
     </header>
 
     <main id="top">
+
+        <!-- ============== HERO ============== -->
         <section class="hero">
-            <div class="container hero-grid">
-                <div>
-                    <p class="eyebrow">Ambient medical scribe for laptop-based physicians</p>
-                    <h1>A scribe built by a doctor who needed it to work.</h1>
-                    <p class="hero-copy">I built Eleanote for my own practice: an ambient scribe that learns how you like notes written, accepts feedback on every note, and helps move your work into the EHR with customizable keyboard workflows.</p>
-                    <div class="hero-actions">
-                        <a class="button" href="#workflow">Watch the workflow</a>
-                        <a class="button button-secondary" href="mailto:eleanote@eleanote.ai">Ask about Eleanote</a>
-                    </div>
-                    <p class="tradeoff">Eleanote does not directly integrate with the EHR. It works beside it. That means more setup, but also more control over notes, shortcuts, codes, orders, instructions, and the small repetitive steps that create cognitive drag in clinic.</p>
+            <div class="container hero-inner">
+                <span class="hero-label">
+                    <span class="dot"></span>
+                    Built and used by a practicing physician
+                </span>
+                <h1>An ambient AI scribe<br>built by a doctor, <span class="accent">for doctors.</span></h1>
+                <p class="hero-sub">
+                    Eleanote writes notes the way you want them, learns from your feedback on every visit, and moves the work into your EHR with hotkeys you control. No black box. No salesperson. Just a tool one doctor built to make his own clinic run better.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn" href="#workflow">See how it works</a>
+                    <a class="btn btn-ghost" href="mailto:eleanote@eleanote.ai">Get in touch</a>
                 </div>
-                <aside class="hero-card" aria-label="Founder note">
-                    <div class="quote-mark">"</div>
-                    <p class="founder-quote">My goal was not to build the flashiest AI scribe. It was to build one that writes the way I want, improves when I correct it, and helps me stop clicking through the same menus all day.</p>
-                    <p>I have no sales team to feed and no marketing machinery to support. The cost is the work of building the product and using high-quality language models with enough context to preserve a detailed personal profile for each physician.</p>
-                    <div class="cred-row">
-                        <div><strong>Doctor-built</strong><span>used in real clinic</span></div>
-                        <div><strong>Personalized</strong><span>preference profile</span></div>
-                        <div><strong>Outside EHR</strong><span>more flexible setup</span></div>
-                    </div>
-                </aside>
-            </div>
-        </section>
-
-        <section class="personal" id="story">
-            <div class="container split">
-                <div>
-                    <p class="eyebrow">The honest pitch</p>
-                    <h2>More personal than plug-and-play.</h2>
-                    <p class="section-copy">Eleanote is for doctors who would rather spend effort training a tool around their own workflow than accept a generic note and a rigid implementation. Each user can develop a detailed personal profile, give feedback on individual notes, and shape the output over time.</p>
-                    <p class="section-copy">That also means the product is best for physicians who are comfortable using a laptop in clinic and willing to customize. The payoff is a scribe that can become much more specific to how you practice.</p>
-                </div>
-                <div class="plain-card">
-                    <h3>What it is not</h3>
-                    <ul>
-                        <li>Not a direct EHR integration.</li>
-                        <li>Not a passive, one-size-fits-all note generator.</li>
-                        <li>Not designed around a sales demo first.</li>
-                        <li>Not a replacement for physician review or judgment.</li>
-                    </ul>
+                <div class="hero-meta">
+                    <div><strong>Frontier-model quality</strong>Built on top-tier LLMs</div>
+                    <div><strong>Personal preference profile</strong>Up to ~8,000 tokens, per user</div>
+                    <div><strong>Learns from your edits</strong>Feedback updates your profile</div>
                 </div>
             </div>
         </section>
 
+        <!-- ============== DEVELOPER NOTE ============== -->
+        <section class="dev-note" id="story">
+            <div class="container container-narrow">
+                <p class="eyebrow">From the developer</p>
+                <div class="dev-note-body">
+                    <p>I'm a practicing physician. I built Eleanote because I wanted an AI scribe that actually wrote my notes the way I wrote them, and that helped me stop clicking through the same menus all day.</p>
+                    <p>I use it in my own clinic every day. The goal is simple: a scribe that writes the way you want, gets better every time you correct it, and quietly takes care of the small repetitive work that wears doctors down.</p>
+                </div>
+                <div class="dev-note-sig">A doctor in independent practice</div>
+            </div>
+        </section>
+
+        <!-- ============== WORKFLOW ============== -->
         <section class="workflow" id="workflow">
             <div class="container">
-                <div class="section-heading">
-                    <p class="eyebrow">Scroll-through workflow mockup</p>
-                    <h2>The program stays out of the way while the work gets done.</h2>
-                    <p class="section-copy">Most of the day, the physician is looking at the EHR. Eleanote can live as a small pill-shaped assistant at the top of the screen, listening for hotkeys and helping move from encounter context to note, codes, orders, and follow-up materials.</p>
+                <div class="workflow-head">
+                    <p class="eyebrow">A day with Eleanote</p>
+                    <h2>It stays out of the way while the work gets done.</h2>
+                    <p class="lead" style="margin-top: 1rem;">Most of your day is spent in your EHR. Eleanote lives as a small pill at the top of your screen, listening for hotkeys and turning each step of the visit into something you barely have to think about.</p>
                 </div>
 
-                <div class="workflow-shell">
-                    <div class="workflow-steps" aria-label="Workflow steps">
-                        <article class="step-card is-active" data-demo="prechart">
-                            <span class="step-label">Step 1</span>
-                            <h3>Prechart without opening Eleanote</h3>
-                            <p>Highlight recent results or notes in the EHR, press Ctrl+C and a hotkey, and Eleanote summarizes what matters immediately before the visit.</p>
+                <div class="workflow-grid">
+                    <!-- LEFT: steps -->
+                    <div class="steps" id="steps">
+                        <article class="step is-active" data-scene="prechart" tabindex="0">
+                            <span class="step-num">Step 01 — Precharting</span>
+                            <h3>Highlight, copy, hit a hotkey.</h3>
+                            <p>Highlight the recent labs, imaging, and messages in your EHR. <b>Ctrl + C</b>, then <b>F4</b>. Eleanote summarizes what matters so you walk into the room already caught up. Seconds, not minutes.</p>
+                            <span class="keys">Hotkey · <span class="keycap">F4</span></span>
                         </article>
-                        <article class="step-card" data-demo="visit">
-                            <span class="step-label">Step 2</span>
-                            <h3>Talk naturally during the visit</h3>
-                            <p>Start recording from the keyboard. You can speak to the patient and also ask the scribe to summarize recent events, results, or the plan.</p>
+
+                        <article class="step" data-scene="visit" tabindex="0">
+                            <span class="step-num">Step 02 — Seeing the patient</span>
+                            <h3>Talk naturally. Stage orders as you go.</h3>
+                            <p>One keystroke starts recording. Talk to your patient like you always do. As the plan forms, Eleanote can stage labs, imaging, referrals, and medications in the background so they're ready before the visit ends.</p>
+                            <span class="keys">Hotkey · <span class="keycap">F6</span></span>
                         </article>
-                        <article class="step-card" data-demo="orders">
-                            <span class="step-label">Step 3</span>
-                            <h3>Stage orders while the visit is happening</h3>
-                            <p>As the assessment and plan forms, Eleanote can prepare labs, imaging, referrals, medications, indications, and follow-up timing for physician review.</p>
+
+                        <article class="step" data-scene="orders" tabindex="0">
+                            <span class="step-num">Step 03 — Real-time orders</span>
+                            <h3>Imaging, labs, referrals — built while you talk.</h3>
+                            <p>You don't stop to type. Eleanote listens and stages the orders you mention, with indications and follow-up timing already attached, ready for your review.</p>
+                            <span class="keys">Hotkey · <span class="keycap">F7</span></span>
                         </article>
-                        <article class="step-card" data-demo="transfer">
-                            <span class="step-label">Step 4</span>
-                            <h3>Send the work to the EHR with programmed keystrokes</h3>
-                            <p>Instead of an API integration, users can train keystroke automations that place formatted notes, diagnosis codes, and order details into the EHR.</p>
+
+                        <article class="step" data-scene="transfer" tabindex="0">
+                            <span class="step-num">Step 04 — Into the EHR</span>
+                            <h3>Note, codes, and orders enter with one keystroke.</h3>
+                            <p>Instead of an EHR integration we don't have, Eleanote uses keystroke automations <em>you</em> program. The formatted note, diagnosis codes, and order details land where you want them.</p>
+                            <span class="keys">Hotkey · <span class="keycap">F8</span></span>
                         </article>
-                        <article class="step-card" data-demo="feedback">
-                            <span class="step-label">Step 5</span>
-                            <h3>Correct the note and teach the system</h3>
-                            <p>If the note needs improvement, give direct feedback. Eleanote rewrites the note and updates the physician's preference profile for next time.</p>
+
+                        <article class="step" data-scene="feedback" tabindex="0">
+                            <span class="step-num">Step 05 — Feedback &amp; learning</span>
+                            <h3>Correct it once. It learns for next time.</h3>
+                            <p>If a note misses your style, tell it what you want changed. Eleanote rewrites it on the spot and updates your personal profile so the next note already reflects the change.</p>
+                            <span class="keys">Hotkey · <span class="keycap">F9</span></span>
+                        </article>
+
+                        <article class="step" data-scene="other" tabindex="0">
+                            <span class="step-num">Step 06 — Other outputs</span>
+                            <h3>Patient instructions. Letters. Summaries.</h3>
+                            <p>The same system can be trained to produce anything you regularly write — patient instructions, letters to other clinicians, school notes, summaries. Whatever your clinic needs, you can teach it.</p>
+                            <span class="keys">Custom hotkeys</span>
                         </article>
                     </div>
 
-                    <div class="demo-stage" aria-live="polite">
-                        <div class="demo-laptop">
-                            <div class="demo-screen" id="demo-screen" data-demo="prechart">
-                                <div class="ehr-topbar">
-                                    <div>
-                                        <div class="eyebrow" style="margin: 0;">Generic EHR</div>
-                                        <div class="ehr-title">Patient chart</div>
+                    <!-- RIGHT: sticky animated stage -->
+                    <div class="workflow-stage" aria-hidden="true">
+                        <div class="stage-frame">
+                            <div class="stage-screen" id="stage" data-scene="prechart">
+
+                                <div class="ehr-bar">
+                                    <span>Generic EHR · Patient chart</span>
+                                    <div class="ehr-tabs">
+                                        <span>Encounter</span>
+                                        <span class="dim">Results</span>
+                                        <span class="dim">Orders</span>
                                     </div>
-                                    <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
                                 </div>
-                                <div class="pill">
-                                    <span class="pulse-dot"></span>
-                                    <span class="pill-text"></span>
-                                    <span class="hotkey"></span>
+
+                                <div class="pill" role="status">
+                                    <span class="ind"></span>
+                                    <span class="pill-text" id="pillText">Prechart copied. Summarizing…</span>
+                                    <span class="keycap" id="pillKey">F4</span>
                                 </div>
-                                <div class="ehr-body">
-                                    <div class="ehr-panel">
-                                        <h4>Recent chart</h4>
-                                        <span class="fake-line"></span>
-                                        <span class="fake-line med"></span>
-                                        <span class="fake-line short"></span>
-                                        <span class="fake-line"></span>
-                                        <div class="typed-output prechart-output">Recent PSA trend, imaging result, medication change, and patient message summarized for pre-visit review.</div>
-                                    </div>
-                                    <div class="ehr-panel note-area">
-                                        <h4>Today&apos;s note / plan</h4>
-                                        <span class="fake-line med"></span>
-                                        <span class="fake-line"></span>
-                                        <span class="fake-line short"></span>
-                                        <div class="typed-output visit-output">Draft note appears in the physician&apos;s preferred format, ready for review and edits.</div>
-                                        <div class="order-list">
-                                            <div class="order-chip">MRI pelvis with indication</div>
-                                            <div class="order-chip">Repeat PSA in 6 months</div>
-                                            <div class="order-chip">Referral message prepared</div>
+
+                                <!-- SCENE 1: PRECHART -->
+                                <div class="scene is-active" data-scene="prechart">
+                                    <div class="ehr-body">
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Recent chart</div>
+                                            <div class="skl"></div>
+                                            <div class="skl m"></div>
+                                            <div class="skl s"></div>
+                                            <div class="skl"></div>
+                                            <div class="skl m"></div>
+                                            <div class="skl s"></div>
                                         </div>
-                                        <div class="typed-output transfer-output">Formatted note, diagnosis codes, and order details are inserted using the user&apos;s programmed workflow.</div>
-                                        <div class="feedback-box">Feedback: &quot;Use my shorter assessment style and put follow-up timing in the plan.&quot; Preference saved.</div>
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Pre-visit summary</div>
+                                            <div class="chip-list">
+                                                <span class="chip">PSA trend</span>
+                                                <span class="chip">MRI report</span>
+                                                <span class="chip">Med change</span>
+                                                <span class="chip">Patient msg</span>
+                                            </div>
+                                            <div class="summary-card">
+                                                <span class="typing-line"><b>PSA</b> rising slowly over 9 months.</span>
+                                                <span class="typing-line"><b>MRI</b> showed PI-RADS 3 lesion left base.</span>
+                                                <span class="typing-line"><b>Patient</b> asked about biopsy timing in portal.</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- SCENE 2: VISIT -->
+                                <div class="scene" data-scene="visit">
+                                    <div class="ehr-body">
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Encounter</div>
+                                            <div class="skl"></div>
+                                            <div class="skl m"></div>
+                                            <div class="skl"></div>
+                                            <div class="skl s"></div>
+                                            <div class="skl m"></div>
+                                        </div>
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Live transcription</div>
+                                            <div class="summary-card">
+                                                <span class="typing-line"><b>Doctor:</b> "How have things been since the last visit?"</span>
+                                                <span class="typing-line"><b>Patient:</b> "Better, but more urgency lately."</span>
+                                                <span class="typing-line"><b>Eleanote:</b> Recording. Profile loaded.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SCENE 3: ORDERS -->
+                                <div class="scene" data-scene="orders">
+                                    <div class="ehr-body">
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Encounter</div>
+                                            <div class="skl m"></div>
+                                            <div class="skl"></div>
+                                            <div class="skl s"></div>
+                                            <div class="skl"></div>
+                                            <div class="skl m"></div>
+                                        </div>
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Staged orders</div>
+                                            <div class="order-row">MRI pelvis w/o contrast<span class="tag">Imaging</span></div>
+                                            <div class="order-row">Free PSA, total PSA<span class="tag">Lab</span></div>
+                                            <div class="order-row">Urology referral<span class="tag">Referral</span></div>
+                                            <div class="order-row">Tamsulosin 0.4 mg<span class="tag">Rx</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SCENE 4: TRANSFER -->
+                                <div class="scene" data-scene="transfer">
+                                    <div class="ehr-body">
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Today's note</div>
+                                            <div class="ehr-note">
+                                                <span class="typed-fragment"><b>S:</b> 64M, established pt. Worsening urgency.</span>
+                                                <span class="typed-fragment"><b>O:</b> BP 128/78. Abd benign. CVA non-tender.</span>
+                                                <span class="typed-fragment"><b>A/P:</b> 1) BPH — start tamsulosin. 2) PSA trend — repeat 6 mo. 3) PI-RADS 3 — uro referral.</span>
+                                                <span class="typed-fragment"><b>F/U:</b> 6 weeks or sooner if symptoms worsen.</span>
+                                            </div>
+                                            <div class="dx-row">
+                                                <span class="chip">N40.0</span>
+                                                <span class="chip">R39.15</span>
+                                                <span class="chip">Z12.5</span>
+                                            </div>
+                                        </div>
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Orders queued</div>
+                                            <div class="order-row" style="opacity:1;transform:none;">MRI pelvis<span class="tag">Sent</span></div>
+                                            <div class="order-row" style="opacity:1;transform:none;">PSA in 6 mo<span class="tag">Sent</span></div>
+                                            <div class="order-row" style="opacity:1;transform:none;">Uro referral<span class="tag">Sent</span></div>
+                                            <div class="order-row" style="opacity:1;transform:none;">Tamsulosin 0.4 mg<span class="tag">Sent</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SCENE 5: FEEDBACK (shows actual program-style UI) -->
+                                <div class="scene" data-scene="feedback">
+                                    <div class="ehr-body" style="grid-template-columns: 1fr; padding-top: 4.4rem;">
+                                        <div class="program-ui">
+                                            <div class="pu-head">
+                                                <span class="pu-title">
+                                                    <svg viewBox="0 0 32 32" aria-hidden="true">
+                                                        <circle cx="16" cy="16" r="15" fill="#14515c"/>
+                                                        <text x="16" y="22.5" text-anchor="middle"
+                                                            font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                                                            letter-spacing="-1" fill="#ffffff">e</text>
+                                                    </svg>
+                                                    Eleanote · Note review
+                                                </span>
+                                                <span class="pu-meta">Visit 14:32 · v2</span>
+                                            </div>
+                                            <div class="pu-note">
+                                                <strong>A/P:</strong>
+                                                <del>Patient with benign prostatic hyperplasia presents for routine follow-up.</del>
+                                                <ins>BPH — worsening urgency. Start tamsulosin 0.4 mg qHS.</ins>
+                                                <br><br>
+                                                <del>Recommend repeat PSA in six months.</del>
+                                                <ins>Repeat PSA in 6 months. Uro referral for PI-RADS 3 lesion.</ins>
+                                            </div>
+                                            <div class="pu-feedback">
+                                                <span class="quote">"Use my shorter assessment style and put follow-up timing in the plan."</span>
+                                            </div>
+                                            <div class="pu-saved">✓ Preference saved to your profile</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SCENE 6: OTHER OUTPUTS -->
+                                <div class="scene" data-scene="other">
+                                    <div class="ehr-body">
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Patient instructions</div>
+                                            <div class="summary-card">
+                                                <span class="typing-line"><b>Take</b> tamsulosin 0.4 mg at bedtime.</span>
+                                                <span class="typing-line"><b>Side effects</b> may include dizziness when standing.</span>
+                                                <span class="typing-line"><b>Follow up</b> in 6 weeks or sooner.</span>
+                                            </div>
+                                        </div>
+                                        <div class="ehr-panel">
+                                            <div class="panel-title">Letter to urology</div>
+                                            <div class="summary-card">
+                                                <span class="typing-line"><b>Dear Dr. Patel,</b></span>
+                                                <span class="typing-line">Thank you for seeing this 64-year-old gentleman with…</span>
+                                                <span class="typing-line"><em>Drafted in your house style.</em></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-                        <p class="demo-caption">Mockup only. Real screenshots and short clips can replace this once the UI is ready.</p>
+                        <p class="stage-caption">Mockup. Real screenshots and clips will replace this once the UI is finalized.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="model" id="model">
+        <!-- ============== WHAT MAKES IT DIFFERENT ============== -->
+        <section class="different" id="different">
             <div class="container">
-                <div class="section-heading">
-                    <p class="eyebrow">How Eleanote is different</p>
-                    <h2>The advantage is personalization and control.</h2>
-                    <p class="section-copy">The product is designed around a detailed physician profile, high-quality language models, and user-directed automation rather than a shallow template or a locked-down EHR integration.</p>
-                </div>
-                <div class="card-grid">
-                    <article class="feature-card">
-                        <h3>Large personal preference profile</h3>
-                        <p>Each physician can develop a detailed profile describing note structure, phrasing, formatting, clinical preferences, and recurring workflow instructions.</p>
-                    </article>
-                    <article class="feature-card">
-                        <h3>Feedback on every note</h3>
-                        <p>When a note is wrong, too long, too short, or not in the right style, the physician can correct it and have the system learn from that feedback.</p>
-                    </article>
-                    <article class="feature-card">
-                        <h3>Frontier model quality</h3>
-                        <p>Eleanote is built around capable language models with enough context to accommodate individualized instructions rather than forcing everyone into one output style.</p>
-                    </article>
-                    <article class="feature-card">
-                        <h3>Custom keyboard automation</h3>
-                        <p>Users can program keystrokes to move notes, formatting, codes, orders, and other generated text into the systems they already use.</p>
-                    </article>
-                    <article class="feature-card">
-                        <h3>Chatbots throughout setup</h3>
-                        <p>Built-in assistants help users configure preferences and workflows, because the customization is powerful but does take effort.</p>
-                    </article>
-                    <article class="feature-card">
-                        <h3>Output beyond the note</h3>
-                        <p>The same system can be trained to generate patient instructions, letters to other clinicians, summaries, and other clinic-specific materials.</p>
-                    </article>
+                <p class="eyebrow">What makes it different</p>
+                <h2>Personalization first.<br>Plug-and-play second.</h2>
+                <p class="lead" style="margin-top: 1rem;">Most ambient scribes optimize for the average doctor. Eleanote optimizes for <em>you</em>. The whole product is built around a detailed personal profile, frontier-model quality, and automation you can shape.</p>
+
+                <div class="feat-grid">
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 6h16M4 12h10M4 18h16"/>
+                        </svg>
+                        <h3>An ~8,000-token personal profile</h3>
+                        <p>Note structure, phrasing, formatting preferences, clinical habits, recurring instructions. Enough room to actually capture how you practice.</p>
+                    </div>
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12a9 9 0 1 1-3.5-7.1"/>
+                            <path d="M21 4v5h-5"/>
+                        </svg>
+                        <h3>Learns every time you correct it</h3>
+                        <p>Feedback rewrites the current note immediately and updates your profile, so the next note already reflects the change.</p>
+                    </div>
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5z"/>
+                        </svg>
+                        <h3>Frontier-model quality</h3>
+                        <p>Built on top-tier LLMs with the context window to actually use a long personal profile, instead of forcing every doctor into one template.</p>
+                    </div>
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="6" width="18" height="12" rx="2"/>
+                            <path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/>
+                        </svg>
+                        <h3>Hotkey-driven, not click-driven</h3>
+                        <p>You barely look at Eleanote. Programmable keystrokes move notes, codes, orders, and instructions wherever you need them.</p>
+                    </div>
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/>
+                        </svg>
+                        <h3>Built-in setup chatbots</h3>
+                        <p>Customization is powerful, and it does take work. Assistants throughout the program help you shape your profile, hotkeys, and outputs.</p>
+                    </div>
+                    <div class="feat">
+                        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 4h12l4 4v12H4z"/>
+                            <path d="M16 4v4h4"/>
+                            <path d="M8 14h8M8 18h6"/>
+                        </svg>
+                        <h3>Outputs beyond the note</h3>
+                        <p>Patient instructions, letters to other clinicians, summaries — anything you regularly write can be trained into a one-keystroke output.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- ============== TRADEOFF (HONEST) ============== -->
+        <section class="tradeoff-section" id="tradeoff">
+            <div class="container">
+                <div class="tradeoff-card">
+                    <p class="eyebrow">The honest tradeoff</p>
+                    <h2>Eleanote does not integrate directly with your EHR.</h2>
+                    <p>It can't, and pretending otherwise would be dishonest. Instead it works <em>beside</em> your EHR, using customizable keystroke automations you set up. That means more upfront effort. In exchange you get a scribe that fits your style instead of forcing you into someone else's, and that you can keep tuning forever.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============== WHO IT'S FOR ============== -->
         <section class="fit" id="fit">
-            <div class="container fit-grid">
-                <div>
-                    <p class="eyebrow">Who it is for</p>
-                    <h2>Best for independent-minded doctors who want the tool to adapt to them.</h2>
-                    <p>Eleanote is not trying to be the easiest enterprise rollout. It is trying to be a practical, customizable scribe for physicians who want a lot of control and are willing to train the system to match their clinic.</p>
+            <div class="container">
+                <p class="eyebrow">Who it's for</p>
+                <h2>Best for independent-minded doctors<br>who want the scribe to fit them.</h2>
+
+                <div class="fit-grid">
+                    <div class="fit-card good">
+                        <h3>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                            You'll likely love it if…
+                        </h3>
+                        <ul class="fit-list">
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                You use a laptop in the exam room.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                You care a lot about how your notes read.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                You're tired of click fatigue and repetitive menus.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                You're willing to invest setup time once for daily payoff.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14515c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                You want a tool that adapts to you, not the other way around.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="fit-card bad">
+                        <h3>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78449" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                            Probably not for you if…
+                        </h3>
+                        <ul class="fit-list">
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78449" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+                                You don't bring a laptop into the exam room.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78449" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+                                You need a turnkey EHR integration on day one.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78449" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+                                You'd rather take a generic note than train a personal one.
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78449" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+                                Setting up hotkeys and templates sounds worse than the problem.
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <ul class="fit-list">
-                    <li>Physicians who use a laptop in the exam room.</li>
-                    <li>Doctors who care deeply about note style and editing time.</li>
-                    <li>Users willing to configure hotkeys and workflows.</li>
-                    <li>Clinicians frustrated by repetitive EHR clicking and menu navigation.</li>
-                    <li>People who want flexibility more than a locked-down integration.</li>
-                </ul>
             </div>
         </section>
 
+        <!-- ============== CONTACT ============== -->
         <section class="contact" id="contact">
-            <div class="container">
-                <p class="eyebrow">Early users and feedback</p>
-                <h2>Interested in trying Eleanote?</h2>
-                <p>The first version is being shared directly with physicians who understand the tradeoff: more setup and training, in exchange for more personalization and control.</p>
-                <a class="button" href="mailto:eleanote@eleanote.ai">eleanote@eleanote.ai</a>
+            <div class="container container-narrow">
+                <p class="eyebrow" style="color: rgba(255,255,255,0.55);">Early users</p>
+                <h2>Want to try it?</h2>
+                <p>Eleanote is being shared first with physicians who understand the tradeoff: more setup and training in exchange for a scribe that ends up genuinely yours. If that sounds like you, send a note.</p>
+                <a class="btn" href="mailto:eleanote@eleanote.ai">Email the developer</a>
+                <span class="email">eleanote@eleanote.ai</span>
             </div>
         </section>
     </main>
@@ -1165,35 +1510,93 @@
     </footer>
 
     <script>
-        const demoScreen = document.getElementById("demo-screen");
-        const stepCards = Array.from(document.querySelectorAll(".step-card"));
+        (function(){
+            const menuBtn = document.getElementById('menuBtn');
+            const menuPanel = document.getElementById('menuPanel');
 
-        function setDemo(name) {
-            demoScreen.dataset.demo = name;
-            stepCards.forEach((card) => {
-                card.classList.toggle("is-active", card.dataset.demo === name);
-            });
-        }
-
-        stepCards.forEach((card) => {
-            card.addEventListener("click", () => setDemo(card.dataset.demo));
-        });
-
-        const observer = new IntersectionObserver((entries) => {
-            const visible = entries
-                .filter((entry) => entry.isIntersecting)
-                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-            if (visible) {
-                setDemo(visible.target.dataset.demo);
+            function setMenu(open){
+                document.body.classList.toggle('menu-open', open);
+                menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
             }
-        }, {
-            root: null,
-            rootMargin: "-35% 0px -40% 0px",
-            threshold: [0.2, 0.45, 0.7]
-        });
 
-        stepCards.forEach((card) => observer.observe(card));
+            menuBtn.addEventListener('click', () => {
+                setMenu(!document.body.classList.contains('menu-open'));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!document.body.classList.contains('menu-open')) return;
+                if (menuPanel.contains(e.target) || menuBtn.contains(e.target)) return;
+                setMenu(false);
+            });
+
+            menuPanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') setMenu(false);
+            });
+        })();
+
+        (function(){
+            const stage = document.getElementById('stage');
+            const pillText = document.getElementById('pillText');
+            const pillKey = document.getElementById('pillKey');
+            const steps = Array.from(document.querySelectorAll('#steps .step'));
+            const scenes = Array.from(stage.querySelectorAll('.scene'));
+
+            const sceneCopy = {
+                prechart: { text: 'Prechart copied. Summarizing recent results…', key: 'F4' },
+                visit:    { text: 'Recording visit. Talk normally.',                key: 'F6' },
+                orders:   { text: 'Staging orders in real time.',                   key: 'F7' },
+                transfer: { text: 'Sending note, codes, and orders to your EHR.',   key: 'F8' },
+                feedback: { text: 'Feedback received. Rewriting and learning.',     key: 'F9' },
+                other:    { text: 'Generating instructions and letters.',           key: 'F10' }
+            };
+
+            function setScene(name){
+                if (!sceneCopy[name]) return;
+                stage.dataset.scene = name;
+                pillText.textContent = sceneCopy[name].text;
+                pillKey.textContent = sceneCopy[name].key;
+                scenes.forEach(s => s.classList.toggle('is-active', s.dataset.scene === name));
+                steps.forEach(s => s.classList.toggle('is-active', s.dataset.scene === name));
+            }
+
+            steps.forEach(step => {
+                step.addEventListener('click', () => setScene(step.dataset.scene));
+                step.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setScene(step.dataset.scene);
+                    }
+                });
+            });
+
+            // scroll-driven scene change: pick the step closest to the viewport center
+            let ticking = false;
+            function onScroll(){
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const center = window.innerHeight * 0.45;
+                    let best = null, bestDist = Infinity;
+                    steps.forEach(step => {
+                        const rect = step.getBoundingClientRect();
+                        const stepCenter = rect.top + rect.height / 2;
+                        const dist = Math.abs(stepCenter - center);
+                        if (rect.bottom > 0 && rect.top < window.innerHeight && dist < bestDist) {
+                            best = step;
+                            bestDist = dist;
+                        }
+                    });
+                    if (best && best.dataset.scene !== stage.dataset.scene) {
+                        setScene(best.dataset.scene);
+                    }
+                    ticking = false;
+                });
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll);
+        })();
     </script>
 </body>
 </html>
