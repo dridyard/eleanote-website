@@ -4,101 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1280, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>EMR Wireframe v2 — Eleanote internal</title>
+    <meta name="theme-color" content="#5b4b8a">
+    <title>Generic EMR — Eleanote demonstration</title>
     <style>
         :root {
-            --bg: #eef1f4;
+            /* surfaces */
+            --bg: #edeef3;
             --pane: #ffffff;
-            --line: #c5cdd3;
-            --line-strong: #98a3ab;
-            --ink: #233038;
-            --muted: #6b7780;
-            --accent: #1f5b8a;
-            --accent-soft: #e6eef6;
-            --warn: #b94e3a;
-            --gold: #a78449;
-            --note-bg: #fbfaf3;
+            --pane-soft: #f7f8fb;
+
+            /* lines */
+            --line: #e3e5ec;
+            --line-strong: #cfd2dc;
+
+            /* ink */
+            --ink: #1f2533;
+            --ink-soft: #2a3142;
+            --muted: #6a7388;
+            --muted-2: #8a93a8;
+
+            /* lavender / plum accent (the brand color of this fake EMR) */
+            --accent: #5b4b8a;
+            --accent-strong: #473a72;
+            --accent-soft: #ece9f3;
+            --accent-tint: #f6f4fa;
+
+            /* status */
+            --warn: #b8443d;
+            --warn-soft: #fbecea;
+            --ok: #2f7a4f;
+            --ok-soft: #e6f1ec;
+            --gold: #8a6620;
+            --gold-soft: #fbf3df;
+
+            /* note */
+            --note-bg: #fbfbfd;
+
+            /* shadows */
+            --shadow-card: 0 1px 2px rgba(31, 37, 51, 0.04), 0 1px 3px rgba(31, 37, 51, 0.06);
+            --shadow-elev: 0 8px 20px rgba(31, 37, 51, 0.10);
+
+            --radius: 6px;
+            --radius-lg: 8px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", "Inter", sans-serif;
             background: var(--bg);
             color: var(--ink);
             font-size: 13px;
-            line-height: 1.4;
+            line-height: 1.45;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
         }
 
-        .wf-tag {
-            position: fixed;
-            top: 6px; right: 8px;
-            font-size: 11px; font-weight: 600;
-            color: #fff; background: #1d6673;
-            padding: 4px 9px; border-radius: 999px;
-            z-index: 1000;
-            letter-spacing: 0.04em; text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-        }
+        ::selection { background: var(--accent); color: #fff; }
 
         /* ====== APP SHELL ====== */
         .app {
             display: grid;
-            grid-template-columns: 220px 1fr 360px;
+            grid-template-columns: 230px 1fr 380px;
             grid-template-rows: 64px 1fr;
             height: 100vh;
             background: var(--bg);
+            position: relative;
+        }
+
+        /* a thin lavender accent strip across the very top */
+        .app::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent) 0%, #7c6aae 50%, var(--accent) 100%);
+            z-index: 60;
         }
 
         /* ----- TOP BANNER ----- */
         .banner {
             grid-column: 1 / -1;
             background: var(--pane);
-            border-bottom: 2px dashed var(--line-strong);
+            border-bottom: 1px solid var(--line);
             display: flex;
             align-items: center;
-            padding: 0 18px;
-            gap: 18px;
+            padding: 0 22px;
+            gap: 22px;
             position: relative;
             overflow-x: auto;
+            box-shadow: var(--shadow-card);
+            z-index: 5;
         }
-        .banner .label,
-        .leftnav .label,
-        .center .label,
-        .right .label {
-            position: absolute;
-            top: -10px; left: 12px;
-            background: var(--bg);
-            padding: 0 6px;
-            font-size: 10px;
+
+        /* small product mark on the far left of the banner so it feels real */
+        .product-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 14px;
+            border-right: 1px solid var(--line);
+            margin-right: 4px;
+            flex: 0 0 auto;
+        }
+        .product-mark .pm-logo {
+            width: 26px; height: 26px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent) 0%, #7c6aae 100%);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
             font-weight: 700;
+            letter-spacing: -0.04em;
+            box-shadow: 0 2px 4px rgba(91, 75, 138, 0.22);
+        }
+        .product-mark .pm-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.005em;
+            white-space: nowrap;
+        }
+        .product-mark .pm-name small {
+            display: block;
+            font-weight: 500;
+            font-size: 10px;
             color: var(--muted);
-            letter-spacing: 0.12em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
         }
 
         .avatar {
             width: 38px; height: 38px;
             border-radius: 50%;
-            border: 2px dashed var(--line-strong);
+            background: var(--accent-soft);
+            color: var(--accent-strong);
             display: flex; align-items: center; justify-content: center;
-            color: var(--muted); font-size: 11px;
+            font-size: 12px;
+            font-weight: 700;
             flex: 0 0 auto;
+            border: 1px solid rgba(91, 75, 138, 0.16);
         }
 
         .b-name {
             font-weight: 700; font-size: 15px;
             line-height: 1.15;
             white-space: nowrap;
+            color: var(--ink);
+            letter-spacing: -0.005em;
         }
         .b-sub {
             color: var(--muted); font-size: 12px;
             white-space: nowrap;
+            margin-top: 2px;
         }
 
         .b-divider {
-            width: 1px; height: 32px;
+            width: 1px; height: 36px;
             background: var(--line);
             flex: 0 0 auto;
         }
@@ -113,69 +178,92 @@
             text-transform: uppercase; letter-spacing: 0.06em;
             font-weight: 600;
         }
-        .b-cell .v { font-size: 12px; color: var(--ink); font-weight: 600; }
+        .b-cell .v { font-size: 12.5px; color: var(--ink); font-weight: 600; }
         .b-cell .v.warn { color: var(--warn); }
 
         .b-flag {
             margin-left: auto;
-            background: #fff3f0;
-            border: 1px dashed var(--warn);
-            color: var(--warn);
-            padding: 4px 10px;
-            font-size: 11px; font-weight: 600;
-            border-radius: 4px;
+            background: var(--gold-soft);
+            border: 1px solid rgba(138, 102, 32, 0.28);
+            color: var(--gold);
+            padding: 5px 11px;
+            font-size: 11.5px; font-weight: 600;
+            border-radius: 999px;
             flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .b-flag::before {
+            content: "";
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 3px rgba(138, 102, 32, 0.18);
         }
 
         /* ----- LEFT NAV ----- */
         .leftnav {
             background: var(--pane);
-            border-right: 2px dashed var(--line-strong);
-            padding: 14px 0;
+            border-right: 1px solid var(--line);
+            padding: 14px 0 18px;
             overflow-y: auto;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         .nav-section {
             padding: 0 12px;
-            margin-bottom: 18px;
         }
         .nav-section h4 {
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.10em;
-            color: var(--muted);
+            color: var(--muted-2);
             font-weight: 700;
-            padding: 0 8px 6px;
-            border-bottom: 1px dashed var(--line);
-            margin-bottom: 6px;
+            padding: 0 10px 6px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--line);
         }
         .nav-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 9px 12px;
-            border-radius: 4px;
+            padding: 8px 10px 8px 12px;
+            border-radius: 5px;
             font-size: 13px;
-            color: var(--ink);
+            color: var(--ink-soft);
             cursor: pointer;
-            margin-bottom: 2px;
-            border: 1px dashed transparent;
+            margin-bottom: 1px;
+            position: relative;
+            border: 1px solid transparent;
+            transition: background 100ms ease, color 100ms ease;
         }
-        .nav-item:hover { background: #f4f6f8; }
+        .nav-item:hover {
+            background: var(--pane-soft);
+            color: var(--ink);
+        }
         .nav-item.active {
             background: var(--accent-soft);
-            border-color: var(--accent);
-            color: var(--accent);
+            color: var(--accent-strong);
             font-weight: 600;
+        }
+        .nav-item.active::before {
+            content: "";
+            position: absolute;
+            left: -1px; top: 6px; bottom: 6px;
+            width: 3px;
+            background: var(--accent);
+            border-radius: 3px;
         }
         .nav-item .badge {
             font-size: 11px;
             color: var(--muted);
             font-weight: 600;
-            background: #f0f3f5;
+            background: var(--pane-soft);
             border: 1px solid var(--line);
             border-radius: 999px;
-            padding: 1px 7px;
+            padding: 1px 8px;
             min-width: 22px;
             text-align: center;
         }
@@ -188,12 +276,13 @@
         /* ----- CENTER PANEL ----- */
         .center {
             background: var(--pane);
-            margin: 12px;
-            border: 2px dashed var(--line-strong);
-            border-radius: 6px;
-            padding: 18px 20px;
+            margin: 12px 8px 12px 12px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 20px 22px 22px;
             position: relative;
             overflow-y: auto;
+            box-shadow: var(--shadow-card);
         }
         .view { display: none; }
         .view.active { display: block; }
@@ -202,34 +291,47 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
-            border-bottom: 1px dashed var(--line);
-            padding-bottom: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--line);
         }
-        .view-head h2 { font-size: 16px; font-weight: 700; }
-        .view-head .meta { font-size: 12px; color: var(--muted); }
+        .view-head h2 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+        }
+        .view-head .meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
 
-        /* generic search bar */
+        /* search bar */
         .search {
             display: flex;
             align-items: center;
-            gap: 6px;
-            border: 1px dashed var(--line-strong);
-            border-radius: 4px;
-            padding: 9px 12px;
-            background: #fafbfc;
+            gap: 8px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            background: var(--pane);
             color: var(--muted);
-            font-style: italic;
             font-size: 13px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             cursor: text;
+            transition: border-color 120ms ease, box-shadow 120ms ease;
         }
-        .search::before { content: "+"; color: var(--accent); font-weight: 700; font-size: 16px; font-style: normal; }
-        .search.real {
-            font-style: normal;
-            color: var(--ink);
-            background: #fff;
-            cursor: default;
+        .search:hover { border-color: var(--accent); }
+        .search:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(91, 75, 138, 0.12);
+        }
+        .search::before {
+            content: "";
+            display: inline-block;
+            width: 14px; height: 14px;
+            background: no-repeat center / contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236a7388' stroke-width='1.6'><circle cx='7' cy='7' r='5'/><path d='M11 11l3.5 3.5'/></svg>");
+            flex: 0 0 auto;
         }
         .search input {
             flex: 1;
@@ -239,7 +341,7 @@
             background: transparent;
             color: var(--ink);
         }
-        .search input::placeholder { color: var(--muted); font-style: italic; }
+        .search input::placeholder { color: var(--muted); }
 
         /* chip lists */
         .chip-row {
@@ -249,25 +351,40 @@
         .chip {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            background: #fff;
-            border: 1px dashed var(--line-strong);
-            border-radius: 4px;
-            padding: 4px 10px;
+            gap: 7px;
+            font-size: 12.5px;
+            background: var(--accent-tint);
+            border: 1px solid rgba(91, 75, 138, 0.18);
+            color: var(--ink);
+            border-radius: 999px;
+            padding: 4px 4px 4px 11px;
+            font-weight: 500;
         }
         .chip .code {
             color: var(--muted);
-            font-family: "SFMono-Regular", Consolas, monospace;
+            font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
             font-size: 11px;
         }
         .chip .x {
             cursor: pointer; color: var(--muted);
-            margin-left: 4px;
             font-size: 14px;
             line-height: 1;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        .chip .x:hover { color: var(--warn); }
+        .chip .x:hover { background: rgba(184, 68, 61, 0.12); color: var(--warn); }
+
+        .helptext {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
 
         /* tables / lists */
         table.list {
@@ -277,96 +394,116 @@
         }
         table.list th, table.list td {
             text-align: left;
-            padding: 8px 10px;
-            border-bottom: 1px dashed var(--line);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--line);
         }
-        table.list th {
+        table.list thead th {
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: var(--muted);
+            color: var(--muted-2);
             font-weight: 700;
+            border-bottom: 1px solid var(--line);
+            background: var(--pane-soft);
         }
-        table.list tr:hover td { background: #f6f8f9; }
+        table.list tbody tr { transition: background 80ms ease; }
+        table.list tbody tr:hover td { background: var(--accent-tint); }
         .pill {
             display: inline-block;
             font-size: 11px;
             font-weight: 600;
-            padding: 1px 7px;
+            padding: 2px 8px;
             border-radius: 999px;
-            background: #f0f3f5;
+            background: var(--pane-soft);
             color: var(--muted);
             border: 1px solid var(--line);
         }
-        .pill.high { background: #fff0ee; color: var(--warn); border-color: var(--warn); }
-        .pill.normal { background: #effaf2; color: #237a44; border-color: #b6dbc1; }
+        .pill.high { background: var(--warn-soft); color: var(--warn); border-color: rgba(184, 68, 61, 0.24); }
+        .pill.normal { background: var(--ok-soft); color: var(--ok); border-color: rgba(47, 122, 79, 0.22); }
 
         .row {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 10px;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--line);
+            grid-template-columns: 130px 1fr;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
             font-size: 13px;
         }
-        .row strong { color: var(--muted); font-weight: 600; }
+        .row:last-child { border-bottom: 0; }
+        .row strong {
+            color: var(--muted);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
         .row a {
-            color: var(--accent);
+            color: var(--accent-strong);
             text-decoration: none;
             cursor: pointer;
+            font-weight: 500;
         }
         .row a:hover { text-decoration: underline; }
 
-        /* order list with type badges */
+        /* order list */
         .order-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 9px 12px;
-            border: 1px dashed var(--line-strong);
-            border-radius: 4px;
-            background: #fff;
-            margin-bottom: 6px;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--pane);
+            margin-bottom: 7px;
             font-size: 13px;
+            transition: border-color 120ms ease, background 120ms ease;
+        }
+        .order-row:hover {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+        }
+        .order-row .o-name { font-weight: 600; color: var(--ink); }
+        .order-row .o-meta {
+            font-size: 11.5px; color: var(--muted);
+            margin-top: 2px;
         }
         .order-row .o-tag {
             font-size: 10px; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.06em;
-            background: #f0f3f5; color: var(--muted);
-            padding: 2px 7px; border-radius: 3px;
+            background: var(--pane-soft); color: var(--muted);
+            padding: 3px 8px; border-radius: 3px;
+            border: 1px solid var(--line);
+            white-space: nowrap;
         }
-        .order-row .o-tag.lab { background: #eaf3ff; color: #1f5b8a; }
-        .order-row .o-tag.img { background: #f4ecff; color: #5b3a99; }
-        .order-row .o-tag.rx { background: #effaf2; color: #237a44; }
-        .order-row .o-tag.ref { background: #fff3df; color: #8a6620; }
-
-        .order-row .o-meta {
-            font-size: 11px; color: var(--muted);
-            margin-top: 2px;
-        }
+        .order-row .o-tag.lab { background: #ecefff; color: #44508f; border-color: rgba(68, 80, 143, 0.18); }
+        .order-row .o-tag.img { background: #f1ebf7; color: var(--accent-strong); border-color: rgba(91, 75, 138, 0.22); }
+        .order-row .o-tag.rx { background: var(--ok-soft); color: var(--ok); border-color: rgba(47, 122, 79, 0.22); }
+        .order-row .o-tag.ref { background: var(--gold-soft); color: var(--gold); border-color: rgba(138, 102, 32, 0.22); }
 
         /* ----- RIGHT (NOTE EDITOR) ----- */
         .right {
             background: var(--pane);
-            margin: 12px 12px 12px 0;
-            border: 2px dashed var(--line-strong);
-            border-radius: 6px;
+            margin: 12px 12px 12px 4px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
         .note-head {
-            padding: 12px 14px 10px;
-            border-bottom: 1px dashed var(--line);
+            padding: 14px 16px 12px;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(180deg, var(--pane) 0%, var(--pane-soft) 100%);
         }
         .note-head h3 {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 700;
             color: var(--ink);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            letter-spacing: -0.005em;
         }
         .note-head h3 .meta {
             font-size: 11px;
@@ -377,32 +514,37 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            padding: 6px 10px;
-            border-bottom: 1px dashed var(--line);
-            background: #fafbfc;
+            padding: 7px 10px;
+            border-bottom: 1px solid var(--line);
+            background: var(--pane-soft);
         }
         .tb-btn {
-            background: #fff;
+            background: var(--pane);
             border: 1px solid var(--line);
-            border-radius: 3px;
+            border-radius: 4px;
             min-width: 28px;
-            height: 26px;
-            padding: 0 7px;
+            height: 28px;
+            padding: 0 8px;
             font: inherit;
             font-size: 13px;
             cursor: pointer;
-            color: var(--ink);
+            color: var(--ink-soft);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: background 100ms ease, border-color 100ms ease, color 100ms ease;
         }
-        .tb-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+        .tb-btn:hover {
+            background: var(--accent-tint);
+            border-color: var(--accent);
+            color: var(--accent-strong);
+        }
         .tb-btn.active {
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
         }
-        .tb-btn.b { font-weight: 700; }
+        .tb-btn.b { font-weight: 800; }
         .tb-btn.i { font-style: italic; font-family: Georgia, serif; }
         .tb-btn.u { text-decoration: underline; }
         .tb-sep {
@@ -414,23 +556,25 @@
             font: inherit;
             font-size: 12px;
             border: 1px solid var(--line);
-            border-radius: 3px;
-            background: #fff;
-            padding: 3px 6px;
+            border-radius: 4px;
+            background: var(--pane);
+            padding: 4px 8px;
             cursor: pointer;
+            color: var(--ink-soft);
         }
+        .tb-select:hover { border-color: var(--accent); }
         .tb-hint {
             margin-left: auto;
             font-size: 10px;
-            color: var(--muted);
-            font-style: italic;
+            color: var(--muted-2);
+            font-weight: 500;
         }
 
         .note-body {
             flex: 1;
-            padding: 14px 16px;
-            font-size: 13px;
-            line-height: 1.55;
+            padding: 16px 18px;
+            font-size: 13.5px;
+            line-height: 1.6;
             overflow-y: auto;
             background: var(--note-bg);
             outline: none;
@@ -448,38 +592,51 @@
         .note-body h4 {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent);
-            margin-top: 0.8em;
-            margin-bottom: 0.2em;
+            letter-spacing: 0.10em;
+            color: var(--accent-strong);
+            margin-top: 0.9em;
+            margin-bottom: 0.25em;
+            font-weight: 700;
         }
 
         .note-foot {
-            padding: 8px 12px;
-            border-top: 1px dashed var(--line);
-            font-size: 11px;
+            padding: 9px 14px;
+            border-top: 1px solid var(--line);
+            font-size: 11.5px;
             color: var(--muted);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fafbfc;
+            background: var(--pane-soft);
+        }
+        .note-foot .saved-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--ok);
+            margin-right: 6px;
+            vertical-align: 1px;
         }
         .note-foot .signbtn {
             font-size: 12px;
             font-weight: 600;
             background: var(--accent);
             color: #fff;
-            border: none;
-            padding: 5px 12px;
+            border: 1px solid var(--accent);
+            padding: 6px 14px;
             border-radius: 4px;
             cursor: pointer;
+            transition: background 120ms ease;
         }
+        .note-foot .signbtn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 
         /* ----- ORDER MODAL ----- */
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(35, 48, 56, 0.42);
+            background: rgba(31, 37, 51, 0.42);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -488,36 +645,48 @@
         .modal-backdrop.open { display: flex; }
         .modal {
             background: var(--pane);
-            border: 2px dashed var(--line-strong);
-            border-radius: 8px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
             width: min(580px, 92vw);
             max-height: 86vh;
             overflow-y: auto;
-            padding: 18px 20px;
+            padding: 20px 22px;
             position: relative;
+            box-shadow: var(--shadow-elev);
         }
-        .modal h3 { font-size: 14px; margin-bottom: 4px; color: var(--ink); }
-        .modal .sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+        .modal h3 {
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: var(--ink);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .modal .sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
 
         .modal-tabs {
             display: flex;
             gap: 4px;
-            margin-bottom: 14px;
-            border-bottom: 1px dashed var(--line);
-            padding-bottom: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 10px;
         }
         .modal-tabs button {
             font: inherit;
             font-size: 11px;
             font-weight: 600;
-            padding: 5px 10px;
+            padding: 6px 11px;
             border-radius: 4px;
             border: 1px solid var(--line);
-            background: #fff;
+            background: var(--pane);
             color: var(--muted);
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.04em;
+            transition: background 100ms ease, color 100ms ease, border-color 100ms ease;
+        }
+        .modal-tabs button:hover {
+            color: var(--accent-strong);
+            border-color: var(--accent);
         }
         .modal-tabs button.active {
             background: var(--accent);
@@ -528,24 +697,25 @@
         .modal .field { margin-bottom: 10px; }
         .modal label {
             display: block;
-            font-size: 11px; color: var(--muted);
-            text-transform: uppercase; letter-spacing: 0.06em;
-            margin-bottom: 4px; font-weight: 600;
+            font-size: 10px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 5px; font-weight: 700;
         }
         .modal .control {
-            border: 1px dashed var(--line-strong);
+            border: 1px solid var(--line-strong);
             border-radius: 4px;
-            padding: 8px 10px;
+            padding: 9px 11px;
             font-size: 13px;
-            background: #fff;
+            font-family: inherit;
+            background: var(--pane);
             color: var(--ink);
             width: 100%;
+            transition: border-color 120ms ease, box-shadow 120ms ease;
         }
-        .modal .control[disabled],
-        .modal .control.placeholder {
-            background: #fafbfc;
-            color: var(--muted);
-            font-style: italic;
+        .modal .control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(91, 75, 138, 0.14);
         }
         .modal-row {
             display: grid;
@@ -556,61 +726,98 @@
             display: flex;
             justify-content: flex-end;
             gap: 8px;
-            padding-top: 12px;
-            border-top: 1px dashed var(--line);
-            margin-top: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+            margin-top: 12px;
         }
         .modal-actions button {
             font: inherit;
-            font-size: 12px;
+            font-size: 12.5px;
+            font-weight: 500;
             border-radius: 4px;
-            padding: 7px 14px;
+            padding: 8px 16px;
             cursor: pointer;
             border: 1px solid var(--line-strong);
-            background: #fff;
+            background: var(--pane);
             color: var(--ink);
+            transition: background 100ms ease;
         }
+        .modal-actions button:hover { background: var(--pane-soft); }
         .modal-actions button.primary {
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
             font-weight: 600;
         }
+        .modal-actions button.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 
         /* responsive */
-        @media (max-width: 1100px) {
-            .app { grid-template-columns: 200px 1fr 320px; }
+        @media (max-width: 1180px) {
+            .app { grid-template-columns: 210px 1fr 340px; }
         }
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .app {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto auto auto;
                 height: auto;
                 min-height: 100vh;
             }
-            .leftnav, .center, .right {
-                margin: 8px;
-                border-right: 2px dashed var(--line-strong);
+            .leftnav {
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+                padding: 12px;
+            }
+            .center, .right {
+                margin: 8px 12px;
                 max-height: none;
             }
-            .leftnav { padding: 14px; }
-            .right { min-height: 360px; }
+            .right {
+                margin-bottom: 16px;
+                min-height: 360px;
+            }
+            .center { margin-top: 0; }
         }
         @media (max-width: 600px) {
-            .banner { gap: 10px; padding: 0 10px; flex-wrap: wrap; height: auto; padding-top: 10px; padding-bottom: 10px; }
+            .banner {
+                gap: 12px; padding: 10px 14px; flex-wrap: wrap; height: auto;
+            }
             .banner .b-flag { margin-left: 0; }
             .b-divider { display: none; }
+            .product-mark { padding-right: 10px; }
+            .modal { padding: 16px; }
+            .modal-row { grid-template-columns: 1fr; }
+        }
+
+        /* scrollbar polish */
+        .leftnav::-webkit-scrollbar,
+        .center::-webkit-scrollbar,
+        .note-body::-webkit-scrollbar,
+        .modal::-webkit-scrollbar {
+            width: 8px; height: 8px;
+        }
+        .leftnav::-webkit-scrollbar-thumb,
+        .center::-webkit-scrollbar-thumb,
+        .note-body::-webkit-scrollbar-thumb,
+        .modal::-webkit-scrollbar-thumb {
+            background: rgba(106, 115, 136, 0.28);
+            border-radius: 4px;
+        }
+        .leftnav::-webkit-scrollbar-thumb:hover,
+        .center::-webkit-scrollbar-thumb:hover,
+        .note-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(106, 115, 136, 0.45);
         }
     </style>
 </head>
 <body>
-    <span class="wf-tag">Wireframe v2</span>
-
     <div class="app">
 
         <!-- ===== TOP BANNER ===== -->
         <header class="banner">
-            <span class="label">Patient banner</span>
+            <div class="product-mark">
+                <span class="pm-logo">M</span>
+                <span class="pm-name">Mauve Health<small>Patient chart</small></span>
+            </div>
 
             <div class="avatar">JD</div>
             <div>
@@ -645,13 +852,11 @@
                 <span class="v">Office Visit · Today</span>
             </div>
 
-            <div class="b-flag">⚑ Overdue: A1c, Colonoscopy</div>
+            <div class="b-flag">Overdue: A1c, Colonoscopy</div>
         </header>
 
         <!-- ===== LEFT NAV ===== -->
         <aside class="leftnav">
-            <span class="label">Navigation</span>
-
             <div class="nav-section">
                 <h4>This visit</h4>
                 <div class="nav-item" data-view="visitdx">
@@ -701,7 +906,6 @@
 
         <!-- ===== CENTER ===== -->
         <main class="center" id="centerPane">
-            <span class="label">Main view</span>
 
             <!-- VISIT DIAGNOSES -->
             <section class="view" data-view="visitdx">
@@ -709,10 +913,10 @@
                     <h2>Visit diagnoses</h2>
                     <span class="meta">Encounter — today</span>
                 </div>
-                <div class="search real">
+                <div class="search">
                     <input type="text" id="dxSearch" placeholder="Search diagnosis by name or ICD-10…">
                 </div>
-                <p style="font-size:11px;color:var(--muted);margin-bottom:8px;">Selected diagnoses for this visit</p>
+                <p class="helptext">Selected for this visit</p>
                 <div class="chip-row" id="dxChips">
                     <span class="chip">Hypertension <span class="code">I10</span><span class="x" data-x>×</span></span>
                     <span class="chip">BPH <span class="code">N40.0</span><span class="x" data-x>×</span></span>
@@ -726,33 +930,35 @@
                     <h2>Orders</h2>
                     <span class="meta">Encounter — today</span>
                 </div>
-                <div class="search" id="ordersSearch">Search order (lab, imaging, med, referral)…</div>
+                <div class="search" id="ordersSearch">
+                    <span style="color:var(--muted);">Search order (lab, imaging, med, referral)…</span>
+                </div>
 
                 <div id="ordersList">
                     <div class="order-row">
                         <div>
-                            <div>MRI pelvis without contrast</div>
+                            <div class="o-name">MRI pelvis without contrast</div>
                             <div class="o-meta">Indication: PI-RADS 3 lesion · Routine · once</div>
                         </div>
                         <span class="o-tag img">Imaging</span>
                     </div>
                     <div class="order-row">
                         <div>
-                            <div>PSA, total &amp; free</div>
+                            <div class="o-name">PSA, total &amp; free</div>
                             <div class="o-meta">In 6 months · routine</div>
                         </div>
                         <span class="o-tag lab">Lab</span>
                     </div>
                     <div class="order-row">
                         <div>
-                            <div>Tamsulosin 0.4 mg cap</div>
+                            <div class="o-name">Tamsulosin 0.4 mg cap</div>
                             <div class="o-meta">1 cap PO qHS · #30 · 3 refills</div>
                         </div>
                         <span class="o-tag rx">Med</span>
                     </div>
                     <div class="order-row">
                         <div>
-                            <div>Urology referral</div>
+                            <div class="o-name">Urology referral</div>
                             <div class="o-meta">Reason: PI-RADS 3, rising PSA · routine</div>
                         </div>
                         <span class="o-tag ref">Referral</span>
@@ -869,7 +1075,6 @@
 
         <!-- ===== RIGHT: NOTE EDITOR ===== -->
         <aside class="right">
-            <span class="label">Note editor</span>
             <div class="note-head">
                 <h3>Today's note <span class="meta">SOAP · Office Visit</span></h3>
             </div>
@@ -901,7 +1106,7 @@
             ><h4>Subjective</h4><p>64-year-old gentleman returns for follow-up of <b>BPH</b> and <b>HTN</b>. Reports worsening urinary urgency and frequency over the past 2 months. No hematuria. Sleep affected.</p><h4>Objective</h4><p>BP 142/88, HR 78. Abdomen benign, no CVA tenderness.</p><h4>Assessment / Plan</h4><p><b>1) BPH</b> — start tamsulosin 0.4 mg qHS.<br><b>2) PSA trend</b> — repeat in 6 months. PI-RADS 3 noted on MRI; <i>uro referral placed.</i><br><b>3) HTN</b> — uncontrolled today, continue lisinopril and recheck in 4 weeks.</p></div>
 
             <div class="note-foot">
-                <span id="noteStatus">Draft · saved locally</span>
+                <span id="noteStatus"><span class="saved-dot"></span>Draft · saved locally</span>
                 <button type="button" class="signbtn">Sign note</button>
             </div>
         </aside>
@@ -941,7 +1146,6 @@
                 </div>
             </div>
 
-            <!-- Med-specific fields, hidden by default -->
             <div id="medFields" style="display:none;">
                 <div class="modal-row">
                     <div class="field">
@@ -968,7 +1172,7 @@
     </div>
 
     <script>
-        // ===== left-nav view switcher =====
+        // left-nav view switcher
         const navItems = document.querySelectorAll('.nav-item');
         const views = document.querySelectorAll('.view');
         function showView(name) {
@@ -977,7 +1181,7 @@
         }
         navItems.forEach(n => n.addEventListener('click', () => showView(n.dataset.view)));
 
-        // ===== visit diagnoses: tiny add-on-Enter =====
+        // visit diagnoses: add chip on Enter
         const dxSearch = document.getElementById('dxSearch');
         const dxChips  = document.getElementById('dxChips');
         const dxCount  = document.getElementById('dxCount');
@@ -999,7 +1203,7 @@
             }
         });
 
-        // ===== orders: open modal =====
+        // orders modal
         const modal = document.getElementById('orderModal');
         const ordersSearch = document.getElementById('ordersSearch');
         const ordersList = document.getElementById('ordersList');
@@ -1014,7 +1218,6 @@
             setTimeout(() => orderName.focus(), 50);
         }
         function closeOrderModal() { modal.classList.remove('open'); }
-
         ordersSearch.addEventListener('click', openOrderModal);
         document.getElementById('modalCancel').addEventListener('click', closeOrderModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeOrderModal(); });
@@ -1036,7 +1239,7 @@
             const row = document.createElement('div');
             row.className = 'order-row';
             row.innerHTML =
-                '<div><div>' + name + '</div><div class="o-meta">Added from order entry</div></div>' +
+                '<div><div class="o-name">' + name + '</div><div class="o-meta">Added from order entry</div></div>' +
                 '<span class="o-tag ' + currentOtype + '">' + tagText + '</span>';
             ordersList.appendChild(row);
             orderCount.textContent = ordersList.querySelectorAll('.order-row').length;
@@ -1044,7 +1247,7 @@
             closeOrderModal();
         });
 
-        // ===== rich-text note editor =====
+        // rich-text note editor
         const noteBody = document.getElementById('noteBody');
         const toolbar  = document.getElementById('toolbar');
         const blockSel = document.getElementById('blockSel');
@@ -1062,47 +1265,37 @@
                 btn.classList.toggle('active', document.queryCommandState(c));
             });
         }
-
         toolbar.addEventListener('click', (e) => {
             const btn = e.target.closest('.tb-btn');
             if (!btn) return;
             exec(btn.dataset.cmd);
         });
+        blockSel.addEventListener('change', () => { exec('formatBlock', blockSel.value); });
 
-        blockSel.addEventListener('change', () => {
-            exec('formatBlock', blockSel.value);
-        });
-
-        // Ctrl/Cmd + B/I/U keyboard shortcuts (browsers do this natively in
-        // contenteditable, but we also catch them so the toolbar state syncs)
         noteBody.addEventListener('keydown', (e) => {
             const mod = e.ctrlKey || e.metaKey;
             if (!mod) return;
             const k = e.key.toLowerCase();
-            if (k === 'b' || k === 'i' || k === 'u') {
-                setTimeout(updateToolbarState, 0);
-            }
+            if (k === 'b' || k === 'i' || k === 'u') setTimeout(updateToolbarState, 0);
         });
         ['mouseup','keyup','focus','input'].forEach(ev =>
             noteBody.addEventListener(ev, updateToolbarState)
         );
 
-        // simple "saved" indicator + persist to localStorage
         const STORAGE_KEY = 'eleanote-demo-note';
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) noteBody.innerHTML = saved;
 
         let saveTimer;
         noteBody.addEventListener('input', () => {
-            noteStatus.textContent = 'Draft · editing…';
+            noteStatus.innerHTML = '<span class="saved-dot" style="background:var(--gold);"></span>Draft · editing…';
             clearTimeout(saveTimer);
             saveTimer = setTimeout(() => {
                 localStorage.setItem(STORAGE_KEY, noteBody.innerHTML);
-                noteStatus.textContent = 'Draft · saved locally';
+                noteStatus.innerHTML = '<span class="saved-dot"></span>Draft · saved locally';
             }, 600);
         });
 
-        // initial toolbar state
         updateToolbarState();
     </script>
 </body>
