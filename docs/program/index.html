@@ -8,34 +8,23 @@
     <title>Eleanote — Program UI mock</title>
     <style>
         /* ----------------------------------------------------------
-           DESIGN NOTE: Keep this CSS PyQt6-friendly.
-           - No flexbox/grid fanciness; only patterns that map to
-             QHBoxLayout / QVBoxLayout / QGridLayout.
-           - No transforms, transitions, animations, or pseudo-element
-             icon tricks. Plain borders, paddings, colors only.
-           - Use solid hex colors -> QSS palette directly.
-           - Buttons are flat rectangles -> QPushButton + QSS.
+           PyQt6-friendly: no transforms, no animations, no flex tricks
+           beyond simple rows. Solid hex colors only. Layouts map to
+           QHBoxLayout / QVBoxLayout / QGridLayout.
            ---------------------------------------------------------- */
         :root {
             --teal: #14515c;
             --teal-deep: #0e3d46;
+            --teal-darker: #0a2f37;
             --teal-soft: #d6e4e6;
-            --teal-tint: #eaf1f1;
 
             --cream: #f5efe1;
             --cream-deep: #ebe2cd;
             --paper: #fbf7ec;
 
             --ink: #1a2429;
-            --ink-soft: #324047;
             --muted: #6b7780;
             --line: #d6cfba;
-            --line-soft: #e7e0cb;
-
-            --warn: #b94e3a;
-            --gold: #a78449;
-
-            --record: #c0392b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,7 +39,7 @@
             padding: 24px 16px 48px;
         }
 
-        /* ===== preview state toggle (NOT part of the product) ===== */
+        /* ===== preview-state toggle (NOT part of the product) ===== */
         .preview-bar {
             max-width: 1080px;
             margin: 0 auto 14px;
@@ -100,161 +89,235 @@
             display: block;
         }
 
-        /* WINDOWS-style title bar (matches color directly below it - teal).
-           Linux note: this exact look will be hard cross-platform. We'll
-           target the Windows look first and tolerate Linux variation. */
+        /* ===== TITLE BAR (Windows-style, thin, teal, matches what's below) ===== */
         .titlebar {
             background: var(--teal);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 32px;
-            padding: 0 0 0 12px;
-            border-bottom: 1px solid var(--teal-deep);
+            height: 28px;
+            padding: 0 0 0 10px;
             user-select: none;
         }
         .titlebar .title {
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
-            letter-spacing: 0.01em;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
         .titlebar .title .mark {
             display: inline-block;
-            width: 16px; height: 16px;
+            width: 14px; height: 14px;
             background: #fff;
             color: var(--teal);
             border-radius: 50%;
             text-align: center;
-            line-height: 16px;
-            font-size: 11px;
+            line-height: 14px;
+            font-size: 10px;
             font-weight: 800;
             letter-spacing: -0.06em;
         }
-        .titlebar .winctl {
-            display: inline-flex;
-        }
+        .titlebar .winctl { display: inline-flex; }
         .titlebar .winctl button {
-            width: 46px;
-            height: 32px;
+            width: 44px;
+            height: 28px;
             background: transparent;
             border: 0;
             color: #fff;
             font: inherit;
-            font-size: 14px;
-            line-height: 1;
+            font-size: 13px;
             cursor: pointer;
             font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
         }
         .titlebar .winctl button:hover { background: rgba(255,255,255,0.16); }
         .titlebar .winctl button.close:hover { background: #c0392b; }
 
-        /* ===== TOOLBAR ROW (tools menu + centered control buttons) ===== */
+        /* ===== TAB STRIP (teal area; cream tabs stick up) ===== */
+        .tabstrip {
+            background: var(--teal);
+            display: flex;
+            align-items: flex-end;
+            padding: 6px 8px 0 10px;
+            gap: 2px;
+            min-height: 36px;
+        }
+        .tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--teal-deep);
+            color: rgba(255,255,255,0.78);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 7px 10px 8px 12px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid transparent;
+            border-bottom: 0;
+            cursor: pointer;
+            min-width: 130px;
+            max-width: 220px;
+            line-height: 1.1;
+            position: relative;
+            top: 0;
+        }
+        .tab:hover { background: var(--teal-darker); color: #fff; }
+        .tab.active {
+            background: var(--cream);
+            color: var(--ink);
+            border-color: var(--line);
+            font-weight: 600;
+            padding-top: 8px;
+            padding-bottom: 9px;
+        }
+        .tab .tab-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tab .tab-sub {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            display: none;
+        }
+        .tab.active .tab-sub { display: block; }
+        .tab .tab-x {
+            width: 16px; height: 16px;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1;
+            color: rgba(255,255,255,0.55);
+        }
+        .tab.active .tab-x { color: var(--muted); }
+        .tab .tab-x:hover { background: rgba(0,0,0,0.10); color: var(--ink); }
+
+        .tab-add {
+            background: transparent;
+            border: 0;
+            color: rgba(255,255,255,0.78);
+            font: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 4px 4px 4px;
+            align-self: center;
+        }
+        .tab-add:hover { background: rgba(255,255,255,0.14); color: #fff; }
+        .tab-add[disabled] { opacity: 0.35; cursor: not-allowed; }
+
+        /* ===== TOOLBAR (thin: tools | controls | side toggle) ===== */
         .toolbar {
             background: var(--teal);
             color: #fff;
-            padding: 10px 14px;
+            padding: 5px 10px;
             display: grid;
             grid-template-columns: auto 1fr auto;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            border-top: 1px solid var(--teal-deep);
             border-bottom: 1px solid var(--teal-deep);
         }
         .tools-menu {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.10);
-            border: 1px solid rgba(255,255,255,0.20);
+            gap: 5px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
             color: #fff;
             font: inherit;
             font-size: 12px;
             font-weight: 600;
-            padding: 6px 10px;
+            padding: 4px 9px;
             border-radius: 3px;
             cursor: pointer;
+            line-height: 1.2;
         }
-        .tools-menu:hover { background: rgba(255,255,255,0.18); }
-        .tools-menu .caret {
-            font-size: 10px;
-            opacity: 0.8;
-        }
+        .tools-menu:hover { background: rgba(255,255,255,0.16); }
+        .tools-menu .caret { font-size: 9px; opacity: 0.85; }
 
         .controls {
             justify-self: center;
             display: inline-flex;
-            gap: 8px;
+            gap: 4px;
             background: rgba(0,0,0,0.10);
-            padding: 4px;
+            padding: 3px;
             border-radius: 4px;
         }
         .ctl {
-            background: var(--paper);
+            background: var(--cream);
             color: var(--ink);
             border: 1px solid var(--teal-deep);
             font: inherit;
             font-size: 12px;
-            font-weight: 600;
-            padding: 7px 12px 5px;
+            font-weight: 500;
+            padding: 4px 10px;
             border-radius: 3px;
             cursor: pointer;
-            min-width: 84px;
             display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            line-height: 1.1;
+            align-items: baseline;
+            gap: 6px;
+            line-height: 1.2;
+            white-space: nowrap;
         }
-        .ctl:hover { background: var(--cream); }
+        .ctl:hover { background: var(--cream-deep); }
         .ctl .label { font-weight: 600; }
         .ctl .hk {
             font-size: 10px;
             font-weight: 700;
             color: var(--muted);
-            letter-spacing: 0.06em;
+            letter-spacing: 0.04em;
         }
-        .ctl.record { background: var(--record); color: #fff; border-color: #8a2218; }
-        .ctl.record .hk { color: rgba(255,255,255,0.78); }
-        .ctl.record:hover { background: #a93324; }
 
-        /* sidebar toggle on the right */
+        /* side-panel toggle: standard "right panel" icon */
         .side-toggle {
-            background: rgba(255,255,255,0.10);
-            border: 1px solid rgba(255,255,255,0.20);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
             color: #fff;
-            font: inherit;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 10px;
+            padding: 4px 6px;
             border-radius: 3px;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
         }
-        .side-toggle:hover { background: rgba(255,255,255,0.18); }
+        .side-toggle:hover { background: rgba(255,255,255,0.16); }
+        .side-toggle.active {
+            background: var(--cream);
+            border-color: var(--cream-deep);
+            color: var(--teal-deep);
+        }
+        .side-toggle svg { display: block; }
 
-        /* ===== BODY (workspace) ===== */
+        /* ===== BODY (workspace + side panel) ===== */
         .body {
             display: grid;
             grid-template-columns: 1fr 0;
             background: var(--paper);
             min-height: 540px;
-            transition: none;
         }
         .body.with-side {
             grid-template-columns: 1fr 320px;
         }
 
         .workspace {
-            padding: 18px 22px 22px;
+            padding: 16px 20px 18px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
             min-height: 0;
         }
 
-        /* shared block heading */
         .blk-head {
             display: flex;
             align-items: center;
@@ -278,7 +341,7 @@
             background: var(--cream);
             border: 1px solid var(--line);
             border-radius: 4px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
         }
@@ -295,24 +358,22 @@
             outline: none;
             width: 100%;
         }
-        .prechart .ta::placeholder {
-            color: var(--muted);
-        }
+        .prechart .ta::placeholder { color: var(--muted); }
         .prechart .ta:focus {
             border-color: var(--teal);
             box-shadow: 0 0 0 2px var(--teal-soft);
         }
 
-        /* INITIAL STATE: prechart fills the workspace */
-        .state-initial .prechart .ta { min-height: 460px; }
+        /* state: initial = prechart fills workspace */
+        .state-initial .prechart .ta { min-height: 480px; }
         .state-initial .note-block,
         .state-initial .feedback-block { display: none; }
 
-        /* SUBMITTED STATE: prechart collapses to one line, note + feedback appear */
+        /* state: submitted = prechart shrinks, note + feedback shown */
         .state-submitted .prechart .ta {
             min-height: 0;
-            height: 36px;
-            padding: 8px 12px;
+            height: 32px;
+            padding: 6px 12px;
             font-size: 12.5px;
             color: var(--muted);
             background: var(--paper);
@@ -323,7 +384,7 @@
             background: var(--paper);
             border: 1px solid var(--line);
             border-radius: 4px;
-            padding: 14px 16px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -352,12 +413,12 @@
         .note-block .note-body h4:first-child { margin-top: 0; }
         .note-block .note-body p { margin: 0 0 0.4em; }
 
-        /* ----- FEEDBACK BLOCK ----- */
+        /* ----- FEEDBACK ----- */
         .feedback-block {
             background: var(--cream);
             border: 1px solid var(--line);
             border-radius: 4px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 10px;
@@ -367,14 +428,14 @@
             border: 1px solid var(--line);
             background: var(--paper);
             border-radius: 3px;
-            padding: 10px 12px;
+            padding: 9px 11px;
             font: inherit;
             font-size: 13px;
             line-height: 1.5;
             color: var(--ink);
             resize: none;
             outline: none;
-            min-height: 64px;
+            min-height: 60px;
         }
         .feedback-block .fb-input:focus {
             border-color: var(--teal);
@@ -393,7 +454,7 @@
             font: inherit;
             font-size: 12px;
             font-weight: 600;
-            padding: 8px 14px;
+            padding: 7px 14px;
             border-radius: 3px;
             border: 1px solid var(--teal);
             background: var(--teal);
@@ -409,7 +470,7 @@
         }
         .btn.ghost:hover { background: var(--cream); }
 
-        /* ===== SIDE PANEL (Dx + Orders staged during visit) ===== */
+        /* ===== SIDE PANEL ===== */
         .sidepanel {
             background: var(--cream);
             border-left: 1px solid var(--line);
@@ -436,7 +497,7 @@
             background: var(--paper);
             border: 1px solid var(--line);
             border-radius: 3px;
-            padding: 8px 10px;
+            padding: 7px 10px;
             font-size: 12.5px;
             color: var(--ink);
         }
@@ -450,19 +511,12 @@
             font-size: 11px;
             color: var(--muted);
         }
-        .sidepanel .empty {
-            color: var(--muted);
-            font-style: italic;
-            font-size: 12px;
-            text-align: center;
-            padding: 10px 0;
-        }
 
         /* ===== FOOTER STATUS BAR ===== */
         .statusbar {
             background: var(--cream-deep);
             border-top: 1px solid var(--line);
-            padding: 6px 14px;
+            padding: 5px 12px;
             display: flex;
             justify-content: space-between;
             font-size: 11px;
@@ -470,23 +524,19 @@
         }
         .statusbar .right { font-variant-numeric: tabular-nums; }
 
-        /* tiny responsive: stack toolbar items on narrow */
+        /* responsive */
         @media (max-width: 880px) {
-            .toolbar { grid-template-columns: 1fr; gap: 8px; }
+            .toolbar { grid-template-columns: 1fr; gap: 6px; }
             .controls { justify-self: stretch; flex-wrap: wrap; justify-content: center; }
-            .ctl { min-width: 70px; padding: 6px 8px 4px; }
             .body.with-side { grid-template-columns: 1fr; }
-            .body.with-side .sidepanel {
-                border-left: 0;
-                border-top: 1px solid var(--line);
-            }
+            .body.with-side .sidepanel { border-left: 0; border-top: 1px solid var(--line); }
             .feedback-block { grid-template-columns: 1fr; }
+            .tab { min-width: 100px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- preview-state toggle (NOT part of the program) -->
     <div class="preview-bar">
         <span class="label">Preview state</span>
         <span class="group" role="tablist">
@@ -499,7 +549,7 @@
 
     <div class="app-window">
 
-        <!-- ===== WINDOWS TITLE BAR (teal, matches toolbar) ===== -->
+        <!-- ===== TITLE BAR ===== -->
         <div class="titlebar">
             <span class="title">
                 <span class="mark">e</span>
@@ -512,45 +562,61 @@
             </div>
         </div>
 
-        <!-- ===== TOOLBAR (tools menu | controls | side toggle) ===== -->
+        <!-- ===== TAB STRIP (cream tabs sticking up into teal) ===== -->
+        <div class="tabstrip" id="tabstrip">
+            <div class="tab active" data-id="t1">
+                <span class="tab-name">Doe, John · 64M</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <div class="tab" data-id="t2">
+                <span class="tab-name">Nguyen, Linh · 47F</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <div class="tab" data-id="t3">
+                <span class="tab-name">Patel, Aarav · 32M</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <button class="tab-add" id="tabAdd" title="Open new encounter (max 3)">+</button>
+        </div>
+
+        <!-- ===== TOOLBAR (thin) ===== -->
         <div class="toolbar">
             <button class="tools-menu" type="button">
-                Tools
-                <span class="caret">&#x25BE;</span>
+                Tools <span class="caret">&#x25BE;</span>
             </button>
 
             <div class="controls" role="toolbar" aria-label="Controls">
-                <button class="ctl record">
-                    <span class="label">Record</span>
-                    <span class="hk">F12</span>
+                <button class="ctl">
+                    <span class="label">Record</span><span class="hk">F12</span>
                 </button>
                 <button class="ctl">
-                    <span class="label">Pause</span>
-                    <span class="hk">F11</span>
+                    <span class="label">Pause</span><span class="hk">F11</span>
                 </button>
                 <button class="ctl">
-                    <span class="label">Refresh</span>
-                    <span class="hk">F10</span>
+                    <span class="label">Refresh</span><span class="hk">F10</span>
                 </button>
                 <button class="ctl">
-                    <span class="label">End encounter</span>
-                    <span class="hk">F9</span>
+                    <span class="label">End encounter</span><span class="hk">F9</span>
                 </button>
                 <button class="ctl">
-                    <span class="label">Dictation</span>
-                    <span class="hk">F8</span>
+                    <span class="label">Dictation</span><span class="hk">F8</span>
                 </button>
             </div>
 
-            <button class="side-toggle" type="button" id="sideToggleBtn">Side panel ▸</button>
+            <button class="side-toggle" type="button" id="sideToggleBtn" title="Toggle side panel">
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" ry="1.5"
+                          fill="none" stroke="currentColor" stroke-width="1.2"/>
+                    <line x1="10.5" y1="2.5" x2="10.5" y2="13.5"
+                          stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+            </button>
         </div>
 
         <!-- ===== BODY ===== -->
         <div class="body state-initial" id="appBody">
 
             <div class="workspace">
-
-                <!-- PRECHART (large in initial state, shrinks after submission) -->
                 <div class="prechart">
                     <div class="blk-head">
                         <h3>Precharting</h3>
@@ -559,7 +625,6 @@
                     <textarea class="ta" id="prechartTa" placeholder="Paste recent labs, imaging, prior notes, patient messages, or type context for the visit. Eleanote uses this for pre-visit review."></textarea>
                 </div>
 
-                <!-- NOTE OUTPUT (only after note is generated) -->
                 <div class="note-block">
                     <div class="blk-head">
                         <h3>Clinical note</h3>
@@ -568,7 +633,6 @@
                     <div class="note-body" contenteditable="true" spellcheck="true"><h4>Subjective</h4><p>64-year-old gentleman returns for follow-up of <b>BPH</b> and <b>HTN</b>. Reports worsening urinary urgency and frequency over the past two months. No hematuria. Nocturia 3–4x. Sleep affected.</p><h4>Objective</h4><p>BP 142/88, HR 78. Abdomen benign. No CVA tenderness. Genitourinary exam unremarkable.</p><h4>Assessment / Plan</h4><p><b>1) BPH</b> — start tamsulosin 0.4 mg qHS.</p><p><b>2) Rising PSA / PI-RADS 3</b> — repeat PSA in 6 months. Urology referral placed.</p><p><b>3) HTN</b> — uncontrolled today. Continue lisinopril and recheck in 4 weeks.</p></div>
                 </div>
 
-                <!-- FEEDBACK BLOCK (only after note is generated) -->
                 <div class="feedback-block">
                     <textarea class="fb-input" placeholder="Feedback on this note. Eleanote will rewrite the note now and learn the preference for next time."></textarea>
                     <div class="fb-actions">
@@ -576,10 +640,8 @@
                         <button class="btn ghost">Save preferences</button>
                     </div>
                 </div>
-
             </div>
 
-            <!-- ===== SIDE PANEL (toggleable) ===== -->
             <aside class="sidepanel">
                 <div>
                     <h3>Visit diagnoses</h3>
@@ -615,7 +677,6 @@
 
         </div>
 
-        <!-- ===== FOOTER STATUS ===== -->
         <div class="statusbar">
             <span>Idle · profile loaded · model: frontier</span>
             <span class="right">v0.0.0-mock</span>
@@ -624,7 +685,6 @@
     </div>
 
     <script>
-        // preview-state toggle (review-only, not part of the product UI)
         const body = document.getElementById('appBody');
         const btnInitial = document.getElementById('btnInitial');
         const btnSubmitted = document.getElementById('btnSubmitted');
@@ -636,7 +696,6 @@
             body.classList.add('state-' + state);
             btnInitial.classList.toggle('active', state === 'initial');
             btnSubmitted.classList.toggle('active', state === 'submitted');
-            // when submitted, fill prechart with a one-liner-ish summary
             const ta = document.getElementById('prechartTa');
             if (state === 'submitted' && !ta.value) {
                 ta.value = 'PSA trend rising · MRI PI-RADS 3 left base · worsening urinary urgency, nocturia 3–4x · BP 142/88';
@@ -645,16 +704,70 @@
         btnInitial.addEventListener('click', () => setState('initial'));
         btnSubmitted.addEventListener('click', () => setState('submitted'));
 
-        function toggleSide() {
-            body.classList.toggle('with-side');
-            const open = body.classList.contains('with-side');
-            sideToggleBtn.textContent = open ? 'Side panel ◂' : 'Side panel ▸';
+        function setSide(open) {
+            body.classList.toggle('with-side', open);
+            sideToggleBtn.classList.toggle('active', open);
             btnSidePanel.classList.toggle('active', open);
         }
-        btnSidePanel.addEventListener('click', toggleSide);
-        sideToggleBtn.addEventListener('click', toggleSide);
+        btnSidePanel.addEventListener('click', () => setSide(!body.classList.contains('with-side')));
+        sideToggleBtn.addEventListener('click', () => setSide(!body.classList.contains('with-side')));
 
-        // Window controls (visual only)
+        // Tabs: click to activate, × to close, + to add up to 3
+        const tabstrip = document.getElementById('tabstrip');
+        const tabAdd = document.getElementById('tabAdd');
+        const sampleNames = [
+            'New encounter',
+            'Smith, Avery · 58F',
+            'Garcia, Mateo · 41M',
+            'Kim, Soo · 29F'
+        ];
+        let nextSampleIdx = 0;
+
+        function refreshAddState() {
+            const count = tabstrip.querySelectorAll('.tab').length;
+            tabAdd.disabled = count >= 3;
+        }
+        function activateTab(tab) {
+            tabstrip.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        }
+
+        tabstrip.addEventListener('click', (e) => {
+            const x = e.target.closest('.tab-x');
+            if (x) {
+                e.stopPropagation();
+                const tab = x.closest('.tab');
+                const wasActive = tab.classList.contains('active');
+                tab.remove();
+                refreshAddState();
+                if (wasActive) {
+                    const first = tabstrip.querySelector('.tab');
+                    if (first) activateTab(first);
+                }
+                return;
+            }
+            const tab = e.target.closest('.tab');
+            if (tab) activateTab(tab);
+        });
+
+        tabAdd.addEventListener('click', () => {
+            const count = tabstrip.querySelectorAll('.tab').length;
+            if (count >= 3) return;
+            const t = document.createElement('div');
+            t.className = 'tab';
+            t.dataset.id = 't' + (Date.now());
+            const name = sampleNames[nextSampleIdx % sampleNames.length];
+            nextSampleIdx++;
+            t.innerHTML =
+                '<span class="tab-name">' + name + '</span>' +
+                '<span class="tab-x" title="Close encounter">×</span>';
+            tabstrip.insertBefore(t, tabAdd);
+            activateTab(t);
+            refreshAddState();
+        });
+
+        refreshAddState();
+
         document.querySelectorAll('.titlebar .winctl button').forEach(b => {
             b.addEventListener('click', (e) => e.preventDefault());
         });
