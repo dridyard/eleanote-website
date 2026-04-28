@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#14515c">
+    <title>Eleanote — Program UI mock</title>
+    <style>
+        /* ----------------------------------------------------------
+           DESIGN NOTE: Keep this CSS PyQt6-friendly.
+           - No flexbox/grid fanciness; only patterns that map to
+             QHBoxLayout / QVBoxLayout / QGridLayout.
+           - No transforms, transitions, animations, or pseudo-element
+             icon tricks. Plain borders, paddings, colors only.
+           - Use solid hex colors -> QSS palette directly.
+           - Buttons are flat rectangles -> QPushButton + QSS.
+           ---------------------------------------------------------- */
+        :root {
+            --teal: #14515c;
+            --teal-deep: #0e3d46;
+            --teal-soft: #d6e4e6;
+            --teal-tint: #eaf1f1;
+
+            --cream: #f5efe1;
+            --cream-deep: #ebe2cd;
+            --paper: #fbf7ec;
+
+            --ink: #1a2429;
+            --ink-soft: #324047;
+            --muted: #6b7780;
+            --line: #d6cfba;
+            --line-soft: #e7e0cb;
+
+            --warn: #b94e3a;
+            --gold: #a78449;
+
+            --record: #c0392b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+            background: #2b2b2b;
+            color: var(--ink);
+            font-size: 13px;
+            line-height: 1.45;
+            min-height: 100vh;
+            padding: 24px 16px 48px;
+        }
+
+        /* ===== preview state toggle (NOT part of the product) ===== */
+        .preview-bar {
+            max-width: 1080px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: #d2d2d2;
+            font-size: 12px;
+        }
+        .preview-bar .label {
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #a9a9a9;
+        }
+        .preview-bar .group {
+            display: inline-flex;
+            border: 1px solid #555;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #3a3a3a;
+        }
+        .preview-bar button {
+            font: inherit;
+            font-size: 12px;
+            color: #d2d2d2;
+            background: transparent;
+            border: 0;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+        .preview-bar button.active {
+            background: var(--teal);
+            color: #fff;
+            font-weight: 600;
+        }
+        .preview-bar .note { color: #888; font-style: italic; font-size: 11px; }
+
+        /* ===== APP WINDOW ===== */
+        .app-window {
+            max-width: 1080px;
+            margin: 0 auto;
+            background: var(--paper);
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+            display: block;
+        }
+
+        /* WINDOWS-style title bar (matches color directly below it - teal).
+           Linux note: this exact look will be hard cross-platform. We'll
+           target the Windows look first and tolerate Linux variation. */
+        .titlebar {
+            background: var(--teal);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 32px;
+            padding: 0 0 0 12px;
+            border-bottom: 1px solid var(--teal-deep);
+            user-select: none;
+        }
+        .titlebar .title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .titlebar .title .mark {
+            display: inline-block;
+            width: 16px; height: 16px;
+            background: #fff;
+            color: var(--teal);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: -0.06em;
+        }
+        .titlebar .winctl {
+            display: inline-flex;
+        }
+        .titlebar .winctl button {
+            width: 46px;
+            height: 32px;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font: inherit;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
+        }
+        .titlebar .winctl button:hover { background: rgba(255,255,255,0.16); }
+        .titlebar .winctl button.close:hover { background: #c0392b; }
+
+        /* ===== TOOLBAR ROW (tools menu + centered control buttons) ===== */
+        .toolbar {
+            background: var(--teal);
+            color: #fff;
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--teal-deep);
+        }
+        .tools-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.20);
+            color: #fff;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .tools-menu:hover { background: rgba(255,255,255,0.18); }
+        .tools-menu .caret {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .controls {
+            justify-self: center;
+            display: inline-flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.10);
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .ctl {
+            background: var(--paper);
+            color: var(--ink);
+            border: 1px solid var(--teal-deep);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 12px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            min-width: 84px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            line-height: 1.1;
+        }
+        .ctl:hover { background: var(--cream); }
+        .ctl .label { font-weight: 600; }
+        .ctl .hk {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: 0.06em;
+        }
+        .ctl.record { background: var(--record); color: #fff; border-color: #8a2218; }
+        .ctl.record .hk { color: rgba(255,255,255,0.78); }
+        .ctl.record:hover { background: #a93324; }
+
+        /* sidebar toggle on the right */
+        .side-toggle {
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.20);
+            color: #fff;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .side-toggle:hover { background: rgba(255,255,255,0.18); }
+
+        /* ===== BODY (workspace) ===== */
+        .body {
+            display: grid;
+            grid-template-columns: 1fr 0;
+            background: var(--paper);
+            min-height: 540px;
+            transition: none;
+        }
+        .body.with-side {
+            grid-template-columns: 1fr 320px;
+        }
+
+        .workspace {
+            padding: 18px 22px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 0;
+        }
+
+        /* shared block heading */
+        .blk-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .blk-head h3 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: var(--teal-deep);
+        }
+        .blk-head .meta {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ----- PRECHART AREA ----- */
+        .prechart {
+            background: var(--cream);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+        }
+        .prechart .ta {
+            border: 1px solid var(--line);
+            background: var(--paper);
+            border-radius: 3px;
+            padding: 12px 14px;
+            font: inherit;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink);
+            resize: none;
+            outline: none;
+            width: 100%;
+        }
+        .prechart .ta::placeholder {
+            color: var(--muted);
+        }
+        .prechart .ta:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 2px var(--teal-soft);
+        }
+
+        /* INITIAL STATE: prechart fills the workspace */
+        .state-initial .prechart .ta { min-height: 460px; }
+        .state-initial .note-block,
+        .state-initial .feedback-block { display: none; }
+
+        /* SUBMITTED STATE: prechart collapses to one line, note + feedback appear */
+        .state-submitted .prechart .ta {
+            min-height: 0;
+            height: 36px;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            color: var(--muted);
+            background: var(--paper);
+        }
+
+        /* ----- NOTE OUTPUT ----- */
+        .note-block {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+        .note-block .note-body {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 3px;
+            padding: 14px 16px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--ink);
+            min-height: 280px;
+            overflow: auto;
+        }
+        .note-block .note-body h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.10em;
+            color: var(--teal-deep);
+            margin-top: 0.7em;
+            margin-bottom: 0.2em;
+            font-weight: 700;
+        }
+        .note-block .note-body h4:first-child { margin-top: 0; }
+        .note-block .note-body p { margin: 0 0 0.4em; }
+
+        /* ----- FEEDBACK BLOCK ----- */
+        .feedback-block {
+            background: var(--cream);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 12px 14px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: stretch;
+        }
+        .feedback-block .fb-input {
+            border: 1px solid var(--line);
+            background: var(--paper);
+            border-radius: 3px;
+            padding: 10px 12px;
+            font: inherit;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--ink);
+            resize: none;
+            outline: none;
+            min-height: 64px;
+        }
+        .feedback-block .fb-input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 2px var(--teal-soft);
+        }
+        .feedback-block .fb-input::placeholder { color: var(--muted); }
+
+        .feedback-block .fb-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+        .btn {
+            font: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 3px;
+            border: 1px solid var(--teal);
+            background: var(--teal);
+            color: #fff;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn:hover { background: var(--teal-deep); border-color: var(--teal-deep); }
+        .btn.ghost {
+            background: var(--paper);
+            color: var(--teal-deep);
+            border-color: var(--line);
+        }
+        .btn.ghost:hover { background: var(--cream); }
+
+        /* ===== SIDE PANEL (Dx + Orders staged during visit) ===== */
+        .sidepanel {
+            background: var(--cream);
+            border-left: 1px solid var(--line);
+            padding: 14px 14px 18px;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        .body.with-side .sidepanel { display: flex; }
+
+        .sidepanel h3 {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: var(--teal-deep);
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--line);
+        }
+        .sidepanel .group { display: flex; flex-direction: column; gap: 4px; }
+        .sidepanel .item {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            padding: 8px 10px;
+            font-size: 12.5px;
+            color: var(--ink);
+        }
+        .sidepanel .item .sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .sidepanel .item .code {
+            font-family: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .sidepanel .empty {
+            color: var(--muted);
+            font-style: italic;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* ===== FOOTER STATUS BAR ===== */
+        .statusbar {
+            background: var(--cream-deep);
+            border-top: 1px solid var(--line);
+            padding: 6px 14px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .statusbar .right { font-variant-numeric: tabular-nums; }
+
+        /* tiny responsive: stack toolbar items on narrow */
+        @media (max-width: 880px) {
+            .toolbar { grid-template-columns: 1fr; gap: 8px; }
+            .controls { justify-self: stretch; flex-wrap: wrap; justify-content: center; }
+            .ctl { min-width: 70px; padding: 6px 8px 4px; }
+            .body.with-side { grid-template-columns: 1fr; }
+            .body.with-side .sidepanel {
+                border-left: 0;
+                border-top: 1px solid var(--line);
+            }
+            .feedback-block { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- preview-state toggle (NOT part of the program) -->
+    <div class="preview-bar">
+        <span class="label">Preview state</span>
+        <span class="group" role="tablist">
+            <button id="btnInitial" class="active">Initial</button>
+            <button id="btnSubmitted">After note generated</button>
+            <button id="btnSidePanel">Toggle side panel</button>
+        </span>
+        <span class="note">review-only · not in product</span>
+    </div>
+
+    <div class="app-window">
+
+        <!-- ===== WINDOWS TITLE BAR (teal, matches toolbar) ===== -->
+        <div class="titlebar">
+            <span class="title">
+                <span class="mark">e</span>
+                eleanote
+            </span>
+            <div class="winctl">
+                <button title="Minimize">&#xE921;</button>
+                <button title="Maximize">&#xE922;</button>
+                <button class="close" title="Close">&#xE8BB;</button>
+            </div>
+        </div>
+
+        <!-- ===== TOOLBAR (tools menu | controls | side toggle) ===== -->
+        <div class="toolbar">
+            <button class="tools-menu" type="button">
+                Tools
+                <span class="caret">&#x25BE;</span>
+            </button>
+
+            <div class="controls" role="toolbar" aria-label="Controls">
+                <button class="ctl record">
+                    <span class="label">Record</span>
+                    <span class="hk">F12</span>
+                </button>
+                <button class="ctl">
+                    <span class="label">Pause</span>
+                    <span class="hk">F11</span>
+                </button>
+                <button class="ctl">
+                    <span class="label">Refresh</span>
+                    <span class="hk">F10</span>
+                </button>
+                <button class="ctl">
+                    <span class="label">End encounter</span>
+                    <span class="hk">F9</span>
+                </button>
+                <button class="ctl">
+                    <span class="label">Dictation</span>
+                    <span class="hk">F8</span>
+                </button>
+            </div>
+
+            <button class="side-toggle" type="button" id="sideToggleBtn">Side panel ▸</button>
+        </div>
+
+        <!-- ===== BODY ===== -->
+        <div class="body state-initial" id="appBody">
+
+            <div class="workspace">
+
+                <!-- PRECHART (large in initial state, shrinks after submission) -->
+                <div class="prechart">
+                    <div class="blk-head">
+                        <h3>Precharting</h3>
+                        <span class="meta">Paste from EHR or type · F4 to capture</span>
+                    </div>
+                    <textarea class="ta" id="prechartTa" placeholder="Paste recent labs, imaging, prior notes, patient messages, or type context for the visit. Eleanote uses this for pre-visit review."></textarea>
+                </div>
+
+                <!-- NOTE OUTPUT (only after note is generated) -->
+                <div class="note-block">
+                    <div class="blk-head">
+                        <h3>Clinical note</h3>
+                        <span class="meta">Generated · review &amp; edit</span>
+                    </div>
+                    <div class="note-body" contenteditable="true" spellcheck="true"><h4>Subjective</h4><p>64-year-old gentleman returns for follow-up of <b>BPH</b> and <b>HTN</b>. Reports worsening urinary urgency and frequency over the past two months. No hematuria. Nocturia 3–4x. Sleep affected.</p><h4>Objective</h4><p>BP 142/88, HR 78. Abdomen benign. No CVA tenderness. Genitourinary exam unremarkable.</p><h4>Assessment / Plan</h4><p><b>1) BPH</b> — start tamsulosin 0.4 mg qHS.</p><p><b>2) Rising PSA / PI-RADS 3</b> — repeat PSA in 6 months. Urology referral placed.</p><p><b>3) HTN</b> — uncontrolled today. Continue lisinopril and recheck in 4 weeks.</p></div>
+                </div>
+
+                <!-- FEEDBACK BLOCK (only after note is generated) -->
+                <div class="feedback-block">
+                    <textarea class="fb-input" placeholder="Feedback on this note. Eleanote will rewrite the note now and learn the preference for next time."></textarea>
+                    <div class="fb-actions">
+                        <button class="btn">Submit feedback</button>
+                        <button class="btn ghost">Save preferences</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== SIDE PANEL (toggleable) ===== -->
+            <aside class="sidepanel">
+                <div>
+                    <h3>Visit diagnoses</h3>
+                    <div class="group">
+                        <div class="item">Hypertension <span class="code">I10</span></div>
+                        <div class="item">BPH <span class="code">N40.0</span></div>
+                        <div class="item">Urinary urgency <span class="code">R39.15</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>Orders staged</h3>
+                    <div class="group">
+                        <div class="item">
+                            MRI pelvis without contrast
+                            <div class="sub">Imaging · indication: PI-RADS 3 lesion</div>
+                        </div>
+                        <div class="item">
+                            PSA, total &amp; free
+                            <div class="sub">Lab · in 6 months</div>
+                        </div>
+                        <div class="item">
+                            Tamsulosin 0.4 mg cap
+                            <div class="sub">Med · 1 cap PO qHS · #30 · 3 refills</div>
+                        </div>
+                        <div class="item">
+                            Urology referral
+                            <div class="sub">Referral · routine</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- ===== FOOTER STATUS ===== -->
+        <div class="statusbar">
+            <span>Idle · profile loaded · model: frontier</span>
+            <span class="right">v0.0.0-mock</span>
+        </div>
+
+    </div>
+
+    <script>
+        // preview-state toggle (review-only, not part of the product UI)
+        const body = document.getElementById('appBody');
+        const btnInitial = document.getElementById('btnInitial');
+        const btnSubmitted = document.getElementById('btnSubmitted');
+        const btnSidePanel = document.getElementById('btnSidePanel');
+        const sideToggleBtn = document.getElementById('sideToggleBtn');
+
+        function setState(state) {
+            body.classList.remove('state-initial', 'state-submitted');
+            body.classList.add('state-' + state);
+            btnInitial.classList.toggle('active', state === 'initial');
+            btnSubmitted.classList.toggle('active', state === 'submitted');
+            // when submitted, fill prechart with a one-liner-ish summary
+            const ta = document.getElementById('prechartTa');
+            if (state === 'submitted' && !ta.value) {
+                ta.value = 'PSA trend rising · MRI PI-RADS 3 left base · worsening urinary urgency, nocturia 3–4x · BP 142/88';
+            }
+        }
+        btnInitial.addEventListener('click', () => setState('initial'));
+        btnSubmitted.addEventListener('click', () => setState('submitted'));
+
+        function toggleSide() {
+            body.classList.toggle('with-side');
+            const open = body.classList.contains('with-side');
+            sideToggleBtn.textContent = open ? 'Side panel ◂' : 'Side panel ▸';
+            btnSidePanel.classList.toggle('active', open);
+        }
+        btnSidePanel.addEventListener('click', toggleSide);
+        sideToggleBtn.addEventListener('click', toggleSide);
+
+        // Window controls (visual only)
+        document.querySelectorAll('.titlebar .winctl button').forEach(b => {
+            b.addEventListener('click', (e) => e.preventDefault());
+        });
+    </script>
+</body>
+</html>
