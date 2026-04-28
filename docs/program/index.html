@@ -134,7 +134,7 @@
         .titlebar .winctl button:hover { background: rgba(255,255,255,0.16); }
         .titlebar .winctl button.close:hover { background: #c0392b; }
 
-        /* ===== TAB STRIP (teal area; cream tabs stick up) ===== */
+        /* ===== TAB STRIP (teal area; cream active tab flows into cream body below) ===== */
         .tabstrip {
             background: var(--teal);
             display: flex;
@@ -142,6 +142,7 @@
             padding: 6px 8px 0 10px;
             gap: 2px;
             min-height: 36px;
+            border-top: 1px solid var(--teal-darker);
         }
         .tab {
             display: inline-flex;
@@ -163,13 +164,17 @@
             top: 0;
         }
         .tab:hover { background: var(--teal-darker); color: #fff; }
+        /* Active tab uses the SAME cream as the workspace, sits flush at
+           the bottom of the teal strip, and extends a hair past the bottom
+           edge so the seam between tab + workspace disappears. */
         .tab.active {
             background: var(--cream);
             color: var(--ink);
             border-color: var(--line);
             font-weight: 600;
             padding-top: 8px;
-            padding-bottom: 9px;
+            padding-bottom: 11px;
+            margin-bottom: -1px;
         }
         .tab .tab-name {
             flex: 1;
@@ -224,8 +229,6 @@
             grid-template-columns: auto 1fr auto;
             align-items: center;
             gap: 10px;
-            border-top: 1px solid var(--teal-deep);
-            border-bottom: 1px solid var(--teal-deep);
         }
         .tools-menu {
             display: inline-flex;
@@ -303,7 +306,7 @@
         .body {
             display: grid;
             grid-template-columns: 1fr 0;
-            background: var(--paper);
+            background: var(--cream);
             min-height: 540px;
         }
         .body.with-side {
@@ -562,24 +565,7 @@
             </div>
         </div>
 
-        <!-- ===== TAB STRIP (cream tabs sticking up into teal) ===== -->
-        <div class="tabstrip" id="tabstrip">
-            <div class="tab active" data-id="t1">
-                <span class="tab-name">Doe, John · 64M</span>
-                <span class="tab-x" title="Close encounter">×</span>
-            </div>
-            <div class="tab" data-id="t2">
-                <span class="tab-name">Nguyen, Linh · 47F</span>
-                <span class="tab-x" title="Close encounter">×</span>
-            </div>
-            <div class="tab" data-id="t3">
-                <span class="tab-name">Patel, Aarav · 32M</span>
-                <span class="tab-x" title="Close encounter">×</span>
-            </div>
-            <button class="tab-add" id="tabAdd" title="Open new encounter (max 3)">+</button>
-        </div>
-
-        <!-- ===== TOOLBAR (thin) ===== -->
+        <!-- ===== TOOLBAR (sits directly under the title bar) ===== -->
         <div class="toolbar">
             <button class="tools-menu" type="button">
                 Tools <span class="caret">&#x25BE;</span>
@@ -611,6 +597,23 @@
                           stroke="currentColor" stroke-width="1.2"/>
                 </svg>
             </button>
+        </div>
+
+        <!-- ===== TAB STRIP (sits directly above the workspace, active tab flows into it) ===== -->
+        <div class="tabstrip" id="tabstrip">
+            <div class="tab active" data-id="t1">
+                <span class="tab-name">Doe, John · 64M</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <div class="tab" data-id="t2">
+                <span class="tab-name">Nguyen, Linh · 47F</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <div class="tab" data-id="t3">
+                <span class="tab-name">Patel, Aarav · 32M</span>
+                <span class="tab-x" title="Close encounter">×</span>
+            </div>
+            <button class="tab-add" id="tabAdd" title="Open new encounter (max 3)">+</button>
         </div>
 
         <!-- ===== BODY ===== -->
