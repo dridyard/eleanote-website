@@ -361,9 +361,9 @@
 
         .blk-head {
             display: flex;
-            align-items: center;
+            align-items: baseline;
             justify-content: space-between;
-            margin-bottom: 4px;
+            padding: 0 2px 2px;
         }
         .blk-head h3 {
             font-size: 11px;
@@ -378,15 +378,11 @@
         }
 
         /* ----- PRECHART AREA -----
-           Three-layer nesting (matches the clinical-note block):
-             workspace tan -> card paper -> input #fff */
+           Two-layer: tan workspace -> white input. No cream card. */
         .prechart {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            padding: 10px 12px;
             display: flex;
             flex-direction: column;
+            gap: 6px;
         }
         .prechart .ta {
             border: 1px solid var(--line);
@@ -410,7 +406,7 @@
         /* state: initial = prechart fills workspace */
         .state-initial .prechart .ta { min-height: 480px; }
         .state-initial .note-block,
-        .state-initial .feedback-block { display: none; }
+        .state-initial .feedback-block-wrap { display: none; }
 
         /* state: submitted = prechart shrinks, note + feedback shown */
         .state-submitted .prechart .ta {
@@ -424,12 +420,9 @@
 
         /* ----- NOTE OUTPUT ----- */
         .note-block {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            padding: 12px 14px;
             display: flex;
             flex-direction: column;
+            gap: 6px;
             flex: 1;
             min-height: 0;
         }
@@ -457,12 +450,13 @@
         .note-block .note-body p { margin: 0 0 0.4em; }
 
         /* ----- FEEDBACK -----
-           Same three-layer nesting: workspace tan -> card paper -> input #fff */
+           Two-layer: tan workspace -> white input. No cream card. */
+        .feedback-block-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
         .feedback-block {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            padding: 10px 12px;
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 10px;
@@ -679,11 +673,17 @@
                     <div class="note-body" contenteditable="true" spellcheck="true"><h4>Subjective</h4><p>64-year-old gentleman returns for follow-up of <b>BPH</b> and <b>HTN</b>. Reports worsening urinary urgency and frequency over the past two months. No hematuria. Nocturia 3–4x. Sleep affected.</p><h4>Objective</h4><p>BP 142/88, HR 78. Abdomen benign. No CVA tenderness. Genitourinary exam unremarkable.</p><h4>Assessment / Plan</h4><p><b>1) BPH</b> — start tamsulosin 0.4 mg qHS.</p><p><b>2) Rising PSA / PI-RADS 3</b> — repeat PSA in 6 months. Urology referral placed.</p><p><b>3) HTN</b> — uncontrolled today. Continue lisinopril and recheck in 4 weeks.</p></div>
                 </div>
 
-                <div class="feedback-block">
-                    <textarea class="fb-input" placeholder="Feedback on this note. Eleanote will rewrite the note now and learn the preference for next time."></textarea>
-                    <div class="fb-actions">
-                        <button class="btn">Submit feedback</button>
-                        <button class="btn ghost">Save preferences</button>
+                <div class="feedback-block-wrap">
+                    <div class="blk-head">
+                        <h3>Feedback</h3>
+                        <span class="meta">Rewrites this note · saves preference</span>
+                    </div>
+                    <div class="feedback-block">
+                        <textarea class="fb-input" placeholder="Feedback on this note. Eleanote will rewrite the note now and learn the preference for next time."></textarea>
+                        <div class="fb-actions">
+                            <button class="btn">Submit feedback</button>
+                            <button class="btn ghost">Save preferences</button>
+                        </div>
                     </div>
                 </div>
             </div>
