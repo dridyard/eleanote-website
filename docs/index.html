@@ -312,6 +312,45 @@
             max-width: 36rem;
         }
 
+        /* hero bullet list - 'just the facts' */
+        .hero-lede {
+            margin-top: 1.6rem;
+            font-size: clamp(1.02rem, 1.45vw, 1.12rem);
+            line-height: 1.5;
+            color: var(--ink);
+            max-width: 38rem;
+            font-weight: 500;
+        }
+        .hero-bullets {
+            list-style: none;
+            margin: 1.1rem 0 0;
+            padding: 0;
+            max-width: 40rem;
+        }
+        .hero-bullets li {
+            position: relative;
+            padding: 0.5rem 0 0.5rem 1.6rem;
+            font-size: clamp(0.98rem, 1.4vw, 1.06rem);
+            line-height: 1.5;
+            color: #2d4448;
+            border-bottom: 1px solid var(--line);
+        }
+        .hero-bullets li:last-child { border-bottom: 0; }
+        .hero-bullets li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.95rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+        .hero-bullets b {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
         .hero-actions {
             display: flex;
             flex-wrap: wrap;
@@ -351,21 +390,6 @@
             background: var(--teal-faint);
             box-shadow: none;
             transform: none;
-        }
-
-        .hero-meta {
-            margin-top: 2.4rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.3rem 2.2rem;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-        .hero-meta strong {
-            color: var(--ink);
-            font-weight: 600;
-            display: block;
-            font-size: 0.95rem;
         }
 
         /* ---------- DEVELOPER NOTE ---------- */
@@ -1042,7 +1066,6 @@
         @media (max-width: 520px) {
             body { font-size: 16px; }
             .hero { padding-top: 3rem; padding-bottom: 3rem; }
-            .hero-meta { gap: 1rem 1.5rem; }
             .pill { min-width: calc(100% - 1.4rem); left: 0.7rem; right: 0.7rem; transform: none; font-size: 0.78rem; }
             .stage-screen { min-height: 26rem; }
             .tradeoff-card { padding: 1.4rem; }
@@ -1096,17 +1119,20 @@
                     Built and used by a practicing physician
                 </span>
                 <h1>An ambient AI scribe<br>built by a doctor, <span class="accent">for doctors.</span></h1>
-                <p class="hero-sub">
-                    Eleanote writes notes the way you want them, learns from your feedback on every visit, and moves the work into your EHR with hotkeys you control. No black box. No salesperson. Just a tool one doctor built to make his own clinic run better.
+                <p class="hero-lede">
+                    Eleanote is a program installed on your clinic laptop. What it does:
                 </p>
+                <ul class="hero-bullets">
+                    <li><b>Precharting in seconds.</b></li>
+                    <li><b>Notes written with frontier-quality AI.</b></li>
+                    <li><b>Personalize your notes</b> exactly the way you want them.</li>
+                    <li><b>Immediate feedback</b> can be applied to any note. The AI learns your preferences quickly.</li>
+                    <li><b>Transfer diagnosis codes, orders, and other programmable inputs</b> into your EMR with the push of a button.</li>
+                    <li><b>Real-time order capture.</b> The AI can be programmed to listen during a visit and stage orders so they're entered before the visit ends.</li>
+                </ul>
                 <div class="hero-actions">
                     <a class="btn" href="#workflow">See how it works</a>
                     <a class="btn btn-ghost" href="mailto:eleanote@eleanote.ai">Get in touch</a>
-                </div>
-                <div class="hero-meta">
-                    <div><strong>Frontier-model quality</strong>Built on top-tier LLMs</div>
-                    <div><strong>Personal preference profile</strong>Up to ~8,000 tokens, per user</div>
-                    <div><strong>Learns from your edits</strong>Feedback updates your profile</div>
                 </div>
             </div>
         </section>
