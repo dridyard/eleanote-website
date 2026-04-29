@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1280, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="theme-color" content="#14515c">
+    <meta name="theme-color" content="#f4eedd">
     <title>Eleanote — Program UI mock</title>
     <style>
         /* ----------------------------------------------------------
@@ -18,13 +18,20 @@
             --teal-darker: #0a2f37;
             --teal-soft: #d6e4e6;
 
-            --cream: #f5efe1;
-            --cream-deep: #ebe2cd;
-            --paper: #fbf7ec;
+            /* Light "chrome" tones (title bar, toolbar, tab strip) */
+            --chrome: #f4eedd;          /* light cream - the new chrome bg */
+            --chrome-edge: #e5dcc1;     /* hairline between chrome elements */
+
+            /* Workspace / panel tones (slightly deeper warm tan) */
+            --cream: #ebe2cd;           /* workspace bg - a touch deeper */
+            --cream-soft: #f0e8d3;      /* hover / soft surfaces */
+            --paper: #fbf7ec;           /* near-white for text fields */
 
             --ink: #1a2429;
+            --ink-soft: #324047;
             --muted: #6b7780;
-            --line: #d6cfba;
+            --line: #cdc4ad;            /* slightly stronger borders against tan */
+            --line-soft: #d8cfb6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,15 +96,20 @@
             display: block;
         }
 
-        /* ===== TITLE BAR (Windows-style, thin, teal, matches what's below) ===== */
+        /* ===== TITLE BAR (light chrome; works on all OSes) =====
+           We do NOT rely on the OS title bar picking up our teal color.
+           Instead the bar is light cream so it reads cleanly whether
+           Windows/macOS/Linux paints native chrome around it or not.
+           Only the small teal `e` mark identifies it as Eleanote. */
         .titlebar {
-            background: var(--teal);
-            color: #fff;
+            background: var(--chrome);
+            color: var(--ink);
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 28px;
             padding: 0 0 0 10px;
+            border-bottom: 1px solid var(--chrome-edge);
             user-select: none;
         }
         .titlebar .title {
@@ -109,13 +121,13 @@
         }
         .titlebar .title .mark {
             display: inline-block;
-            width: 14px; height: 14px;
-            background: #fff;
-            color: var(--teal);
+            width: 16px; height: 16px;
+            background: var(--teal);
+            color: #fff;
             border-radius: 50%;
             text-align: center;
-            line-height: 14px;
-            font-size: 10px;
+            line-height: 16px;
+            font-size: 11px;
             font-weight: 800;
             letter-spacing: -0.06em;
         }
@@ -125,35 +137,38 @@
             height: 28px;
             background: transparent;
             border: 0;
-            color: #fff;
+            color: var(--ink-soft);
             font: inherit;
             font-size: 13px;
             cursor: pointer;
             font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
         }
-        .titlebar .winctl button:hover { background: rgba(255,255,255,0.16); }
-        .titlebar .winctl button.close:hover { background: #c0392b; }
+        .titlebar .winctl button:hover { background: rgba(0,0,0,0.06); }
+        .titlebar .winctl button.close:hover { background: #c0392b; color: #fff; }
 
         /* ===== TAB STRIP (teal area; cream active tab flows into cream body below) ===== */
+        /* tab strip: light chrome. Active tab is the cream of the workspace,
+           with a small teal indicator on top so it pops without flooding
+           the whole strip with green. */
         .tabstrip {
-            background: var(--teal);
+            background: var(--chrome);
             display: flex;
             align-items: flex-end;
-            padding: 6px 8px 0 10px;
+            padding: 5px 8px 0 10px;
             gap: 2px;
-            min-height: 36px;
-            border-top: 1px solid var(--teal-darker);
+            min-height: 34px;
+            border-bottom: 1px solid var(--chrome-edge);
         }
         .tab {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--teal-deep);
-            color: rgba(255,255,255,0.78);
+            background: transparent;
+            color: var(--muted);
             font-size: 12px;
             font-weight: 500;
             padding: 7px 10px 8px 12px;
-            border-radius: 6px 6px 0 0;
+            border-radius: 5px 5px 0 0;
             border: 1px solid transparent;
             border-bottom: 0;
             cursor: pointer;
@@ -163,18 +178,29 @@
             position: relative;
             top: 0;
         }
-        .tab:hover { background: var(--teal-darker); color: #fff; }
-        /* Active tab uses the SAME cream as the workspace, sits flush at
-           the bottom of the teal strip, and extends a hair past the bottom
-           edge so the seam between tab + workspace disappears. */
+        .tab:hover {
+            background: var(--cream-soft);
+            color: var(--ink);
+        }
+        /* Active tab fills with the workspace cream and overlaps the
+           bottom border so the seam disappears. A 2px teal stripe on top
+           is the visual cue, not a flooded green tab. */
         .tab.active {
             background: var(--cream);
             color: var(--ink);
-            border-color: var(--line);
+            border-color: var(--chrome-edge);
             font-weight: 600;
             padding-top: 8px;
             padding-bottom: 11px;
             margin-bottom: -1px;
+        }
+        .tab.active::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 8px; right: 8px;
+            height: 2px;
+            background: var(--teal);
+            border-radius: 2px;
         }
         .tab .tab-name {
             flex: 1;
@@ -197,96 +223,104 @@
             justify-content: center;
             font-size: 14px;
             line-height: 1;
-            color: rgba(255,255,255,0.55);
+            color: var(--muted);
         }
         .tab.active .tab-x { color: var(--muted); }
-        .tab .tab-x:hover { background: rgba(0,0,0,0.10); color: var(--ink); }
+        .tab .tab-x:hover { background: rgba(0,0,0,0.06); color: var(--ink); }
 
         .tab-add {
             background: transparent;
             border: 0;
-            color: rgba(255,255,255,0.78);
+            color: var(--muted);
             font: inherit;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 500;
             line-height: 1;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 4px;
             cursor: pointer;
-            margin: 0 4px 4px 4px;
+            margin: 0 4px 3px 4px;
             align-self: center;
         }
-        .tab-add:hover { background: rgba(255,255,255,0.14); color: #fff; }
+        .tab-add:hover {
+            background: var(--cream-soft);
+            color: var(--teal-deep);
+        }
         .tab-add[disabled] { opacity: 0.35; cursor: not-allowed; }
 
         /* ===== TOOLBAR (thin: tools | controls | side toggle) ===== */
         .toolbar {
-            background: var(--teal);
-            color: #fff;
-            padding: 5px 10px;
+            background: var(--chrome);
+            color: var(--ink);
+            padding: 6px 10px;
             display: grid;
             grid-template-columns: auto 1fr auto;
             align-items: center;
             gap: 10px;
+            border-bottom: 1px solid var(--chrome-edge);
         }
         .tools-menu {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.18);
-            color: #fff;
+            background: var(--paper);
+            border: 1px solid var(--chrome-edge);
+            color: var(--ink);
             font: inherit;
             font-size: 12px;
             font-weight: 600;
-            padding: 4px 9px;
+            padding: 4px 10px;
             border-radius: 3px;
             cursor: pointer;
             line-height: 1.2;
         }
-        .tools-menu:hover { background: rgba(255,255,255,0.16); }
-        .tools-menu .caret { font-size: 9px; opacity: 0.85; }
+        .tools-menu:hover {
+            background: #fff;
+            border-color: var(--line);
+        }
+        .tools-menu .caret { font-size: 9px; opacity: 0.7; }
 
         .controls {
             justify-self: center;
             display: inline-flex;
             gap: 4px;
-            background: rgba(0,0,0,0.10);
-            padding: 3px;
-            border-radius: 4px;
         }
         .ctl {
-            background: var(--cream);
+            background: var(--paper);
             color: var(--ink);
-            border: 1px solid var(--teal-deep);
+            border: 1px solid var(--chrome-edge);
             font: inherit;
             font-size: 12px;
             font-weight: 500;
-            padding: 4px 10px;
+            padding: 5px 11px;
             border-radius: 3px;
             cursor: pointer;
             display: inline-flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 7px;
             line-height: 1.2;
             white-space: nowrap;
         }
-        .ctl:hover { background: var(--cream-deep); }
+        .ctl:hover {
+            background: #fff;
+            border-color: var(--teal);
+            color: var(--teal-deep);
+        }
         .ctl .label { font-weight: 600; }
         .ctl .hk {
             font-size: 10px;
             font-weight: 700;
-            color: var(--muted);
+            color: var(--teal);
             letter-spacing: 0.04em;
         }
 
         /* side-panel toggle: standard "right panel" icon */
         .side-toggle {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.18);
-            color: #fff;
-            padding: 4px 6px;
+            background: var(--paper);
+            border: 1px solid var(--chrome-edge);
+            color: var(--ink-soft);
+            padding: 4px 7px;
             border-radius: 3px;
             cursor: pointer;
             display: inline-flex;
@@ -294,11 +328,15 @@
             justify-content: center;
             line-height: 0;
         }
-        .side-toggle:hover { background: rgba(255,255,255,0.16); }
-        .side-toggle.active {
-            background: var(--cream);
-            border-color: var(--cream-deep);
+        .side-toggle:hover {
+            background: #fff;
+            border-color: var(--teal);
             color: var(--teal-deep);
+        }
+        .side-toggle.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #fff;
         }
         .side-toggle svg { display: block; }
 
@@ -552,11 +590,13 @@
 
     <div class="app-window">
 
-        <!-- ===== TITLE BAR ===== -->
+        <!-- ===== TITLE BAR =====
+             Wordmark removed: many OSes will paint native chrome here that
+             we cannot recolor (macOS, Linux, older Windows). The small teal
+             `e` mark is the only identifier - it survives in any rendering. -->
         <div class="titlebar">
             <span class="title">
                 <span class="mark">e</span>
-                eleanote
             </span>
             <div class="winctl">
                 <button title="Minimize">&#xE921;</button>
