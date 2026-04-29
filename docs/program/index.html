@@ -19,13 +19,15 @@
             --teal-soft: #d6e4e6;
 
             /* Light "chrome" tones (title bar, toolbar, tab strip) */
-            --chrome: #f4eedd;          /* light cream - the new chrome bg */
+            --chrome: #f4eedd;          /* deeper cream - chrome bg (top of window) */
             --chrome-edge: #e5dcc1;     /* hairline between chrome elements */
 
-            /* Workspace / panel tones (slightly deeper warm tan) */
-            --cream: #ebe2cd;           /* workspace bg - a touch deeper */
-            --cream-soft: #f0e8d3;      /* hover / soft surfaces */
-            --paper: #fbf7ec;           /* near-white for text fields */
+            /* Workspace / panel tones */
+            --workspace: #fbf7ec;       /* very light cream - workspace bg (bottom) */
+            --cream-soft: #f0e8d3;      /* hover surfaces */
+            --cream: #ebe2cd;           /* deep cream - side panel bg, statusbar */
+            --cream-deep: #ebe2cd;      /* alias, legacy refs */
+            --paper: #fbf7ec;           /* alias of workspace, legacy refs */
 
             --ink: #1a2429;
             --ink-soft: #324047;
@@ -182,11 +184,11 @@
             background: var(--cream-soft);
             color: var(--ink);
         }
-        /* Active tab fills with the workspace cream and overlaps the
+        /* Active tab fills with the workspace color and overlaps the
            bottom border so the seam disappears. A 2px teal stripe on top
            is the visual cue, not a flooded green tab. */
         .tab.active {
-            background: var(--cream);
+            background: var(--workspace);
             color: var(--ink);
             border-color: var(--chrome-edge);
             font-weight: 600;
@@ -344,7 +346,7 @@
         .body {
             display: grid;
             grid-template-columns: 1fr 0;
-            background: var(--cream);
+            background: var(--workspace);
             min-height: 540px;
         }
         .body.with-side {
