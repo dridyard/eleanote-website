@@ -19,12 +19,14 @@
             --ink: #0d2b30;
             --teal: #14515c;
             --teal-deep: #0e3d46;
-            --teal-soft: #e6efef;
-            --teal-faint: #f1f6f6;
-            --paper: #fafaf7;
-            --surface: #ffffff;
-            --line: #d8e2e3;
-            --muted: #5b6e74;
+            --teal-soft: #e8efe8;
+            --teal-faint: #eef3ed;
+            /* Warm cream/tan palette - matches the program UI */
+            --paper: #fbf7ec;        /* main body cream (= program --workspace) */
+            --paper-2: #f4eedd;      /* deeper cream band (= program --chrome) */
+            --surface: #ffffff;       /* elevated white cards */
+            --line: #e5dcc1;          /* warm hairline (= program --chrome-edge) */
+            --muted: #6a6e6a;
             --gold: #a78449;
             --shadow-sm: 0 2px 8px rgba(13, 43, 48, 0.05);
             --shadow-md: 0 12px 32px rgba(13, 43, 48, 0.08);
@@ -404,7 +406,7 @@
 
         /* ---------- WORKFLOW ---------- */
         .workflow {
-            background: linear-gradient(180deg, var(--paper) 0%, #f3f7f7 100%);
+            background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
             padding-bottom: 6rem;
         }
 
@@ -917,7 +919,7 @@
             padding: 1.6rem;
         }
 
-        .fit-card.bad { background: #fdfaf6; border-color: rgba(167, 132, 73, 0.18); }
+        .fit-card.bad { background: var(--paper-2); border-color: rgba(167, 132, 73, 0.18); }
         .fit-card h3 {
             font-size: 1rem;
             font-weight: 600;
@@ -947,7 +949,7 @@
 
         /* ---------- TRADEOFF ---------- */
         .tradeoff-section {
-            background: linear-gradient(180deg, var(--paper) 0%, #f3f7f7 100%);
+            background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
         }
         .tradeoff-card {
             max-width: 760px;
