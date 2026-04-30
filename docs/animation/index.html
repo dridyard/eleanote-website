@@ -132,40 +132,84 @@
             .scene-title { margin-bottom: 16px; }
         }
 
-        /* Dock at the very bottom of the desktop stage */
+        /* Windows-style taskbar at the bottom.
+           Open-program tabs are wider with their app name on them; closed-app
+           slots are small unlabelled squares. */
         .dock {
             position: absolute;
             left: 0; right: 0; bottom: 0;
-            height: 28px;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(0,0,0,0.06);
+            height: 30px;
+            background: rgba(238, 240, 244, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-top: 1px solid rgba(0,0,0,0.10);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 9px;
+            gap: 4px;
             padding: 0 12px;
             z-index: 2;
         }
+        /* small closed-app icons (no logos / unbranded) */
         .dock-icon {
-            width: 18px; height: 18px;
+            width: 22px; height: 22px;
             border-radius: 4px;
-            background: #c8c2b0;
+            background: rgba(0, 0, 0, 0.06);
             border: 1px solid rgba(0,0,0,0.06);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
-            color: #4a4538;
-            font-weight: 700;
         }
-        .dock-icon.brand-e {
+        /* open-program tabs (wider, with app name) */
+        .dock-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 22px;
+            padding: 0 10px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid transparent;
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 600;
+            position: relative;
+        }
+        .dock-tab.active {
+            background: rgba(20, 81, 92, 0.10);
+            border-color: rgba(20, 81, 92, 0.18);
+        }
+        /* the small "this app is running" underline */
+        .dock-tab::after {
+            content: "";
+            position: absolute;
+            left: 25%; right: 25%;
+            bottom: -3px;
+            height: 2px;
+            background: var(--teal);
+            border-radius: 1px;
+            opacity: 0;
+        }
+        .dock-tab.running::after { opacity: 1; }
+
+        /* mini eleanote logo (the brand 'e' circle) inside its tab */
+        .dock-tab .ele-logo {
+            width: 12px; height: 12px;
+            border-radius: 50%;
             background: var(--teal);
             color: #fff;
+            font-size: 9px;
             font-weight: 800;
-            font-size: 11px;
-            letter-spacing: -0.04em;
+            letter-spacing: -0.06em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* generic EHR mark inside its tab */
+        .dock-tab .ehr-logo {
+            width: 12px; height: 12px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
         }
 
         /* ======================================================
@@ -794,63 +838,164 @@
         }
 
         /* ======================================================
-           SCENE 1: Eleanote opens -> minimizes -> copilot springs out
+           SCENE 1: Eleanote opens -> minimizes into its taskbar tab,
+                    copilot springs out of the same tab,
+                    EMR maximizes out of the EHR tab.
            Loop: 9s
+
+           The taskbar has two visible tabs:
+             - eleanote tab (left of center)
+             - EHR tab (right of center)
+           Each window's transform-origin points at its tab so the
+           minimize/maximize is a clean, direct shrink/expand - no swoop.
+
+           Math: dock height is 30px, taskbar centered horizontally.
+           For a 16:9 stage of width W, height ~W*9/16:
+              - eleanote tab center is roughly at (47%, 100%)
+              - EHR tab center is roughly at (53%, 100%)
+           We use scale + translate values calibrated to each tab.
            ====================================================== */
+
+        /* Eleanote window: opens center, minimizes INTO the eleanote tab.
+           transform-origin pinned to the eleanote tab's screen position so
+           the shrink is a clean direct collapse (no swoop). */
         .scene-1 .ele-win {
-            top: 8%; left: 22%;
-            width: 56%; height: 64%;
-            transform-origin: 60% 100%;
+            top: 8%;
+            left: 50%;
+            width: 56%;
+            height: 64%;
+            margin-left: -28%;
+            transform-origin: 48% 144%;       /* 48% across, 144% down = stage-100% */
             animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
         }
-        .scene-1 .pill {
-            opacity: 0;
-            animation: s1-pill 9s cubic-bezier(.4,0,.2,1) infinite;
+        @keyframes s1-ele {
+            0%, 8%   { opacity: 0; transform: scale(0.06); }
+            14%      { opacity: 1; transform: scale(1); }
+            38%      { opacity: 1; transform: scale(1); }
+            44%      { opacity: 0; transform: scale(0.04); }
+            100%     { opacity: 0; transform: scale(0.04); }
         }
+
+        /* Copilot pill: emerges FROM the eleanote tab, grows into a small
+           pill, then slides up to its parked spot top-right.
+           We animate top/right/transform-scale directly so the path is
+           viewport-relative and stays correct at any stage size. */
         .scene-1 .pill.idle {
-            top: 4%; right: 3%;
+            position: absolute;
+            transform-origin: 47% 100%;
+            animation: s1-pill 9s cubic-bezier(.4,0,.2,1) infinite;
+            opacity: 0;
         }
+        @keyframes s1-pill {
+            /* 0-44%: hidden inside the eleanote taskbar tab.
+               eleanote tab sits left of center, so we anchor the pill's
+               horizontal center to ~52% (right offset 48%). */
+            0%, 44%   { opacity: 0;
+                        top: calc(100% - 22px);
+                        right: 48%;
+                        transform: translateX(50%) scale(0.04); }
+            /* 46%: just above the dock, still over the eleanote tab */
+            46%       { opacity: 1;
+                        top: calc(100% - 56px);
+                        right: 48%;
+                        transform: translateX(50%) scale(0.7); }
+            /* 50%: arc over to the top-right resting spot */
+            50%       { opacity: 1;
+                        top: 35%;
+                        right: 30%;
+                        transform: translateX(50%) scale(0.85); }
+            /* 54%: parked at top-right at full size */
+            54%, 96%  { opacity: 1;
+                        top: 4%;
+                        right: 3%;
+                        transform: translateX(0) scale(1); }
+            100%      { opacity: 0;
+                        top: 4%;
+                        right: 3%;
+                        transform: translateX(0) scale(1); }
+        }
+
+        /* EMR: maximizes FROM the EHR tab (right of center).
+           transform-origin pinned to the EHR tab's screen position so
+           the EMR expands directly out of the tab. */
         .scene-1 .emr {
             top: 4%; left: 4%;
             width: 92%; height: 84%;
-            opacity: 0;
+            transform-origin: 55% 114%;       /* EHR tab in EMR-local coords */
             animation: s1-emr 9s cubic-bezier(.4,0,.2,1) infinite;
-        }
-
-        @keyframes s1-ele {
-            0%   { opacity: 0; transform: scale(0.92) translateY(20px); }
-            8%   { opacity: 0; transform: scale(0.92) translateY(20px); }
-            12%  { opacity: 1; transform: scale(1) translateY(0); }
-            36%  { opacity: 1; transform: scale(1) translateY(0); }
-            44%  { opacity: 0; transform: scale(0.06) translate(60%, 240%); }
-            100% { opacity: 0; transform: scale(0.06) translate(60%, 240%); }
-        }
-        @keyframes s1-pill {
-            0%, 40%   { opacity: 0; transform: translate(40%, 280%) scale(0.5); }
-            46%       { opacity: 1; transform: translate(20%, 240%) scale(0.7); }
-            54%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            96%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            100%      { opacity: 0; transform: translate(0, 0) scale(1); }
+            opacity: 0;
         }
         @keyframes s1-emr {
-            0%, 50%  { opacity: 0; transform: translateY(8px); }
-            58%      { opacity: 1; transform: translateY(0); }
-            96%      { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
+            0%, 52%  { opacity: 0; transform: scale(0.05); }
+            58%      { opacity: 1; transform: scale(1); }
+            96%      { opacity: 1; transform: scale(1); }
+            100%     { opacity: 0; transform: scale(1); }
         }
 
-        /* phone version of scene 1 */
-        .scene-1 .stage.p .ele-win {
-            top: 6%; left: 8%;
-            width: 84%; height: 50%;
-            transform-origin: 70% 100%;
+        /* "Active" emphasis on each taskbar tab while its app is on screen */
+        .scene-1 .dock-tab.tab-ele {
+            animation: s1-ele-tab 9s cubic-bezier(.4,0,.2,1) infinite;
         }
-        .scene-1 .stage.p .pill.idle {
-            top: 3%; right: 5%;
+        .scene-1 .dock-tab.tab-ehr {
+            animation: s1-ehr-tab 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s1-ele-tab {
+            0%, 8%   { background: rgba(0,0,0,0.05); border-color: transparent; }
+            14%, 42% { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
+            44%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
+        }
+        @keyframes s1-ehr-tab {
+            0%, 56%  { background: rgba(0,0,0,0.05); border-color: transparent; }
+            58%, 96% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
+            97%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
+        }
+
+        /* ---------- PHONE variant of scene 1 ---------- */
+        /* On phone: stage is 9:13 (taller than wide). Only 2 tabs in the
+           dock (eleanote, EHR) so they sit symmetric around center:
+              eleanote tab center @ ~42% horizontal
+              EHR tab center      @ ~58% horizontal
+           Both at 100% vertical (the dock).
+           Origins are computed relative to each window's local box so the
+           shrink/expand still ends/starts inside the actual tab. */
+        .scene-1 .stage.p .ele-win {
+            top: 6%; left: 50%;
+            width: 84%; height: 50%;
+            margin-left: -42%;
+            transform-origin: 40% 188%;       /* eleanote tab in window-local coords */
         }
         .scene-1 .stage.p .emr {
             top: 3%; left: 3%;
             width: 94%; height: 86%;
+            transform-origin: 59% 113%;       /* EHR tab in EMR-local coords */
+        }
+        /* pill on phone: emerges from eleanote tab (~42% horizontal) */
+        .scene-1 .stage.p .pill.idle {
+            top: 3%; right: 5%;
+        }
+        @media (max-width: 700px) {
+            @keyframes s1-pill {
+                0%, 44%   { opacity: 0;
+                            top: calc(100% - 22px);
+                            right: 53%;
+                            transform: translateX(50%) scale(0.04); }
+                46%       { opacity: 1;
+                            top: calc(100% - 56px);
+                            right: 53%;
+                            transform: translateX(50%) scale(0.7); }
+                50%       { opacity: 1;
+                            top: 30%;
+                            right: 30%;
+                            transform: translateX(50%) scale(0.85); }
+                54%, 96%  { opacity: 1;
+                            top: 3%;
+                            right: 5%;
+                            transform: translateX(0) scale(1); }
+                100%      { opacity: 0;
+                            top: 3%;
+                            right: 5%;
+                            transform: translateX(0) scale(1); }
+            }
         }
 
         /* ======================================================
@@ -1321,12 +1466,19 @@
                 <!-- Idle copilot pill -->
                 <div class="pill idle">eleanote</div>
 
+                <!-- Windows-style taskbar: blank slots + named tabs for open programs -->
                 <div class="dock">
-                    <span class="dock-icon">A</span>
-                    <span class="dock-icon">B</span>
-                    <span class="dock-icon brand-e">e</span>
-                    <span class="dock-icon">C</span>
-                    <span class="dock-icon">D</span>
+                    <span class="dock-icon"></span>
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo"></span>
+                        EHR
+                    </span>
+                    <span class="dock-icon"></span>
                 </div>
             </div>
 
@@ -1380,9 +1532,14 @@
                 </div>
                 <div class="pill idle">eleanote</div>
                 <div class="dock">
-                    <span class="dock-icon">A</span>
-                    <span class="dock-icon brand-e">e</span>
-                    <span class="dock-icon">B</span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo"></span>
+                        EHR
+                    </span>
                 </div>
             </div>
         </section>
