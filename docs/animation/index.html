@@ -251,9 +251,14 @@
         }
         .ele-title-text {
             color: var(--ink);
-            font-size: 9px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
+        .ele-titlebar { position: relative; }
         .ele-winctl {
             margin-left: auto;
             display: inline-flex;
@@ -868,10 +873,10 @@
             transform-origin: 48% 144%;       /* 48% across, 144% down = stage-100% */
             animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
         }
+        /* Eleanote starts already open at full size, then minimizes
+           directly into the tab - no opening grow at the start. */
         @keyframes s1-ele {
-            0%, 8%   { opacity: 0; transform: scale(0.06); }
-            14%      { opacity: 1; transform: scale(1); }
-            38%      { opacity: 1; transform: scale(1); }
+            0%, 38%  { opacity: 1; transform: scale(1); }
             44%      { opacity: 0; transform: scale(0.04); }
             100%     { opacity: 0; transform: scale(0.04); }
         }
@@ -887,24 +892,20 @@
             opacity: 0;
         }
         @keyframes s1-pill {
-            /* 0-44%: hidden inside the eleanote taskbar tab.
-               eleanote tab sits left of center, so we anchor the pill's
-               horizontal center to ~52% (right offset 48%). */
-            0%, 44%   { opacity: 0;
+            /* 0-43%: hidden inside the eleanote taskbar tab.
+               At 44% the eleanote window has just collapsed into the tab,
+               so the pill becomes visible at the same instant. */
+            0%, 43%   { opacity: 0;
                         top: calc(100% - 22px);
                         right: 48%;
                         transform: translateX(50%) scale(0.04); }
-            /* 46%: just above the dock, still over the eleanote tab */
-            46%       { opacity: 1;
-                        top: calc(100% - 56px);
+            /* 44%: appears at the tab the moment the window vanishes there */
+            44%       { opacity: 1;
+                        top: calc(100% - 22px);
                         right: 48%;
-                        transform: translateX(50%) scale(0.7); }
-            /* 50%: arc over to the top-right resting spot */
-            50%       { opacity: 1;
-                        top: 35%;
-                        right: 30%;
-                        transform: translateX(50%) scale(0.85); }
-            /* 54%: parked at top-right at full size */
+                        transform: translateX(50%) scale(0.4); }
+            /* 54%: smooth direct travel up to the top-right resting spot.
+               No mid-flight pause - one continuous easing curve. */
             54%, 96%  { opacity: 1;
                         top: 4%;
                         right: 3%;
@@ -975,18 +976,14 @@
         }
         @media (max-width: 700px) {
             @keyframes s1-pill {
-                0%, 44%   { opacity: 0;
+                0%, 43%   { opacity: 0;
                             top: calc(100% - 22px);
                             right: 53%;
                             transform: translateX(50%) scale(0.04); }
-                46%       { opacity: 1;
-                            top: calc(100% - 56px);
+                44%       { opacity: 1;
+                            top: calc(100% - 22px);
                             right: 53%;
-                            transform: translateX(50%) scale(0.7); }
-                50%       { opacity: 1;
-                            top: 30%;
-                            right: 30%;
-                            transform: translateX(50%) scale(0.85); }
+                            transform: translateX(50%) scale(0.4); }
                 54%, 96%  { opacity: 1;
                             top: 3%;
                             right: 5%;
@@ -1413,7 +1410,7 @@
                 <div class="ele-win">
                     <div class="ele-titlebar">
                         <span class="ele-mark">e</span>
-                        <span class="ele-title-text"></span>
+                        <span class="ele-title-text">eleanote</span>
                         <span class="ele-winctl"><span></span><span></span><span></span></span>
                     </div>
                     <div class="ele-toolbar">
@@ -1487,7 +1484,7 @@
                 <div class="ele-win">
                     <div class="ele-titlebar">
                         <span class="ele-mark">e</span>
-                        <span class="ele-title-text"></span>
+                        <span class="ele-title-text">eleanote</span>
                         <span class="ele-winctl"><span></span><span></span><span></span></span>
                     </div>
                     <div class="ele-toolbar">
