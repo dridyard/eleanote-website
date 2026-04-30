@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#fbf7ec">
+    <title>Eleanote — workflow animation (preview)</title>
+    <style>
+        :root {
+            --teal: #14515c;
+            --teal-deep: #0e3d46;
+            --teal-soft: #d6e4e6;
+
+            --workspace: #fbf7ec;
+            --chrome: #f4eedd;
+            --chrome-edge: #e5dcc1;
+            --cream-soft: #f0e8d3;
+            --cream: #ebe2cd;
+            --paper: #fbf7ec;
+
+            --ink: #1a2429;
+            --ink-soft: #324047;
+            --muted: #6b7780;
+            --line: #d6cfba;
+
+            --emr-bg: #edeef3;
+            --emr-pane: #ffffff;
+            --emr-line: #e3e5ec;
+            --emr-ink: #1f2533;
+            --emr-muted: #6a7388;
+            --emr-accent: #5b4b8a;
+            --emr-accent-soft: #ece9f3;
+            --emr-tint: #f6f4fa;
+
+            --record: #d44a4a;
+
+            /* total loop duration. Increase to slow everything down. */
+            --loop: 26s;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", "Inter", sans-serif;
+            background: #1a1a1a;
+            color: #ddd;
+            min-height: 100vh;
+            padding: 16px 12px 64px;
+            font-size: 13px;
+        }
+
+        .preview-bar {
+            max-width: 1080px;
+            margin: 0 auto 14px;
+            color: #d2d2d2;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .preview-bar .label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #a9a9a9;
+            font-weight: 600;
+        }
+        .preview-bar .controls {
+            display: inline-flex;
+            gap: 6px;
+        }
+        .preview-bar button {
+            font: inherit;
+            font-size: 12px;
+            color: #ddd;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .preview-bar button:hover { background: #444; }
+
+        /* ===================================================
+           STAGE - the "computer screen" frame
+           =================================================== */
+        .stage-wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: linear-gradient(180deg, #d8d3c4 0%, #c9c2ad 100%);
+            border-radius: 14px 14px 4px 4px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+            overflow: hidden;
+            font-size: clamp(10px, 0.95vw, 13px);
+        }
+
+        /* faint generic desktop wallpaper */
+        .stage::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 32px 0;
+            background:
+                radial-gradient(60% 50% at 25% 30%, rgba(255,255,255,0.18), transparent 70%),
+                radial-gradient(70% 60% at 80% 70%, rgba(20, 81, 92, 0.10), transparent 70%),
+                linear-gradient(180deg, #cfc8b3 0%, #b9b39f 100%);
+        }
+
+        /* dock at bottom */
+        .dock {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 32px;
+            background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 12px;
+            z-index: 2;
+        }
+        .dock-icon {
+            width: 22px; height: 22px;
+            border-radius: 5px;
+            background: #c8c2b0;
+            border: 1px solid rgba(0,0,0,0.08);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #4a4538;
+            font-weight: 700;
+        }
+        .dock-icon.brand-e {
+            background: var(--teal);
+            color: #fff;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: -0.04em;
+            border-color: rgba(0,0,0,0.18);
+            position: relative;
+        }
+        /* tiny "running" indicator under the brand icon */
+        .dock-icon.brand-e::after {
+            content: "";
+            position: absolute;
+            bottom: -4px; left: 50%;
+            transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--teal);
+            opacity: 0;
+            animation: dockIndicator var(--loop) ease-in-out infinite;
+        }
+
+        /* ===================================================
+           ELEANOTE WINDOW (compact, recognizable)
+           =================================================== */
+        .ele {
+            position: absolute;
+            z-index: 5;
+            width: 64%;
+            height: 70%;
+            top: 12%;
+            left: 18%;
+            background: var(--workspace);
+            border: 1px solid rgba(0,0,0,0.20);
+            border-radius: 7px;
+            box-shadow: 0 18px 36px rgba(0,0,0,0.30);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform-origin: 84% 100%; /* shrink toward dock-right */
+            opacity: 0;
+            animation: eleLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .ele-titlebar {
+            background: var(--chrome);
+            border-bottom: 1px solid var(--chrome-edge);
+            height: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 6px;
+            flex: 0 0 auto;
+        }
+        .ele-mark {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: #fff;
+            font-size: 8px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.06em;
+        }
+        .ele-winctl {
+            margin-left: auto;
+            display: inline-flex;
+            gap: 4px;
+        }
+        .ele-winctl span {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.18);
+        }
+        .ele-toolbar {
+            background: var(--chrome);
+            border-bottom: 1px solid var(--chrome-edge);
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 0 0 auto;
+        }
+        .ele-tools {
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--paper);
+            border: 1px solid var(--chrome-edge);
+            padding: 2px 6px;
+            border-radius: 2px;
+            color: var(--ink);
+        }
+        .ele-ctls {
+            margin: 0 auto;
+            display: inline-flex;
+            gap: 3px;
+        }
+        .ele-ctl {
+            font-size: 9px;
+            font-weight: 500;
+            background: var(--paper);
+            border: 1px solid var(--chrome-edge);
+            padding: 2px 6px;
+            border-radius: 2px;
+            color: var(--ink);
+            display: inline-flex;
+            gap: 4px;
+        }
+        .ele-ctl em {
+            font-style: normal;
+            color: var(--teal);
+            font-weight: 700;
+            font-size: 8px;
+        }
+        .ele-tabs {
+            background: var(--chrome);
+            padding: 2px 8px 0;
+            display: flex;
+            gap: 2px;
+            min-height: 18px;
+            border-bottom: 1px solid var(--chrome-edge);
+            flex: 0 0 auto;
+        }
+        .ele-tab {
+            background: var(--workspace);
+            border: 1px solid var(--chrome-edge);
+            border-bottom: 0;
+            border-radius: 4px 4px 0 0;
+            padding: 3px 9px 5px;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: -1px;
+            position: relative;
+        }
+        .ele-tab::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 6px; right: 6px;
+            height: 1.5px;
+            background: var(--teal);
+            border-radius: 2px;
+        }
+        .ele-body {
+            flex: 1;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-height: 0;
+        }
+        .ele-blk-title {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.10em;
+            color: var(--teal-deep);
+        }
+        .ele-input {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            padding: 6px 8px;
+            font-size: 10px;
+            color: var(--muted);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* ===================================================
+           PILL (the floating dictation pill)
+           =================================================== */
+        .pill {
+            position: absolute;
+            z-index: 7;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--chrome);
+            border: 1px solid var(--teal-deep);
+            border-radius: 999px;
+            padding: 4px 6px 4px 10px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.22);
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--ink);
+            white-space: nowrap;
+            opacity: 0;
+            animation: pillLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .pill .ind {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex: 0 0 auto;
+            animation: pillDot var(--loop) ease-in-out infinite;
+        }
+        .pill .pill-text {
+            font-weight: 600;
+            min-width: 110px;
+            display: inline-block;
+        }
+        .pill .pill-text::after {
+            content: attr(data-text);
+            animation: pillText var(--loop) steps(1, end) infinite;
+        }
+        .pill .pill-text {
+            position: relative;
+        }
+        .pill .pill-text::after {
+            content: "Idle";
+        }
+        .pill .keycap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 4px;
+            background: var(--teal-deep);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .pill .keycap::after {
+            content: "F4";
+            animation: pillKey var(--loop) steps(1, end) infinite;
+        }
+        .pill .keycap { color: transparent; }
+        .pill .keycap::after { color: #fff; }
+
+        /* ===================================================
+           EMR WINDOW
+           =================================================== */
+        .emr {
+            position: absolute;
+            z-index: 4;
+            width: 90%;
+            height: 84%;
+            top: 6%;
+            left: 5%;
+            background: var(--emr-pane);
+            border: 1px solid rgba(0,0,0,0.18);
+            border-radius: 7px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: 26px auto 1fr;
+            grid-template-columns: 26% 1fr 26%;
+            opacity: 0;
+            animation: emrLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .emr-banner {
+            grid-column: 1 / -1;
+            background: var(--emr-pane);
+            border-bottom: 1px solid var(--emr-line);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+            font-size: 10px;
+            color: var(--emr-ink);
+        }
+        .emr-banner .pmark {
+            width: 14px; height: 14px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .emr-banner .name { font-weight: 700; }
+        .emr-banner .meta { color: var(--emr-muted); font-size: 9px; }
+        .emr-tabs {
+            grid-column: 1 / -1;
+            background: var(--emr-pane);
+            border-bottom: 1px solid var(--emr-line);
+            display: flex;
+            gap: 0;
+            padding: 0 10px;
+            height: 22px;
+        }
+        .emr-tab {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--emr-muted);
+            padding: 0 10px;
+            display: inline-flex;
+            align-items: center;
+            border-bottom: 2px solid transparent;
+        }
+        .emr-tab.active {
+            color: var(--emr-accent);
+            border-bottom-color: var(--emr-accent);
+        }
+        .emr-left {
+            background: var(--emr-tint);
+            border-right: 1px solid var(--emr-line);
+            padding: 8px 10px;
+            font-size: 9px;
+        }
+        .emr-left h5 {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            margin-bottom: 4px;
+        }
+        .emr-left .navrow {
+            padding: 3px 6px;
+            color: var(--emr-ink);
+            border-radius: 3px;
+        }
+        .emr-left .navrow.active {
+            background: var(--emr-accent-soft);
+            color: var(--emr-accent);
+            font-weight: 600;
+        }
+        .emr-center {
+            padding: 10px 12px;
+            font-size: 10px;
+            line-height: 1.5;
+            color: var(--emr-ink);
+            overflow: hidden;
+            position: relative;
+        }
+        .emr-center h4 {
+            font-size: 11px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .emr-center p { margin-bottom: 6px; color: var(--emr-ink); }
+        .emr-center .lab {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--emr-line);
+            font-size: 9px;
+        }
+        .emr-center .lab strong { color: var(--emr-ink); font-weight: 600; }
+        .emr-center .lab .high { color: #b8443d; font-weight: 700; }
+        .emr-right {
+            background: var(--emr-tint);
+            border-left: 1px solid var(--emr-line);
+            padding: 8px 10px;
+            font-size: 9px;
+        }
+        .emr-right h5 {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            margin-bottom: 4px;
+        }
+        .emr-right .order-slot,
+        .emr-right .dx-slot,
+        .emr-right .note-slot {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 3px;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 9px;
+            color: var(--emr-muted);
+            min-height: 14px;
+        }
+
+        /* selection rectangle (for highlighting EMR text) */
+        .selection {
+            position: absolute;
+            background: rgba(91, 75, 138, 0.22);
+            border: 1px solid var(--emr-accent);
+            border-radius: 2px;
+            pointer-events: none;
+            opacity: 0;
+            animation: selection var(--loop) ease-in-out infinite;
+            z-index: 6;
+        }
+        .selection.s1 { top: 17%; left: 30%; width: 38%; height: 4.5%; }
+        .selection.s2 { top: 22%; left: 30%; width: 32%; height: 4.5%; animation-name: selection2; }
+        .selection.s3 { top: 50%; left: 30%; width: 38%; height: 4.2%; animation-name: selection3; }
+
+        /* "ghost" - flying text from EMR -> pill or pill -> EMR */
+        .ghost {
+            position: absolute;
+            z-index: 6;
+            background: var(--emr-accent-soft);
+            border: 1px solid var(--emr-accent);
+            color: var(--emr-accent);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 3px 7px;
+            border-radius: 3px;
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            box-shadow: 0 4px 10px rgba(91, 75, 138, 0.25);
+        }
+        .ghost.from-emr {
+            color: var(--emr-accent);
+            background: var(--emr-accent-soft);
+            border-color: var(--emr-accent);
+        }
+        .ghost.from-pill {
+            color: var(--teal-deep);
+            background: var(--teal-soft);
+            border-color: var(--teal);
+        }
+
+        .ghost.g1 {
+            top: 17%; left: 32%;
+            animation: ghostToPill var(--loop) ease-in-out infinite;
+        }
+        .ghost.g2 {
+            top: 50%; left: 32%;
+            animation: ghostToPill2 var(--loop) ease-in-out infinite;
+        }
+        .ghost.g3 {
+            top: 9%; right: 12%;
+            animation: ghostToOrders var(--loop) ease-in-out infinite;
+        }
+        .ghost.g4 {
+            top: 9%; right: 12%;
+            animation: ghostToOrders2 var(--loop) ease-in-out infinite;
+        }
+        .ghost.g5 {
+            top: 9%; right: 12%;
+            animation: ghostToOrders3 var(--loop) ease-in-out infinite;
+        }
+        .ghost.g6 {
+            top: 9%; right: 12%;
+            animation: ghostToNote var(--loop) ease-in-out infinite;
+        }
+        .ghost.g7 {
+            top: 9%; right: 12%;
+            animation: ghostToDx var(--loop) ease-in-out infinite;
+        }
+
+        /* "key flash" - hotkey indicator that appears mid-screen */
+        .keyflash {
+            position: absolute;
+            z-index: 8;
+            top: 18%; left: 50%;
+            transform: translateX(-50%) translateY(-30%);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(20, 81, 92, 0.94);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .keyflash::before { content: "⌨"; opacity: 0.9; font-weight: 400; }
+        .keyflash.k1 { animation: keyFlash1 var(--loop) ease-out infinite; }
+        .keyflash.k2 { animation: keyFlash2 var(--loop) ease-out infinite; }
+        .keyflash.k3 { animation: keyFlash3 var(--loop) ease-out infinite; }
+        .keyflash.k4 { animation: keyFlash4 var(--loop) ease-out infinite; }
+
+        /* "order modal" - small modal popping up in EMR */
+        .order-modal {
+            position: absolute;
+            z-index: 9;
+            top: 32%; left: 30%;
+            width: 38%;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 6px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.30);
+            padding: 8px 10px;
+            font-size: 9px;
+            color: var(--emr-ink);
+            opacity: 0;
+            transform: translateY(8px) scale(0.96);
+        }
+        .order-modal h5 {
+            font-size: 9px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--emr-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .order-modal .field {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 6px;
+            padding: 2px 0;
+            border-bottom: 1px dashed var(--emr-line);
+        }
+        .order-modal .field:last-of-type { border-bottom: 0; }
+        .order-modal .field .k { color: var(--emr-muted); font-size: 8px; }
+        .order-modal .field .v { color: var(--emr-ink); font-weight: 600; font-size: 9px; }
+        .order-modal .accept {
+            margin-top: 5px;
+            text-align: right;
+            font-size: 8px;
+            color: var(--emr-accent);
+            font-weight: 700;
+        }
+        .order-modal.m1 { animation: orderModal1 var(--loop) ease-in-out infinite; }
+        .order-modal.m2 { animation: orderModal2 var(--loop) ease-in-out infinite; }
+        .order-modal.m3 { animation: orderModal3 var(--loop) ease-in-out infinite; }
+
+        /* slots in EMR right column that get filled */
+        .filled-order {
+            position: absolute;
+            z-index: 5;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--emr-ink);
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 2px solid var(--emr-accent);
+            border-radius: 3px;
+            padding: 3px 6px;
+            opacity: 0;
+        }
+        .filled-order.fo1 {
+            top: 14%; right: 1.5%;
+            width: 22%;
+            animation: fillOrder1 var(--loop) ease-out infinite;
+        }
+        .filled-order.fo2 {
+            top: 19%; right: 1.5%;
+            width: 22%;
+            animation: fillOrder2 var(--loop) ease-out infinite;
+        }
+        .filled-order.fo3 {
+            top: 24%; right: 1.5%;
+            width: 22%;
+            animation: fillOrder3 var(--loop) ease-out infinite;
+        }
+        .filled-dx {
+            position: absolute;
+            z-index: 5;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--emr-ink);
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 2px solid #a78449;
+            border-radius: 3px;
+            padding: 3px 6px;
+            opacity: 0;
+        }
+        .filled-dx.fd1 {
+            top: 38%; right: 1.5%;
+            width: 22%;
+            animation: fillDx1 var(--loop) ease-out infinite;
+        }
+        .filled-dx.fd2 {
+            top: 43%; right: 1.5%;
+            width: 22%;
+            animation: fillDx2 var(--loop) ease-out infinite;
+        }
+        .filled-note {
+            position: absolute;
+            z-index: 5;
+            font-size: 9px;
+            color: var(--emr-ink);
+            background: var(--emr-tint);
+            border: 1px solid var(--emr-line);
+            border-radius: 3px;
+            padding: 4px 8px;
+            line-height: 1.5;
+            opacity: 0;
+            top: 53%;
+            right: 1.5%;
+            width: 22%;
+            font-style: italic;
+            animation: fillNote var(--loop) ease-out infinite;
+        }
+
+        /* "complete" toast on the pill */
+        .toast {
+            position: absolute;
+            z-index: 9;
+            top: 14%; right: 12%;
+            background: var(--teal);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 4px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+            opacity: 0;
+            animation: toast var(--loop) ease-out infinite;
+        }
+        .toast::before { content: "✓ "; }
+
+        /* ===================================================
+           KEYFRAMES (timed against --loop = 26s)
+           =================================================== */
+        /* % markers reference these absolute seconds:
+           0s    cold start
+           1.5   eleanote opens
+           4     minimize starts
+           5     pill arrives top-right
+           6     EMR opens
+           9     selection 1
+           10.5  ghost 1 -> pill (F4)
+           11.5  selection 2
+           13    ghost 2 -> pill
+           14    F12 record on
+           15    order modal 1 (lab)
+           16    order modal 2 (imaging)
+           17.5  order modal 3 (rx)
+           19    F9 end visit
+           20    note ghosts -> EMR center
+           21    dx ghosts -> EMR right
+           23    toast complete
+           24    fade
+           26    loop
+        */
+
+        /* Eleanote window: open -> minimize to dock-right */
+        @keyframes eleLifecycle {
+            0%   { opacity: 0; transform: scale(0.92) translateY(20px); }
+            5%   { opacity: 0; transform: scale(0.92) translateY(20px); }
+            6%   { opacity: 1; transform: scale(1) translateY(0); }
+            14%  { opacity: 1; transform: scale(1) translateY(0); }
+            /* minimize: scale toward dock-right + fade */
+            18%  { opacity: 0; transform: scale(0.06) translate(60%, 220%); }
+            100% { opacity: 0; transform: scale(0.06) translate(60%, 220%); }
+        }
+
+        /* Pill: appears as Eleanote minimizes, fly to top-right, stay there */
+        @keyframes pillLifecycle {
+            0%   { opacity: 0; transform: translate(40%, 290%) scale(0.5); top: 0; left: 50%; }
+            16%  { opacity: 0; transform: translate(40%, 290%) scale(0.5); top: 0; left: 50%; }
+            /* spring up out of the dock */
+            18%  { opacity: 1; transform: translate(40%, 280%) scale(0.7); top: 0; left: 50%; }
+            21%  { opacity: 1; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
+            /* stay put for the rest */
+            96%  { opacity: 1; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
+            100% { opacity: 0; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
+        }
+        /* the .pill positions itself via transforms; reset its base box */
+        .pill { top: 0; left: 50%; right: auto; }
+
+        /* pill indicator dot color: grey -> red (record) -> teal (transfer) -> grey */
+        @keyframes pillDot {
+            0%, 51%   { background: var(--muted); box-shadow: none; }
+            52%, 70%  { background: var(--record); box-shadow: 0 0 0 3px rgba(212, 74, 74, 0.22); }
+            71%, 87%  { background: var(--teal); box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.22); }
+            88%, 100% { background: var(--muted); box-shadow: none; }
+        }
+
+        /* pill text: rolling status string */
+        @keyframes pillText {
+            0%, 30%   { content: "Idle"; }
+            31%, 39%  { content: "Pre-chart captured"; }
+            40%, 51%  { content: "Pre-chart captured"; }
+            52%, 56%  { content: "Recording…"; }
+            57%, 70%  { content: "Recording · staging orders"; }
+            71%, 75%  { content: "Sending to EMR"; }
+            76%, 87%  { content: "Sending to EMR"; }
+            88%, 100% { content: "Visit complete"; }
+        }
+        @keyframes pillKey {
+            0%, 35%   { content: "F4"; }
+            36%, 51%  { content: "F4"; }
+            52%, 70%  { content: "F12"; }
+            71%, 87%  { content: "F9"; }
+            88%, 100% { content: "—"; }
+        }
+
+        /* EMR window: appears after Eleanote minimizes, stays for the rest */
+        @keyframes emrLifecycle {
+            0%   { opacity: 0; transform: translateY(10px); }
+            22%  { opacity: 0; transform: translateY(10px); }
+            25%  { opacity: 1; transform: translateY(0); }
+            96%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(0); }
+        }
+
+        /* selection rectangles in EMR */
+        @keyframes selection {
+            0%, 33%   { opacity: 0; }
+            34%, 41%  { opacity: 1; }
+            42%, 100% { opacity: 0; }
+        }
+        @keyframes selection2 {
+            0%, 41%   { opacity: 0; }
+            42%, 49%  { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        @keyframes selection3 {
+            0%, 100%  { opacity: 0; }
+        }
+
+        /* ghost flying from EMR center -> pill (top right) */
+        @keyframes ghostToPill {
+            0%, 35%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            36%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            41%       { opacity: 0.6; transform: translate(140%, -120%) scale(0.6); }
+            42%, 100% { opacity: 0; transform: translate(140%, -120%) scale(0.6); }
+        }
+        @keyframes ghostToPill2 {
+            0%, 43%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            44%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            49%       { opacity: 0.6; transform: translate(140%, -300%) scale(0.6); }
+            50%, 100% { opacity: 0; transform: translate(140%, -300%) scale(0.6); }
+        }
+        /* ghosts flying out of pill -> order modal area / note / dx */
+        @keyframes ghostToOrders {
+            0%, 56%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            57%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            61%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
+            62%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
+        }
+        @keyframes ghostToOrders2 {
+            0%, 60%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            61%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            65%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
+            66%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
+        }
+        @keyframes ghostToOrders3 {
+            0%, 65%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            66%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            70%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
+            71%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
+        }
+        @keyframes ghostToNote {
+            0%, 75%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            76%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            81%       { opacity: 0; transform: translate(-30%, 540%) scale(0.6); }
+            82%, 100% { opacity: 0; transform: translate(-30%, 540%) scale(0.6); }
+        }
+        @keyframes ghostToDx {
+            0%, 80%   { opacity: 0; transform: translate(0, 0) scale(1); }
+            81%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            85%       { opacity: 0; transform: translate(-30%, 320%) scale(0.6); }
+            86%, 100% { opacity: 0; transform: translate(-30%, 320%) scale(0.6); }
+        }
+
+        /* hotkey flashes mid-screen */
+        @keyframes keyFlash1 {
+            0%, 38%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
+            40%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
+            44%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
+            100%      { opacity: 0; }
+        }
+        @keyframes keyFlash2 {
+            0%, 50%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
+            52%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
+            56%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
+            100%      { opacity: 0; }
+        }
+        @keyframes keyFlash3 {
+            /* end-visit F9 flash */
+            0%, 71%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
+            73%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
+            77%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
+            100%      { opacity: 0; }
+        }
+        @keyframes keyFlash4 { 0%,100%{opacity:0;} } /* unused, reserved */
+
+        /* order modals */
+        @keyframes orderModal1 {
+            0%, 56%   { opacity: 0; transform: translateY(8px) scale(0.96); }
+            58%       { opacity: 1; transform: translateY(0) scale(1); }
+            61%       { opacity: 1; transform: translateY(0) scale(1); }
+            62%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
+            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
+        }
+        @keyframes orderModal2 {
+            0%, 60%   { opacity: 0; transform: translateY(8px) scale(0.96); }
+            62%       { opacity: 1; transform: translateY(0) scale(1); }
+            65%       { opacity: 1; transform: translateY(0) scale(1); }
+            66%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
+            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
+        }
+        @keyframes orderModal3 {
+            0%, 65%   { opacity: 0; transform: translateY(8px) scale(0.96); }
+            67%       { opacity: 1; transform: translateY(0) scale(1); }
+            70%       { opacity: 1; transform: translateY(0) scale(1); }
+            71%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
+            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
+        }
+
+        /* filled orders settle into the EMR right column */
+        @keyframes fillOrder1 {
+            0%, 61%  { opacity: 0; transform: translateY(-4px); }
+            62%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+        @keyframes fillOrder2 {
+            0%, 65%  { opacity: 0; transform: translateY(-4px); }
+            66%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+        @keyframes fillOrder3 {
+            0%, 70%  { opacity: 0; transform: translateY(-4px); }
+            71%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+        @keyframes fillDx1 {
+            0%, 85%  { opacity: 0; transform: translateY(-4px); }
+            86%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+        @keyframes fillDx2 {
+            0%, 87%  { opacity: 0; transform: translateY(-4px); }
+            88%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+        @keyframes fillNote {
+            0%, 80%  { opacity: 0; transform: translateY(4px); }
+            82%, 96% { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+
+        /* completion toast */
+        @keyframes toast {
+            0%, 89%  { opacity: 0; transform: translateY(-4px) scale(0.9); }
+            90%      { opacity: 1; transform: translateY(0) scale(1); }
+            94%      { opacity: 1; transform: translateY(0) scale(1); }
+            96%      { opacity: 0; transform: translateY(-4px) scale(0.95); }
+            100%     { opacity: 0; }
+        }
+
+        /* dock indicator dot under brand-e while running */
+        @keyframes dockIndicator {
+            0%, 6%   { opacity: 0; }
+            7%, 96%  { opacity: 1; }
+            97%, 100%{ opacity: 0; }
+        }
+
+        /* respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .ele, .pill, .emr,
+            .selection, .ghost, .keyflash,
+            .order-modal, .filled-order, .filled-dx, .filled-note, .toast,
+            .dock-icon.brand-e::after,
+            .pill .ind, .pill .pill-text::after, .pill .keycap::after {
+                animation: none !important;
+            }
+            .ele { opacity: 1; }
+            .emr { opacity: 1; }
+            .pill { opacity: 1; top: 4%; right: 3%; left: auto; transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-bar">
+        <span class="label">Animation preview · 26s loop</span>
+        <span class="controls">
+            <button id="restartBtn">Restart</button>
+            <button id="speedBtn">2× speed</button>
+            <button id="halfBtn">½ speed</button>
+        </span>
+    </div>
+
+    <div class="stage-wrap">
+        <div class="stage" id="stage">
+
+            <!-- ===== ELEANOTE WINDOW (opens, then minimizes) ===== -->
+            <div class="ele">
+                <div class="ele-titlebar">
+                    <span class="ele-mark">e</span>
+                    <span class="ele-winctl"><span></span><span></span><span></span></span>
+                </div>
+                <div class="ele-toolbar">
+                    <span class="ele-tools">Tools ▾</span>
+                    <span class="ele-ctls">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">Refresh <em>F10</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                    </span>
+                </div>
+                <div class="ele-tabs">
+                    <span class="ele-tab">Doe, John · 64M</span>
+                </div>
+                <div class="ele-body">
+                    <span class="ele-blk-title">Precharting</span>
+                    <span class="ele-input">Paste from EHR or type · F4 to capture</span>
+                </div>
+            </div>
+
+            <!-- ===== EMR WINDOW (opens behind, stays the rest of the time) ===== -->
+            <div class="emr">
+                <div class="emr-banner">
+                    <span class="pmark">M</span>
+                    <span class="name">Doe, John</span>
+                    <span class="meta">64 y/o M · MRN 10428501 · BCBS PPO · Allergies: Sulfa</span>
+                </div>
+                <div class="emr-tabs">
+                    <span class="emr-tab active">Notes</span>
+                    <span class="emr-tab">Labs</span>
+                    <span class="emr-tab">Imaging</span>
+                    <span class="emr-tab">Orders</span>
+                    <span class="emr-tab">Wrap-Up</span>
+                </div>
+                <div class="emr-left">
+                    <h5>Chart</h5>
+                    <div class="navrow active">Notes</div>
+                    <div class="navrow">Labs</div>
+                    <div class="navrow">Imaging</div>
+                    <div class="navrow">Encounters</div>
+                    <div class="navrow">Problem list</div>
+                </div>
+                <div class="emr-center">
+                    <h4>Office visit · 04/18/2026</h4>
+                    <p>Established 64 y/o M, follow-up of <strong>HTN</strong> and <strong>BPH</strong>. Reports worsening urinary urgency and nocturia 3–4×.</p>
+                    <p>Recent <strong>PSA</strong> rising over 9 months. <strong>MRI pelvis</strong>: PI-RADS 3 lesion, left base.</p>
+                    <h4 style="margin-top:8px;">Recent labs</h4>
+                    <div class="lab"><strong>PSA, total</strong><span>5.8 ng/mL</span><span class="high">High</span></div>
+                    <div class="lab"><strong>A1c</strong><span>6.9 %</span><span class="high">High</span></div>
+                    <div class="lab"><strong>Creatinine</strong><span>1.0</span><span>Normal</span></div>
+                </div>
+                <div class="emr-right">
+                    <h5>Visit panel</h5>
+                    <div class="order-slot">Orders…</div>
+                    <div class="order-slot">&nbsp;</div>
+                    <div class="order-slot">&nbsp;</div>
+                    <div class="dx-slot" style="margin-top: 14px;">Diagnoses…</div>
+                    <div class="dx-slot">&nbsp;</div>
+                    <div class="note-slot" style="margin-top: 14px; min-height: 70px;">Note…</div>
+                </div>
+            </div>
+
+            <!-- ===== SELECTION RECTANGLES on the EMR ===== -->
+            <div class="selection s1"></div>
+            <div class="selection s2"></div>
+
+            <!-- ===== GHOSTS flying around ===== -->
+            <div class="ghost from-emr g1">PSA trend, MRI lesion</div>
+            <div class="ghost from-emr g2">Labs · A1c high · PSA high</div>
+
+            <div class="ghost from-pill g3">MRI pelvis</div>
+            <div class="ghost from-pill g4">PSA in 6 mo</div>
+            <div class="ghost from-pill g5">Tamsulosin 0.4 mg</div>
+            <div class="ghost from-pill g6">SOAP note · 4 paragraphs</div>
+            <div class="ghost from-pill g7">N40.0 · I10 · R39.15</div>
+
+            <!-- ===== KEY FLASHES ===== -->
+            <div class="keyflash k1">F4 · capture pre-chart</div>
+            <div class="keyflash k2">F12 · start recording</div>
+            <div class="keyflash k3">F9 · end visit · transfer</div>
+
+            <!-- ===== ORDER MODALS ===== -->
+            <div class="order-modal m1">
+                <h5>New order</h5>
+                <div class="field"><span class="k">Order</span><span class="v">MRI pelvis w/o contrast</span></div>
+                <div class="field"><span class="k">Indication</span><span class="v">PI-RADS 3 lesion, left base</span></div>
+                <div class="field"><span class="k">Priority</span><span class="v">Routine</span></div>
+                <div class="accept">✓ Accepted</div>
+            </div>
+            <div class="order-modal m2">
+                <h5>New order</h5>
+                <div class="field"><span class="k">Lab</span><span class="v">PSA, total &amp; free</span></div>
+                <div class="field"><span class="k">When</span><span class="v">In 6 months</span></div>
+                <div class="field"><span class="k">Priority</span><span class="v">Routine</span></div>
+                <div class="accept">✓ Accepted</div>
+            </div>
+            <div class="order-modal m3">
+                <h5>New medication</h5>
+                <div class="field"><span class="k">Drug</span><span class="v">Tamsulosin 0.4 mg cap</span></div>
+                <div class="field"><span class="k">Sig</span><span class="v">1 cap PO qHS</span></div>
+                <div class="field"><span class="k">Disp</span><span class="v">#30 · 3 refills</span></div>
+                <div class="accept">✓ Accepted</div>
+            </div>
+
+            <!-- ===== FILLED rows in EMR right ===== -->
+            <div class="filled-order fo1">MRI pelvis w/o contrast</div>
+            <div class="filled-order fo2">PSA in 6 months</div>
+            <div class="filled-order fo3">Tamsulosin 0.4 mg</div>
+
+            <div class="filled-dx fd1">N40.0 · BPH</div>
+            <div class="filled-dx fd2">I10 · Hypertension</div>
+
+            <div class="filled-note">SOAP note · 64 y/o M, follow-up of HTN/BPH…</div>
+
+            <!-- ===== TOAST ===== -->
+            <div class="toast">Visit complete · note signed</div>
+
+            <!-- ===== PILL (lives across most of the loop) ===== -->
+            <div class="pill">
+                <span class="ind"></span>
+                <span class="pill-text"></span>
+                <span class="keycap"></span>
+            </div>
+
+            <!-- ===== DOCK ===== -->
+            <div class="dock">
+                <span class="dock-icon">A</span>
+                <span class="dock-icon">B</span>
+                <span class="dock-icon">C</span>
+                <span class="dock-icon brand-e">e</span>
+                <span class="dock-icon">D</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // playback controls (preview only)
+        const stage = document.getElementById('stage');
+        const restartBtn = document.getElementById('restartBtn');
+        const speedBtn = document.getElementById('speedBtn');
+        const halfBtn = document.getElementById('halfBtn');
+
+        function applyDuration(seconds){
+            document.documentElement.style.setProperty('--loop', seconds + 's');
+            // restart all animations by toggling a class
+            stage.classList.remove('restart');
+            void stage.offsetWidth;
+            stage.classList.add('restart');
+        }
+
+        restartBtn.addEventListener('click', () => {
+            // hard-restart by re-applying the same duration
+            const cur = getComputedStyle(document.documentElement).getPropertyValue('--loop').trim() || '26s';
+            applyDuration(parseFloat(cur));
+        });
+        speedBtn.addEventListener('click', () => applyDuration(13));
+        halfBtn.addEventListener('click', () => applyDuration(52));
+    </script>
+</body>
+</html>
