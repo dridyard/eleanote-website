@@ -25,12 +25,14 @@
             --ink-soft: #324047;
             --muted: #6b7780;
 
-            /* Copilot pill (dark, partially translucent) */
-            --pill-bg:    rgba(28, 30, 34, 0.92);
+            /* Copilot pill (dark, partially translucent across all scenes) */
+            --pill-bg:    rgba(28, 30, 34, 0.74);
             --pill-bg-solid: #1c1e22;
-            --pill-line:  rgba(255, 255, 255, 0.08);
+            --pill-line:  rgba(255, 255, 255, 0.10);
             --pill-text:  #f4f3f0;
-            --pill-mute:  #9ea2a8;
+            --pill-mute:  #adb1b8;
+            --pill-width: 200px;
+            --pill-width-phone: 180px;
 
             /* Output type colors (per the actual pill screenshot) */
             --c-order:   #4ea3ff;   /* blue   */
@@ -367,12 +369,14 @@
             font-family: "Inter", "Segoe UI", sans-serif;
         }
 
-        /* idle copilot: collapsed, just the wordmark */
+        /* Idle copilot: same width as active, just no item list.
+           Consistent across all four scenes. */
         .pill.idle {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 14px;
+            width: var(--pill-width);
+            padding: 7px 14px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 600;
@@ -384,12 +388,20 @@
             border-radius: 50%;
             background: var(--pill-mute);
             margin-right: 8px;
+            flex: 0 0 auto;
         }
 
-        /* active copilot: header + item list */
+        /* Active copilot: same width, header + item list below */
         .pill.active {
-            width: 220px;
+            width: var(--pill-width);
             padding: 0;
+        }
+
+        /* On phone, the pill is slightly narrower to avoid overflow */
+        @media (max-width: 700px) {
+            .pill.idle, .pill.active {
+                width: var(--pill-width-phone);
+            }
         }
         .pill .head {
             display: flex;
@@ -873,11 +885,11 @@
             transform-origin: 48% 144%;       /* 48% across, 144% down = stage-100% */
             animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
         }
-        /* Eleanote starts already open at full size, then minimizes
-           directly into the tab - no opening grow at the start. */
+        /* Eleanote starts already open at full size, holds for ~1s, then
+           minimizes directly into the tab. Loop is 9s so 1s = ~11%. */
         @keyframes s1-ele {
-            0%, 38%  { opacity: 1; transform: scale(1); }
-            44%      { opacity: 0; transform: scale(0.04); }
+            0%, 11%  { opacity: 1; transform: scale(1); }
+            17%      { opacity: 0; transform: scale(0.04); }
             100%     { opacity: 0; transform: scale(0.04); }
         }
 
@@ -892,21 +904,19 @@
             opacity: 0;
         }
         @keyframes s1-pill {
-            /* 0-43%: hidden inside the eleanote taskbar tab.
-               At 44% the eleanote window has just collapsed into the tab,
+            /* 0-16%: hidden inside the eleanote taskbar tab.
+               At 17% the eleanote window has just collapsed into the tab,
                so the pill becomes visible at the same instant. */
-            0%, 43%   { opacity: 0;
+            0%, 16%   { opacity: 0;
                         top: calc(100% - 22px);
                         right: 48%;
                         transform: translateX(50%) scale(0.04); }
-            /* 44%: appears at the tab the moment the window vanishes there */
-            44%       { opacity: 1;
+            17%       { opacity: 1;
                         top: calc(100% - 22px);
                         right: 48%;
                         transform: translateX(50%) scale(0.4); }
-            /* 54%: smooth direct travel up to the top-right resting spot.
-               No mid-flight pause - one continuous easing curve. */
-            54%, 96%  { opacity: 1;
+            /* 28%: smooth direct travel up to the top-right resting spot. */
+            28%, 96%  { opacity: 1;
                         top: 4%;
                         right: 3%;
                         transform: translateX(0) scale(1); }
@@ -927,8 +937,8 @@
             opacity: 0;
         }
         @keyframes s1-emr {
-            0%, 52%  { opacity: 0; transform: scale(0.05); }
-            58%      { opacity: 1; transform: scale(1); }
+            0%, 22%  { opacity: 0; transform: scale(0.05); }
+            30%      { opacity: 1; transform: scale(1); }
             96%      { opacity: 1; transform: scale(1); }
             100%     { opacity: 0; transform: scale(1); }
         }
@@ -941,13 +951,12 @@
             animation: s1-ehr-tab 9s cubic-bezier(.4,0,.2,1) infinite;
         }
         @keyframes s1-ele-tab {
-            0%, 8%   { background: rgba(0,0,0,0.05); border-color: transparent; }
-            14%, 42% { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
-            44%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
+            0%, 16%  { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
+            18%,100% { background: rgba(0,0,0,0.05); border-color: transparent; }
         }
         @keyframes s1-ehr-tab {
-            0%, 56%  { background: rgba(0,0,0,0.05); border-color: transparent; }
-            58%, 96% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
+            0%, 28%  { background: rgba(0,0,0,0.05); border-color: transparent; }
+            30%, 96% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
             97%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
         }
 
@@ -976,15 +985,15 @@
         }
         @media (max-width: 700px) {
             @keyframes s1-pill {
-                0%, 43%   { opacity: 0;
+                0%, 16%   { opacity: 0;
                             top: calc(100% - 22px);
                             right: 53%;
                             transform: translateX(50%) scale(0.04); }
-                44%       { opacity: 1;
+                17%       { opacity: 1;
                             top: calc(100% - 22px);
                             right: 53%;
                             transform: translateX(50%) scale(0.4); }
-                54%, 96%  { opacity: 1;
+                28%, 96%  { opacity: 1;
                             top: 3%;
                             right: 5%;
                             transform: translateX(0) scale(1); }
@@ -1774,7 +1783,7 @@
                     </div>
                 </div>
                 <div class="keyflash kf1">⌨ F12 · recording</div>
-                <div class="pill active" style="opacity: 1; width: 200px;">
+                <div class="pill active" style="opacity: 1;">
                     <div class="head">
                         <span class="rec-dot"></span>
                         <span class="hk">F12 stop · F11 pause</span>
@@ -1930,7 +1939,7 @@
                     </div>
                 </div>
                 <div class="keyflash kf-end">⌨ F9 · transfer</div>
-                <div class="pill active" style="opacity: 1; width: 200px;">
+                <div class="pill active" style="opacity: 1;">
                     <div class="head">
                         <span class="rec-dot"></span>
                         <span class="hk">F9 transfer · F3 reject</span>
