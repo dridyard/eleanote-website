@@ -5,25 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#fbf7ec">
-    <title>Eleanote — workflow animation (preview)</title>
+    <title>Eleanote — workflow animations (preview)</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
     <style>
         :root {
+            /* Brand */
             --teal: #14515c;
             --teal-deep: #0e3d46;
             --teal-soft: #d6e4e6;
+            --teal-tint: #eaf1f1;
 
-            --workspace: #fbf7ec;
-            --chrome: #f4eedd;
-            --chrome-edge: #e5dcc1;
-            --cream-soft: #f0e8d3;
-            --cream: #ebe2cd;
-            --paper: #fbf7ec;
+            /* Cream / paper (matches website + program) */
+            --paper:    #fbf7ec;
+            --paper-2:  #f4eedd;
+            --line:     #e5dcc1;
 
+            /* Ink */
             --ink: #1a2429;
             --ink-soft: #324047;
             --muted: #6b7780;
-            --line: #d6cfba;
 
+            /* Copilot pill (dark, partially translucent) */
+            --pill-bg:    rgba(28, 30, 34, 0.92);
+            --pill-bg-solid: #1c1e22;
+            --pill-line:  rgba(255, 255, 255, 0.08);
+            --pill-text:  #f4f3f0;
+            --pill-mute:  #9ea2a8;
+
+            /* Output type colors (per the actual pill screenshot) */
+            --c-order:   #4ea3ff;   /* blue   */
+            --c-dx:      #5fc787;   /* green  */
+            --c-note:    #f0a44a;   /* orange */
+            --c-pt:      #c47ad6;   /* purple */
+            --c-record:  #38d27a;   /* green recording dot */
+
+            /* EMR (lavender/grey, matches /demo/) */
             --emr-bg: #edeef3;
             --emr-pane: #ffffff;
             --emr-line: #e3e5ec;
@@ -32,111 +48,115 @@
             --emr-accent: #5b4b8a;
             --emr-accent-soft: #ece9f3;
             --emr-tint: #f6f4fa;
-
-            --record: #d44a4a;
-
-            /* total loop duration. Increase to slow everything down. */
-            --loop: 26s;
+            --emr-select: rgba(91, 75, 138, 0.28);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", "Inter", sans-serif;
-            background: #1a1a1a;
-            color: #ddd;
-            min-height: 100vh;
-            padding: 16px 12px 64px;
-            font-size: 13px;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .preview-bar {
-            max-width: 1080px;
-            margin: 0 auto 14px;
+        ::selection { background: var(--teal); color: #fff; }
+
+        .preview-note {
+            background: #1a1a1a;
             color: #d2d2d2;
             font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
+            text-align: center;
+            padding: 8px 16px;
+            font-family: "Segoe UI", sans-serif;
+            letter-spacing: 0.04em;
         }
-        .preview-bar .label {
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #a9a9a9;
-            font-weight: 600;
-        }
-        .preview-bar .controls {
-            display: inline-flex;
-            gap: 6px;
-        }
-        .preview-bar button {
-            font: inherit;
-            font-size: 12px;
-            color: #ddd;
-            background: #3a3a3a;
-            border: 1px solid #555;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .preview-bar button:hover { background: #444; }
 
-        /* ===================================================
-           STAGE - the "computer screen" frame
-           =================================================== */
-        .stage-wrap {
+        .wrap {
             max-width: 1080px;
             margin: 0 auto;
+            padding: 56px 22px 96px;
         }
 
+        .scene {
+            margin-bottom: 88px;
+        }
+        .scene:last-child { margin-bottom: 0; }
+
+        .scene-title {
+            color: var(--teal-deep);
+            font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+            font-weight: 700;
+            letter-spacing: -0.018em;
+            line-height: 1.25;
+            margin: 0 0 22px;
+            max-width: 30rem;
+        }
+        .scene-title .accent {
+            color: var(--teal);
+        }
+
+        /* The animation stage. Each scene has its own. */
         .stage {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 10;
             background: linear-gradient(180deg, #d8d3c4 0%, #c9c2ad 100%);
-            border-radius: 14px 14px 4px 4px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+            border-radius: 12px 12px 4px 4px;
+            box-shadow:
+                0 1px 0 rgba(0,0,0,0.05) inset,
+                0 18px 40px rgba(0,0,0,0.18);
             overflow: hidden;
-            font-size: clamp(10px, 0.95vw, 13px);
+            font-size: 12px;
         }
-
-        /* faint generic desktop wallpaper */
         .stage::before {
             content: "";
             position: absolute;
-            inset: 0 0 32px 0;
+            inset: 0 0 28px 0;
             background:
                 radial-gradient(60% 50% at 25% 30%, rgba(255,255,255,0.18), transparent 70%),
                 radial-gradient(70% 60% at 80% 70%, rgba(20, 81, 92, 0.10), transparent 70%),
                 linear-gradient(180deg, #cfc8b3 0%, #b9b39f 100%);
+            z-index: 0;
         }
 
-        /* dock at bottom */
+        /* desktop & phone variants */
+        .stage.d { aspect-ratio: 16 / 9; display: block; }
+        .stage.p { aspect-ratio: 9 / 13; display: none; }
+
+        @media (max-width: 700px) {
+            .stage.d { display: none; }
+            .stage.p { display: block; }
+            .wrap { padding: 36px 14px 72px; }
+            .scene { margin-bottom: 56px; }
+            .scene-title { margin-bottom: 16px; }
+        }
+
+        /* Dock at the very bottom of the desktop stage */
         .dock {
             position: absolute;
             left: 0; right: 0; bottom: 0;
-            height: 32px;
-            background: rgba(255,255,255,0.55);
+            height: 28px;
+            background: rgba(255,255,255,0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(0,0,0,0.08);
+            border-top: 1px solid rgba(0,0,0,0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 9px;
             padding: 0 12px;
             z-index: 2;
         }
         .dock-icon {
-            width: 22px; height: 22px;
-            border-radius: 5px;
+            width: 18px; height: 18px;
+            border-radius: 4px;
             background: #c8c2b0;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.06);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #4a4538;
             font-weight: 700;
         }
@@ -144,133 +164,103 @@
             background: var(--teal);
             color: #fff;
             font-weight: 800;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: -0.04em;
-            border-color: rgba(0,0,0,0.18);
-            position: relative;
-        }
-        /* tiny "running" indicator under the brand icon */
-        .dock-icon.brand-e::after {
-            content: "";
-            position: absolute;
-            bottom: -4px; left: 50%;
-            transform: translateX(-50%);
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--teal);
-            opacity: 0;
-            animation: dockIndicator var(--loop) ease-in-out infinite;
         }
 
-        /* ===================================================
-           ELEANOTE WINDOW (compact, recognizable)
-           =================================================== */
-        .ele {
+        /* ======================================================
+           SHARED: ELEANOTE WINDOW (mini)
+           ====================================================== */
+        .ele-win {
             position: absolute;
             z-index: 5;
-            width: 64%;
-            height: 70%;
-            top: 12%;
-            left: 18%;
-            background: var(--workspace);
-            border: 1px solid rgba(0,0,0,0.20);
-            border-radius: 7px;
-            box-shadow: 0 18px 36px rgba(0,0,0,0.30);
+            background: var(--paper);
+            border: 1px solid rgba(0,0,0,0.18);
+            border-radius: 6px;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.28);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transform-origin: 84% 100%; /* shrink toward dock-right */
-            opacity: 0;
-            animation: eleLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+            font-size: 9px;
         }
         .ele-titlebar {
-            background: var(--chrome);
-            border-bottom: 1px solid var(--chrome-edge);
-            height: 22px;
+            background: var(--paper-2);
+            border-bottom: 1px solid var(--line);
+            height: 18px;
             display: flex;
             align-items: center;
-            padding: 0 8px;
-            gap: 6px;
+            padding: 0 6px;
+            gap: 5px;
             flex: 0 0 auto;
         }
         .ele-mark {
-            width: 12px; height: 12px;
+            width: 11px; height: 11px;
             border-radius: 50%;
             background: var(--teal);
             color: #fff;
-            font-size: 8px;
+            font-size: 7px;
             font-weight: 800;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             letter-spacing: -0.06em;
         }
+        .ele-title-text {
+            color: var(--ink);
+            font-size: 9px;
+            font-weight: 600;
+        }
         .ele-winctl {
             margin-left: auto;
             display: inline-flex;
-            gap: 4px;
-        }
-        .ele-winctl span {
-            width: 9px; height: 9px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.18);
-        }
-        .ele-toolbar {
-            background: var(--chrome);
-            border-bottom: 1px solid var(--chrome-edge);
-            padding: 4px 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex: 0 0 auto;
-        }
-        .ele-tools {
-            font-size: 9px;
-            font-weight: 600;
-            background: var(--paper);
-            border: 1px solid var(--chrome-edge);
-            padding: 2px 6px;
-            border-radius: 2px;
-            color: var(--ink);
-        }
-        .ele-ctls {
-            margin: 0 auto;
-            display: inline-flex;
             gap: 3px;
         }
+        .ele-winctl span {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.16);
+        }
+        .ele-toolbar {
+            background: var(--paper-2);
+            border-bottom: 1px solid var(--line);
+            padding: 3px 6px;
+            display: flex;
+            gap: 3px;
+            flex: 0 0 auto;
+            justify-content: center;
+        }
         .ele-ctl {
-            font-size: 9px;
-            font-weight: 500;
+            font-size: 8px;
+            font-weight: 600;
             background: var(--paper);
-            border: 1px solid var(--chrome-edge);
-            padding: 2px 6px;
+            border: 1px solid var(--line);
+            padding: 2px 5px;
             border-radius: 2px;
             color: var(--ink);
             display: inline-flex;
-            gap: 4px;
+            gap: 3px;
         }
         .ele-ctl em {
             font-style: normal;
             color: var(--teal);
             font-weight: 700;
-            font-size: 8px;
+            font-size: 7px;
         }
         .ele-tabs {
-            background: var(--chrome);
-            padding: 2px 8px 0;
+            background: var(--paper-2);
+            padding: 3px 6px 0;
             display: flex;
-            gap: 2px;
-            min-height: 18px;
-            border-bottom: 1px solid var(--chrome-edge);
+            min-height: 16px;
+            border-bottom: 1px solid var(--line);
             flex: 0 0 auto;
         }
         .ele-tab {
-            background: var(--workspace);
-            border: 1px solid var(--chrome-edge);
+            background: var(--paper);
+            border: 1px solid var(--line);
             border-bottom: 0;
             border-radius: 4px 4px 0 0;
-            padding: 3px 9px 5px;
-            font-size: 9px;
+            padding: 3px 8px 4px;
+            font-size: 8px;
             font-weight: 600;
             color: var(--ink);
             margin-bottom: -1px;
@@ -279,121 +269,193 @@
         .ele-tab::before {
             content: "";
             position: absolute;
-            top: 0; left: 6px; right: 6px;
-            height: 1.5px;
+            top: 0; left: 5px; right: 5px;
+            height: 1.2px;
             background: var(--teal);
             border-radius: 2px;
         }
         .ele-body {
             flex: 1;
-            padding: 8px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+            padding: 7px 9px;
             min-height: 0;
+            background: var(--paper);
         }
         .ele-blk-title {
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.10em;
             color: var(--teal-deep);
+            margin-bottom: 4px;
         }
         .ele-input {
             background: #fff;
             border: 1px solid var(--line);
             border-radius: 3px;
             padding: 6px 8px;
-            font-size: 10px;
+            font-size: 9px;
             color: var(--muted);
             line-height: 1.4;
-            flex: 1;
+            height: calc(100% - 14px);
         }
 
-        /* ===================================================
-           PILL (the floating dictation pill)
-           =================================================== */
+        /* ======================================================
+           SHARED: COPILOT PILL
+           Dark, partially translucent. Idle = slim ("eleanote").
+           Active = full with header + item list.
+           ====================================================== */
         .pill {
             position: absolute;
-            z-index: 7;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--chrome);
-            border: 1px solid var(--teal-deep);
-            border-radius: 999px;
-            padding: 4px 6px 4px 10px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.22);
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--ink);
-            white-space: nowrap;
-            opacity: 0;
-            animation: pillLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+            z-index: 9;
+            background: var(--pill-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--pill-line);
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.40);
+            color: var(--pill-text);
+            overflow: hidden;
+            font-family: "Inter", "Segoe UI", sans-serif;
         }
-        .pill .ind {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: var(--muted);
-            flex: 0 0 auto;
-            animation: pillDot var(--loop) ease-in-out infinite;
-        }
-        .pill .pill-text {
-            font-weight: 600;
-            min-width: 110px;
-            display: inline-block;
-        }
-        .pill .pill-text::after {
-            content: attr(data-text);
-            animation: pillText var(--loop) steps(1, end) infinite;
-        }
-        .pill .pill-text {
-            position: relative;
-        }
-        .pill .pill-text::after {
-            content: "Idle";
-        }
-        .pill .keycap {
+
+        /* idle copilot: collapsed, just the wordmark */
+        .pill.idle {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 20px;
-            height: 18px;
-            padding: 0 5px;
-            border-radius: 4px;
-            background: var(--teal-deep);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
-        .pill .keycap::after {
-            content: "F4";
-            animation: pillKey var(--loop) steps(1, end) infinite;
+        .pill.idle::before {
+            content: "";
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--pill-mute);
+            margin-right: 8px;
         }
-        .pill .keycap { color: transparent; }
-        .pill .keycap::after { color: #fff; }
 
-        /* ===================================================
-           EMR WINDOW
-           =================================================== */
+        /* active copilot: header + item list */
+        .pill.active {
+            width: 220px;
+            padding: 0;
+        }
+        .pill .head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--pill-line);
+            font-size: 10.5px;
+            font-weight: 600;
+        }
+        .pill .head .rec-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--c-record);
+            box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18);
+            flex: 0 0 auto;
+        }
+        .pill .head .hk {
+            display: inline-flex;
+            gap: 8px;
+            font-size: 10px;
+            color: var(--pill-text);
+        }
+        .pill .head .x {
+            margin-left: auto;
+            color: var(--pill-mute);
+            font-size: 12px;
+            line-height: 1;
+            cursor: default;
+        }
+        .pill .items {
+            padding: 4px 0 6px;
+            display: flex;
+            flex-direction: column;
+        }
+        .pill .item {
+            display: grid;
+            grid-template-columns: 14px 1fr auto;
+            column-gap: 8px;
+            row-gap: 0;
+            padding: 5px 10px 5px 10px;
+            font-size: 11px;
+            line-height: 1.25;
+            position: relative;
+        }
+        .pill .item .bullet {
+            grid-row: 1 / 2;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-top: 5px;
+            background: var(--c-order);
+            justify-self: center;
+        }
+        .pill .item.dx .bullet { background: var(--c-dx); }
+        .pill .item.note .bullet { background: var(--c-note); }
+        .pill .item.pt .bullet { background: var(--c-pt); }
+        .pill .item .label {
+            grid-row: 1 / 2;
+            color: var(--pill-text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pill .item .sub {
+            grid-row: 2 / 3;
+            grid-column: 2 / 3;
+            color: var(--pill-mute);
+            font-size: 9.5px;
+            margin-top: 1px;
+        }
+        .pill .item .keys {
+            grid-row: 1 / 2;
+            grid-column: 3 / 4;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9.5px;
+            color: var(--pill-mute);
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .pill .item.focus .keys { opacity: 1; }
+        .pill .item .keys .y { color: var(--c-record); }
+        .pill .item .keys .n { color: #e15b5b; }
+
+        /* item leaving (transferring) */
+        .pill .item.leaving {
+            opacity: 0;
+            transform: translateX(40px) scale(0.9);
+            transition: opacity .35s ease, transform .35s ease;
+        }
+        .pill .item.appearing {
+            animation: itemIn .45s cubic-bezier(.4,0,.2,1) both;
+        }
+        @keyframes itemIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        /* ======================================================
+           SHARED: EMR
+           ====================================================== */
         .emr {
             position: absolute;
             z-index: 4;
-            width: 90%;
-            height: 84%;
-            top: 6%;
-            left: 5%;
             background: var(--emr-pane);
             border: 1px solid rgba(0,0,0,0.18);
-            border-radius: 7px;
-            box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+            border-radius: 6px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.20);
             overflow: hidden;
             display: grid;
-            grid-template-rows: 26px auto 1fr;
-            grid-template-columns: 26% 1fr 26%;
-            opacity: 0;
-            animation: emrLifecycle var(--loop) cubic-bezier(.4,0,.2,1) infinite;
+            grid-template-rows: 22px 18px 1fr;
+            grid-template-columns: 22% 1fr 26%;
+            font-size: 9.5px;
         }
         .emr-banner {
             grid-column: 1 / -1;
@@ -401,38 +463,35 @@
             border-bottom: 1px solid var(--emr-line);
             display: flex;
             align-items: center;
-            padding: 0 10px;
-            gap: 10px;
-            font-size: 10px;
+            padding: 0 9px;
+            gap: 9px;
             color: var(--emr-ink);
         }
         .emr-banner .pmark {
-            width: 14px; height: 14px;
+            width: 13px; height: 13px;
             border-radius: 4px;
             background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
             color: #fff;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        .emr-banner .name { font-weight: 700; }
+        .emr-banner .name { font-weight: 700; font-size: 10px; }
         .emr-banner .meta { color: var(--emr-muted); font-size: 9px; }
         .emr-tabs {
             grid-column: 1 / -1;
             background: var(--emr-pane);
             border-bottom: 1px solid var(--emr-line);
             display: flex;
-            gap: 0;
-            padding: 0 10px;
-            height: 22px;
+            padding: 0 9px;
         }
         .emr-tab {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 600;
             color: var(--emr-muted);
-            padding: 0 10px;
+            padding: 0 9px;
             display: inline-flex;
             align-items: center;
             border-bottom: 2px solid transparent;
@@ -444,15 +503,16 @@
         .emr-left {
             background: var(--emr-tint);
             border-right: 1px solid var(--emr-line);
-            padding: 8px 10px;
+            padding: 6px 8px;
             font-size: 9px;
         }
         .emr-left h5 {
-            font-size: 8px;
+            font-size: 7.5px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--emr-muted);
             margin-bottom: 4px;
+            font-weight: 700;
         }
         .emr-left .navrow {
             padding: 3px 6px;
@@ -465,712 +525,1310 @@
             font-weight: 600;
         }
         .emr-center {
-            padding: 10px 12px;
-            font-size: 10px;
-            line-height: 1.5;
+            padding: 8px 12px;
+            font-size: 9.5px;
+            line-height: 1.55;
             color: var(--emr-ink);
             overflow: hidden;
             position: relative;
         }
         .emr-center h4 {
-            font-size: 11px;
-            margin-bottom: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .emr-center p { margin-bottom: 5px; }
+        .emr-center p strong { color: var(--emr-ink); font-weight: 600; }
+
+        .emr-right {
+            background: var(--emr-tint);
+            border-left: 1px solid var(--emr-line);
+            padding: 6px 8px;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+        .emr-right h5 {
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            margin-bottom: 0;
             font-weight: 700;
         }
-        .emr-center p { margin-bottom: 6px; color: var(--emr-ink); }
+        .emr-right .slot {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 3px;
+            padding: 5px 7px;
+            font-size: 9px;
+            color: var(--emr-muted);
+            min-height: 16px;
+        }
+        .emr-right .slot.filled {
+            color: var(--emr-ink);
+            font-weight: 600;
+            border-left: 2px solid var(--emr-accent);
+        }
+        .emr-right .slot.dx-fill {
+            border-left-color: #a78449;
+        }
+        .emr-right .note-area {
+            min-height: 60px;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
         .emr-center .lab {
             display: grid;
             grid-template-columns: 1fr auto auto;
             gap: 8px;
-            padding: 4px 6px;
+            padding: 4px 4px;
             border-bottom: 1px solid var(--emr-line);
             font-size: 9px;
         }
         .emr-center .lab strong { color: var(--emr-ink); font-weight: 600; }
         .emr-center .lab .high { color: #b8443d; font-weight: 700; }
-        .emr-right {
-            background: var(--emr-tint);
-            border-left: 1px solid var(--emr-line);
-            padding: 8px 10px;
-            font-size: 9px;
+
+        /* selectable text block ("highlightable" paragraphs/labs) */
+        .selectable {
+            position: relative;
         }
-        .emr-right h5 {
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--emr-muted);
-            margin-bottom: 4px;
-        }
-        .emr-right .order-slot,
-        .emr-right .dx-slot,
-        .emr-right .note-slot {
-            background: #fff;
-            border: 1px solid var(--emr-line);
-            border-radius: 3px;
-            padding: 4px 6px;
-            margin-bottom: 4px;
-            font-size: 9px;
-            color: var(--emr-muted);
-            min-height: 14px;
+        .selectable .hl {
+            position: absolute;
+            background: var(--emr-select);
+            opacity: 0;
+            border-radius: 1px;
         }
 
-        /* selection rectangle (for highlighting EMR text) */
-        .selection {
+        /* ======================================================
+           SHARED: REAL ARROW CURSOR
+           ====================================================== */
+        .cursor {
             position: absolute;
-            background: rgba(91, 75, 138, 0.22);
-            border: 1px solid var(--emr-accent);
-            border-radius: 2px;
+            z-index: 11;
+            width: 18px;
+            height: 24px;
             pointer-events: none;
             opacity: 0;
-            animation: selection var(--loop) ease-in-out infinite;
-            z-index: 6;
         }
-        .selection.s1 { top: 17%; left: 30%; width: 38%; height: 4.5%; }
-        .selection.s2 { top: 22%; left: 30%; width: 32%; height: 4.5%; animation-name: selection2; }
-        .selection.s3 { top: 50%; left: 30%; width: 38%; height: 4.2%; animation-name: selection3; }
+        .cursor svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.35)); }
+        .click-flash {
+            position: absolute;
+            z-index: 10;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(91, 75, 138, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
 
-        /* "ghost" - flying text from EMR -> pill or pill -> EMR */
+        /* ======================================================
+           SHARED: GHOST flying chip
+           ====================================================== */
         .ghost {
             position: absolute;
-            z-index: 6;
+            z-index: 10;
             background: var(--emr-accent-soft);
             border: 1px solid var(--emr-accent);
             color: var(--emr-accent);
             font-size: 9px;
             font-weight: 600;
             padding: 3px 7px;
-            border-radius: 3px;
+            border-radius: 4px;
             pointer-events: none;
             white-space: nowrap;
             opacity: 0;
-            box-shadow: 0 4px 10px rgba(91, 75, 138, 0.25);
-        }
-        .ghost.from-emr {
-            color: var(--emr-accent);
-            background: var(--emr-accent-soft);
-            border-color: var(--emr-accent);
+            box-shadow: 0 6px 14px rgba(91, 75, 138, 0.30);
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .ghost.from-pill {
-            color: var(--teal-deep);
-            background: var(--teal-soft);
-            border-color: var(--teal);
+            background: rgba(28, 30, 34, 0.94);
+            border-color: rgba(255,255,255,0.18);
+            color: var(--pill-text);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.40);
         }
+        .ghost.from-pill.order  { border-left: 3px solid var(--c-order); }
+        .ghost.from-pill.dx     { border-left: 3px solid var(--c-dx); }
+        .ghost.from-pill.note   { border-left: 3px solid var(--c-note); }
 
-        .ghost.g1 {
-            top: 17%; left: 32%;
-            animation: ghostToPill var(--loop) ease-in-out infinite;
-        }
-        .ghost.g2 {
-            top: 50%; left: 32%;
-            animation: ghostToPill2 var(--loop) ease-in-out infinite;
-        }
-        .ghost.g3 {
-            top: 9%; right: 12%;
-            animation: ghostToOrders var(--loop) ease-in-out infinite;
-        }
-        .ghost.g4 {
-            top: 9%; right: 12%;
-            animation: ghostToOrders2 var(--loop) ease-in-out infinite;
-        }
-        .ghost.g5 {
-            top: 9%; right: 12%;
-            animation: ghostToOrders3 var(--loop) ease-in-out infinite;
-        }
-        .ghost.g6 {
-            top: 9%; right: 12%;
-            animation: ghostToNote var(--loop) ease-in-out infinite;
-        }
-        .ghost.g7 {
-            top: 9%; right: 12%;
-            animation: ghostToDx var(--loop) ease-in-out infinite;
-        }
-
-        /* "key flash" - hotkey indicator that appears mid-screen */
-        .keyflash {
-            position: absolute;
-            z-index: 8;
-            top: 18%; left: 50%;
-            transform: translateX(-50%) translateY(-30%);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(20, 81, 92, 0.94);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 6px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-            opacity: 0;
-            white-space: nowrap;
-        }
-        .keyflash::before { content: "⌨"; opacity: 0.9; font-weight: 400; }
-        .keyflash.k1 { animation: keyFlash1 var(--loop) ease-out infinite; }
-        .keyflash.k2 { animation: keyFlash2 var(--loop) ease-out infinite; }
-        .keyflash.k3 { animation: keyFlash3 var(--loop) ease-out infinite; }
-        .keyflash.k4 { animation: keyFlash4 var(--loop) ease-out infinite; }
-
-        /* "order modal" - small modal popping up in EMR */
+        /* ======================================================
+           SHARED: ORDER MODAL (auto-typing fields)
+           ====================================================== */
         .order-modal {
             position: absolute;
-            z-index: 9;
-            top: 32%; left: 30%;
-            width: 38%;
+            z-index: 12;
             background: #fff;
             border: 1px solid var(--emr-line);
-            border-radius: 6px;
-            box-shadow: 0 14px 30px rgba(0,0,0,0.30);
+            border-radius: 5px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.30);
             padding: 8px 10px;
-            font-size: 9px;
+            font-size: 9.5px;
             color: var(--emr-ink);
             opacity: 0;
-            transform: translateY(8px) scale(0.96);
+            min-width: 200px;
         }
-        .order-modal h5 {
+        .order-modal .om-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 6px;
+        }
+        .order-modal .om-head h5 {
             font-size: 9px;
             font-weight: 700;
-            margin-bottom: 4px;
             color: var(--emr-accent);
             text-transform: uppercase;
             letter-spacing: 0.08em;
+        }
+        .order-modal .om-head .auto {
+            font-size: 8px;
+            font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 1px 6px;
+            border-radius: 999px;
         }
         .order-modal .field {
             display: grid;
             grid-template-columns: 60px 1fr;
             gap: 6px;
-            padding: 2px 0;
+            padding: 3px 0;
             border-bottom: 1px dashed var(--emr-line);
+            align-items: center;
         }
         .order-modal .field:last-of-type { border-bottom: 0; }
-        .order-modal .field .k { color: var(--emr-muted); font-size: 8px; }
-        .order-modal .field .v { color: var(--emr-ink); font-weight: 600; font-size: 9px; }
+        .order-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .order-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 9.5px;
+            min-height: 12px;
+        }
+        .order-modal .field .v.locked {
+            color: var(--emr-muted);
+            font-style: italic;
+        }
+        .order-modal .field .v .typed {
+            display: inline-block;
+            color: var(--emr-ink);
+            font-style: normal;
+        }
+        .order-modal .field .v .caret {
+            display: inline-block;
+            width: 1px;
+            height: 11px;
+            background: var(--emr-accent);
+            margin-left: 1px;
+            vertical-align: -2px;
+            animation: caretBlink 0.8s steps(2) infinite;
+        }
+        @keyframes caretBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
         .order-modal .accept {
             margin-top: 5px;
             text-align: right;
-            font-size: 8px;
+            font-size: 8.5px;
             color: var(--emr-accent);
             font-weight: 700;
-        }
-        .order-modal.m1 { animation: orderModal1 var(--loop) ease-in-out infinite; }
-        .order-modal.m2 { animation: orderModal2 var(--loop) ease-in-out infinite; }
-        .order-modal.m3 { animation: orderModal3 var(--loop) ease-in-out infinite; }
-
-        /* slots in EMR right column that get filled */
-        .filled-order {
-            position: absolute;
-            z-index: 5;
-            font-size: 9px;
-            font-weight: 600;
-            color: var(--emr-ink);
-            background: #fff;
-            border: 1px solid var(--emr-line);
-            border-left: 2px solid var(--emr-accent);
-            border-radius: 3px;
-            padding: 3px 6px;
             opacity: 0;
-        }
-        .filled-order.fo1 {
-            top: 14%; right: 1.5%;
-            width: 22%;
-            animation: fillOrder1 var(--loop) ease-out infinite;
-        }
-        .filled-order.fo2 {
-            top: 19%; right: 1.5%;
-            width: 22%;
-            animation: fillOrder2 var(--loop) ease-out infinite;
-        }
-        .filled-order.fo3 {
-            top: 24%; right: 1.5%;
-            width: 22%;
-            animation: fillOrder3 var(--loop) ease-out infinite;
-        }
-        .filled-dx {
-            position: absolute;
-            z-index: 5;
-            font-size: 9px;
-            font-weight: 600;
-            color: var(--emr-ink);
-            background: #fff;
-            border: 1px solid var(--emr-line);
-            border-left: 2px solid #a78449;
-            border-radius: 3px;
-            padding: 3px 6px;
-            opacity: 0;
-        }
-        .filled-dx.fd1 {
-            top: 38%; right: 1.5%;
-            width: 22%;
-            animation: fillDx1 var(--loop) ease-out infinite;
-        }
-        .filled-dx.fd2 {
-            top: 43%; right: 1.5%;
-            width: 22%;
-            animation: fillDx2 var(--loop) ease-out infinite;
-        }
-        .filled-note {
-            position: absolute;
-            z-index: 5;
-            font-size: 9px;
-            color: var(--emr-ink);
-            background: var(--emr-tint);
-            border: 1px solid var(--emr-line);
-            border-radius: 3px;
-            padding: 4px 8px;
-            line-height: 1.5;
-            opacity: 0;
-            top: 53%;
-            right: 1.5%;
-            width: 22%;
-            font-style: italic;
-            animation: fillNote var(--loop) ease-out infinite;
         }
 
-        /* "complete" toast on the pill */
-        .toast {
+        /* type-in pulse */
+        .typing-flash {
             position: absolute;
-            z-index: 9;
-            top: 14%; right: 12%;
-            background: var(--teal);
-            color: #fff;
-            font-size: 10px;
+            z-index: 11;
+            font-size: 8.5px;
             font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 4px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+            color: var(--emr-accent);
+            background: rgba(91, 75, 138, 0.10);
+            border: 1px dashed var(--emr-accent);
+            padding: 1px 5px;
+            border-radius: 3px;
             opacity: 0;
-            animation: toast var(--loop) ease-out infinite;
-        }
-        .toast::before { content: "✓ "; }
-
-        /* ===================================================
-           KEYFRAMES (timed against --loop = 26s)
-           =================================================== */
-        /* % markers reference these absolute seconds:
-           0s    cold start
-           1.5   eleanote opens
-           4     minimize starts
-           5     pill arrives top-right
-           6     EMR opens
-           9     selection 1
-           10.5  ghost 1 -> pill (F4)
-           11.5  selection 2
-           13    ghost 2 -> pill
-           14    F12 record on
-           15    order modal 1 (lab)
-           16    order modal 2 (imaging)
-           17.5  order modal 3 (rx)
-           19    F9 end visit
-           20    note ghosts -> EMR center
-           21    dx ghosts -> EMR right
-           23    toast complete
-           24    fade
-           26    loop
-        */
-
-        /* Eleanote window: open -> minimize to dock-right */
-        @keyframes eleLifecycle {
-            0%   { opacity: 0; transform: scale(0.92) translateY(20px); }
-            5%   { opacity: 0; transform: scale(0.92) translateY(20px); }
-            6%   { opacity: 1; transform: scale(1) translateY(0); }
-            14%  { opacity: 1; transform: scale(1) translateY(0); }
-            /* minimize: scale toward dock-right + fade */
-            18%  { opacity: 0; transform: scale(0.06) translate(60%, 220%); }
-            100% { opacity: 0; transform: scale(0.06) translate(60%, 220%); }
+            pointer-events: none;
         }
 
-        /* Pill: appears as Eleanote minimizes, fly to top-right, stay there */
-        @keyframes pillLifecycle {
-            0%   { opacity: 0; transform: translate(40%, 290%) scale(0.5); top: 0; left: 50%; }
-            16%  { opacity: 0; transform: translate(40%, 290%) scale(0.5); top: 0; left: 50%; }
-            /* spring up out of the dock */
-            18%  { opacity: 1; transform: translate(40%, 280%) scale(0.7); top: 0; left: 50%; }
-            21%  { opacity: 1; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
-            /* stay put for the rest */
-            96%  { opacity: 1; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
-            100% { opacity: 0; transform: translate(0, 0) scale(1); top: 4%; left: auto; right: 3%; }
-        }
-        /* the .pill positions itself via transforms; reset its base box */
-        .pill { top: 0; left: 50%; right: auto; }
-
-        /* pill indicator dot color: grey -> red (record) -> teal (transfer) -> grey */
-        @keyframes pillDot {
-            0%, 51%   { background: var(--muted); box-shadow: none; }
-            52%, 70%  { background: var(--record); box-shadow: 0 0 0 3px rgba(212, 74, 74, 0.22); }
-            71%, 87%  { background: var(--teal); box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.22); }
-            88%, 100% { background: var(--muted); box-shadow: none; }
-        }
-
-        /* pill text: rolling status string */
-        @keyframes pillText {
-            0%, 30%   { content: "Idle"; }
-            31%, 39%  { content: "Pre-chart captured"; }
-            40%, 51%  { content: "Pre-chart captured"; }
-            52%, 56%  { content: "Recording…"; }
-            57%, 70%  { content: "Recording · staging orders"; }
-            71%, 75%  { content: "Sending to EMR"; }
-            76%, 87%  { content: "Sending to EMR"; }
-            88%, 100% { content: "Visit complete"; }
-        }
-        @keyframes pillKey {
-            0%, 35%   { content: "F4"; }
-            36%, 51%  { content: "F4"; }
-            52%, 70%  { content: "F12"; }
-            71%, 87%  { content: "F9"; }
-            88%, 100% { content: "—"; }
-        }
-
-        /* EMR window: appears after Eleanote minimizes, stays for the rest */
-        @keyframes emrLifecycle {
-            0%   { opacity: 0; transform: translateY(10px); }
-            22%  { opacity: 0; transform: translateY(10px); }
-            25%  { opacity: 1; transform: translateY(0); }
-            96%  { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(0); }
-        }
-
-        /* selection rectangles in EMR */
-        @keyframes selection {
-            0%, 33%   { opacity: 0; }
-            34%, 41%  { opacity: 1; }
-            42%, 100% { opacity: 0; }
-        }
-        @keyframes selection2 {
-            0%, 41%   { opacity: 0; }
-            42%, 49%  { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-        @keyframes selection3 {
-            0%, 100%  { opacity: 0; }
-        }
-
-        /* ghost flying from EMR center -> pill (top right) */
-        @keyframes ghostToPill {
-            0%, 35%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            36%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            41%       { opacity: 0.6; transform: translate(140%, -120%) scale(0.6); }
-            42%, 100% { opacity: 0; transform: translate(140%, -120%) scale(0.6); }
-        }
-        @keyframes ghostToPill2 {
-            0%, 43%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            44%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            49%       { opacity: 0.6; transform: translate(140%, -300%) scale(0.6); }
-            50%, 100% { opacity: 0; transform: translate(140%, -300%) scale(0.6); }
-        }
-        /* ghosts flying out of pill -> order modal area / note / dx */
-        @keyframes ghostToOrders {
-            0%, 56%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            57%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            61%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
-            62%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
-        }
-        @keyframes ghostToOrders2 {
-            0%, 60%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            61%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            65%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
-            66%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
-        }
-        @keyframes ghostToOrders3 {
-            0%, 65%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            66%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            70%       { opacity: 0.6; transform: translate(-180%, 200%) scale(0.7); }
-            71%, 100% { opacity: 0; transform: translate(-180%, 200%) scale(0.7); }
-        }
-        @keyframes ghostToNote {
-            0%, 75%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            76%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            81%       { opacity: 0; transform: translate(-30%, 540%) scale(0.6); }
-            82%, 100% { opacity: 0; transform: translate(-30%, 540%) scale(0.6); }
-        }
-        @keyframes ghostToDx {
-            0%, 80%   { opacity: 0; transform: translate(0, 0) scale(1); }
-            81%       { opacity: 1; transform: translate(0, 0) scale(1); }
-            85%       { opacity: 0; transform: translate(-30%, 320%) scale(0.6); }
-            86%, 100% { opacity: 0; transform: translate(-30%, 320%) scale(0.6); }
-        }
-
-        /* hotkey flashes mid-screen */
-        @keyframes keyFlash1 {
-            0%, 38%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
-            40%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
-            44%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
-            100%      { opacity: 0; }
-        }
-        @keyframes keyFlash2 {
-            0%, 50%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
-            52%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
-            56%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
-            100%      { opacity: 0; }
-        }
-        @keyframes keyFlash3 {
-            /* end-visit F9 flash */
-            0%, 71%   { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.9); }
-            73%       { opacity: 1; transform: translateX(-50%) translateY(-30%) scale(1); }
-            77%       { opacity: 0; transform: translateX(-50%) translateY(-50%) scale(1.05); }
-            100%      { opacity: 0; }
-        }
-        @keyframes keyFlash4 { 0%,100%{opacity:0;} } /* unused, reserved */
-
-        /* order modals */
-        @keyframes orderModal1 {
-            0%, 56%   { opacity: 0; transform: translateY(8px) scale(0.96); }
-            58%       { opacity: 1; transform: translateY(0) scale(1); }
-            61%       { opacity: 1; transform: translateY(0) scale(1); }
-            62%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
-            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
-        }
-        @keyframes orderModal2 {
-            0%, 60%   { opacity: 0; transform: translateY(8px) scale(0.96); }
-            62%       { opacity: 1; transform: translateY(0) scale(1); }
-            65%       { opacity: 1; transform: translateY(0) scale(1); }
-            66%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
-            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
-        }
-        @keyframes orderModal3 {
-            0%, 65%   { opacity: 0; transform: translateY(8px) scale(0.96); }
-            67%       { opacity: 1; transform: translateY(0) scale(1); }
-            70%       { opacity: 1; transform: translateY(0) scale(1); }
-            71%       { opacity: 0; transform: translateY(-6px) scale(0.96); }
-            100%      { opacity: 0; transform: translateY(-6px) scale(0.96); }
-        }
-
-        /* filled orders settle into the EMR right column */
-        @keyframes fillOrder1 {
-            0%, 61%  { opacity: 0; transform: translateY(-4px); }
-            62%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-        @keyframes fillOrder2 {
-            0%, 65%  { opacity: 0; transform: translateY(-4px); }
-            66%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-        @keyframes fillOrder3 {
-            0%, 70%  { opacity: 0; transform: translateY(-4px); }
-            71%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-        @keyframes fillDx1 {
-            0%, 85%  { opacity: 0; transform: translateY(-4px); }
-            86%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-        @keyframes fillDx2 {
-            0%, 87%  { opacity: 0; transform: translateY(-4px); }
-            88%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-        @keyframes fillNote {
-            0%, 80%  { opacity: 0; transform: translateY(4px); }
-            82%, 96% { opacity: 1; transform: translateY(0); }
-            100%     { opacity: 0; }
-        }
-
-        /* completion toast */
-        @keyframes toast {
-            0%, 89%  { opacity: 0; transform: translateY(-4px) scale(0.9); }
-            90%      { opacity: 1; transform: translateY(0) scale(1); }
-            94%      { opacity: 1; transform: translateY(0) scale(1); }
-            96%      { opacity: 0; transform: translateY(-4px) scale(0.95); }
-            100%     { opacity: 0; }
-        }
-
-        /* dock indicator dot under brand-e while running */
-        @keyframes dockIndicator {
-            0%, 6%   { opacity: 0; }
-            7%, 96%  { opacity: 1; }
-            97%, 100%{ opacity: 0; }
+        /* hotkey flash banner */
+        .keyflash {
+            position: absolute;
+            z-index: 13;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(20, 81, 92, 0.94);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 11px;
+            border-radius: 6px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.30);
+            opacity: 0;
+            white-space: nowrap;
+            font-family: "Inter", "Segoe UI", sans-serif;
         }
 
         /* respect reduced motion */
         @media (prefers-reduced-motion: reduce) {
-            .ele, .pill, .emr,
-            .selection, .ghost, .keyflash,
-            .order-modal, .filled-order, .filled-dx, .filled-note, .toast,
-            .dock-icon.brand-e::after,
-            .pill .ind, .pill .pill-text::after, .pill .keycap::after {
+            .stage * {
                 animation: none !important;
+                transition: none !important;
             }
-            .ele { opacity: 1; }
-            .emr { opacity: 1; }
-            .pill { opacity: 1; top: 4%; right: 3%; left: auto; transform: none; }
+            .pill { opacity: 1 !important; }
+            .ele-win, .emr { opacity: 1 !important; }
         }
+
+        /* ======================================================
+           SCENE 1: Eleanote opens -> minimizes -> copilot springs out
+           Loop: 9s
+           ====================================================== */
+        .scene-1 .ele-win {
+            top: 8%; left: 22%;
+            width: 56%; height: 64%;
+            transform-origin: 60% 100%;
+            animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-1 .pill {
+            opacity: 0;
+            animation: s1-pill 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-1 .pill.idle {
+            top: 4%; right: 3%;
+        }
+        .scene-1 .emr {
+            top: 4%; left: 4%;
+            width: 92%; height: 84%;
+            opacity: 0;
+            animation: s1-emr 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+
+        @keyframes s1-ele {
+            0%   { opacity: 0; transform: scale(0.92) translateY(20px); }
+            8%   { opacity: 0; transform: scale(0.92) translateY(20px); }
+            12%  { opacity: 1; transform: scale(1) translateY(0); }
+            36%  { opacity: 1; transform: scale(1) translateY(0); }
+            44%  { opacity: 0; transform: scale(0.06) translate(60%, 240%); }
+            100% { opacity: 0; transform: scale(0.06) translate(60%, 240%); }
+        }
+        @keyframes s1-pill {
+            0%, 40%   { opacity: 0; transform: translate(40%, 280%) scale(0.5); }
+            46%       { opacity: 1; transform: translate(20%, 240%) scale(0.7); }
+            54%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            96%       { opacity: 1; transform: translate(0, 0) scale(1); }
+            100%      { opacity: 0; transform: translate(0, 0) scale(1); }
+        }
+        @keyframes s1-emr {
+            0%, 50%  { opacity: 0; transform: translateY(8px); }
+            58%      { opacity: 1; transform: translateY(0); }
+            96%      { opacity: 1; transform: translateY(0); }
+            100%     { opacity: 0; }
+        }
+
+        /* phone version of scene 1 */
+        .scene-1 .stage.p .ele-win {
+            top: 6%; left: 8%;
+            width: 84%; height: 50%;
+            transform-origin: 70% 100%;
+        }
+        .scene-1 .stage.p .pill.idle {
+            top: 3%; right: 5%;
+        }
+        .scene-1 .stage.p .emr {
+            top: 3%; left: 3%;
+            width: 94%; height: 86%;
+        }
+
+        /* ======================================================
+           SCENE 2: Cursor highlights paragraph -> ghost -> pill says precharted
+           Then highlights labs -> ghost -> pill updates
+           Loop: 11s
+           ====================================================== */
+        .scene-2 .emr {
+            top: 6%; left: 4%;
+            width: 92%; height: 84%;
+            opacity: 1;
+        }
+        .scene-2 .pill {
+            top: 4%; right: 3%;
+        }
+        .scene-2 .pill.precharting {
+            display: none;
+        }
+        .scene-2 .pill.precharting.show {
+            display: inline-flex;
+        }
+
+        .scene-2 .cursor.c1 {
+            animation: s2-cursor 11s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .click-flash.cf1 {
+            animation: s2-click 11s ease-out infinite;
+        }
+        .scene-2 .selectable .hl.h1 {
+            animation: s2-hl1 11s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .selectable .hl.h2 {
+            animation: s2-hl2 11s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .ghost.gA {
+            animation: s2-ghostA 11s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .ghost.gB {
+            animation: s2-ghostB 11s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .pill .pill-status {
+            animation: s2-status 11s steps(1, end) infinite;
+        }
+
+        /* cursor moves: starts top-left of EMR center -> drags across paragraph -> moves down to labs -> drags */
+        @keyframes s2-cursor {
+            0%   { opacity: 0; left: 25%; top: 28%; }
+            6%   { opacity: 1; left: 25%; top: 28%; }
+            10%  { opacity: 1; left: 30%; top: 30%; }
+            18%  { opacity: 1; left: 60%; top: 30%; }   /* drags right (paragraph 1) */
+            22%  { opacity: 1; left: 60%; top: 30%; }
+            34%  { opacity: 1; left: 30%; top: 60%; }   /* moves down to labs */
+            40%  { opacity: 1; left: 30%; top: 60%; }
+            48%  { opacity: 1; left: 60%; top: 64%; }   /* drags across labs */
+            58%  { opacity: 1; left: 60%; top: 64%; }
+            64%  { opacity: 0; left: 60%; top: 64%; }
+            100% { opacity: 0; left: 60%; top: 64%; }
+        }
+        @keyframes s2-click {
+            0%, 9%   { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
+            10%      { opacity: 1; transform: translate(-50%,-50%) scale(0.8); left: 30%; top: 30%; }
+            14%      { opacity: 0; transform: translate(-50%,-50%) scale(1.4); left: 30%; top: 30%; }
+            33%      { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
+            34%      { opacity: 1; transform: translate(-50%,-50%) scale(0.8); left: 30%; top: 60%; }
+            38%      { opacity: 0; transform: translate(-50%,-50%) scale(1.4); left: 30%; top: 60%; }
+            100%     { opacity: 0; }
+        }
+        /* highlight rectangle grows under the cursor as it drags */
+        @keyframes s2-hl1 {
+            0%, 9%   { opacity: 0; width: 0%; }
+            10%      { opacity: 1; width: 0%; }
+            18%      { opacity: 1; width: 64%; }
+            27%      { opacity: 1; width: 64%; }
+            30%      { opacity: 0; width: 64%; }
+            100%     { opacity: 0; width: 0%; }
+        }
+        @keyframes s2-hl2 {
+            0%, 33%  { opacity: 0; width: 0%; }
+            34%      { opacity: 1; width: 0%; }
+            48%      { opacity: 1; width: 64%; }
+            58%      { opacity: 1; width: 64%; }
+            62%      { opacity: 0; width: 64%; }
+            100%     { opacity: 0; width: 0%; }
+        }
+        /* ghost flying from highlight to pill */
+        @keyframes s2-ghostA {
+            0%, 19%  { opacity: 0; transform: translate(0, 0) scale(1); }
+            21%      { opacity: 1; transform: translate(0, 0) scale(1); }
+            28%      { opacity: 0; transform: translate(58%, -180%) scale(0.6); }
+            100%     { opacity: 0; transform: translate(58%, -180%) scale(0.6); }
+        }
+        @keyframes s2-ghostB {
+            0%, 49%  { opacity: 0; transform: translate(0, 0) scale(1); }
+            51%      { opacity: 1; transform: translate(0, 0) scale(1); }
+            58%      { opacity: 0; transform: translate(58%, -480%) scale(0.6); }
+            100%     { opacity: 0; transform: translate(58%, -480%) scale(0.6); }
+        }
+        /* pill status text rolls from "F12 record" to "Text precharted" briefly */
+        @keyframes s2-status {
+            0%, 25%  { content: "F12 record"; }
+            26%, 38% { content: "Text precharted"; }
+            39%, 55% { content: "F12 record"; }
+            56%, 68% { content: "Labs precharted"; }
+            69%,100% { content: "F12 record"; }
+        }
+
+        /* ======================================================
+           SCENE 3: Recording -> items appear in pill -> fly to EMR
+           -> order modal opens, fields type in -> close -> item gone
+           Loop: 16s
+           ====================================================== */
+        .scene-3 .emr {
+            top: 6%; left: 4%;
+            width: 92%; height: 84%;
+            opacity: 1;
+        }
+        .scene-3 .pill {
+            top: 4%; right: 3%;
+        }
+        .scene-3 .pill.idle { display: none; }
+        .scene-3 .pill.active {
+            opacity: 1;
+            display: block;
+        }
+        .scene-3 .pill .item.lab1 {
+            animation: s3-lab1Item 16s ease-out infinite both;
+        }
+        .scene-3 .pill .item.img1 {
+            animation: s3-img1Item 16s ease-out infinite both;
+        }
+
+        @keyframes s3-lab1Item {
+            0%, 9%   { opacity: 0; transform: translateY(-3px); }
+            12%, 38% { opacity: 1; transform: none; }
+            42%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+        @keyframes s3-img1Item {
+            0%, 19%  { opacity: 0; transform: translateY(-3px); }
+            22%, 64% { opacity: 1; transform: none; }
+            68%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+
+        .scene-3 .ghost.gLab {
+            animation: s3-ghostLab 16s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-3 .ghost.gImg {
+            animation: s3-ghostImg 16s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s3-ghostLab {
+            0%, 38%  { opacity: 0; }
+            40%      { opacity: 1; right: 8%; top: 14%; }
+            46%      { opacity: 1; right: 32%; top: 35%; }
+            50%      { opacity: 0; right: 32%; top: 35%; }
+            100%     { opacity: 0; }
+        }
+        @keyframes s3-ghostImg {
+            0%, 64%  { opacity: 0; }
+            66%      { opacity: 1; right: 8%; top: 18%; }
+            72%      { opacity: 1; right: 32%; top: 35%; }
+            76%      { opacity: 0; right: 32%; top: 35%; }
+            100%     { opacity: 0; }
+        }
+
+        /* lab modal: 1 field types in (when), then accepts */
+        .scene-3 .order-modal.mLab {
+            top: 30%; left: 28%;
+            width: 38%;
+            animation: s3-modalLab 16s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s3-modalLab {
+            0%, 47%  { opacity: 0; transform: translateY(8px) scale(0.96); }
+            49%      { opacity: 1; transform: translateY(0) scale(1); }
+            58%      { opacity: 1; transform: translateY(0) scale(1); }
+            61%      { opacity: 0; transform: translateY(-4px) scale(0.96); }
+            100%     { opacity: 0; }
+        }
+        /* lab field "When" types in over s3 49->54% */
+        .scene-3 .order-modal.mLab .v.f-when .typed {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: s3-typeWhen 16s steps(1) infinite;
+            vertical-align: bottom;
+        }
+        .scene-3 .order-modal.mLab .accept {
+            animation: s3-acceptLab 16s steps(1, end) infinite;
+        }
+        @keyframes s3-typeWhen {
+            0%, 49%   { content: ""; }
+            50%       { content: "I"; }
+            50.5%     { content: "In"; }
+            51%       { content: "In "; }
+            51.5%     { content: "In 6"; }
+            52%       { content: "In 6 "; }
+            52.5%     { content: "In 6 m"; }
+            53%       { content: "In 6 mo"; }
+            53.5%     { content: "In 6 mon"; }
+            54%, 100% { content: "In 6 months"; }
+        }
+        @keyframes s3-acceptLab {
+            0%, 56%  { opacity: 0; }
+            57%, 60% { opacity: 1; }
+            61%, 100%{ opacity: 0; }
+        }
+
+        /* imaging modal: 2 fields type in (indication + when), then accepts */
+        .scene-3 .order-modal.mImg {
+            top: 30%; left: 28%;
+            width: 40%;
+            animation: s3-modalImg 16s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s3-modalImg {
+            0%, 73%  { opacity: 0; transform: translateY(8px) scale(0.96); }
+            75%      { opacity: 1; transform: translateY(0) scale(1); }
+            92%      { opacity: 1; transform: translateY(0) scale(1); }
+            95%      { opacity: 0; transform: translateY(-4px) scale(0.96); }
+            100%     { opacity: 0; }
+        }
+        .scene-3 .order-modal.mImg .v.f-ind .typed {
+            animation: s3-typeInd 16s steps(1) infinite;
+        }
+        @keyframes s3-typeInd {
+            0%, 76%   { content: ""; }
+            77%       { content: "P"; }
+            77.5%     { content: "PI"; }
+            78%       { content: "PI-"; }
+            78.5%     { content: "PI-R"; }
+            79%       { content: "PI-RA"; }
+            79.5%     { content: "PI-RAD"; }
+            80%       { content: "PI-RADS"; }
+            80.5%     { content: "PI-RADS "; }
+            81%       { content: "PI-RADS 3"; }
+            81.5%     { content: "PI-RADS 3 "; }
+            82%       { content: "PI-RADS 3 le"; }
+            82.5%     { content: "PI-RADS 3 lesi"; }
+            83%, 100% { content: "PI-RADS 3 lesion"; }
+        }
+        .scene-3 .order-modal.mImg .v.f-when2 .typed {
+            animation: s3-typeWhen2 16s steps(1) infinite;
+        }
+        @keyframes s3-typeWhen2 {
+            0%, 84%   { content: ""; }
+            85%       { content: "R"; }
+            85.5%     { content: "Ro"; }
+            86%       { content: "Rou"; }
+            86.5%     { content: "Rout"; }
+            87%       { content: "Routi"; }
+            87.5%, 100% { content: "Routine"; }
+        }
+        .scene-3 .order-modal.mImg .accept {
+            animation: s3-acceptImg 16s steps(1, end) infinite;
+        }
+        @keyframes s3-acceptImg {
+            0%, 89%  { opacity: 0; }
+            90%, 94% { opacity: 1; }
+            95%, 100%{ opacity: 0; }
+        }
+
+        /* filled rows persist in EMR right panel */
+        .scene-3 .emr-right .slot.filled.r-lab {
+            animation: s3-fillLab 16s ease-out infinite;
+        }
+        .scene-3 .emr-right .slot.filled.r-img {
+            animation: s3-fillImg 16s ease-out infinite;
+        }
+        @keyframes s3-fillLab {
+            0%, 60%  { opacity: 0; transform: translateY(-3px); }
+            62%, 96% { opacity: 1; transform: none; }
+            100%     { opacity: 0; }
+        }
+        @keyframes s3-fillImg {
+            0%, 94%  { opacity: 0; transform: translateY(-3px); }
+            96%, 99% { opacity: 1; transform: none; }
+            100%     { opacity: 0; }
+        }
+
+        /* keyflash for F12 (start record) appears at scene start */
+        .scene-3 .keyflash.kf1 {
+            top: 14%; left: 50%;
+            transform: translate(-50%, 0);
+            animation: s3-kf1 16s ease-out infinite;
+        }
+        @keyframes s3-kf1 {
+            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.9); }
+            3%   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            7%   { opacity: 0; transform: translate(-50%, -30%) scale(1.05); }
+            100% { opacity: 0; }
+        }
+
+        /* ======================================================
+           SCENE 4: end-of-encounter -> diagnoses fly, then note types in
+           Loop: 11s
+           ====================================================== */
+        .scene-4 .emr {
+            top: 6%; left: 4%;
+            width: 92%; height: 84%;
+            opacity: 1;
+        }
+        .scene-4 .pill {
+            top: 4%; right: 3%;
+        }
+        .scene-4 .pill.idle { display: none; }
+        .scene-4 .pill.active { opacity: 1; display: block; }
+        .scene-4 .keyflash.kf-end {
+            top: 14%; left: 50%;
+            transform: translate(-50%, 0);
+            animation: s4-kf 11s ease-out infinite;
+        }
+        @keyframes s4-kf {
+            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.9); }
+            4%   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            10%  { opacity: 0; transform: translate(-50%, -30%) scale(1.05); }
+            100% { opacity: 0; }
+        }
+
+        .scene-4 .pill .item.dx1 { animation: s4-dx1Item 11s ease-out infinite both; }
+        .scene-4 .pill .item.dx2 { animation: s4-dx2Item 11s ease-out infinite both; }
+        .scene-4 .pill .item.dx3 { animation: s4-dx3Item 11s ease-out infinite both; }
+        .scene-4 .pill .item.noteI { animation: s4-noteItem 11s ease-out infinite both; }
+        @keyframes s4-dx1Item {
+            0%, 18%  { opacity: 1; transform: none; }
+            22%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-dx2Item {
+            0%, 30%  { opacity: 1; transform: none; }
+            34%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-dx3Item {
+            0%, 42%  { opacity: 1; transform: none; }
+            46%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-noteItem {
+            0%, 58%  { opacity: 1; transform: none; }
+            62%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            100%     { opacity: 0; }
+        }
+
+        .scene-4 .ghost.gDx1 { animation: s4-gDx1 11s cubic-bezier(.4,0,.2,1) infinite; }
+        .scene-4 .ghost.gDx2 { animation: s4-gDx2 11s cubic-bezier(.4,0,.2,1) infinite; }
+        .scene-4 .ghost.gDx3 { animation: s4-gDx3 11s cubic-bezier(.4,0,.2,1) infinite; }
+        .scene-4 .ghost.gNote { animation: s4-gNote 11s cubic-bezier(.4,0,.2,1) infinite; }
+        @keyframes s4-gDx1 {
+            0%, 18%  { opacity: 0; }
+            20%      { opacity: 1; right: 8%; top: 14%; }
+            26%      { opacity: 1; right: 8%; top: 50%; }
+            29%      { opacity: 0; right: 8%; top: 50%; }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-gDx2 {
+            0%, 30%  { opacity: 0; }
+            32%      { opacity: 1; right: 8%; top: 18%; }
+            38%      { opacity: 1; right: 8%; top: 55%; }
+            41%      { opacity: 0; right: 8%; top: 55%; }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-gDx3 {
+            0%, 42%  { opacity: 0; }
+            44%      { opacity: 1; right: 8%; top: 22%; }
+            50%      { opacity: 1; right: 8%; top: 60%; }
+            53%      { opacity: 0; right: 8%; top: 60%; }
+            100%     { opacity: 0; }
+        }
+        @keyframes s4-gNote {
+            0%, 58%  { opacity: 0; }
+            60%      { opacity: 1; right: 8%; top: 30%; }
+            68%      { opacity: 1; right: 8%; top: 70%; }
+            72%      { opacity: 0; right: 8%; top: 70%; }
+            100%     { opacity: 0; }
+        }
+
+        .scene-4 .emr-right .slot.dx-fill.r-dx1 { animation: s4-fillDx1 11s ease-out infinite; }
+        .scene-4 .emr-right .slot.dx-fill.r-dx2 { animation: s4-fillDx2 11s ease-out infinite; }
+        .scene-4 .emr-right .slot.dx-fill.r-dx3 { animation: s4-fillDx3 11s ease-out infinite; }
+        @keyframes s4-fillDx1 { 0%,28%{opacity:0;transform:translateY(-3px);} 30%,96%{opacity:1;transform:none;} 100%{opacity:0;} }
+        @keyframes s4-fillDx2 { 0%,40%{opacity:0;transform:translateY(-3px);} 42%,96%{opacity:1;transform:none;} 100%{opacity:0;} }
+        @keyframes s4-fillDx3 { 0%,52%{opacity:0;transform:translateY(-3px);} 54%,96%{opacity:1;transform:none;} 100%{opacity:0;} }
+        .scene-4 .emr-right .note-area.r-note .typed {
+            animation: s4-typeNote 11s steps(1) infinite;
+        }
+        @keyframes s4-typeNote {
+            0%, 71%   { content: ""; }
+            72%       { content: "S:"; }
+            73%       { content: "S: 64yo M"; }
+            74%       { content: "S: 64yo M, follow-up"; }
+            75%       { content: "S: 64yo M, follow-up HTN, BPH"; }
+            76%       { content: "S: 64yo M, follow-up HTN, BPH. Worsening urgency."; }
+            78%       { content: "S: 64yo M, follow-up HTN, BPH. Worsening urgency.\AO: BP 142/88."; }
+            80%       { content: "S: 64yo M, follow-up HTN, BPH. Worsening urgency.\AO: BP 142/88. Abd benign."; }
+            82%       { content: "S: 64yo M, follow-up HTN, BPH. Worsening urgency.\AO: BP 142/88. Abd benign.\AA/P: 1) BPH..."; }
+            85%, 100% { content: "S: 64yo M, follow-up HTN, BPH. Worsening urgency.\AO: BP 142/88. Abd benign.\AA/P: 1) BPH - tamsulosin. 2) PSA - repeat 6mo. 3) HTN - continue lisinopril."; }
+        }
+
+        .scene-4 .ghost.gNote { max-width: 30%; }
     </style>
 </head>
 <body>
-    <div class="preview-bar">
-        <span class="label">Animation preview · 26s loop</span>
-        <span class="controls">
-            <button id="restartBtn">Restart</button>
-            <button id="speedBtn">2× speed</button>
-            <button id="halfBtn">½ speed</button>
-        </span>
-    </div>
+    <p class="preview-note">Animation preview · 4 scenes · auto-loop · phone or desktop layout based on viewport</p>
 
-    <div class="stage-wrap">
-        <div class="stage" id="stage">
+    <main class="wrap">
 
-            <!-- ===== ELEANOTE WINDOW (opens, then minimizes) ===== -->
-            <div class="ele">
-                <div class="ele-titlebar">
-                    <span class="ele-mark">e</span>
-                    <span class="ele-winctl"><span></span><span></span><span></span></span>
-                </div>
-                <div class="ele-toolbar">
-                    <span class="ele-tools">Tools ▾</span>
-                    <span class="ele-ctls">
+        <!-- ===================================================
+             SCENE 1
+             =================================================== -->
+        <section class="scene scene-1">
+            <h2 class="scene-title">A small <span class="accent">copilot</span> sits on your screen, controlled by hotkeys — no toggling between EMR and Eleanote.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <!-- Eleanote window opens, then minimizes -->
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text"></span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
                         <span class="ele-ctl">Record <em>F12</em></span>
                         <span class="ele-ctl">Pause <em>F11</em></span>
                         <span class="ele-ctl">Refresh <em>F10</em></span>
                         <span class="ele-ctl">End <em>F9</em></span>
-                    </span>
+                        <span class="ele-ctl">Dictation <em>F8</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR or type · F4 to capture</div>
+                    </div>
                 </div>
-                <div class="ele-tabs">
-                    <span class="ele-tab">Doe, John · 64M</span>
+
+                <!-- EMR opens after Eleanote minimizes -->
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · MRN 10428501</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Imaging</span>
+                        <span class="emr-tab">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Office visit · 04/18/2026</h4>
+                        <p>Established 64 y/o M, follow-up of <strong>HTN</strong> and <strong>BPH</strong>.</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Visit panel</h5>
+                        <div class="slot">Orders…</div>
+                        <div class="slot">Diagnoses…</div>
+                        <div class="slot note-area">Note…</div>
+                    </div>
                 </div>
-                <div class="ele-body">
-                    <span class="ele-blk-title">Precharting</span>
-                    <span class="ele-input">Paste from EHR or type · F4 to capture</span>
+
+                <!-- Idle copilot pill -->
+                <div class="pill idle">eleanote</div>
+
+                <div class="dock">
+                    <span class="dock-icon">A</span>
+                    <span class="dock-icon">B</span>
+                    <span class="dock-icon brand-e">e</span>
+                    <span class="dock-icon">C</span>
+                    <span class="dock-icon">D</span>
                 </div>
             </div>
 
-            <!-- ===== EMR WINDOW (opens behind, stays the rest of the time) ===== -->
-            <div class="emr">
-                <div class="emr-banner">
-                    <span class="pmark">M</span>
-                    <span class="name">Doe, John</span>
-                    <span class="meta">64 y/o M · MRN 10428501 · BCBS PPO · Allergies: Sulfa</span>
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text"></span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR · F4 to capture</div>
+                    </div>
                 </div>
-                <div class="emr-tabs">
-                    <span class="emr-tab active">Notes</span>
-                    <span class="emr-tab">Labs</span>
-                    <span class="emr-tab">Imaging</span>
-                    <span class="emr-tab">Orders</span>
-                    <span class="emr-tab">Wrap-Up</span>
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Office visit</h4>
+                        <p>64 y/o M, follow-up <strong>HTN/BPH</strong>.</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Panel</h5>
+                        <div class="slot">Orders</div>
+                        <div class="slot">Dx</div>
+                        <div class="slot note-area">Note</div>
+                    </div>
                 </div>
-                <div class="emr-left">
-                    <h5>Chart</h5>
-                    <div class="navrow active">Notes</div>
-                    <div class="navrow">Labs</div>
-                    <div class="navrow">Imaging</div>
-                    <div class="navrow">Encounters</div>
-                    <div class="navrow">Problem list</div>
-                </div>
-                <div class="emr-center">
-                    <h4>Office visit · 04/18/2026</h4>
-                    <p>Established 64 y/o M, follow-up of <strong>HTN</strong> and <strong>BPH</strong>. Reports worsening urinary urgency and nocturia 3–4×.</p>
-                    <p>Recent <strong>PSA</strong> rising over 9 months. <strong>MRI pelvis</strong>: PI-RADS 3 lesion, left base.</p>
-                    <h4 style="margin-top:8px;">Recent labs</h4>
-                    <div class="lab"><strong>PSA, total</strong><span>5.8 ng/mL</span><span class="high">High</span></div>
-                    <div class="lab"><strong>A1c</strong><span>6.9 %</span><span class="high">High</span></div>
-                    <div class="lab"><strong>Creatinine</strong><span>1.0</span><span>Normal</span></div>
-                </div>
-                <div class="emr-right">
-                    <h5>Visit panel</h5>
-                    <div class="order-slot">Orders…</div>
-                    <div class="order-slot">&nbsp;</div>
-                    <div class="order-slot">&nbsp;</div>
-                    <div class="dx-slot" style="margin-top: 14px;">Diagnoses…</div>
-                    <div class="dx-slot">&nbsp;</div>
-                    <div class="note-slot" style="margin-top: 14px; min-height: 70px;">Note…</div>
+                <div class="pill idle">eleanote</div>
+                <div class="dock">
+                    <span class="dock-icon">A</span>
+                    <span class="dock-icon brand-e">e</span>
+                    <span class="dock-icon">B</span>
                 </div>
             </div>
+        </section>
 
-            <!-- ===== SELECTION RECTANGLES on the EMR ===== -->
-            <div class="selection s1"></div>
-            <div class="selection s2"></div>
+        <!-- ===================================================
+             SCENE 2
+             =================================================== -->
+        <section class="scene scene-2">
+            <h2 class="scene-title">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to Eleanote.</h2>
 
-            <!-- ===== GHOSTS flying around ===== -->
-            <div class="ghost from-emr g1">PSA trend, MRI lesion</div>
-            <div class="ghost from-emr g2">Labs · A1c high · PSA high</div>
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · BCBS PPO · Allergies: Sulfa</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Imaging</span>
+                        <span class="emr-tab">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Encounters</div>
+                    </div>
+                    <div class="emr-center selectable">
+                        <h4>Prior note · 02/02/2026</h4>
+                        <p>64 y/o M with <strong>HTN, BPH, T2DM</strong>. Follow-up. Reports stable on lisinopril, mild urinary frequency, otherwise well. PSA noted to be rising; MRI pelvis pending.</p>
+                        <h4 style="margin-top: 6px;">Recent labs</h4>
+                        <div class="lab"><strong>PSA, total</strong><span>5.8 ng/mL</span><span class="high">High</span></div>
+                        <div class="lab"><strong>A1c</strong><span>6.9 %</span><span class="high">High</span></div>
+                        <div class="lab"><strong>LDL</strong><span>92 mg/dL</span><span>Normal</span></div>
+                        <div class="lab"><strong>Creatinine</strong><span>1.0</span><span>Normal</span></div>
+                        <!-- highlight overlays -->
+                        <div class="hl h1" style="left: 0; top: 35%; height: 22%;"></div>
+                        <div class="hl h2" style="left: 0; top: 64%; height: 28%;"></div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Visit panel</h5>
+                        <div class="slot">Orders…</div>
+                        <div class="slot">Diagnoses…</div>
+                        <div class="slot note-area">Note…</div>
+                    </div>
+                </div>
 
-            <div class="ghost from-pill g3">MRI pelvis</div>
-            <div class="ghost from-pill g4">PSA in 6 mo</div>
-            <div class="ghost from-pill g5">Tamsulosin 0.4 mg</div>
-            <div class="ghost from-pill g6">SOAP note · 4 paragraphs</div>
-            <div class="ghost from-pill g7">N40.0 · I10 · R39.15</div>
+                <!-- copilot in idle "F12 record" / "Text precharted" state -->
+                <div class="pill idle">
+                    <span class="pill-status" style="display: inline-block; min-width: 140px; text-align: center;"></span>
+                </div>
 
-            <!-- ===== KEY FLASHES ===== -->
-            <div class="keyflash k1">F4 · capture pre-chart</div>
-            <div class="keyflash k2">F12 · start recording</div>
-            <div class="keyflash k3">F9 · end visit · transfer</div>
+                <!-- arrow cursor -->
+                <div class="cursor c1">
+                    <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
+                        fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="click-flash cf1"></div>
 
-            <!-- ===== ORDER MODALS ===== -->
-            <div class="order-modal m1">
-                <h5>New order</h5>
-                <div class="field"><span class="k">Order</span><span class="v">MRI pelvis w/o contrast</span></div>
-                <div class="field"><span class="k">Indication</span><span class="v">PI-RADS 3 lesion, left base</span></div>
-                <div class="field"><span class="k">Priority</span><span class="v">Routine</span></div>
-                <div class="accept">✓ Accepted</div>
-            </div>
-            <div class="order-modal m2">
-                <h5>New order</h5>
-                <div class="field"><span class="k">Lab</span><span class="v">PSA, total &amp; free</span></div>
-                <div class="field"><span class="k">When</span><span class="v">In 6 months</span></div>
-                <div class="field"><span class="k">Priority</span><span class="v">Routine</span></div>
-                <div class="accept">✓ Accepted</div>
-            </div>
-            <div class="order-modal m3">
-                <h5>New medication</h5>
-                <div class="field"><span class="k">Drug</span><span class="v">Tamsulosin 0.4 mg cap</span></div>
-                <div class="field"><span class="k">Sig</span><span class="v">1 cap PO qHS</span></div>
-                <div class="field"><span class="k">Disp</span><span class="v">#30 · 3 refills</span></div>
-                <div class="accept">✓ Accepted</div>
-            </div>
-
-            <!-- ===== FILLED rows in EMR right ===== -->
-            <div class="filled-order fo1">MRI pelvis w/o contrast</div>
-            <div class="filled-order fo2">PSA in 6 months</div>
-            <div class="filled-order fo3">Tamsulosin 0.4 mg</div>
-
-            <div class="filled-dx fd1">N40.0 · BPH</div>
-            <div class="filled-dx fd2">I10 · Hypertension</div>
-
-            <div class="filled-note">SOAP note · 64 y/o M, follow-up of HTN/BPH…</div>
-
-            <!-- ===== TOAST ===== -->
-            <div class="toast">Visit complete · note signed</div>
-
-            <!-- ===== PILL (lives across most of the loop) ===== -->
-            <div class="pill">
-                <span class="ind"></span>
-                <span class="pill-text"></span>
-                <span class="keycap"></span>
-            </div>
-
-            <!-- ===== DOCK ===== -->
-            <div class="dock">
-                <span class="dock-icon">A</span>
-                <span class="dock-icon">B</span>
-                <span class="dock-icon">C</span>
-                <span class="dock-icon brand-e">e</span>
-                <span class="dock-icon">D</span>
+                <!-- ghosts -->
+                <div class="ghost gA" style="top: 38%; left: 30%;">PSA rising · MRI pending</div>
+                <div class="ghost gB" style="top: 70%; left: 30%;">PSA 5.8 · A1c 6.9</div>
             </div>
 
-        </div>
-    </div>
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                    </div>
+                    <div class="emr-center selectable">
+                        <h4>Prior note · 02/02/2026</h4>
+                        <p>64 y/o M with <strong>HTN, BPH</strong>. PSA rising; MRI pelvis pending.</p>
+                        <h4 style="margin-top: 4px;">Recent labs</h4>
+                        <div class="lab"><strong>PSA</strong><span>5.8</span><span class="high">High</span></div>
+                        <div class="lab"><strong>A1c</strong><span>6.9</span><span class="high">High</span></div>
+                        <div class="hl h1" style="left: 0; top: 35%; height: 18%;"></div>
+                        <div class="hl h2" style="left: 0; top: 65%; height: 26%;"></div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Panel</h5>
+                        <div class="slot">Orders</div>
+                        <div class="slot">Dx</div>
+                        <div class="slot note-area">Note</div>
+                    </div>
+                </div>
+                <div class="pill idle">
+                    <span class="pill-status" style="display: inline-block; min-width: 130px; text-align: center;"></span>
+                </div>
+                <div class="cursor c1">
+                    <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
+                        fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="click-flash cf1"></div>
+                <div class="ghost gA" style="top: 38%; left: 30%;">PSA rising · MRI pending</div>
+                <div class="ghost gB" style="top: 70%; left: 30%;">PSA 5.8 · A1c 6.9</div>
+            </div>
+        </section>
+
+        <!-- ===================================================
+             SCENE 3
+             =================================================== -->
+        <section class="scene scene-3">
+            <h2 class="scene-title">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · Encounter today</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Imaging</span>
+                        <span class="emr-tab active">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow active">Orders</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Encounter orders</h4>
+                        <p style="color: var(--emr-muted);">Awaiting orders from this visit…</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Visit panel</h5>
+                        <div class="slot filled r-lab">PSA in 6 months</div>
+                        <div class="slot filled r-img">MRI pelvis w/o contrast</div>
+                        <div class="slot">Diagnoses…</div>
+                        <div class="slot note-area">Note…</div>
+                    </div>
+                </div>
+
+                <!-- F12 hotkey flash at start -->
+                <div class="keyflash kf1">⌨ F12 · recording</div>
+
+                <!-- copilot active, with two items appearing then leaving -->
+                <div class="pill active" style="opacity: 1;">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">F12 stop &nbsp; F11 pause</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item lab1 focus">
+                            <span class="bullet"></span>
+                            <span class="label">PSA, total &amp; free</span>
+                            <span class="keys"><span class="y">F6 ✓</span><span class="n">F3 ✗</span></span>
+                            <span class="sub">In 6 months · routine</span>
+                        </div>
+                        <div class="item img1">
+                            <span class="bullet"></span>
+                            <span class="label">MRI pelvis w/o contrast</span>
+                            <span class="sub">PI-RADS 3 lesion · routine</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ghosts flying out of pill into modal area -->
+                <div class="ghost from-pill order gLab">PSA, total &amp; free</div>
+                <div class="ghost from-pill order gImg">MRI pelvis</div>
+
+                <!-- order modals -->
+                <div class="order-modal mLab">
+                    <div class="om-head">
+                        <h5>New lab order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">PSA, total &amp; free</span></div>
+                    <div class="field"><span class="k">When</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v locked">Routine</span></div>
+                    <div class="accept">✓ Accepted</div>
+                </div>
+                <div class="order-modal mImg">
+                    <div class="om-head">
+                        <h5>New imaging order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI pelvis without contrast</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v f-ind"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v f-when2"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="accept">✓ Accepted</div>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab active">Orders</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Orders</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Encounter orders</h4>
+                        <p style="color: var(--emr-muted); font-size: 9px;">Awaiting…</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Panel</h5>
+                        <div class="slot filled r-lab">PSA in 6 mo</div>
+                        <div class="slot filled r-img">MRI pelvis</div>
+                        <div class="slot">Dx</div>
+                        <div class="slot note-area">Note</div>
+                    </div>
+                </div>
+                <div class="keyflash kf1">⌨ F12 · recording</div>
+                <div class="pill active" style="opacity: 1; width: 200px;">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">F12 stop · F11 pause</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item lab1 focus">
+                            <span class="bullet"></span>
+                            <span class="label">PSA, total &amp; free</span>
+                            <span class="keys"><span class="y">F6</span><span class="n">F3</span></span>
+                            <span class="sub">In 6 months</span>
+                        </div>
+                        <div class="item img1">
+                            <span class="bullet"></span>
+                            <span class="label">MRI pelvis w/o contrast</span>
+                            <span class="sub">PI-RADS 3 lesion</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ghost from-pill order gLab">PSA</div>
+                <div class="ghost from-pill order gImg">MRI</div>
+                <div class="order-modal mLab" style="width: 78%; left: 11%;">
+                    <div class="om-head">
+                        <h5>Lab order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">PSA</span></div>
+                    <div class="field"><span class="k">When</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="accept">✓ Accepted</div>
+                </div>
+                <div class="order-modal mImg" style="width: 78%; left: 11%;">
+                    <div class="om-head">
+                        <h5>Imaging order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI pelvis</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v f-ind"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v f-when2"><span class="typed"></span><span class="caret"></span></span></div>
+                    <div class="accept">✓ Accepted</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================
+             SCENE 4
+             =================================================== -->
+        <section class="scene scene-4">
+            <h2 class="scene-title">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · End of encounter</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Labs</span>
+                        <span class="emr-tab">Orders</span>
+                        <span class="emr-tab">Wrap-Up</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Orders</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Today's note</h4>
+                        <p style="color: var(--emr-muted);">Awaiting note from Eleanote…</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Visit panel</h5>
+                        <div class="slot filled" style="opacity: 1;">PSA in 6 months</div>
+                        <div class="slot filled" style="opacity: 1;">MRI pelvis</div>
+                        <div class="slot dx-fill r-dx1">N40.0 · BPH</div>
+                        <div class="slot dx-fill r-dx2">I10 · Hypertension</div>
+                        <div class="slot dx-fill r-dx3">R39.15 · Urgency</div>
+                        <div class="slot note-area r-note"><span class="typed"></span></div>
+                    </div>
+                </div>
+
+                <div class="keyflash kf-end">⌨ F9 · transfer</div>
+
+                <!-- copilot active with diagnosis + note items, then they disappear -->
+                <div class="pill active" style="opacity: 1;">
+                    <div class="head">
+                        <span class="rec-dot" style="background: var(--c-record);"></span>
+                        <span class="hk">F9 transfer &nbsp; F3 reject</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx dx1">
+                            <span class="bullet"></span>
+                            <span class="label">Hypertension</span>
+                            <span class="sub">I10</span>
+                        </div>
+                        <div class="item dx dx2">
+                            <span class="bullet"></span>
+                            <span class="label">BPH</span>
+                            <span class="sub">N40.0</span>
+                        </div>
+                        <div class="item dx dx3">
+                            <span class="bullet"></span>
+                            <span class="label">Urinary urgency</span>
+                            <span class="sub">R39.15</span>
+                        </div>
+                        <div class="item note noteI focus">
+                            <span class="bullet"></span>
+                            <span class="label">Clinical note (formatted)</span>
+                            <span class="keys"><span class="y">F6 ✓</span><span class="n">F3 ✗</span></span>
+                            <span class="sub">SOAP · 4 paragraphs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ghost from-pill dx gDx1">Hypertension · I10</div>
+                <div class="ghost from-pill dx gDx2">BPH · N40.0</div>
+                <div class="ghost from-pill dx gDx3">Urinary urgency · R39.15</div>
+                <div class="ghost from-pill note gNote">SOAP note</div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr">
+                    <div class="emr-banner">
+                        <span class="pmark">M</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">End of encounter</span>
+                    </div>
+                    <div class="emr-tabs">
+                        <span class="emr-tab active">Notes</span>
+                        <span class="emr-tab">Wrap-Up</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                    </div>
+                    <div class="emr-center">
+                        <h4>Today's note</h4>
+                        <p style="color: var(--emr-muted); font-size: 9px;">Awaiting…</p>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Panel</h5>
+                        <div class="slot filled" style="opacity: 1;">PSA</div>
+                        <div class="slot filled" style="opacity: 1;">MRI</div>
+                        <div class="slot dx-fill r-dx1">BPH</div>
+                        <div class="slot dx-fill r-dx2">HTN</div>
+                        <div class="slot dx-fill r-dx3">Urgency</div>
+                        <div class="slot note-area r-note"><span class="typed"></span></div>
+                    </div>
+                </div>
+                <div class="keyflash kf-end">⌨ F9 · transfer</div>
+                <div class="pill active" style="opacity: 1; width: 200px;">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">F9 transfer · F3 reject</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx dx1">
+                            <span class="bullet"></span>
+                            <span class="label">Hypertension</span>
+                            <span class="sub">I10</span>
+                        </div>
+                        <div class="item dx dx2">
+                            <span class="bullet"></span>
+                            <span class="label">BPH</span>
+                            <span class="sub">N40.0</span>
+                        </div>
+                        <div class="item dx dx3">
+                            <span class="bullet"></span>
+                            <span class="label">Urinary urgency</span>
+                            <span class="sub">R39.15</span>
+                        </div>
+                        <div class="item note noteI focus">
+                            <span class="bullet"></span>
+                            <span class="label">Clinical note</span>
+                            <span class="keys"><span class="y">F6</span><span class="n">F3</span></span>
+                            <span class="sub">SOAP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ghost from-pill dx gDx1">Hypertension</div>
+                <div class="ghost from-pill dx gDx2">BPH</div>
+                <div class="ghost from-pill dx gDx3">Urinary urgency</div>
+                <div class="ghost from-pill note gNote">SOAP note</div>
+            </div>
+        </section>
+
+    </main>
 
     <script>
-        // playback controls (preview only)
-        const stage = document.getElementById('stage');
-        const restartBtn = document.getElementById('restartBtn');
-        const speedBtn = document.getElementById('speedBtn');
-        const halfBtn = document.getElementById('halfBtn');
-
-        function applyDuration(seconds){
-            document.documentElement.style.setProperty('--loop', seconds + 's');
-            // restart all animations by toggling a class
-            stage.classList.remove('restart');
-            void stage.offsetWidth;
-            stage.classList.add('restart');
-        }
-
-        restartBtn.addEventListener('click', () => {
-            // hard-restart by re-applying the same duration
-            const cur = getComputedStyle(document.documentElement).getPropertyValue('--loop').trim() || '26s';
-            applyDuration(parseFloat(cur));
-        });
-        speedBtn.addEventListener('click', () => applyDuration(13));
-        halfBtn.addEventListener('click', () => applyDuration(52));
+        // Pause animations when offscreen to save battery on phones
+        const scenes = document.querySelectorAll('.scene');
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const stage = entry.target.querySelector(window.matchMedia('(max-width: 700px)').matches ? '.stage.p' : '.stage.d');
+                if (!stage) return;
+                stage.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+                stage.querySelectorAll('*').forEach(el => {
+                    el.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+                });
+            });
+        }, { threshold: 0.2 });
+        scenes.forEach(s => obs.observe(s));
     </script>
 </body>
 </html>
