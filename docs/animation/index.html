@@ -962,20 +962,22 @@
 
         /* ============================================================
            SCENE 2 - SCRIPTED, COORDINATE-DRIVEN
-           ------------------------------------------------------------
-           Coordinate map (% of stage):
-             DESKTOP (16:9)           PHONE (9:13)
-             Cursor start: (50%, 45%)  (50%, 35%)
-             Notes button: (11%, 12%)  (14%, 12%)
 
-           Loop: 3.0 seconds (cursor speed 2x previous)
+           Target coordinates are MEASURED FROM THE DOM at page load
+           (see <script> at the bottom). Each labeled element on the
+           stage gets its center position written to CSS variables
+           on the stage element:
+              --notes-x, --notes-y    (Notes nav row center)
+              --start-x, --start-y    (cursor start)
+           This eliminates the "eyeballing screenshots" guesswork.
+           Cursor and click flash use these variables directly.
 
+           Loop: 3.0 seconds.
            Script:
-             0.00s - 0.30s  cursor visible at center
-             0.30s - 0.90s  cursor moves diagonally to Notes button
-                            (0.60s linear travel - 2x previous speed)
-             0.90s - 1.10s  click flash at Notes button (0.20s)
-             1.10s - 3.00s  prior notes list visible on main screen
+             0.00 - 0.30s  cursor visible at start
+             0.30 - 0.90s  cursor moves to Notes (0.60s linear)
+             0.90 - 1.10s  click flash at Notes (0.20s)
+             1.10 - 3.00s  prior notes list visible
              (loop)
            ============================================================ */
         .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
@@ -1002,21 +1004,30 @@
             36.7%, 100% { opacity: 1; }
         }
 
-        /* Cursor: straight diagonal at 2x previous speed */
-        .scene-2 .cursor.c1 {
-            animation: s2-cursor 3s linear infinite;
+        /* Cursor uses CSS variables that JS sets from real DOM measurement.
+           Per the user's request, the cursor START position is the same as
+           the click target (the "o" in Notes), so the cursor begins focused
+           on Notes and the click circle flashes there. */
+        .scene-2 .stage {
+            --notes-x: 9%;       /* fallback - overridden by JS */
+            --notes-y: 12%;
         }
-        @keyframes s2-cursor {
-            0%   { opacity: 1; left: 50%; top: 45%; }
-            10%  { opacity: 1; left: 50%; top: 45%; }     /* hold until 0.30s */
-            30%  { opacity: 1; left: 9%;  top: 12%; }     /* arrive at Notes by 0.90s */
-            100% { opacity: 1; left: 9%;  top: 12%; }     /* stay there */
+        .scene-2 .cursor.c1 {
+            left: var(--notes-x);
+            top: var(--notes-y);
+            opacity: 1;
+            animation: s2-click-cursor 3s steps(1, end) infinite;
+        }
+        /* Cursor stays put for the whole loop (no movement until step 2). */
+        @keyframes s2-click-cursor {
+            0%, 100% { opacity: 1; left: var(--notes-x); top: var(--notes-y); }
         }
 
-        /* Click flash at Notes button. Pinned to (9%, 12%), visible
-           30% -> 36.7% of the loop (0.90s -> 1.10s = 0.20s). */
+        /* Click flash pinned to Notes coords. Visible 30% -> 36.7%
+           of the loop (0.90s -> 1.10s = 0.20s pulse). */
         .scene-2 .click-flash.cf-notes {
-            left: 9%; top: 12%;
+            left: var(--notes-x);
+            top: var(--notes-y);
             animation: s2-click 3s steps(1, end) infinite;
         }
         @keyframes s2-click {
@@ -1024,17 +1035,6 @@
             30%       { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
             36.6%     { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%      { opacity: 0; }
-        }
-
-        /* PHONE: cursor coordinates differ */
-        @media (max-width: 700px) {
-            @keyframes s2-cursor {
-                0%   { opacity: 1; left: 50%; top: 35%; }
-                10%  { opacity: 1; left: 50%; top: 35%; }
-                30%  { opacity: 1; left: 14%; top: 12%; }
-                100% { opacity: 1; left: 14%; top: 12%; }
-            }
-            .scene-2 .click-flash.cf-notes { left: 14%; top: 12%; }
         }
 
         /* ============================================================
@@ -1520,7 +1520,7 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow">Notes</div>
+                        <div class="navrow"><span data-target="notes">Notes</span></div>
                         <div class="navrow">Labs</div>
                         <div class="navrow">Imaging</div>
                         <div class="navrow">Orders</div>
@@ -1576,7 +1576,7 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow">Notes</div>
+                        <div class="navrow"><span data-target="notes">Notes</span></div>
                         <div class="navrow">Labs</div>
                         <div class="navrow">Imaging</div>
                         <div class="navrow">Orders</div>
@@ -1997,6 +1997,40 @@
     </main>
 
     <script>
+        // ============================================================
+        // COORDINATE MEASUREMENT
+        // For each .stage that contains [data-target] elements, measure
+        // each target's center position relative to the stage and write
+        // it as CSS variables on the stage. Cursor and click-flash CSS
+        // reads those variables instead of guessing percentages.
+        //
+        // Measured at: load, resize, fonts ready.
+        // ============================================================
+        function measureTargets() {
+            document.querySelectorAll('.stage').forEach(stage => {
+                const sr = stage.getBoundingClientRect();
+                stage.querySelectorAll('[data-target]').forEach(el => {
+                    const r = el.getBoundingClientRect();
+                    // For text elements, target the visual center.
+                    // We aim slightly left of pure center so the cursor's
+                    // arrow tip lands ON the text, since the cursor SVG
+                    // anchor is its top-left corner offset (-2px,-1px).
+                    const cx = r.left + r.width  / 2 - sr.left;
+                    const cy = r.top  + r.height / 2 - sr.top;
+                    const px = (cx / sr.width)  * 100;
+                    const py = (cy / sr.height) * 100;
+                    const name = el.dataset.target;
+                    stage.style.setProperty(`--${name}-x`, px.toFixed(3) + '%');
+                    stage.style.setProperty(`--${name}-y`, py.toFixed(3) + '%');
+                });
+            });
+        }
+        measureTargets();
+        window.addEventListener('resize', measureTargets);
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(measureTargets);
+        }
+
         const scenes = document.querySelectorAll('.scene');
         const obs = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
