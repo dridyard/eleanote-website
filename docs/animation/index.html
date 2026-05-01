@@ -30,8 +30,10 @@
             --pill-line:  rgba(255, 255, 255, 0.14);
             --pill-text:  #ffffff;
             --pill-mute:  #c0c4cc;
-            --pill-width: 220px;
-            --pill-width-phone: 150px;
+            /* 33% narrower than the previous 220/150 widths.
+               Phone needs slight bump from 100px so 'Text precharted' fits. */
+            --pill-width: 148px;
+            --pill-width-phone: 130px;
 
             /* Output type colors */
             --c-order:   #4ea3ff;
@@ -992,7 +994,7 @@
         .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
         .scene-2 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
         .scene-2 .pill.idle { top: 4%; right: 3%; }
-        .scene-2 .stage.p .pill.idle { top: 3%; right: 5%; }
+        .scene-2 .stage.p .pill.idle { top: 3%; right: 4%; }
 
         /* The center pane: blank initially, prior-notes list shown after click */
         .s2-view {
@@ -1143,6 +1145,99 @@
         @keyframes s2-hl-6 {
             0%, 51.2%  { background: transparent; }
             51.25%, 100% { background: var(--emr-select); }
+        }
+
+        /* ============================================================
+           GHOST TRANSFER (step 4)
+           A small chip representing the highlighted block flies on a
+           straight diagonal from the center of the highlighted block
+           to the center of the pill, shrinking 100% -> 20% in size and
+           fading 100% -> 75% opacity along the way, vanishing at arrival.
+
+           Timing inside the 4s loop:
+             2.30s (57.5%)  ghost appears at hlblock center, full size
+             2.80s (70%)    ghost arrives at pill center, 20% size, 0% opacity
+             2.80s (70%)    pill text changes to 'Text precharted'
+             3.80s (95%)    pill text changes back to 'eleanote'
+        */
+        .scene-2 .stage {
+            --hlblock-x: 50%; --hlblock-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+        }
+        .s2-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(91, 75, 138, 0.40);
+            border: 1.5px solid var(--emr-accent);
+            border-radius: 4px;
+            width: 90px;
+            height: 56px;
+            opacity: 0;
+            box-shadow: 0 10px 24px rgba(91, 75, 138, 0.45);
+            pointer-events: none;
+            transform-origin: center center;
+            animation: s2-ghost-fly 4s linear infinite;
+        }
+        @keyframes s2-ghost-fly {
+            0%, 57.4% {
+                opacity: 0;
+                left: var(--hlblock-x); top: var(--hlblock-y);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            57.5% {
+                opacity: 1;
+                left: var(--hlblock-x); top: var(--hlblock-y);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            65% {
+                opacity: 0.75;
+                /* halfway: position auto-interpolates between hlblock and pill */
+            }
+            69.9% {
+                opacity: 0.5;
+                left: var(--pill-x); top: var(--pill-y);
+                transform: translate(-50%, -50%) scale(0.2);
+            }
+            70%, 100% {
+                opacity: 0;
+                left: var(--pill-x); top: var(--pill-y);
+                transform: translate(-50%, -50%) scale(0.2);
+            }
+        }
+
+        /* Pill text: two pre-rendered words stacked at the same place,
+           toggled via opacity. 'eleanote' visible by default; at 70% of
+           loop (2.80s) 'Text precharted' takes over for 1 second, then
+           'eleanote' returns at 95%.
+           NB: don't override .pill's position: absolute - the pill needs
+           to remain absolutely positioned within the stage. */
+        .s2-pill-word {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .s2-pill-word.w-precharted {
+            position: absolute;
+            left: 28px; top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+        /* Show full label on desktop, short label on phone */
+        .s2-pill-word.w-precharted .short { display: none; }
+        @media (max-width: 700px) {
+            .s2-pill-word.w-precharted .full  { display: none; }
+            .s2-pill-word.w-precharted .short { display: inline; }
+        }
+        .scene-2 .s2-pill-word.w-eleanote { animation: s2-w-ele 4s steps(1, end) infinite; }
+        .scene-2 .s2-pill-word.w-precharted { animation: s2-w-pre 4s steps(1, end) infinite; }
+        @keyframes s2-w-ele {
+            0%, 69.9%  { opacity: 1; }
+            70%, 94.9% { opacity: 0; }
+            95%, 100%  { opacity: 1; }
+        }
+        @keyframes s2-w-pre {
+            0%, 69.9%  { opacity: 0; }
+            70%, 94.9% { opacity: 1; }
+            95%, 100%  { opacity: 0; }
         }
 
         /* ============================================================
@@ -1646,7 +1741,7 @@
                         </div>
                         <div class="s2-view s2-view-visit">
                             <h4>Office visit · 06/12/2025</h4>
-                            <div class="s2-noteblock">
+                            <div class="s2-noteblock" data-target="hlblock">
                                 <div class="s2-line"><span data-target="line-start"><b>6</b></span>4yo M, follow-up. RCC s/p partial nephrectomy 2023.</div>
                                 <div class="s2-line">CKD stage 3 stable, baseline Cr 1.5, GFR 48.</div>
                                 <div class="s2-line">HTN well-controlled on lisinopril 20 mg daily.</div>
@@ -1664,7 +1759,10 @@
                     </div>
                 </div>
 
-                <div class="pill idle">eleanote</div>
+                <div class="pill idle" data-target="pill">
+                    <span class="s2-pill-word w-eleanote">eleanote</span>
+                    <span class="s2-pill-word w-precharted"><span class="full">Text precharted</span><span class="short">Precharted</span></span>
+                </div>
 
                 <div class="cursor c1">
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
@@ -1674,6 +1772,7 @@
                 <div class="click-flash cf-office"></div>
                 <div class="click-flash cf-line-start"></div>
                 <div class="click-flash cf-line-end"></div>
+                <div class="s2-ghost"></div>
 
                 <div class="dock">
                     <span class="dock-icon"></span>
@@ -1716,7 +1815,7 @@
                         </div>
                         <div class="s2-view s2-view-visit">
                             <h4 style="padding: 8px 8px 4px;">Office visit · 06/12/25</h4>
-                            <div class="s2-noteblock" style="padding: 0 8px;">
+                            <div class="s2-noteblock" data-target="hlblock" style="padding: 0 8px;">
                                 <div class="s2-line"><span data-target="line-start"><b>6</b></span>4M, f/u. RCC s/p partial nephrectomy.</div>
                                 <div class="s2-line">CKD-3 stable, Cr 1.5, GFR 48.</div>
                                 <div class="s2-line">HTN on lisinopril 20 mg daily.</div>
@@ -1728,7 +1827,10 @@
                     </div>
                 </div>
 
-                <div class="pill idle">eleanote</div>
+                <div class="pill idle" data-target="pill">
+                    <span class="s2-pill-word w-eleanote">eleanote</span>
+                    <span class="s2-pill-word w-precharted"><span class="full">Text precharted</span><span class="short">Precharted</span></span>
+                </div>
 
                 <div class="cursor c1">
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
@@ -1738,6 +1840,7 @@
                 <div class="click-flash cf-office"></div>
                 <div class="click-flash cf-line-start"></div>
                 <div class="click-flash cf-line-end"></div>
+                <div class="s2-ghost"></div>
 
                 <div class="dock">
                     <span class="dock-tab tab-ele running">
