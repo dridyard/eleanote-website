@@ -966,16 +966,16 @@
            Coordinate map (% of stage):
              DESKTOP (16:9)           PHONE (9:13)
              Cursor start: (50%, 45%)  (50%, 35%)
-             Notes button: (15%, 13%)  (18%, 11%)
+             Notes button: (11%, 12%)  (14%, 12%)
 
-           Loop: 3.0 seconds
+           Loop: 3.0 seconds (cursor speed 2x previous)
 
            Script:
              0.00s - 0.30s  cursor visible at center
-             0.30s - 1.50s  cursor moves diagonally to Notes button
-                            (1.20s linear travel)
-             1.50s - 1.70s  click flash at Notes button (0.20s)
-             1.70s - 3.00s  prior notes list visible on main screen
+             0.30s - 0.90s  cursor moves diagonally to Notes button
+                            (0.60s linear travel - 2x previous speed)
+             0.90s - 1.10s  click flash at Notes button (0.20s)
+             1.10s - 3.00s  prior notes list visible on main screen
              (loop)
            ============================================================ */
         .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
@@ -993,35 +993,36 @@
         .s2-view-blank { animation: s2v-blank 3s steps(1, end) infinite; }
         .s2-view-notes { animation: s2v-notes 3s steps(1, end) infinite; }
         @keyframes s2v-blank {
-            0%, 56.6% { opacity: 1; }
-            56.7%, 100% { opacity: 0; }
+            /* hide at 1.10s = 36.7% of 3s loop */
+            0%, 36.6%   { opacity: 1; }
+            36.7%, 100% { opacity: 0; }
         }
         @keyframes s2v-notes {
-            0%, 56.6% { opacity: 0; }
-            56.7%, 100% { opacity: 1; }
+            0%, 36.6%   { opacity: 0; }
+            36.7%, 100% { opacity: 1; }
         }
 
-        /* Cursor: straight diagonal from (50%, 45%) -> (15%, 13%) */
+        /* Cursor: straight diagonal at 2x previous speed */
         .scene-2 .cursor.c1 {
             animation: s2-cursor 3s linear infinite;
         }
         @keyframes s2-cursor {
             0%   { opacity: 1; left: 50%; top: 45%; }
-            10%  { opacity: 1; left: 50%; top: 45%; }     /* hold ~0.3s */
-            50%  { opacity: 1; left: 15%; top: 13%; }     /* arrive at Notes by 1.5s */
-            100% { opacity: 1; left: 15%; top: 13%; }     /* stay there */
+            10%  { opacity: 1; left: 50%; top: 45%; }     /* hold until 0.30s */
+            30%  { opacity: 1; left: 9%;  top: 12%; }     /* arrive at Notes by 0.90s */
+            100% { opacity: 1; left: 9%;  top: 12%; }     /* stay there */
         }
 
-        /* Click flash at Notes button. Pinned to (15%, 13%), only visible
-           50% -> 56.6% of the loop (1.50s -> 1.70s = 0.20s). */
+        /* Click flash at Notes button. Pinned to (9%, 12%), visible
+           30% -> 36.7% of the loop (0.90s -> 1.10s = 0.20s). */
         .scene-2 .click-flash.cf-notes {
-            left: 15%; top: 13%;
+            left: 9%; top: 12%;
             animation: s2-click 3s steps(1, end) infinite;
         }
         @keyframes s2-click {
-            0%, 49.9% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            50%       { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
-            56.6%     { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            0%, 29.9% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            30%       { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            36.6%     { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%      { opacity: 0; }
         }
 
@@ -1030,10 +1031,10 @@
             @keyframes s2-cursor {
                 0%   { opacity: 1; left: 50%; top: 35%; }
                 10%  { opacity: 1; left: 50%; top: 35%; }
-                50%  { opacity: 1; left: 18%; top: 11%; }
-                100% { opacity: 1; left: 18%; top: 11%; }
+                30%  { opacity: 1; left: 14%; top: 12%; }
+                100% { opacity: 1; left: 14%; top: 12%; }
             }
-            .scene-2 .click-flash.cf-notes { left: 18%; top: 11%; }
+            .scene-2 .click-flash.cf-notes { left: 14%; top: 12%; }
         }
 
         /* ============================================================
