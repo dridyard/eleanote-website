@@ -26,11 +26,11 @@
             --muted: #6b7780;
 
             /* Copilot pill (dark, partially translucent across all scenes) */
-            --pill-bg:    rgba(28, 30, 34, 0.74);
+            --pill-bg:    rgba(28, 30, 34, 0.50);
             --pill-bg-solid: #1c1e22;
-            --pill-line:  rgba(255, 255, 255, 0.10);
-            --pill-text:  #f4f3f0;
-            --pill-mute:  #adb1b8;
+            --pill-line:  rgba(255, 255, 255, 0.14);
+            --pill-text:  #ffffff;
+            --pill-mute:  #c0c4cc;
             --pill-width: 200px;
             --pill-width-phone: 180px;
 
@@ -529,15 +529,17 @@
             color: var(--emr-ink);
         }
         .emr-banner .pmark {
-            width: 13px; height: 13px;
-            border-radius: 4px;
+            min-width: 22px; height: 14px;
+            border-radius: 3px;
             background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
             color: #fff;
             font-size: 8px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.04em;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 0 4px;
         }
         .emr-banner .name { font-weight: 700; font-size: 10px; }
         .emr-banner .meta { color: var(--emr-muted); font-size: 9px; }
@@ -852,6 +854,111 @@
             }
             .pill { opacity: 1 !important; }
             .ele-win, .emr { opacity: 1 !important; }
+        }
+
+        /* ======================================================
+           SCENE 1 EMR LAYOUT
+           Desktop = 3 columns: nav | content | today's note entry
+           Phone   = 2 columns: nav | (prior notes top + today's note bottom)
+           ====================================================== */
+        .emr.emr-3col {
+            grid-template-rows: 22px 1fr;
+            grid-template-columns: 22% 1fr 32%;
+        }
+        .emr.emr-3col .emr-banner { grid-column: 1 / -1; }
+        .emr.emr-3col .emr-left   { grid-row: 2 / 3; grid-column: 1 / 2; }
+        .emr.emr-3col .emr-center { grid-row: 2 / 3; grid-column: 2 / 3; }
+        .emr.emr-3col .emr-right  { grid-row: 2 / 3; grid-column: 3 / 4; }
+
+        /* prior notes list (used in center on desktop, top section on phone) */
+        .notes-list .note-row,
+        .emr-stack-section .note-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--emr-line);
+            font-size: 9px;
+            color: var(--emr-ink);
+            line-height: 1.4;
+        }
+        .notes-list .note-row:last-child,
+        .emr-stack-section .note-row:last-child { border-bottom: 0; }
+        .notes-list .note-row .d,
+        .emr-stack-section .note-row .d {
+            color: var(--emr-muted);
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            font-size: 8.5px;
+        }
+        .notes-list .note-row .t,
+        .emr-stack-section .note-row .t {
+            color: var(--emr-ink);
+            font-weight: 500;
+        }
+        .notes-list .note-row:hover {
+            background: var(--emr-tint);
+        }
+
+        /* today's note entry box (used in right column on desktop, bottom on phone) */
+        .note-entry, .emr-stack-section.today {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .note-entry .entry-box,
+        .emr-stack-section.today .entry-box {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 4px;
+            flex: 1;
+            min-height: 100px;
+            padding: 8px 10px;
+            font-size: 9.5px;
+            color: var(--emr-muted);
+            font-style: italic;
+            position: relative;
+        }
+        .note-entry .entry-placeholder,
+        .emr-stack-section.today .entry-placeholder {
+            color: var(--emr-muted);
+            font-style: italic;
+        }
+
+        /* phone 2-column layout */
+        .emr.emr-2col {
+            grid-template-rows: 22px 1fr;
+            grid-template-columns: 32% 1fr;
+        }
+        .emr.emr-2col .emr-banner { grid-column: 1 / -1; }
+        .emr.emr-2col .emr-left {
+            grid-row: 2 / 3;
+            grid-column: 1 / 2;
+        }
+        .emr.emr-2col .emr-stack {
+            grid-row: 2 / 3;
+            grid-column: 2 / 3;
+            display: flex;
+            flex-direction: column;
+            background: var(--emr-pane);
+            padding: 6px 8px 8px;
+            gap: 8px;
+            overflow: hidden;
+        }
+        .emr-stack-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .emr-stack-section h5 {
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            font-weight: 700;
+        }
+        .emr-stack-section.today {
+            margin-top: 2px;
         }
 
         /* ======================================================
@@ -1439,33 +1546,41 @@
                 </div>
 
                 <!-- EMR opens after Eleanote minimizes -->
-                <div class="emr">
+                <div class="emr emr-3col">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M · MRN 10428501</span>
                     </div>
-                    <div class="emr-tabs">
-                        <span class="emr-tab active">Notes</span>
-                        <span class="emr-tab">Labs</span>
-                        <span class="emr-tab">Imaging</span>
-                        <span class="emr-tab">Orders</span>
-                    </div>
+                    <!-- Left: nav list -->
                     <div class="emr-left">
                         <h5>Chart</h5>
                         <div class="navrow active">Notes</div>
                         <div class="navrow">Labs</div>
                         <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Diagnoses</div>
                     </div>
-                    <div class="emr-center">
-                        <h4>Office visit · 04/18/2026</h4>
-                        <p>Established 64 y/o M, follow-up of <strong>HTN</strong> and <strong>BPH</strong>.</p>
+                    <!-- Center: content of clicked nav item (default: list of 10 prior notes) -->
+                    <div class="emr-center notes-list">
+                        <h4>Notes · prior encounters</h4>
+                        <div class="note-row"><span class="d">04/18/2026</span><span class="t">Office visit — Dr. Carter</span></div>
+                        <div class="note-row"><span class="d">02/02/2026</span><span class="t">Telephone encounter — RN Owens</span></div>
+                        <div class="note-row"><span class="d">11/14/2025</span><span class="t">Annual wellness visit — Dr. Carter</span></div>
+                        <div class="note-row"><span class="d">09/30/2025</span><span class="t">Imaging report — MRI pelvis</span></div>
+                        <div class="note-row"><span class="d">06/12/2025</span><span class="t">Office visit — Dr. Carter</span></div>
+                        <div class="note-row"><span class="d">03/04/2025</span><span class="t">Office visit — Dr. Carter</span></div>
+                        <div class="note-row"><span class="d">12/10/2024</span><span class="t">Lab visit — CMP, lipids, PSA</span></div>
+                        <div class="note-row"><span class="d">10/14/2024</span><span class="t">Imaging — Renal ultrasound</span></div>
+                        <div class="note-row"><span class="d">07/02/2024</span><span class="t">Office visit — Dr. Carter</span></div>
+                        <div class="note-row"><span class="d">04/19/2024</span><span class="t">Annual wellness visit — Dr. Carter</span></div>
                     </div>
-                    <div class="emr-right">
-                        <h5>Visit panel</h5>
-                        <div class="slot">Orders…</div>
-                        <div class="slot">Diagnoses…</div>
-                        <div class="slot note-area">Note…</div>
+                    <!-- Right: today's note entry box (full column) -->
+                    <div class="emr-right note-entry">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1509,31 +1624,39 @@
                         <div class="ele-input">Paste from EHR · F4 to capture</div>
                     </div>
                 </div>
-                <div class="emr">
+                <div class="emr emr-2col">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M</span>
                     </div>
-                    <div class="emr-tabs">
-                        <span class="emr-tab active">Notes</span>
-                        <span class="emr-tab">Labs</span>
-                        <span class="emr-tab">Orders</span>
-                    </div>
+                    <!-- Left: nav -->
                     <div class="emr-left">
                         <h5>Chart</h5>
                         <div class="navrow active">Notes</div>
                         <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Dx</div>
                     </div>
-                    <div class="emr-center">
-                        <h4>Office visit</h4>
-                        <p>64 y/o M, follow-up <strong>HTN/BPH</strong>.</p>
-                    </div>
-                    <div class="emr-right">
-                        <h5>Panel</h5>
-                        <div class="slot">Orders</div>
-                        <div class="slot">Dx</div>
-                        <div class="slot note-area">Note</div>
+                    <!-- Right: prior notes top + today's note bottom -->
+                    <div class="emr-stack">
+                        <div class="emr-stack-section">
+                            <h5>Notes · prior</h5>
+                            <div class="note-row"><span class="d">04/18/26</span><span class="t">Office visit</span></div>
+                            <div class="note-row"><span class="d">02/02/26</span><span class="t">Phone enc.</span></div>
+                            <div class="note-row"><span class="d">11/14/25</span><span class="t">Annual</span></div>
+                            <div class="note-row"><span class="d">09/30/25</span><span class="t">MRI pelvis</span></div>
+                            <div class="note-row"><span class="d">06/12/25</span><span class="t">Office visit</span></div>
+                            <div class="note-row"><span class="d">03/04/25</span><span class="t">Office visit</span></div>
+                            <div class="note-row"><span class="d">12/10/24</span><span class="t">Lab visit</span></div>
+                        </div>
+                        <div class="emr-stack-section today">
+                            <h5>Today's note</h5>
+                            <div class="entry-box">
+                                <span class="entry-placeholder">Click to begin note…</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="pill idle">eleanote</div>
@@ -1560,7 +1683,7 @@
             <div class="stage d">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M · BCBS PPO · Allergies: Sulfa</span>
                     </div>
@@ -1618,7 +1741,7 @@
             <div class="stage p">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M</span>
                     </div>
@@ -1671,7 +1794,7 @@
             <div class="stage d">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M · Encounter today</span>
                     </div>
@@ -1757,7 +1880,7 @@
             <div class="stage p">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M</span>
                     </div>
@@ -1837,7 +1960,7 @@
             <div class="stage d">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">64 y/o M · End of encounter</span>
                     </div>
@@ -1912,7 +2035,7 @@
             <div class="stage p">
                 <div class="emr">
                     <div class="emr-banner">
-                        <span class="pmark">M</span>
+                        <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
                         <span class="meta">End of encounter</span>
                     </div>
