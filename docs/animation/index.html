@@ -31,7 +31,7 @@
             --pill-text:  #ffffff;
             --pill-mute:  #c0c4cc;
             --pill-width: 220px;
-            --pill-width-phone: 200px;
+            --pill-width-phone: 150px;
 
             /* Output type colors */
             --c-order:   #4ea3ff;
@@ -367,9 +367,9 @@
         .pill.idle {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             width: var(--pill-width);
-            padding: 7px 14px;
+            padding: 7px 12px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 600;
@@ -377,10 +377,10 @@
         }
         .pill.idle::before {
             content: "";
-            width: 6px; height: 6px;
+            width: 7px; height: 7px;
             border-radius: 50%;
             background: var(--pill-mute);
-            margin-right: 8px;
+            margin-right: 10px;
             flex: 0 0 auto;
         }
         .pill.active {
@@ -957,123 +957,380 @@
            the prior-notes list visible. */
 
         /* ============================================================
-           SCENE 2: cursor highlights prior note + labs + imaging,
-                    each transfers to the copilot for precharting.
-           Loop: 14s
+           SCENE 2: cursor navigates EHR - clicks a prior note row,
+                    a multi-line note opens, cursor click-drags across
+                    multiple lines to highlight the whole thing, ghost
+                    flies to copilot ('Text precharted'). Then cursor
+                    clicks 'Labs' in the left nav, view swaps to a labs
+                    list, drags one row, ghost. Then 'Imaging' nav,
+                    drags one row, ghost.
+           Loop: 22s
            ============================================================ */
-        .scene-2 .emr {
-            top: 4%; left: 4%;
-            width: 92%; height: 84%;
+        .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-2 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-2 .pill.idle { top: 4%; right: 3%; }
+        .scene-2 .stage.p .pill.idle { top: 3%; right: 5%; }
+
+        /* The four center-pane views - only one visible at a time */
+        .s2-view {
+            position: absolute;
+            inset: 0;
+            padding: 8px 12px;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
         }
-        .scene-2 .stage.p .emr {
-            top: 3%; left: 3%;
-            width: 94%; height: 86%;
+        .s2-view-notes  { animation: s2v-notes  22s steps(1, end) infinite; }
+        .s2-view-note   { animation: s2v-note   22s steps(1, end) infinite; }
+        .s2-view-labs   { animation: s2v-labs   22s steps(1, end) infinite; }
+        .s2-view-img    { animation: s2v-img    22s steps(1, end) infinite; }
+        @keyframes s2v-notes {
+            0%, 9%    { opacity: 1; }
+            10%, 100% { opacity: 0; }
         }
-        .scene-2 .pill.idle {
-            top: 4%; right: 3%;
+        @keyframes s2v-note {
+            0%, 9%    { opacity: 0; }
+            10%, 36%  { opacity: 1; }
+            37%, 100% { opacity: 0; }
         }
-        .scene-2 .stage.p .pill.idle {
-            top: 3%; right: 5%;
+        @keyframes s2v-labs {
+            0%, 41%   { opacity: 0; }
+            42%, 60%  { opacity: 1; }
+            61%, 100% { opacity: 0; }
+        }
+        @keyframes s2v-img {
+            0%, 65%   { opacity: 0; }
+            66%, 88%  { opacity: 1; }
+            89%, 100% { opacity: 0; }
         }
 
-        /* The cursor walks: prior note row -> highlight row -> ghost to pill
-           -> labs row -> highlight row -> ghost -> imaging row -> highlight
-           -> ghost. Pill text changes between each. */
-        .scene-2 .cursor.c1 { animation: s2-cursor 14s linear infinite; }
-        .scene-2 .click-flash.cf1 { animation: s2-click 14s linear infinite; }
-        .scene-2 .selectable .hl.h-note { animation: s2-hlNote 14s linear infinite; }
-        .scene-2 .selectable .hl.h-lab  { animation: s2-hlLab  14s linear infinite; }
-        .scene-2 .selectable .hl.h-img  { animation: s2-hlImg  14s linear infinite; }
-        .scene-2 .ghost.gNote { animation: s2-gNote 14s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-2 .ghost.gLab  { animation: s2-gLab  14s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-2 .ghost.gImg  { animation: s2-gImg  14s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-2 .pill .pill-status::after { content: "F12 record"; }
-        .scene-2 .pill .pill-status {
-            animation: s2-status 14s steps(1, end) infinite;
+        /* nav row activation: 'Notes' active 0-9% and 10-36% (during note
+           detail), 'Labs' active 37-60%, 'Imaging' active 61-88% */
+        .scene-2 .navrow.nav-notes { animation: s2nav-notes 22s steps(1, end) infinite; }
+        .scene-2 .navrow.nav-labs  { animation: s2nav-labs  22s steps(1, end) infinite; }
+        .scene-2 .navrow.nav-img   { animation: s2nav-img   22s steps(1, end) infinite; }
+        @keyframes s2nav-notes {
+            0%, 36%   { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
+            37%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
+        }
+        @keyframes s2nav-labs {
+            0%, 36%   { background: transparent; color: var(--emr-ink); font-weight: 400; }
+            37%, 60%  { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
+            61%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
+        }
+        @keyframes s2nav-img {
+            0%, 60%   { background: transparent; color: var(--emr-ink); font-weight: 400; }
+            61%, 88%  { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
+            89%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
         }
 
-        /* DESKTOP cursor path:
-           % timing: cursor approaches notes-list at ~5%, clicks/drags at 7-12%,
-           moves to labs at 22%, drags 25-30%, moves to imaging at 42%, drags 45-50% */
+        /* CURSOR - one continuous path, coordinates exactly drive
+           the highlights. Anchored to top-left of the stage.
+           All percentages are STAGE-relative.
+
+           Stage layout reminder for the desktop animation:
+             EMR: top 4%, left 4%, width 92%, height 84%, so spans
+             rows 4-88% top-to-bottom and cols 4-96% left-to-right.
+             Banner is 22px tall (~5% of 16:9 stage @ 1080w).
+             Left nav (22%) sits cols 4-24%; center (1fr) cols 24-72%;
+             right (32%) cols 72-96%. Center pane top is at ~10% of
+             stage, bottom at ~88%.
+
+           Cursor path (DESKTOP, 22s loop):
+             0-3%   off-screen, fade in
+             3-6%   move to first prior-note row in center (~28%, 25%)
+             6-7%   click flash (notes-list -> note-detail view at 10%)
+             10-13% reposition to start of note line 1 (~28%, 17%)
+             13-15% drag right across line 1 to ~70%, 17%
+             15-17% drag down/left to start of line 2 (~28%, 22%)
+             17-19% drag right across line 2 to ~70%, 22%
+             19-21% drag down/left to start of line 3 (~28%, 27%)
+             21-23% drag right across line 3 to ~70%, 27%
+             23-26% release; cursor moves toward 'Labs' nav (~12%, 35%)
+             26-27% click flash (view -> labs-list at 42%)
+             29-32% cursor moves to a lab row (~28%, 30%)
+             32-33% click + drag start
+             33-36% drag right across to ~70%, 30%
+             36-39% release; ghost; cursor moves toward 'Imaging' (~12%, 41%)
+             50-51% click flash (view -> imaging-list at 66%)
+             53-56% cursor moves to MRI row (~28%, 30%)
+             56-59% drag across to ~70%, 30%
+             59-62% release; ghost
+             62-100% cursor stays then fades out
+        */
+        .scene-2 .cursor.c1 { animation: s2-cursor 22s linear infinite; }
+        .scene-2 .click-flash.cf1 { animation: s2-click 22s linear infinite; }
+
         @keyframes s2-cursor {
-            0%   { opacity: 0; left: 22%; top: 35%; }
-            4%   { opacity: 1; left: 25%; top: 30%; }
-            7%   { opacity: 1; left: 27%; top: 30%; }
-            12%  { opacity: 1; left: 55%; top: 30%; }
-            16%  { opacity: 1; left: 55%; top: 30%; }
-            22%  { opacity: 1; left: 27%; top: 53%; }
-            25%  { opacity: 1; left: 27%; top: 53%; }
-            30%  { opacity: 1; left: 55%; top: 53%; }
-            36%  { opacity: 1; left: 55%; top: 53%; }
-            42%  { opacity: 1; left: 27%; top: 73%; }
-            45%  { opacity: 1; left: 27%; top: 73%; }
-            50%  { opacity: 1; left: 55%; top: 73%; }
-            56%  { opacity: 1; left: 55%; top: 73%; }
-            65%  { opacity: 0; left: 55%; top: 73%; }
+            0%   { opacity: 0; left: 30%; top: 25%; }
+            2%   { opacity: 1; left: 30%; top: 25%; }
+            6%   { opacity: 1; left: 28%; top: 25%; }     /* first note row */
+            7%   { opacity: 1; left: 28%; top: 25%; }
+            /* view swaps to note-detail at 10% */
+            13%  { opacity: 1; left: 28%; top: 18%; }     /* start of line 1 */
+            15%  { opacity: 1; left: 70%; top: 18%; }     /* end of line 1 */
+            17%  { opacity: 1; left: 28%; top: 23%; }     /* start of line 2 */
+            19%  { opacity: 1; left: 70%; top: 23%; }     /* end of line 2 */
+            21%  { opacity: 1; left: 28%; top: 28%; }     /* start of line 3 */
+            23%  { opacity: 1; left: 70%; top: 28%; }     /* end of line 3 */
+            26%  { opacity: 1; left: 12%; top: 35%; }     /* approach Labs nav */
+            27%  { opacity: 1; left: 12%; top: 35%; }     /* click Labs */
+            /* view swaps to labs-list at 42% */
+            32%  { opacity: 1; left: 28%; top: 30%; }     /* lab row start */
+            33%  { opacity: 1; left: 28%; top: 30%; }
+            36%  { opacity: 1; left: 70%; top: 30%; }     /* lab row end */
+            41%  { opacity: 1; left: 12%; top: 41%; }     /* approach Imaging nav */
+            51%  { opacity: 1; left: 12%; top: 41%; }     /* click Imaging */
+            /* view swaps to imaging-list at 66% */
+            56%  { opacity: 1; left: 28%; top: 30%; }     /* MRI row start */
+            57%  { opacity: 1; left: 28%; top: 30%; }
+            59%  { opacity: 1; left: 70%; top: 30%; }     /* MRI row end */
+            70%  { opacity: 1; left: 70%; top: 30%; }
+            85%  { opacity: 0; left: 70%; top: 30%; }
             100% { opacity: 0; }
         }
         @keyframes s2-click {
-            0%, 6%   { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-            7%       { opacity: 1; transform: translate(-50%,-50%) scale(0.8); left: 27%; top: 30%; }
-            10%      { opacity: 0; transform: translate(-50%,-50%) scale(1.4); left: 27%; top: 30%; }
-            24%      { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-            25%      { opacity: 1; transform: translate(-50%,-50%) scale(0.8); left: 27%; top: 53%; }
-            28%      { opacity: 0; transform: translate(-50%,-50%) scale(1.4); left: 27%; top: 53%; }
-            44%      { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-            45%      { opacity: 1; transform: translate(-50%,-50%) scale(0.8); left: 27%; top: 73%; }
-            48%      { opacity: 0; transform: translate(-50%,-50%) scale(1.4); left: 27%; top: 73%; }
-            100%     { opacity: 0; }
+            0%, 6%    { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
+            7%        { opacity: 1; left: 28%; top: 25%; transform: translate(-50%,-50%) scale(0.8); }
+            10%       { opacity: 0; left: 28%; top: 25%; transform: translate(-50%,-50%) scale(1.4); }
+            26%       { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
+            27%       { opacity: 1; left: 12%; top: 35%; transform: translate(-50%,-50%) scale(0.8); }
+            30%       { opacity: 0; left: 12%; top: 35%; transform: translate(-50%,-50%) scale(1.4); }
+            32%       { opacity: 0; }
+            33%       { opacity: 1; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(0.8); }
+            36%       { opacity: 0; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(1.4); }
+            50%       { opacity: 0; }
+            51%       { opacity: 1; left: 12%; top: 41%; transform: translate(-50%,-50%) scale(0.8); }
+            54%       { opacity: 0; left: 12%; top: 41%; transform: translate(-50%,-50%) scale(1.4); }
+            56%       { opacity: 0; }
+            57%       { opacity: 1; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(0.8); }
+            60%       { opacity: 0; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(1.4); }
+            100%      { opacity: 0; }
         }
-        @keyframes s2-hlNote {
-            0%, 6%   { opacity: 0; width: 0%; }
-            7%       { opacity: 1; width: 0%; }
-            12%      { opacity: 1; width: 95%; }
-            17%      { opacity: 1; width: 95%; }
-            18%      { opacity: 0; width: 95%; }
-            100%     { opacity: 0; width: 0%; }
+
+        /* MULTI-LINE highlight bars in the note-detail view.
+           Three bars stacked vertically, each grows in width to match
+           the cursor sweep on its line. Coordinates match s2-cursor. */
+        .s2-hl-line {
+            position: absolute;
+            background: var(--emr-select);
+            opacity: 0;
+            border-radius: 2px;
+            height: 2.4%;
+            width: 0;
+        }
+        .s2-hl-line.l1 {
+            top: 17%; left: 24%;
+            animation: s2-hlL1 22s linear infinite;
+        }
+        .s2-hl-line.l2 {
+            top: 22%; left: 24%;
+            animation: s2-hlL2 22s linear infinite;
+        }
+        .s2-hl-line.l3 {
+            top: 27%; left: 24%;
+            animation: s2-hlL3 22s linear infinite;
+        }
+        @keyframes s2-hlL1 {
+            0%, 12%   { opacity: 0; width: 0; }
+            13%       { opacity: 1; width: 4%; }
+            15%       { opacity: 1; width: 46%; }   /* matches cursor 28%->70% */
+            33%       { opacity: 1; width: 46%; }
+            34%       { opacity: 0; width: 46%; }
+            100%      { opacity: 0; }
+        }
+        @keyframes s2-hlL2 {
+            0%, 16%   { opacity: 0; width: 0; }
+            17%       { opacity: 1; width: 4%; }
+            19%       { opacity: 1; width: 46%; }
+            33%       { opacity: 1; width: 46%; }
+            34%       { opacity: 0; width: 46%; }
+            100%      { opacity: 0; }
+        }
+        @keyframes s2-hlL3 {
+            0%, 20%   { opacity: 0; width: 0; }
+            21%       { opacity: 1; width: 4%; }
+            23%       { opacity: 1; width: 46%; }
+            33%       { opacity: 1; width: 46%; }
+            34%       { opacity: 0; width: 46%; }
+            100%      { opacity: 0; }
+        }
+
+        /* labs/imaging single-line highlight bars.
+           These live INSIDE the swap views, so they're absolutely positioned
+           inside .s2-view (which has its own padding of 8/12px). */
+        .s2-row-hl-lab {
+            position: absolute;
+            background: var(--emr-select);
+            opacity: 0;
+            border-radius: 2px;
+            height: 2.6%;
+            top: 30%;
+            left: 24%;
+            width: 0;
+            animation: s2-hlLab 22s linear infinite;
         }
         @keyframes s2-hlLab {
-            0%, 24%  { opacity: 0; width: 0%; }
-            25%      { opacity: 1; width: 0%; }
-            30%      { opacity: 1; width: 95%; }
-            35%      { opacity: 1; width: 95%; }
-            36%      { opacity: 0; width: 95%; }
-            100%     { opacity: 0; width: 0%; }
+            0%, 32%   { opacity: 0; width: 0; }
+            33%       { opacity: 1; width: 4%; }
+            36%       { opacity: 1; width: 46%; }
+            58%       { opacity: 1; width: 46%; }
+            59%       { opacity: 0; width: 46%; }
+            100%      { opacity: 0; }
+        }
+        .s2-row-hl-img {
+            position: absolute;
+            background: var(--emr-select);
+            opacity: 0;
+            border-radius: 2px;
+            height: 2.6%;
+            top: 30%;
+            left: 24%;
+            width: 0;
+            animation: s2-hlImg 22s linear infinite;
         }
         @keyframes s2-hlImg {
-            0%, 44%  { opacity: 0; width: 0%; }
-            45%      { opacity: 1; width: 0%; }
-            50%      { opacity: 1; width: 95%; }
-            55%      { opacity: 1; width: 95%; }
-            56%      { opacity: 0; width: 95%; }
-            100%     { opacity: 0; width: 0%; }
+            0%, 56%   { opacity: 0; width: 0; }
+            57%       { opacity: 1; width: 4%; }
+            59%       { opacity: 1; width: 46%; }
+            83%       { opacity: 1; width: 46%; }
+            84%       { opacity: 0; width: 46%; }
+            100%      { opacity: 0; }
+        }
+
+        /* GHOSTS fly from the highlight area to the pill (top-right) */
+        .scene-2 .ghost.gNote {
+            top: 25%; left: 30%;
+            animation: s2-gNote 22s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .ghost.gLab {
+            top: 30%; left: 30%;
+            animation: s2-gLab 22s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-2 .ghost.gImg {
+            top: 30%; left: 30%;
+            animation: s2-gImg 22s cubic-bezier(.4,0,.2,1) infinite;
         }
         @keyframes s2-gNote {
-            0%, 13%  { opacity: 0; transform: translate(0,0) scale(1); }
-            15%      { opacity: 1; transform: translate(0,0) scale(1); }
-            19%      { opacity: 0; transform: translate(120%, -180%) scale(0.6); }
-            100%     { opacity: 0; }
+            0%, 23%   { opacity: 0; transform: translate(0,0) scale(1); }
+            24%       { opacity: 1; transform: translate(0,0) scale(1); }
+            27%       { opacity: 0; transform: translate(160%, -100%) scale(0.6); }
+            100%      { opacity: 0; }
         }
         @keyframes s2-gLab {
-            0%, 31%  { opacity: 0; transform: translate(0,0) scale(1); }
-            33%      { opacity: 1; transform: translate(0,0) scale(1); }
-            37%      { opacity: 0; transform: translate(120%, -480%) scale(0.6); }
-            100%     { opacity: 0; }
+            0%, 36%   { opacity: 0; transform: translate(0,0) scale(1); }
+            37%       { opacity: 1; transform: translate(0,0) scale(1); }
+            40%       { opacity: 0; transform: translate(160%, -160%) scale(0.6); }
+            100%      { opacity: 0; }
         }
         @keyframes s2-gImg {
-            0%, 51%  { opacity: 0; transform: translate(0,0) scale(1); }
-            53%      { opacity: 1; transform: translate(0,0) scale(1); }
-            57%      { opacity: 0; transform: translate(120%, -800%) scale(0.6); }
-            100%     { opacity: 0; }
+            0%, 59%   { opacity: 0; transform: translate(0,0) scale(1); }
+            60%       { opacity: 1; transform: translate(0,0) scale(1); }
+            63%       { opacity: 0; transform: translate(160%, -160%) scale(0.6); }
+            100%      { opacity: 0; }
+        }
+
+        /* COPILOT IDLE STATUS TEXT - rolls through 4 strings */
+        .scene-2 .pill .pill-status::after { content: "eleanote"; }
+        .scene-2 .pill .pill-status {
+            animation: s2-status 22s steps(1, end) infinite;
         }
         @keyframes s2-status {
-            0%, 14%  { content: "F12 record"; }
-            15%, 21% { content: "Note precharted"; }
-            22%, 32% { content: "F12 record"; }
-            33%, 39% { content: "Labs precharted"; }
-            40%, 52% { content: "F12 record"; }
-            53%, 60% { content: "Imaging precharted"; }
-            61%,100% { content: "F12 record"; }
+            0%, 23%   { content: "eleanote"; }
+            24%, 35%  { content: "Text precharted"; }
+            36%, 39%  { content: "eleanote"; }
+            40%, 56%  { content: "Labs precharted"; }
+            57%, 59%  { content: "eleanote"; }
+            60%, 80%  { content: "Imaging precharted"; }
+            81%, 100% { content: "eleanote"; }
+        }
+
+        /* PHONE: cursor coordinates change a bit because the EMR is taller
+           on a 9:13 stage. Same beats, repositioned. */
+        @media (max-width: 700px) {
+            @keyframes s2-cursor {
+                0%   { opacity: 0; left: 50%; top: 22%; }
+                2%   { opacity: 1; left: 48%; top: 22%; }
+                6%   { opacity: 1; left: 48%; top: 22%; }
+                13%  { opacity: 1; left: 40%; top: 18%; }
+                15%  { opacity: 1; left: 88%; top: 18%; }
+                17%  { opacity: 1; left: 40%; top: 22%; }
+                19%  { opacity: 1; left: 88%; top: 22%; }
+                21%  { opacity: 1; left: 40%; top: 26%; }
+                23%  { opacity: 1; left: 88%; top: 26%; }
+                26%  { opacity: 1; left: 16%; top: 32%; }
+                27%  { opacity: 1; left: 16%; top: 32%; }
+                32%  { opacity: 1; left: 40%; top: 28%; }
+                36%  { opacity: 1; left: 88%; top: 28%; }
+                41%  { opacity: 1; left: 16%; top: 38%; }
+                51%  { opacity: 1; left: 16%; top: 38%; }
+                56%  { opacity: 1; left: 40%; top: 28%; }
+                59%  { opacity: 1; left: 88%; top: 28%; }
+                70%  { opacity: 1; left: 88%; top: 28%; }
+                85%  { opacity: 0; left: 88%; top: 28%; }
+                100% { opacity: 0; }
+            }
+            @keyframes s2-click {
+                0%, 6%   { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
+                7%       { opacity: 1; left: 48%; top: 22%; transform: translate(-50%,-50%) scale(0.8); }
+                10%      { opacity: 0; left: 48%; top: 22%; transform: translate(-50%,-50%) scale(1.4); }
+                26%      { opacity: 0; }
+                27%      { opacity: 1; left: 16%; top: 32%; transform: translate(-50%,-50%) scale(0.8); }
+                30%      { opacity: 0; left: 16%; top: 32%; transform: translate(-50%,-50%) scale(1.4); }
+                33%      { opacity: 1; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(0.8); }
+                36%      { opacity: 0; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(1.4); }
+                51%      { opacity: 1; left: 16%; top: 38%; transform: translate(-50%,-50%) scale(0.8); }
+                54%      { opacity: 0; left: 16%; top: 38%; transform: translate(-50%,-50%) scale(1.4); }
+                57%      { opacity: 1; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(0.8); }
+                60%      { opacity: 0; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(1.4); }
+                100%     { opacity: 0; }
+            }
+            /* phone highlight bars: stretched a bit to match phone cursor */
+            .s2-hl-line.l1 { top: 17%; left: 35%; }
+            .s2-hl-line.l2 { top: 22%; left: 35%; }
+            .s2-hl-line.l3 { top: 27%; left: 35%; }
+            @keyframes s2-hlL1 {
+                0%, 12%  { opacity: 0; width: 0; }
+                13%      { opacity: 1; width: 4%; }
+                15%      { opacity: 1; width: 53%; }
+                33%      { opacity: 1; width: 53%; }
+                34%      { opacity: 0; width: 53%; }
+                100%     { opacity: 0; }
+            }
+            @keyframes s2-hlL2 {
+                0%, 16%  { opacity: 0; width: 0; }
+                17%      { opacity: 1; width: 4%; }
+                19%      { opacity: 1; width: 53%; }
+                33%      { opacity: 1; width: 53%; }
+                34%      { opacity: 0; width: 53%; }
+                100%     { opacity: 0; }
+            }
+            @keyframes s2-hlL3 {
+                0%, 20%  { opacity: 0; width: 0; }
+                21%      { opacity: 1; width: 4%; }
+                23%      { opacity: 1; width: 53%; }
+                33%      { opacity: 1; width: 53%; }
+                34%      { opacity: 0; width: 53%; }
+                100%     { opacity: 0; }
+            }
+            .s2-row-hl-lab { top: 28%; left: 35%; }
+            .s2-row-hl-img { top: 28%; left: 35%; }
+            @keyframes s2-hlLab {
+                0%, 32%  { opacity: 0; width: 0; }
+                33%      { opacity: 1; width: 4%; }
+                36%      { opacity: 1; width: 53%; }
+                58%      { opacity: 1; width: 53%; }
+                59%      { opacity: 0; width: 53%; }
+                100%     { opacity: 0; }
+            }
+            @keyframes s2-hlImg {
+                0%, 56%  { opacity: 0; width: 0; }
+                57%      { opacity: 1; width: 4%; }
+                59%      { opacity: 1; width: 53%; }
+                83%      { opacity: 1; width: 53%; }
+                84%      { opacity: 0; width: 53%; }
+                100%     { opacity: 0; }
+            }
         }
 
         /* ============================================================
@@ -1559,33 +1816,64 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow active">Notes</div>
-                        <div class="navrow">Labs</div>
-                        <div class="navrow">Imaging</div>
+                        <div class="navrow nav-notes">Notes</div>
+                        <div class="navrow nav-labs">Labs</div>
+                        <div class="navrow nav-img">Imaging</div>
                         <div class="navrow">Orders</div>
                         <div class="navrow">Diagnoses</div>
                     </div>
-                    <!-- Center pane is selectable: prior note row + lab row + imaging row -->
-                    <div class="emr-center selectable">
-                        <h4>Prior visits, labs, imaging</h4>
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 4px 0;">Prior note</h5>
-                        <div class="clinical-row" style="position: relative;">
-                            <span class="d">11/14/2025</span>
-                            <span class="t">Annual wellness — RCC surveillance, CKD stable</span>
-                            <div class="hl h-note" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+                    <!-- Center pane has 4 swappable views, only one visible at a time -->
+                    <div class="emr-center" style="padding: 0; position: relative;">
+
+                        <!-- VIEW 1: Notes list (default) -->
+                        <div class="s2-view s2-view-notes">
+                            <h4>Notes · prior encounters</h4>
+                            <div class="clinical-row"><span class="d">11/14/2025</span><span class="t">Annual wellness — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">06/12/2025</span><span class="t">Office visit — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">03/04/2025</span><span class="t">Office visit — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">04/02/2024</span><span class="t">Urology f/u — partial nephrectomy</span></div>
+                            <div class="clinical-row"><span class="d">11/18/2023</span><span class="t">Op note — partial nephrectomy</span></div>
                         </div>
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 8px 0 4px;">Recent labs</h5>
-                        <div class="clinical-row with-value" style="position: relative;">
-                            <span class="d">12/10/2024</span>
-                            <span class="t">BMP — Cr 1.5, GFR 48, K 4.2</span>
-                            <div class="hl h-lab" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+
+                        <!-- VIEW 2: Note detail (multi-line note text) -->
+                        <div class="s2-view s2-view-note">
+                            <h4>Annual wellness · 11/14/2025</h4>
+                            <p style="font-size: 9.5px; line-height: 1.65; color: var(--emr-ink); margin-top: 6px;">
+                                64-year-old gentleman returns for annual wellness. History of T1b
+                                renal cell carcinoma s/p partial nephrectomy 2023, currently under
+                                surveillance with no evidence of recurrence on most recent MRI.
+                            </p>
+                            <p style="font-size: 9.5px; line-height: 1.65; color: var(--emr-ink); margin-top: 4px;">
+                                CKD stage 3 (baseline Cr 1.5) felt secondary to nephrectomy; stable.
+                                HTN well-controlled on lisinopril 20 mg. No new symptoms today,
+                                exercise tolerance preserved.
+                            </p>
+                            <!-- 3 stacked highlight bars timed with the cursor -->
+                            <div class="s2-hl-line l1"></div>
+                            <div class="s2-hl-line l2"></div>
+                            <div class="s2-hl-line l3"></div>
                         </div>
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 8px 0 4px;">Recent imaging</h5>
-                        <div class="clinical-row" style="position: relative;">
-                            <span class="d">09/30/2025</span>
-                            <span class="t">MRI abdomen — RCC surveillance, no recurrence</span>
-                            <div class="hl h-img" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+
+                        <!-- VIEW 3: Labs list -->
+                        <div class="s2-view s2-view-labs">
+                            <h4>Labs</h4>
+                            <div class="clinical-row with-value"><span class="d">12/10/2024</span><span class="t">BMP — Cr 1.5, GFR 48, K 4.2</span></div>
+                            <div class="clinical-row with-value"><span class="d">12/10/2024</span><span class="t">CBC — WBC 6.8, Hgb 13.5</span></div>
+                            <div class="clinical-row with-value"><span class="d">06/04/2024</span><span class="t">BMP — Cr 1.5, GFR 47</span></div>
+                            <div class="clinical-row with-value"><span class="d">12/15/2023</span><span class="t">BMP — Cr 1.6, GFR 44</span></div>
+                            <!-- Highlight bar timed with the cursor on the first row -->
+                            <div class="s2-row-hl-lab"></div>
                         </div>
+
+                        <!-- VIEW 4: Imaging list -->
+                        <div class="s2-view s2-view-img">
+                            <h4>Imaging</h4>
+                            <div class="clinical-row"><span class="d">09/30/2025</span><span class="t">MRI abdomen — RCC surveillance, no recurrence</span></div>
+                            <div class="clinical-row"><span class="d">09/15/2024</span><span class="t">MRI abdomen — RCC surveillance, no recurrence</span></div>
+                            <div class="clinical-row"><span class="d">12/02/2023</span><span class="t">CT abdomen — post-op nephrectomy, expected changes</span></div>
+                            <div class="s2-row-hl-img"></div>
+                        </div>
+
                     </div>
                     <div class="emr-right">
                         <h5>Today's note</h5>
@@ -1597,7 +1885,7 @@
 
                 <!-- copilot idle, with status text rolling -->
                 <div class="pill idle">
-                    <span class="pill-status" style="display: inline-block; min-width: 130px; text-align: center;"></span>
+                    <span class="pill-status"></span>
                 </div>
 
                 <!-- arrow cursor -->
@@ -1608,9 +1896,9 @@
                 <div class="click-flash cf1"></div>
 
                 <!-- ghosts -->
-                <div class="ghost gNote" style="top: 30%; left: 30%;">Annual: RCC surveillance, CKD stable</div>
-                <div class="ghost gLab"  style="top: 53%; left: 30%;">BMP: Cr 1.5, GFR 48</div>
-                <div class="ghost gImg"  style="top: 73%; left: 30%;">MRI abdomen: no recurrence</div>
+                <div class="ghost gNote">RCC surveillance, CKD-3 stable, HTN controlled</div>
+                <div class="ghost gLab">BMP · Cr 1.5, GFR 48, K 4.2</div>
+                <div class="ghost gImg">MRI abdomen · no recurrence</div>
 
                 <div class="dock">
                     <span class="dock-icon"></span>
@@ -1635,46 +1923,64 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow active">Notes</div>
-                        <div class="navrow">Labs</div>
-                        <div class="navrow">Imaging</div>
+                        <div class="navrow nav-notes">Notes</div>
+                        <div class="navrow nav-labs">Labs</div>
+                        <div class="navrow nav-img">Imaging</div>
                         <div class="navrow">Orders</div>
                         <div class="navrow">Dx</div>
                         <div class="navrow">Today's note</div>
                     </div>
-                    <div class="emr-center selectable">
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 4px 0;">Prior note</h5>
-                        <div class="clinical-row" style="position: relative;">
-                            <span class="d">11/14/25</span>
-                            <span class="t">Annual — RCC surv., CKD</span>
-                            <div class="hl h-note" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s2-view s2-view-notes">
+                            <h4 style="padding: 8px 8px 4px;">Notes · prior</h4>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">11/14/25</span><span class="t">Annual wellness</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">06/12/25</span><span class="t">Office visit</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">03/04/25</span><span class="t">Office visit</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">04/02/24</span><span class="t">Urology f/u</span></div>
                         </div>
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 8px 0 4px;">Recent labs</h5>
-                        <div class="clinical-row" style="position: relative;">
-                            <span class="d">12/10/24</span>
-                            <span class="t">BMP · Cr 1.5, GFR 48</span>
-                            <div class="hl h-lab" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+                        <div class="s2-view s2-view-note">
+                            <h4 style="padding: 8px 8px 4px;">Annual · 11/14/25</h4>
+                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 0 8px;">
+                                64M, annual visit. RCC s/p partial nephrectomy 2023, surveillance.
+                            </p>
+                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 4px 8px 0;">
+                                CKD-3 stable (Cr 1.5). HTN on lisinopril, controlled.
+                            </p>
+                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 4px 8px 0;">
+                                No new symptoms. Exam normal.
+                            </p>
+                            <div class="s2-hl-line l1"></div>
+                            <div class="s2-hl-line l2"></div>
+                            <div class="s2-hl-line l3"></div>
                         </div>
-                        <h5 style="font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emr-muted); font-weight: 700; margin: 8px 0 4px;">Imaging</h5>
-                        <div class="clinical-row" style="position: relative;">
-                            <span class="d">09/30/25</span>
-                            <span class="t">MRI abd — no recurrence</span>
-                            <div class="hl h-img" style="position: absolute; left: 4px; right: 4px; top: 4px; bottom: 4px;"></div>
+                        <div class="s2-view s2-view-labs">
+                            <h4 style="padding: 8px 8px 4px;">Labs</h4>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/10/24</span><span class="t">BMP · Cr 1.5, GFR 48</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">06/04/24</span><span class="t">BMP · Cr 1.5, GFR 47</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/15/23</span><span class="t">BMP · Cr 1.6, GFR 44</span></div>
+                            <div class="s2-row-hl-lab"></div>
+                        </div>
+                        <div class="s2-view s2-view-img">
+                            <h4 style="padding: 8px 8px 4px;">Imaging</h4>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">09/30/25</span><span class="t">MRI abd · no recurrence</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">09/15/24</span><span class="t">MRI abd · no recurrence</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/02/23</span><span class="t">CT abd · post-op</span></div>
+                            <div class="s2-row-hl-img"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pill idle">
-                    <span class="pill-status" style="display: inline-block; min-width: 130px; text-align: center;"></span>
+                    <span class="pill-status"></span>
                 </div>
                 <div class="cursor c1">
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
                         fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
                 </div>
                 <div class="click-flash cf1"></div>
-                <div class="ghost gNote" style="top: 28%; left: 38%;">Annual: RCC surv., CKD</div>
-                <div class="ghost gLab"  style="top: 50%; left: 38%;">BMP: Cr 1.5, GFR 48</div>
-                <div class="ghost gImg"  style="top: 70%; left: 38%;">MRI abd: no recurrence</div>
+                <div class="ghost gNote" style="top: 25%; left: 40%;">RCC surv., CKD, HTN</div>
+                <div class="ghost gLab"  style="top: 28%; left: 40%;">BMP · Cr 1.5</div>
+                <div class="ghost gImg"  style="top: 28%; left: 40%;">MRI abd · no recur</div>
 
                 <div class="dock">
                     <span class="dock-tab tab-ele running">
