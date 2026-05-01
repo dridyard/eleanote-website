@@ -702,7 +702,10 @@
             pointer-events: none;
         }
 
-        /* arrow cursor */
+        /* arrow cursor.
+           The visual click point (arrow tip) is at SVG coords (2,1).
+           We use translate(-2px, -1px) so the element's left/top values
+           refer to where the click actually lands, not the bounding box. */
         .cursor {
             position: absolute;
             z-index: 11;
@@ -710,6 +713,7 @@
             height: 24px;
             pointer-events: none;
             opacity: 0;
+            transform: translate(-2px, -1px);
         }
         .cursor svg {
             width: 100%; height: 100%; display: block;
@@ -1059,123 +1063,153 @@
              62-100% cursor stays then fades out
         */
         .scene-2 .cursor.c1 { animation: s2-cursor 22s linear infinite; }
-        .scene-2 .click-flash.cf1 { animation: s2-click 22s linear infinite; }
+        /* Four separate click-flash elements - each pinned to its click position
+           and only briefly visible at its moment. No interpolation between
+           positions = no "floating" between clicks. */
+        .scene-2 .click-flash.cf1 { left: 28%; top: 11%; animation: s2-click1 22s steps(1, end) infinite; }
+        .scene-2 .click-flash.cf2 { left: 12%; top: 14%; animation: s2-click2 22s steps(1, end) infinite; }
+        .scene-2 .click-flash.cf3 { left: 28%; top: 12%; animation: s2-click3 22s steps(1, end) infinite; }
+        .scene-2 .click-flash.cf4 { left: 12%; top: 18%; animation: s2-click4 22s steps(1, end) infinite; }
+        /* The "ring" pulse uses opacity + scale only, no position interpolation */
+        @keyframes s2-click1 {
+            0%, 6%    { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            7%        { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+            10%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        @keyframes s2-click2 {
+            0%, 26%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            27%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+            30%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        @keyframes s2-click3 {
+            0%, 32%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            33%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+            36%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        @keyframes s2-click4 {
+            0%, 50%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            51%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+            54%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        /* Click 5: drag-start on lab row (no nav click, just drag start) - unused */
+        /* Click 6: drag-start on imaging row */
+        .scene-2 .click-flash.cf5 { left: 28%; top: 12%; animation: s2-click5 22s steps(1, end) infinite; }
+        @keyframes s2-click5 {
+            0%, 56%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            57%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+            60%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
 
         @keyframes s2-cursor {
-            0%   { opacity: 0; left: 30%; top: 25%; }
-            2%   { opacity: 1; left: 30%; top: 25%; }
-            6%   { opacity: 1; left: 28%; top: 25%; }     /* first note row */
-            7%   { opacity: 1; left: 28%; top: 25%; }
+            /* Coordinates calibrated against actual rendered positions
+               (verified by headless screenshots). Stage is 16:9. */
+            0%   { opacity: 0; left: 32%; top: 14%; }
+            2%   { opacity: 1; left: 32%; top: 14%; }
+            6%   { opacity: 1; left: 28%; top: 11%; }     /* row 1: Annual wellness */
+            8%   { opacity: 1; left: 28%; top: 11%; }
             /* view swaps to note-detail at 10% */
-            13%  { opacity: 1; left: 28%; top: 18%; }     /* start of line 1 */
-            15%  { opacity: 1; left: 70%; top: 18%; }     /* end of line 1 */
-            17%  { opacity: 1; left: 28%; top: 23%; }     /* start of line 2 */
-            19%  { opacity: 1; left: 70%; top: 23%; }     /* end of line 2 */
-            21%  { opacity: 1; left: 28%; top: 28%; }     /* start of line 3 */
-            23%  { opacity: 1; left: 70%; top: 28%; }     /* end of line 3 */
-            26%  { opacity: 1; left: 12%; top: 35%; }     /* approach Labs nav */
-            27%  { opacity: 1; left: 12%; top: 35%; }     /* click Labs */
+            13%  { opacity: 1; left: 28%; top: 11%; }     /* note line 1 start */
+            15%  { opacity: 1; left: 70%; top: 11%; }     /* note line 1 end */
+            17%  { opacity: 1; left: 28%; top: 13.5%; }   /* note line 2 start */
+            19%  { opacity: 1; left: 70%; top: 13.5%; }   /* note line 2 end */
+            21%  { opacity: 1; left: 28%; top: 16%; }     /* note line 3 start */
+            23%  { opacity: 1; left: 70%; top: 16%; }     /* note line 3 end */
+            26%  { opacity: 1; left: 12%; top: 14%; }     /* approach Labs nav */
+            28%  { opacity: 1; left: 12%; top: 14%; }     /* click Labs */
             /* view swaps to labs-list at 42% */
-            32%  { opacity: 1; left: 28%; top: 30%; }     /* lab row start */
-            33%  { opacity: 1; left: 28%; top: 30%; }
-            36%  { opacity: 1; left: 70%; top: 30%; }     /* lab row end */
-            41%  { opacity: 1; left: 12%; top: 41%; }     /* approach Imaging nav */
-            51%  { opacity: 1; left: 12%; top: 41%; }     /* click Imaging */
+            32%  { opacity: 1; left: 28%; top: 12%; }     /* first lab row */
+            34%  { opacity: 1; left: 28%; top: 12%; }
+            37%  { opacity: 1; left: 70%; top: 12%; }     /* lab row sweep end */
+            42%  { opacity: 1; left: 12%; top: 18%; }     /* approach Imaging nav */
+            52%  { opacity: 1; left: 12%; top: 18%; }     /* click Imaging */
             /* view swaps to imaging-list at 66% */
-            56%  { opacity: 1; left: 28%; top: 30%; }     /* MRI row start */
-            57%  { opacity: 1; left: 28%; top: 30%; }
-            59%  { opacity: 1; left: 70%; top: 30%; }     /* MRI row end */
-            70%  { opacity: 1; left: 70%; top: 30%; }
-            85%  { opacity: 0; left: 70%; top: 30%; }
+            56%  { opacity: 1; left: 28%; top: 12%; }     /* first imaging row */
+            58%  { opacity: 1; left: 28%; top: 12%; }
+            61%  { opacity: 1; left: 70%; top: 12%; }     /* imaging row sweep end */
+            72%  { opacity: 1; left: 70%; top: 12%; }
+            85%  { opacity: 0; left: 70%; top: 12%; }
             100% { opacity: 0; }
         }
-        @keyframes s2-click {
-            0%, 6%    { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-            7%        { opacity: 1; left: 28%; top: 25%; transform: translate(-50%,-50%) scale(0.8); }
-            10%       { opacity: 0; left: 28%; top: 25%; transform: translate(-50%,-50%) scale(1.4); }
-            26%       { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-            27%       { opacity: 1; left: 12%; top: 35%; transform: translate(-50%,-50%) scale(0.8); }
-            30%       { opacity: 0; left: 12%; top: 35%; transform: translate(-50%,-50%) scale(1.4); }
-            32%       { opacity: 0; }
-            33%       { opacity: 1; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(0.8); }
-            36%       { opacity: 0; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(1.4); }
-            50%       { opacity: 0; }
-            51%       { opacity: 1; left: 12%; top: 41%; transform: translate(-50%,-50%) scale(0.8); }
-            54%       { opacity: 0; left: 12%; top: 41%; transform: translate(-50%,-50%) scale(1.4); }
-            56%       { opacity: 0; }
-            57%       { opacity: 1; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(0.8); }
-            60%       { opacity: 0; left: 28%; top: 30%; transform: translate(-50%,-50%) scale(1.4); }
-            100%      { opacity: 0; }
+        /* (old single-element s2-click keyframes removed - replaced with
+           per-click independent animations s2-click1..5 above) */
+
+        /* Note-text-block: a fixed-size container around the multi-line note
+           so the highlight rectangle can be positioned relative to a known
+           layout. Text uses explicit <br> tags so the line breaks are
+           predictable regardless of viewport size. */
+        .note-text-block {
+            position: relative;
+            margin-top: 6px;
+            padding: 4px 0;
+        }
+        .note-text-block p {
+            font-size: 10px;
+            line-height: 18px;
+            color: var(--emr-ink);
+            margin: 0;
         }
 
-        /* MULTI-LINE highlight bars in the note-detail view.
-           Three bars stacked vertically, each grows in width to match
-           the cursor sweep on its line. Coordinates match s2-cursor. */
-        .s2-hl-line {
+        /* Single contiguous note-selection rectangle, positioned relative to
+           .note-text-block. Each text line is 18px tall (set in CSS). */
+        .s2-note-hl {
             position: absolute;
             background: var(--emr-select);
             opacity: 0;
             border-radius: 2px;
-            height: 2.4%;
+            top: 4px;
+            left: 0;
             width: 0;
+            height: 18px;
+            animation: s2-noteHl 22s linear infinite;
+            pointer-events: none;
         }
-        .s2-hl-line.l1 {
-            top: 17%; left: 24%;
-            animation: s2-hlL1 22s linear infinite;
-        }
-        .s2-hl-line.l2 {
-            top: 22%; left: 24%;
-            animation: s2-hlL2 22s linear infinite;
-        }
-        .s2-hl-line.l3 {
-            top: 27%; left: 24%;
-            animation: s2-hlL3 22s linear infinite;
-        }
-        @keyframes s2-hlL1 {
-            0%, 12%   { opacity: 0; width: 0; }
-            13%       { opacity: 1; width: 4%; }
-            15%       { opacity: 1; width: 46%; }   /* matches cursor 28%->70% */
-            33%       { opacity: 1; width: 46%; }
-            34%       { opacity: 0; width: 46%; }
-            100%      { opacity: 0; }
-        }
-        @keyframes s2-hlL2 {
-            0%, 16%   { opacity: 0; width: 0; }
-            17%       { opacity: 1; width: 4%; }
-            19%       { opacity: 1; width: 46%; }
-            33%       { opacity: 1; width: 46%; }
-            34%       { opacity: 0; width: 46%; }
-            100%      { opacity: 0; }
-        }
-        @keyframes s2-hlL3 {
-            0%, 20%   { opacity: 0; width: 0; }
-            21%       { opacity: 1; width: 4%; }
-            23%       { opacity: 1; width: 46%; }
-            33%       { opacity: 1; width: 46%; }
-            34%       { opacity: 0; width: 46%; }
+        @keyframes s2-noteHl {
+            /* Hidden until cursor lands on note line 1 */
+            0%, 12%   { opacity: 0; width: 0;     height: 18px; }
+            /* Cursor sweeps line 1 (13-15% in the cursor timeline) */
+            13%       { opacity: 1; width: 8px;   height: 18px; }
+            15%       { opacity: 1; width: 88%;   height: 18px; }
+            /* Cursor wraps to line 2 - height grows to cover line 2 */
+            17%       { opacity: 1; width: 88%;   height: 36px; }
+            19%       { opacity: 1; width: 88%;   height: 36px; }
+            /* Cursor wraps to line 3 - height grows once more */
+            21%       { opacity: 1; width: 88%;   height: 54px; }
+            23%       { opacity: 1; width: 88%;   height: 54px; }
+            /* Hold while ghost flies */
+            26%       { opacity: 1; width: 88%;   height: 54px; }
+            /* Fade as cursor moves to Labs nav */
+            28%       { opacity: 0; width: 88%;   height: 54px; }
             100%      { opacity: 0; }
         }
 
         /* labs/imaging single-line highlight bars.
            These live INSIDE the swap views, so they're absolutely positioned
            inside .s2-view (which has its own padding of 8/12px). */
+        /* Labs and imaging single-row highlights are positioned RELATIVE
+           to their swap views (.s2-view), so left/top are within that
+           view, not within the whole stage. */
         .s2-row-hl-lab {
             position: absolute;
             background: var(--emr-select);
             opacity: 0;
             border-radius: 2px;
-            height: 2.6%;
-            top: 30%;
-            left: 24%;
+            height: 18px;
+            top: 38px;
+            left: 0;
             width: 0;
             animation: s2-hlLab 22s linear infinite;
         }
         @keyframes s2-hlLab {
             0%, 32%   { opacity: 0; width: 0; }
-            33%       { opacity: 1; width: 4%; }
-            36%       { opacity: 1; width: 46%; }
-            58%       { opacity: 1; width: 46%; }
-            59%       { opacity: 0; width: 46%; }
+            34%       { opacity: 1; width: 8px; }
+            37%       { opacity: 1; width: 88%; }
+            48%       { opacity: 1; width: 88%; }
+            49%       { opacity: 0; width: 88%; }
             100%      { opacity: 0; }
         }
         .s2-row-hl-img {
@@ -1183,66 +1217,71 @@
             background: var(--emr-select);
             opacity: 0;
             border-radius: 2px;
-            height: 2.6%;
-            top: 30%;
-            left: 24%;
+            height: 18px;
+            top: 38px;
+            left: 0;
             width: 0;
             animation: s2-hlImg 22s linear infinite;
         }
         @keyframes s2-hlImg {
-            0%, 56%   { opacity: 0; width: 0; }
-            57%       { opacity: 1; width: 4%; }
-            59%       { opacity: 1; width: 46%; }
-            83%       { opacity: 1; width: 46%; }
-            84%       { opacity: 0; width: 46%; }
+            0%, 58%   { opacity: 0; width: 0; }
+            60%       { opacity: 1; width: 8px; }
+            63%       { opacity: 1; width: 88%; }
+            74%       { opacity: 1; width: 88%; }
+            75%       { opacity: 0; width: 88%; }
             100%      { opacity: 0; }
         }
 
-        /* GHOSTS fly from the highlight area to the pill (top-right) */
+        /* GHOSTS fly in a STRAIGHT LINE from the highlighted area to the
+           copilot pill at top-right (4%/3%). We animate top + right
+           directly so the trajectory is a straight line independent of
+           the ghost's own width. */
         .scene-2 .ghost.gNote {
-            top: 25%; left: 30%;
-            animation: s2-gNote 22s cubic-bezier(.4,0,.2,1) infinite;
+            top: 22%; left: auto; right: 60%;
+            animation: s2-gNote 22s cubic-bezier(.25, .1, .25, 1) infinite;
         }
         .scene-2 .ghost.gLab {
-            top: 30%; left: 30%;
-            animation: s2-gLab 22s cubic-bezier(.4,0,.2,1) infinite;
+            top: 30%; left: auto; right: 60%;
+            animation: s2-gLab 22s cubic-bezier(.25, .1, .25, 1) infinite;
         }
         .scene-2 .ghost.gImg {
-            top: 30%; left: 30%;
-            animation: s2-gImg 22s cubic-bezier(.4,0,.2,1) infinite;
+            top: 30%; left: auto; right: 60%;
+            animation: s2-gImg 22s cubic-bezier(.25, .1, .25, 1) infinite;
         }
         @keyframes s2-gNote {
-            0%, 23%   { opacity: 0; transform: translate(0,0) scale(1); }
-            24%       { opacity: 1; transform: translate(0,0) scale(1); }
-            27%       { opacity: 0; transform: translate(160%, -100%) scale(0.6); }
-            100%      { opacity: 0; }
+            0%, 23%  { opacity: 0; top: 22%; right: 60%; transform: scale(1); }
+            24%      { opacity: 1; top: 22%; right: 60%; transform: scale(1); }
+            27%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
+            28%, 100%{ opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
         }
         @keyframes s2-gLab {
-            0%, 36%   { opacity: 0; transform: translate(0,0) scale(1); }
-            37%       { opacity: 1; transform: translate(0,0) scale(1); }
-            40%       { opacity: 0; transform: translate(160%, -160%) scale(0.6); }
-            100%      { opacity: 0; }
+            0%, 36%  { opacity: 0; top: 30%; right: 60%; transform: scale(1); }
+            37%      { opacity: 1; top: 30%; right: 60%; transform: scale(1); }
+            40%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
+            41%,100% { opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
         }
         @keyframes s2-gImg {
-            0%, 59%   { opacity: 0; transform: translate(0,0) scale(1); }
-            60%       { opacity: 1; transform: translate(0,0) scale(1); }
-            63%       { opacity: 0; transform: translate(160%, -160%) scale(0.6); }
-            100%      { opacity: 0; }
+            0%, 59%  { opacity: 0; top: 30%; right: 60%; transform: scale(1); }
+            60%      { opacity: 1; top: 30%; right: 60%; transform: scale(1); }
+            63%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
+            64%,100% { opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
         }
 
-        /* COPILOT IDLE STATUS TEXT - rolls through 4 strings */
+        /* COPILOT IDLE STATUS TEXT - rolls through 4 strings.
+           Each "X precharted" message holds for ~1 second then returns to
+           "eleanote". 22s loop -> 1s = ~4.5%. */
         .scene-2 .pill .pill-status::after { content: "eleanote"; }
         .scene-2 .pill .pill-status {
             animation: s2-status 22s steps(1, end) infinite;
         }
         @keyframes s2-status {
             0%, 23%   { content: "eleanote"; }
-            24%, 35%  { content: "Text precharted"; }
-            36%, 39%  { content: "eleanote"; }
-            40%, 56%  { content: "Labs precharted"; }
-            57%, 59%  { content: "eleanote"; }
-            60%, 80%  { content: "Imaging precharted"; }
-            81%, 100% { content: "eleanote"; }
+            24%, 28%  { content: "Text precharted"; }
+            29%, 39%  { content: "eleanote"; }
+            40%, 44%  { content: "Labs precharted"; }
+            45%, 62%  { content: "eleanote"; }
+            63%, 67%  { content: "Imaging precharted"; }
+            68%, 100% { content: "eleanote"; }
         }
 
         /* PHONE: cursor coordinates change a bit because the EMR is taller
@@ -1285,34 +1324,28 @@
                 60%      { opacity: 0; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(1.4); }
                 100%     { opacity: 0; }
             }
-            /* phone highlight bars: stretched a bit to match phone cursor */
-            .s2-hl-line.l1 { top: 17%; left: 35%; }
-            .s2-hl-line.l2 { top: 22%; left: 35%; }
-            .s2-hl-line.l3 { top: 27%; left: 35%; }
-            @keyframes s2-hlL1 {
-                0%, 12%  { opacity: 0; width: 0; }
-                13%      { opacity: 1; width: 4%; }
-                15%      { opacity: 1; width: 53%; }
-                33%      { opacity: 1; width: 53%; }
-                34%      { opacity: 0; width: 53%; }
+            /* phone single-rectangle highlight - same idea as desktop */
+            .s2-note-hl {
+                top: 17%; left: 35%;
+            }
+            @keyframes s2-noteHl {
+                0%, 12%  { opacity: 0; width: 0; height: 2.4%; }
+                13%      { opacity: 1; width: 4%; height: 2.4%; }
+                15%      { opacity: 1; width: 53%; height: 2.4%; }
+                17%      { opacity: 1; width: 53%; height: 7.4%; }
+                19%      { opacity: 1; width: 53%; height: 7.4%; }
+                21%      { opacity: 1; width: 53%; height: 12.4%; }
+                23%      { opacity: 1; width: 53%; height: 12.4%; }
+                27%      { opacity: 1; width: 53%; height: 12.4%; }
+                29%      { opacity: 0; width: 53%; height: 12.4%; }
                 100%     { opacity: 0; }
             }
-            @keyframes s2-hlL2 {
-                0%, 16%  { opacity: 0; width: 0; }
-                17%      { opacity: 1; width: 4%; }
-                19%      { opacity: 1; width: 53%; }
-                33%      { opacity: 1; width: 53%; }
-                34%      { opacity: 0; width: 53%; }
-                100%     { opacity: 0; }
-            }
-            @keyframes s2-hlL3 {
-                0%, 20%  { opacity: 0; width: 0; }
-                21%      { opacity: 1; width: 4%; }
-                23%      { opacity: 1; width: 53%; }
-                33%      { opacity: 1; width: 53%; }
-                34%      { opacity: 0; width: 53%; }
-                100%     { opacity: 0; }
-            }
+            /* phone click-flash positions match phone cursor coordinates */
+            .scene-2 .click-flash.cf1 { left: 48%; top: 22%; }
+            .scene-2 .click-flash.cf2 { left: 16%; top: 32%; }
+            .scene-2 .click-flash.cf3 { left: 40%; top: 28%; }
+            .scene-2 .click-flash.cf4 { left: 16%; top: 38%; }
+            .scene-2 .click-flash.cf5 { left: 40%; top: 28%; }
             .s2-row-hl-lab { top: 28%; left: 35%; }
             .s2-row-hl-img { top: 28%; left: 35%; }
             @keyframes s2-hlLab {
@@ -1838,20 +1871,17 @@
                         <!-- VIEW 2: Note detail (multi-line note text) -->
                         <div class="s2-view s2-view-note">
                             <h4>Annual wellness · 11/14/2025</h4>
-                            <p style="font-size: 9.5px; line-height: 1.65; color: var(--emr-ink); margin-top: 6px;">
-                                64-year-old gentleman returns for annual wellness. History of T1b
-                                renal cell carcinoma s/p partial nephrectomy 2023, currently under
-                                surveillance with no evidence of recurrence on most recent MRI.
-                            </p>
-                            <p style="font-size: 9.5px; line-height: 1.65; color: var(--emr-ink); margin-top: 4px;">
-                                CKD stage 3 (baseline Cr 1.5) felt secondary to nephrectomy; stable.
-                                HTN well-controlled on lisinopril 20 mg. No new symptoms today,
-                                exercise tolerance preserved.
-                            </p>
-                            <!-- 3 stacked highlight bars timed with the cursor -->
-                            <div class="s2-hl-line l1"></div>
-                            <div class="s2-hl-line l2"></div>
-                            <div class="s2-hl-line l3"></div>
+                            <!-- The note paragraph is a fixed-line block.
+                                 Highlight is positioned RELATIVE to this block
+                                 so it always covers the visible text regardless
+                                 of how text wraps across viewports. -->
+                            <div class="note-text-block">
+                                <p>64-year-old gentleman returns for annual wellness.<br>
+                                History of T1b renal cell carcinoma s/p partial<br>
+                                nephrectomy 2023, currently on surveillance.</p>
+                                <!-- Single contiguous selection rectangle -->
+                                <div class="s2-note-hl"></div>
+                            </div>
                         </div>
 
                         <!-- VIEW 3: Labs list -->
@@ -1893,7 +1923,12 @@
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
                         fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
                 </div>
+                <!-- Five independent click flashes, each pinned to its click site -->
                 <div class="click-flash cf1"></div>
+                <div class="click-flash cf2"></div>
+                <div class="click-flash cf3"></div>
+                <div class="click-flash cf4"></div>
+                <div class="click-flash cf5"></div>
 
                 <!-- ghosts -->
                 <div class="ghost gNote">RCC surveillance, CKD-3 stable, HTN controlled</div>
@@ -1949,9 +1984,7 @@
                             <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 4px 8px 0;">
                                 No new symptoms. Exam normal.
                             </p>
-                            <div class="s2-hl-line l1"></div>
-                            <div class="s2-hl-line l2"></div>
-                            <div class="s2-hl-line l3"></div>
+                            <div class="s2-note-hl"></div>
                         </div>
                         <div class="s2-view s2-view-labs">
                             <h4 style="padding: 8px 8px 4px;">Labs</h4>
@@ -1978,9 +2011,13 @@
                         fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
                 </div>
                 <div class="click-flash cf1"></div>
-                <div class="ghost gNote" style="top: 25%; left: 40%;">RCC surv., CKD, HTN</div>
-                <div class="ghost gLab"  style="top: 28%; left: 40%;">BMP · Cr 1.5</div>
-                <div class="ghost gImg"  style="top: 28%; left: 40%;">MRI abd · no recur</div>
+                <div class="click-flash cf2"></div>
+                <div class="click-flash cf3"></div>
+                <div class="click-flash cf4"></div>
+                <div class="click-flash cf5"></div>
+                <div class="ghost gNote" style="top: 22%; right: 60%;">RCC surv., CKD, HTN</div>
+                <div class="ghost gLab"  style="top: 28%; right: 60%;">BMP · Cr 1.5</div>
+                <div class="ghost gImg"  style="top: 28%; right: 60%;">MRI abd · no recur</div>
 
                 <div class="dock">
                     <span class="dock-tab tab-ele running">
@@ -2388,6 +2425,24 @@
             });
         }, { threshold: 0.2 });
         scenes.forEach(s => obs.observe(s));
+
+        // Debug scrubber: ?scrub=7s pauses every animation 7 seconds in.
+        // Useful for verifying frames in headless screenshots. Remove
+        // before final ship if desired - it's a no-op without ?scrub=.
+        const scrub = new URLSearchParams(location.search).get('scrub');
+        if (scrub) {
+            const ms = parseFloat(scrub) * 1000;
+            obs.disconnect();
+            requestAnimationFrame(() => {
+                document.querySelectorAll('*').forEach(el => {
+                    const cs = getComputedStyle(el);
+                    if (cs.animationName && cs.animationName !== 'none') {
+                        el.style.animationDelay = -ms + 'ms';
+                        el.style.animationPlayState = 'paused';
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>
