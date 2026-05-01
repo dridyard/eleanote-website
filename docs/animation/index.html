@@ -961,409 +961,79 @@
            the prior-notes list visible. */
 
         /* ============================================================
-           SCENE 2: cursor navigates EHR - clicks a prior note row,
-                    a multi-line note opens, cursor click-drags across
-                    multiple lines to highlight the whole thing, ghost
-                    flies to copilot ('Text precharted'). Then cursor
-                    clicks 'Labs' in the left nav, view swaps to a labs
-                    list, drags one row, ghost. Then 'Imaging' nav,
-                    drags one row, ghost.
-           Loop: 22s
+           SCENE 2 - SCRIPTED, COORDINATE-DRIVEN
+           ------------------------------------------------------------
+           Coordinate map (% of stage):
+             DESKTOP (16:9)           PHONE (9:13)
+             Cursor start: (50%, 45%)  (50%, 35%)
+             Notes button: (15%, 13%)  (18%, 11%)
+
+           Loop: 3.0 seconds
+
+           Script:
+             0.00s - 0.30s  cursor visible at center
+             0.30s - 1.50s  cursor moves diagonally to Notes button
+                            (1.20s linear travel)
+             1.50s - 1.70s  click flash at Notes button (0.20s)
+             1.70s - 3.00s  prior notes list visible on main screen
+             (loop)
            ============================================================ */
         .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
         .scene-2 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
         .scene-2 .pill.idle { top: 4%; right: 3%; }
         .scene-2 .stage.p .pill.idle { top: 3%; right: 5%; }
 
-        /* The four center-pane views - only one visible at a time */
+        /* The center pane: blank initially, prior-notes list shown after click */
         .s2-view {
             position: absolute;
             inset: 0;
             padding: 8px 12px;
             opacity: 0;
-            display: flex;
-            flex-direction: column;
         }
-        .s2-view-notes  { animation: s2v-notes  22s steps(1, end) infinite; }
-        .s2-view-note   { animation: s2v-note   22s steps(1, end) infinite; }
-        .s2-view-labs   { animation: s2v-labs   22s steps(1, end) infinite; }
-        .s2-view-img    { animation: s2v-img    22s steps(1, end) infinite; }
+        .s2-view-blank { animation: s2v-blank 3s steps(1, end) infinite; }
+        .s2-view-notes { animation: s2v-notes 3s steps(1, end) infinite; }
+        @keyframes s2v-blank {
+            0%, 56.6% { opacity: 1; }
+            56.7%, 100% { opacity: 0; }
+        }
         @keyframes s2v-notes {
-            0%, 9%    { opacity: 1; }
-            10%, 100% { opacity: 0; }
-        }
-        @keyframes s2v-note {
-            0%, 9%    { opacity: 0; }
-            10%, 36%  { opacity: 1; }
-            37%, 100% { opacity: 0; }
-        }
-        @keyframes s2v-labs {
-            0%, 41%   { opacity: 0; }
-            42%, 60%  { opacity: 1; }
-            61%, 100% { opacity: 0; }
-        }
-        @keyframes s2v-img {
-            0%, 65%   { opacity: 0; }
-            66%, 88%  { opacity: 1; }
-            89%, 100% { opacity: 0; }
+            0%, 56.6% { opacity: 0; }
+            56.7%, 100% { opacity: 1; }
         }
 
-        /* nav row activation: 'Notes' active 0-9% and 10-36% (during note
-           detail), 'Labs' active 37-60%, 'Imaging' active 61-88% */
-        .scene-2 .navrow.nav-notes { animation: s2nav-notes 22s steps(1, end) infinite; }
-        .scene-2 .navrow.nav-labs  { animation: s2nav-labs  22s steps(1, end) infinite; }
-        .scene-2 .navrow.nav-img   { animation: s2nav-img   22s steps(1, end) infinite; }
-        @keyframes s2nav-notes {
-            0%, 36%   { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
-            37%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
+        /* Cursor: straight diagonal from (50%, 45%) -> (15%, 13%) */
+        .scene-2 .cursor.c1 {
+            animation: s2-cursor 3s linear infinite;
         }
-        @keyframes s2nav-labs {
-            0%, 36%   { background: transparent; color: var(--emr-ink); font-weight: 400; }
-            37%, 60%  { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
-            61%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
-        }
-        @keyframes s2nav-img {
-            0%, 60%   { background: transparent; color: var(--emr-ink); font-weight: 400; }
-            61%, 88%  { background: var(--emr-accent-soft); color: var(--emr-accent); font-weight: 600; }
-            89%, 100% { background: transparent; color: var(--emr-ink); font-weight: 400; }
-        }
-
-        /* CURSOR - one continuous path, coordinates exactly drive
-           the highlights. Anchored to top-left of the stage.
-           All percentages are STAGE-relative.
-
-           Stage layout reminder for the desktop animation:
-             EMR: top 4%, left 4%, width 92%, height 84%, so spans
-             rows 4-88% top-to-bottom and cols 4-96% left-to-right.
-             Banner is 22px tall (~5% of 16:9 stage @ 1080w).
-             Left nav (22%) sits cols 4-24%; center (1fr) cols 24-72%;
-             right (32%) cols 72-96%. Center pane top is at ~10% of
-             stage, bottom at ~88%.
-
-           Cursor path (DESKTOP, 22s loop):
-             0-3%   off-screen, fade in
-             3-6%   move to first prior-note row in center (~28%, 25%)
-             6-7%   click flash (notes-list -> note-detail view at 10%)
-             10-13% reposition to start of note line 1 (~28%, 17%)
-             13-15% drag right across line 1 to ~70%, 17%
-             15-17% drag down/left to start of line 2 (~28%, 22%)
-             17-19% drag right across line 2 to ~70%, 22%
-             19-21% drag down/left to start of line 3 (~28%, 27%)
-             21-23% drag right across line 3 to ~70%, 27%
-             23-26% release; cursor moves toward 'Labs' nav (~12%, 35%)
-             26-27% click flash (view -> labs-list at 42%)
-             29-32% cursor moves to a lab row (~28%, 30%)
-             32-33% click + drag start
-             33-36% drag right across to ~70%, 30%
-             36-39% release; ghost; cursor moves toward 'Imaging' (~12%, 41%)
-             50-51% click flash (view -> imaging-list at 66%)
-             53-56% cursor moves to MRI row (~28%, 30%)
-             56-59% drag across to ~70%, 30%
-             59-62% release; ghost
-             62-100% cursor stays then fades out
-        */
-        .scene-2 .cursor.c1 { animation: s2-cursor 22s linear infinite; }
-        /* Four separate click-flash elements - each pinned to its click position
-           and only briefly visible at its moment. No interpolation between
-           positions = no "floating" between clicks. */
-        .scene-2 .click-flash.cf1 { left: 28%; top: 11%; animation: s2-click1 22s steps(1, end) infinite; }
-        .scene-2 .click-flash.cf2 { left: 12%; top: 14%; animation: s2-click2 22s steps(1, end) infinite; }
-        .scene-2 .click-flash.cf3 { left: 28%; top: 12%; animation: s2-click3 22s steps(1, end) infinite; }
-        .scene-2 .click-flash.cf4 { left: 12%; top: 18%; animation: s2-click4 22s steps(1, end) infinite; }
-        /* The "ring" pulse uses opacity + scale only, no position interpolation */
-        @keyframes s2-click1 {
-            0%, 6%    { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            7%        { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-            10%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-        @keyframes s2-click2 {
-            0%, 26%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            27%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-            30%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-        @keyframes s2-click3 {
-            0%, 32%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            33%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-            36%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-        @keyframes s2-click4 {
-            0%, 50%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            51%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-            54%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-        /* Click 5: drag-start on lab row (no nav click, just drag start) - unused */
-        /* Click 6: drag-start on imaging row */
-        .scene-2 .click-flash.cf5 { left: 28%; top: 12%; animation: s2-click5 22s steps(1, end) infinite; }
-        @keyframes s2-click5 {
-            0%, 56%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            57%       { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-            60%       { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-            100%      { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-
         @keyframes s2-cursor {
-            /* Coordinates calibrated against actual rendered positions
-               (verified by headless screenshots). Stage is 16:9. */
-            0%   { opacity: 0; left: 32%; top: 14%; }
-            2%   { opacity: 1; left: 32%; top: 14%; }
-            6%   { opacity: 1; left: 28%; top: 11%; }     /* row 1: Annual wellness */
-            8%   { opacity: 1; left: 28%; top: 11%; }
-            /* view swaps to note-detail at 10% */
-            13%  { opacity: 1; left: 28%; top: 11%; }     /* note line 1 start */
-            15%  { opacity: 1; left: 70%; top: 11%; }     /* note line 1 end */
-            17%  { opacity: 1; left: 28%; top: 13.5%; }   /* note line 2 start */
-            19%  { opacity: 1; left: 70%; top: 13.5%; }   /* note line 2 end */
-            21%  { opacity: 1; left: 28%; top: 16%; }     /* note line 3 start */
-            23%  { opacity: 1; left: 70%; top: 16%; }     /* note line 3 end */
-            26%  { opacity: 1; left: 12%; top: 14%; }     /* approach Labs nav */
-            28%  { opacity: 1; left: 12%; top: 14%; }     /* click Labs */
-            /* view swaps to labs-list at 42% */
-            32%  { opacity: 1; left: 28%; top: 12%; }     /* first lab row */
-            34%  { opacity: 1; left: 28%; top: 12%; }
-            37%  { opacity: 1; left: 70%; top: 12%; }     /* lab row sweep end */
-            42%  { opacity: 1; left: 12%; top: 18%; }     /* approach Imaging nav */
-            52%  { opacity: 1; left: 12%; top: 18%; }     /* click Imaging */
-            /* view swaps to imaging-list at 66% */
-            56%  { opacity: 1; left: 28%; top: 12%; }     /* first imaging row */
-            58%  { opacity: 1; left: 28%; top: 12%; }
-            61%  { opacity: 1; left: 70%; top: 12%; }     /* imaging row sweep end */
-            72%  { opacity: 1; left: 70%; top: 12%; }
-            85%  { opacity: 0; left: 70%; top: 12%; }
-            100% { opacity: 0; }
-        }
-        /* (old single-element s2-click keyframes removed - replaced with
-           per-click independent animations s2-click1..5 above) */
-
-        /* Note-text-block: a fixed-size container around the multi-line note
-           so the highlight rectangle can be positioned relative to a known
-           layout. Text uses explicit <br> tags so the line breaks are
-           predictable regardless of viewport size. */
-        .note-text-block {
-            position: relative;
-            margin-top: 6px;
-            padding: 4px 0;
-        }
-        .note-text-block p {
-            font-size: 10px;
-            line-height: 18px;
-            color: var(--emr-ink);
-            margin: 0;
+            0%   { opacity: 1; left: 50%; top: 45%; }
+            10%  { opacity: 1; left: 50%; top: 45%; }     /* hold ~0.3s */
+            50%  { opacity: 1; left: 15%; top: 13%; }     /* arrive at Notes by 1.5s */
+            100% { opacity: 1; left: 15%; top: 13%; }     /* stay there */
         }
 
-        /* Single contiguous note-selection rectangle, positioned relative to
-           .note-text-block. Each text line is 18px tall (set in CSS). */
-        .s2-note-hl {
-            position: absolute;
-            background: var(--emr-select);
-            opacity: 0;
-            border-radius: 2px;
-            top: 4px;
-            left: 0;
-            width: 0;
-            height: 18px;
-            animation: s2-noteHl 22s linear infinite;
-            pointer-events: none;
+        /* Click flash at Notes button. Pinned to (15%, 13%), only visible
+           50% -> 56.6% of the loop (1.50s -> 1.70s = 0.20s). */
+        .scene-2 .click-flash.cf-notes {
+            left: 15%; top: 13%;
+            animation: s2-click 3s steps(1, end) infinite;
         }
-        @keyframes s2-noteHl {
-            /* Hidden until cursor lands on note line 1 */
-            0%, 12%   { opacity: 0; width: 0;     height: 18px; }
-            /* Cursor sweeps line 1 (13-15% in the cursor timeline) */
-            13%       { opacity: 1; width: 8px;   height: 18px; }
-            15%       { opacity: 1; width: 88%;   height: 18px; }
-            /* Cursor wraps to line 2 - height grows to cover line 2 */
-            17%       { opacity: 1; width: 88%;   height: 36px; }
-            19%       { opacity: 1; width: 88%;   height: 36px; }
-            /* Cursor wraps to line 3 - height grows once more */
-            21%       { opacity: 1; width: 88%;   height: 54px; }
-            23%       { opacity: 1; width: 88%;   height: 54px; }
-            /* Hold while ghost flies */
-            26%       { opacity: 1; width: 88%;   height: 54px; }
-            /* Fade as cursor moves to Labs nav */
-            28%       { opacity: 0; width: 88%;   height: 54px; }
+        @keyframes s2-click {
+            0%, 49.9% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            50%       { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            56.6%     { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%      { opacity: 0; }
         }
 
-        /* labs/imaging single-line highlight bars.
-           These live INSIDE the swap views, so they're absolutely positioned
-           inside .s2-view (which has its own padding of 8/12px). */
-        /* Labs and imaging single-row highlights are positioned RELATIVE
-           to their swap views (.s2-view), so left/top are within that
-           view, not within the whole stage. */
-        .s2-row-hl-lab {
-            position: absolute;
-            background: var(--emr-select);
-            opacity: 0;
-            border-radius: 2px;
-            height: 18px;
-            top: 38px;
-            left: 0;
-            width: 0;
-            animation: s2-hlLab 22s linear infinite;
-        }
-        @keyframes s2-hlLab {
-            0%, 32%   { opacity: 0; width: 0; }
-            34%       { opacity: 1; width: 8px; }
-            37%       { opacity: 1; width: 88%; }
-            48%       { opacity: 1; width: 88%; }
-            49%       { opacity: 0; width: 88%; }
-            100%      { opacity: 0; }
-        }
-        .s2-row-hl-img {
-            position: absolute;
-            background: var(--emr-select);
-            opacity: 0;
-            border-radius: 2px;
-            height: 18px;
-            top: 38px;
-            left: 0;
-            width: 0;
-            animation: s2-hlImg 22s linear infinite;
-        }
-        @keyframes s2-hlImg {
-            0%, 58%   { opacity: 0; width: 0; }
-            60%       { opacity: 1; width: 8px; }
-            63%       { opacity: 1; width: 88%; }
-            74%       { opacity: 1; width: 88%; }
-            75%       { opacity: 0; width: 88%; }
-            100%      { opacity: 0; }
-        }
-
-        /* GHOSTS fly in a STRAIGHT LINE from the highlighted area to the
-           copilot pill at top-right (4%/3%). We animate top + right
-           directly so the trajectory is a straight line independent of
-           the ghost's own width. */
-        .scene-2 .ghost.gNote {
-            top: 22%; left: auto; right: 60%;
-            animation: s2-gNote 22s cubic-bezier(.25, .1, .25, 1) infinite;
-        }
-        .scene-2 .ghost.gLab {
-            top: 30%; left: auto; right: 60%;
-            animation: s2-gLab 22s cubic-bezier(.25, .1, .25, 1) infinite;
-        }
-        .scene-2 .ghost.gImg {
-            top: 30%; left: auto; right: 60%;
-            animation: s2-gImg 22s cubic-bezier(.25, .1, .25, 1) infinite;
-        }
-        @keyframes s2-gNote {
-            0%, 23%  { opacity: 0; top: 22%; right: 60%; transform: scale(1); }
-            24%      { opacity: 1; top: 22%; right: 60%; transform: scale(1); }
-            27%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
-            28%, 100%{ opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
-        }
-        @keyframes s2-gLab {
-            0%, 36%  { opacity: 0; top: 30%; right: 60%; transform: scale(1); }
-            37%      { opacity: 1; top: 30%; right: 60%; transform: scale(1); }
-            40%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
-            41%,100% { opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
-        }
-        @keyframes s2-gImg {
-            0%, 59%  { opacity: 0; top: 30%; right: 60%; transform: scale(1); }
-            60%      { opacity: 1; top: 30%; right: 60%; transform: scale(1); }
-            63%      { opacity: 0.6; top: 8%; right: 8%; transform: scale(0.5); }
-            64%,100% { opacity: 0; top: 8%; right: 8%; transform: scale(0.5); }
-        }
-
-        /* COPILOT IDLE STATUS TEXT - rolls through 4 strings.
-           Each "X precharted" message holds for ~1 second then returns to
-           "eleanote". 22s loop -> 1s = ~4.5%. */
-        .scene-2 .pill .pill-status::after { content: "eleanote"; }
-        .scene-2 .pill .pill-status {
-            animation: s2-status 22s steps(1, end) infinite;
-        }
-        @keyframes s2-status {
-            0%, 23%   { content: "eleanote"; }
-            24%, 28%  { content: "Text precharted"; }
-            29%, 39%  { content: "eleanote"; }
-            40%, 44%  { content: "Labs precharted"; }
-            45%, 62%  { content: "eleanote"; }
-            63%, 67%  { content: "Imaging precharted"; }
-            68%, 100% { content: "eleanote"; }
-        }
-
-        /* PHONE: cursor coordinates change a bit because the EMR is taller
-           on a 9:13 stage. Same beats, repositioned. */
+        /* PHONE: cursor coordinates differ */
         @media (max-width: 700px) {
             @keyframes s2-cursor {
-                0%   { opacity: 0; left: 50%; top: 22%; }
-                2%   { opacity: 1; left: 48%; top: 22%; }
-                6%   { opacity: 1; left: 48%; top: 22%; }
-                13%  { opacity: 1; left: 40%; top: 18%; }
-                15%  { opacity: 1; left: 88%; top: 18%; }
-                17%  { opacity: 1; left: 40%; top: 22%; }
-                19%  { opacity: 1; left: 88%; top: 22%; }
-                21%  { opacity: 1; left: 40%; top: 26%; }
-                23%  { opacity: 1; left: 88%; top: 26%; }
-                26%  { opacity: 1; left: 16%; top: 32%; }
-                27%  { opacity: 1; left: 16%; top: 32%; }
-                32%  { opacity: 1; left: 40%; top: 28%; }
-                36%  { opacity: 1; left: 88%; top: 28%; }
-                41%  { opacity: 1; left: 16%; top: 38%; }
-                51%  { opacity: 1; left: 16%; top: 38%; }
-                56%  { opacity: 1; left: 40%; top: 28%; }
-                59%  { opacity: 1; left: 88%; top: 28%; }
-                70%  { opacity: 1; left: 88%; top: 28%; }
-                85%  { opacity: 0; left: 88%; top: 28%; }
-                100% { opacity: 0; }
+                0%   { opacity: 1; left: 50%; top: 35%; }
+                10%  { opacity: 1; left: 50%; top: 35%; }
+                50%  { opacity: 1; left: 18%; top: 11%; }
+                100% { opacity: 1; left: 18%; top: 11%; }
             }
-            @keyframes s2-click {
-                0%, 6%   { opacity: 0; transform: translate(-50%,-50%) scale(0.6); }
-                7%       { opacity: 1; left: 48%; top: 22%; transform: translate(-50%,-50%) scale(0.8); }
-                10%      { opacity: 0; left: 48%; top: 22%; transform: translate(-50%,-50%) scale(1.4); }
-                26%      { opacity: 0; }
-                27%      { opacity: 1; left: 16%; top: 32%; transform: translate(-50%,-50%) scale(0.8); }
-                30%      { opacity: 0; left: 16%; top: 32%; transform: translate(-50%,-50%) scale(1.4); }
-                33%      { opacity: 1; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(0.8); }
-                36%      { opacity: 0; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(1.4); }
-                51%      { opacity: 1; left: 16%; top: 38%; transform: translate(-50%,-50%) scale(0.8); }
-                54%      { opacity: 0; left: 16%; top: 38%; transform: translate(-50%,-50%) scale(1.4); }
-                57%      { opacity: 1; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(0.8); }
-                60%      { opacity: 0; left: 40%; top: 28%; transform: translate(-50%,-50%) scale(1.4); }
-                100%     { opacity: 0; }
-            }
-            /* phone single-rectangle highlight - same idea as desktop */
-            .s2-note-hl {
-                top: 17%; left: 35%;
-            }
-            @keyframes s2-noteHl {
-                0%, 12%  { opacity: 0; width: 0; height: 2.4%; }
-                13%      { opacity: 1; width: 4%; height: 2.4%; }
-                15%      { opacity: 1; width: 53%; height: 2.4%; }
-                17%      { opacity: 1; width: 53%; height: 7.4%; }
-                19%      { opacity: 1; width: 53%; height: 7.4%; }
-                21%      { opacity: 1; width: 53%; height: 12.4%; }
-                23%      { opacity: 1; width: 53%; height: 12.4%; }
-                27%      { opacity: 1; width: 53%; height: 12.4%; }
-                29%      { opacity: 0; width: 53%; height: 12.4%; }
-                100%     { opacity: 0; }
-            }
-            /* phone click-flash positions match phone cursor coordinates */
-            .scene-2 .click-flash.cf1 { left: 48%; top: 22%; }
-            .scene-2 .click-flash.cf2 { left: 16%; top: 32%; }
-            .scene-2 .click-flash.cf3 { left: 40%; top: 28%; }
-            .scene-2 .click-flash.cf4 { left: 16%; top: 38%; }
-            .scene-2 .click-flash.cf5 { left: 40%; top: 28%; }
-            .s2-row-hl-lab { top: 28%; left: 35%; }
-            .s2-row-hl-img { top: 28%; left: 35%; }
-            @keyframes s2-hlLab {
-                0%, 32%  { opacity: 0; width: 0; }
-                33%      { opacity: 1; width: 4%; }
-                36%      { opacity: 1; width: 53%; }
-                58%      { opacity: 1; width: 53%; }
-                59%      { opacity: 0; width: 53%; }
-                100%     { opacity: 0; }
-            }
-            @keyframes s2-hlImg {
-                0%, 56%  { opacity: 0; width: 0; }
-                57%      { opacity: 1; width: 4%; }
-                59%      { opacity: 1; width: 53%; }
-                83%      { opacity: 1; width: 53%; }
-                84%      { opacity: 0; width: 53%; }
-                100%     { opacity: 0; }
-            }
+            .scene-2 .click-flash.cf-notes { left: 18%; top: 11%; }
         }
 
         /* ============================================================
@@ -1834,7 +1504,7 @@
         </section>
 
         <!-- ============================================================
-             SCENE 2
+             SCENE 2  (scripted, coordinate-driven, step 1 only so far)
              ============================================================ -->
         <section class="scene scene-2">
             <h2 class="scene-title">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to Eleanote.</h2>
@@ -1849,16 +1519,14 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow nav-notes">Notes</div>
-                        <div class="navrow nav-labs">Labs</div>
-                        <div class="navrow nav-img">Imaging</div>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
                         <div class="navrow">Orders</div>
                         <div class="navrow">Diagnoses</div>
                     </div>
-                    <!-- Center pane has 4 swappable views, only one visible at a time -->
                     <div class="emr-center" style="padding: 0; position: relative;">
-
-                        <!-- VIEW 1: Notes list (default) -->
+                        <div class="s2-view s2-view-blank"></div>
                         <div class="s2-view s2-view-notes">
                             <h4>Notes · prior encounters</h4>
                             <div class="clinical-row"><span class="d">11/14/2025</span><span class="t">Annual wellness — Dr. Carter</span></div>
@@ -1867,43 +1535,6 @@
                             <div class="clinical-row"><span class="d">04/02/2024</span><span class="t">Urology f/u — partial nephrectomy</span></div>
                             <div class="clinical-row"><span class="d">11/18/2023</span><span class="t">Op note — partial nephrectomy</span></div>
                         </div>
-
-                        <!-- VIEW 2: Note detail (multi-line note text) -->
-                        <div class="s2-view s2-view-note">
-                            <h4>Annual wellness · 11/14/2025</h4>
-                            <!-- The note paragraph is a fixed-line block.
-                                 Highlight is positioned RELATIVE to this block
-                                 so it always covers the visible text regardless
-                                 of how text wraps across viewports. -->
-                            <div class="note-text-block">
-                                <p>64-year-old gentleman returns for annual wellness.<br>
-                                History of T1b renal cell carcinoma s/p partial<br>
-                                nephrectomy 2023, currently on surveillance.</p>
-                                <!-- Single contiguous selection rectangle -->
-                                <div class="s2-note-hl"></div>
-                            </div>
-                        </div>
-
-                        <!-- VIEW 3: Labs list -->
-                        <div class="s2-view s2-view-labs">
-                            <h4>Labs</h4>
-                            <div class="clinical-row with-value"><span class="d">12/10/2024</span><span class="t">BMP — Cr 1.5, GFR 48, K 4.2</span></div>
-                            <div class="clinical-row with-value"><span class="d">12/10/2024</span><span class="t">CBC — WBC 6.8, Hgb 13.5</span></div>
-                            <div class="clinical-row with-value"><span class="d">06/04/2024</span><span class="t">BMP — Cr 1.5, GFR 47</span></div>
-                            <div class="clinical-row with-value"><span class="d">12/15/2023</span><span class="t">BMP — Cr 1.6, GFR 44</span></div>
-                            <!-- Highlight bar timed with the cursor on the first row -->
-                            <div class="s2-row-hl-lab"></div>
-                        </div>
-
-                        <!-- VIEW 4: Imaging list -->
-                        <div class="s2-view s2-view-img">
-                            <h4>Imaging</h4>
-                            <div class="clinical-row"><span class="d">09/30/2025</span><span class="t">MRI abdomen — RCC surveillance, no recurrence</span></div>
-                            <div class="clinical-row"><span class="d">09/15/2024</span><span class="t">MRI abdomen — RCC surveillance, no recurrence</span></div>
-                            <div class="clinical-row"><span class="d">12/02/2023</span><span class="t">CT abdomen — post-op nephrectomy, expected changes</span></div>
-                            <div class="s2-row-hl-img"></div>
-                        </div>
-
                     </div>
                     <div class="emr-right">
                         <h5>Today's note</h5>
@@ -1913,27 +1544,13 @@
                     </div>
                 </div>
 
-                <!-- copilot idle, with status text rolling -->
-                <div class="pill idle">
-                    <span class="pill-status"></span>
-                </div>
+                <div class="pill idle">eleanote</div>
 
-                <!-- arrow cursor -->
                 <div class="cursor c1">
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
                         fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
                 </div>
-                <!-- Five independent click flashes, each pinned to its click site -->
-                <div class="click-flash cf1"></div>
-                <div class="click-flash cf2"></div>
-                <div class="click-flash cf3"></div>
-                <div class="click-flash cf4"></div>
-                <div class="click-flash cf5"></div>
-
-                <!-- ghosts -->
-                <div class="ghost gNote">RCC surveillance, CKD-3 stable, HTN controlled</div>
-                <div class="ghost gLab">BMP · Cr 1.5, GFR 48, K 4.2</div>
-                <div class="ghost gImg">MRI abdomen · no recurrence</div>
+                <div class="click-flash cf-notes"></div>
 
                 <div class="dock">
                     <span class="dock-icon"></span>
@@ -1958,14 +1575,15 @@
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
-                        <div class="navrow nav-notes">Notes</div>
-                        <div class="navrow nav-labs">Labs</div>
-                        <div class="navrow nav-img">Imaging</div>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
                         <div class="navrow">Orders</div>
                         <div class="navrow">Dx</div>
                         <div class="navrow">Today's note</div>
                     </div>
                     <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s2-view s2-view-blank"></div>
                         <div class="s2-view s2-view-notes">
                             <h4 style="padding: 8px 8px 4px;">Notes · prior</h4>
                             <div class="clinical-row" style="margin: 0 8px;"><span class="d">11/14/25</span><span class="t">Annual wellness</span></div>
@@ -1973,51 +1591,16 @@
                             <div class="clinical-row" style="margin: 0 8px;"><span class="d">03/04/25</span><span class="t">Office visit</span></div>
                             <div class="clinical-row" style="margin: 0 8px;"><span class="d">04/02/24</span><span class="t">Urology f/u</span></div>
                         </div>
-                        <div class="s2-view s2-view-note">
-                            <h4 style="padding: 8px 8px 4px;">Annual · 11/14/25</h4>
-                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 0 8px;">
-                                64M, annual visit. RCC s/p partial nephrectomy 2023, surveillance.
-                            </p>
-                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 4px 8px 0;">
-                                CKD-3 stable (Cr 1.5). HTN on lisinopril, controlled.
-                            </p>
-                            <p style="font-size: 9px; line-height: 1.65; color: var(--emr-ink); padding: 4px 8px 0;">
-                                No new symptoms. Exam normal.
-                            </p>
-                            <div class="s2-note-hl"></div>
-                        </div>
-                        <div class="s2-view s2-view-labs">
-                            <h4 style="padding: 8px 8px 4px;">Labs</h4>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/10/24</span><span class="t">BMP · Cr 1.5, GFR 48</span></div>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">06/04/24</span><span class="t">BMP · Cr 1.5, GFR 47</span></div>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/15/23</span><span class="t">BMP · Cr 1.6, GFR 44</span></div>
-                            <div class="s2-row-hl-lab"></div>
-                        </div>
-                        <div class="s2-view s2-view-img">
-                            <h4 style="padding: 8px 8px 4px;">Imaging</h4>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">09/30/25</span><span class="t">MRI abd · no recurrence</span></div>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">09/15/24</span><span class="t">MRI abd · no recurrence</span></div>
-                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">12/02/23</span><span class="t">CT abd · post-op</span></div>
-                            <div class="s2-row-hl-img"></div>
-                        </div>
                     </div>
                 </div>
 
-                <div class="pill idle">
-                    <span class="pill-status"></span>
-                </div>
+                <div class="pill idle">eleanote</div>
+
                 <div class="cursor c1">
                     <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
                         fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
                 </div>
-                <div class="click-flash cf1"></div>
-                <div class="click-flash cf2"></div>
-                <div class="click-flash cf3"></div>
-                <div class="click-flash cf4"></div>
-                <div class="click-flash cf5"></div>
-                <div class="ghost gNote" style="top: 22%; right: 60%;">RCC surv., CKD, HTN</div>
-                <div class="ghost gLab"  style="top: 28%; right: 60%;">BMP · Cr 1.5</div>
-                <div class="ghost gImg"  style="top: 28%; right: 60%;">MRI abd · no recur</div>
+                <div class="click-flash cf-notes"></div>
 
                 <div class="dock">
                     <span class="dock-tab tab-ele running">
