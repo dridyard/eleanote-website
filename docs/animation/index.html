@@ -391,6 +391,14 @@
         }
         @media (max-width: 700px) {
             .pill.idle, .pill.active { width: var(--pill-width-phone); }
+            /* Mobile-only: ~33% thinner (height) so stacked items take less
+               vertical space. Desktop unchanged. */
+            .pill.idle      { padding: 5px 10px; font-size: 10px; }
+            .pill.active .head { padding: 5px 8px; font-size: 9.5px; }
+            .pill.active .head .hk { font-size: 9px; gap: 6px; }
+            .pill.active .item { padding: 3px 8px; font-size: 10px; }
+            .pill.active .item .bullet { width: 6px; height: 6px; margin-top: 4px; }
+            .pill.active .item .sub { font-size: 9px; }
         }
         .pill .head {
             display: flex;
@@ -1240,199 +1248,348 @@
             95%, 100%  { opacity: 0; }
         }
 
+
         /* ============================================================
-           SCENE 3: Recording -> orders appear in copilot -> fly to EMR
-                    -> order modal opens with auto-typed fields ->
-                    item disappears from copilot and copilot shrinks.
-           Loop: 16s
-           Orders for this visit:
-             - BMP in 1 year      (lab; modal autofills "Date" only)
-             - MRI abdomen in 1y  (imaging; modal autofills "Date" + "Indication")
+           SCENE 3 - SCRIPTED, COORDINATE-DRIVEN
+
+           Stage layout:
+             EMR center pane shows the Orders view:
+               - 'Search order...' input box positioned at vertical
+                 midpoint (so the pill at top-right doesn't overlap)
+               - Below it: a stacked list of staged orders that
+                 accumulate as items transfer over
+
+           Loop: 12.0 seconds
+           Beats:
+             0.00 - 0.50s   pill appears with 2 items (BMP, MRI)
+             0.50 - 0.90s   ghost flies from pill BMP -> search input
+                            (shrinks 100%->50%, fades 100%->25%)
+             0.90s          search input fills with "BMP"
+             1.10s          modal opens (Date field empty)
+             1.30s          modal Date field auto-pastes "05/01/2027"
+             3.30s          modal closes; BMP row appears in list
+             3.30 - 3.70s   ghost flies from pill MRI -> search input
+             3.70s          search input fills with "MRI abdomen"
+             3.90s          modal opens (Date + Indication fields)
+             4.10s          modal Date pastes
+             6.10s          modal Indication pastes
+             8.10s          modal closes; MRI row appears
+             8.10 - 12.00s  hold (both rows visible, copilot empty)
            ============================================================ */
-        .scene-3 .emr {
-            top: 4%; left: 4%;
-            width: 92%; height: 84%;
+        .scene-3 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-3 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-3 .pill.active { top: 4%; right: 3%; opacity: 1; }
+        .scene-3 .stage.p .pill.active { top: 3%; right: 4%; }
+
+        /* The "Orders" view layout: search input near vertical middle,
+           staged-orders list below it */
+        .s3-orders-view {
+            position: absolute;
+            inset: 0;
+            padding: 14px 14px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        .scene-3 .stage.p .emr {
-            top: 3%; left: 3%;
-            width: 94%; height: 86%;
-        }
-        .scene-3 .pill.active {
-            top: 4%; right: 3%;
-            opacity: 0;
-            animation: s3-pill 16s steps(1, end) infinite;
-        }
-        .scene-3 .stage.p .pill.active {
-            top: 3%; right: 5%;
-        }
-        @keyframes s3-pill {
-            0%, 5%   { opacity: 0; }
-            6%, 96%  { opacity: 1; }
-            100%     { opacity: 0; }
-        }
-        .scene-3 .pill .item.bmp1 { animation: s3-bmp 16s linear infinite both; }
-        .scene-3 .pill .item.mri1 { animation: s3-mri 16s linear infinite both; }
-        @keyframes s3-bmp {
-            0%, 9%   { opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; transform: translateY(-3px); }
-            12%, 50% { opacity: 1; height: auto; padding-top: 5px; padding-bottom: 5px; transform: none; }
-            54%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            56%, 100%{ opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; }
-        }
-        @keyframes s3-mri {
-            0%, 19%  { opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; transform: translateY(-3px); }
-            22%, 78% { opacity: 1; height: auto; padding-top: 5px; padding-bottom: 5px; transform: none; }
-            82%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            84%, 100%{ opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; }
-        }
-        /* the copilot shrinks visibly as items leave */
-        .scene-3 .pill.active .items { overflow: hidden; }
-        .scene-3 .ghost.gBmp { animation: s3-gBmp 16s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-3 .ghost.gMri { animation: s3-gMri 16s cubic-bezier(.4,0,.2,1) infinite; }
-        @keyframes s3-gBmp {
-            0%, 49%  { opacity: 0; right: 8%; top: 14%; }
-            51%      { opacity: 1; right: 8%; top: 14%; }
-            55%      { opacity: 1; right: 28%; top: 35%; }
-            58%      { opacity: 0; right: 28%; top: 35%; }
-            100%     { opacity: 0; }
-        }
-        @keyframes s3-gMri {
-            0%, 77%  { opacity: 0; right: 8%; top: 18%; }
-            79%      { opacity: 1; right: 8%; top: 18%; }
-            83%      { opacity: 1; right: 28%; top: 35%; }
-            86%      { opacity: 0; right: 28%; top: 35%; }
-            100%     { opacity: 0; }
-        }
-        .scene-3 .order-modal.mBmp {
-            top: 28%; left: 25%;
-            width: 40%;
-            animation: s3-mBmp 16s cubic-bezier(.4,0,.2,1) infinite;
-        }
-        .scene-3 .stage.p .order-modal.mBmp {
-            top: 18%; left: 6%; width: 88%;
-        }
-        @keyframes s3-mBmp {
-            0%, 55%  { opacity: 0; transform: translateY(8px) scale(0.96); }
-            57%      { opacity: 1; transform: translateY(0) scale(1); }
-            68%      { opacity: 1; }
-            70%      { opacity: 0; transform: translateY(-4px) scale(0.96); }
-            100%     { opacity: 0; }
-        }
-        .scene-3 .order-modal.mBmp .v.f-when .typed {
-            animation: s3-typeBmpDate 16s steps(1) infinite;
+        .s3-orders-view h4 {
+            font-size: 10.5px;
+            font-weight: 700;
             color: var(--emr-ink);
+            margin-bottom: 2px;
         }
-        @keyframes s3-typeBmpDate {
-            0%, 58%   { content: ""; }
-            59%       { content: "0"; }
-            59.5%     { content: "05"; }
-            60%       { content: "05/"; }
-            60.5%     { content: "05/0"; }
-            61%       { content: "05/01"; }
-            61.5%     { content: "05/01/"; }
-            62%       { content: "05/01/2"; }
-            62.5%     { content: "05/01/20"; }
-            63%, 100% { content: "05/01/2027"; }
+        /* Search input at the vertical midpoint of the orders view.
+           On mobile we anchor it nearer the top so the pill doesn't
+           overlap. */
+        .s3-spacer { flex: 1; }
+        .s3-search {
+            border: 1px solid var(--emr-line);
+            background: #fff;
+            border-radius: 4px;
+            padding: 9px 11px;
+            font-size: 10px;
+            color: var(--emr-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+            min-height: 32px;
         }
-        .scene-3 .order-modal.mBmp .accept {
-            animation: s3-acceptBmp 16s steps(1, end) infinite;
+        .s3-search::before {
+            content: "";
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: no-repeat center / contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236a7388' stroke-width='1.6'><circle cx='7' cy='7' r='5'/><path d='M11 11l3.5 3.5'/></svg>");
+            flex: 0 0 auto;
         }
-        @keyframes s3-acceptBmp {
-            0%, 65%  { opacity: 0; }
-            66%, 69% { opacity: 1; }
-            70%,100% { opacity: 0; }
+        /* Two text-spans inside the search box: placeholder vs typed value.
+           Toggle via opacity on a per-order basis. */
+        .s3-search .placeholder { font-style: italic; }
+        .s3-search .typed { color: var(--emr-ink); font-weight: 500; font-style: normal; display: none; }
+        .s3-search.is-bmp .placeholder { display: none; }
+        .s3-search.is-bmp .typed.t-bmp { display: inline; }
+        .s3-search.is-mri .placeholder { display: none; }
+        .s3-search.is-mri .typed.t-mri { display: inline; }
+
+        .s3-search-anim { animation: s3-search-state 12s steps(1, end) infinite; }
+        @keyframes s3-search-state {
+            /* class-toggle approximation via opacity on child labels */
+            0%, 100% {}
+        }
+        /* Use opacity for placeholder/typed instead of class-toggle */
+        .s3-search .lbl { transition: none; }
+        .s3-search .lbl.placeholder { animation: s3-lbl-placeholder 12s steps(1, end) infinite; }
+        .s3-search .lbl.t-bmp        { animation: s3-lbl-bmp        12s steps(1, end) infinite; }
+        .s3-search .lbl.t-mri        { animation: s3-lbl-mri        12s steps(1, end) infinite; }
+        @keyframes s3-lbl-placeholder {
+            /* visible 0->0.9s and 3.3->3.7s; hidden the rest */
+            0%, 7.4%   { opacity: 1; }
+            7.5%, 27.4%{ opacity: 0; }
+            27.5%, 30.8% { opacity: 1; }
+            30.9%, 100%{ opacity: 0; }
+        }
+        @keyframes s3-lbl-bmp {
+            0%, 7.4%    { opacity: 0; }
+            7.5%, 27.4% { opacity: 1; }
+            27.5%, 100% { opacity: 0; }
+        }
+        @keyframes s3-lbl-mri {
+            0%, 30.8%   { opacity: 0; }
+            30.9%, 100% { opacity: 1; }
+        }
+        .s3-search .lbl {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
         }
 
-        .scene-3 .order-modal.mMri {
-            top: 28%; left: 25%;
-            width: 42%;
-            animation: s3-mMri 16s cubic-bezier(.4,0,.2,1) infinite;
+        /* Staged orders list (rows that persist in the EMR) */
+        .s3-staged {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .scene-3 .stage.p .order-modal.mMri {
-            top: 16%; left: 6%; width: 88%;
-        }
-        @keyframes s3-mMri {
-            0%, 83%  { opacity: 0; transform: translateY(8px) scale(0.96); }
-            85%      { opacity: 1; transform: translateY(0) scale(1); }
-            96%      { opacity: 1; }
-            98%      { opacity: 0; transform: translateY(-4px) scale(0.96); }
-            100%     { opacity: 0; }
-        }
-        .scene-3 .order-modal.mMri .v.f-when .typed {
-            animation: s3-typeMriDate 16s steps(1) infinite;
+        .s3-staged .row {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 3px solid var(--emr-accent);
+            border-radius: 3px;
+            padding: 7px 10px;
+            font-size: 9.5px;
             color: var(--emr-ink);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            opacity: 0;
         }
-        @keyframes s3-typeMriDate {
-            0%, 86%   { content: ""; }
-            87%       { content: "0"; }
-            87.3%     { content: "05"; }
-            87.6%     { content: "05/"; }
-            88%       { content: "05/0"; }
-            88.3%     { content: "05/01"; }
-            88.6%     { content: "05/01/"; }
-            89%       { content: "05/01/2"; }
-            89.3%     { content: "05/01/20"; }
-            89.6%, 100% { content: "05/01/2027"; }
+        .s3-staged .row .name { font-weight: 600; }
+        .s3-staged .row .meta { color: var(--emr-muted); font-size: 9px; }
+        .s3-staged .row .tag {
+            font-size: 8.5px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            background: var(--emr-tint); color: var(--emr-accent);
+            padding: 1px 7px; border-radius: 3px;
+            white-space: nowrap;
         }
-        .scene-3 .order-modal.mMri .v.f-ind .typed {
-            animation: s3-typeMriInd 16s steps(1) infinite;
+        .s3-staged .row.r-bmp { animation: s3-row-bmp 12s steps(1, end) infinite; }
+        .s3-staged .row.r-mri { animation: s3-row-mri 12s steps(1, end) infinite; }
+        @keyframes s3-row-bmp {
+            0%, 27.4%   { opacity: 0; }
+            27.5%, 100% { opacity: 1; }
+        }
+        @keyframes s3-row-mri {
+            0%, 67.4%   { opacity: 0; }
+            67.5%, 100% { opacity: 1; }
+        }
+
+        /* Phone: search anchored nearer top so pill doesn't overlap */
+        .scene-3 .stage.p .s3-orders-view { padding-top: 38px; }
+        .scene-3 .stage.p .s3-spacer { display: none; }
+
+        /* Pill items - shrink-out keyframes so they collapse the pill */
+        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 12s linear infinite both; }
+        .scene-3 .pill .item.it-mri { animation: s3-it-mri 12s linear infinite both; }
+        @keyframes s3-it-bmp {
+            0%, 7.4%   { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
+            7.5%       { opacity: 0; transform: translateX(40px) scale(0.92); }
+            8%, 100%   { opacity: 0; height: 0; padding: 0 10px; }
+        }
+        @keyframes s3-it-mri {
+            0%, 30.8%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
+            30.9%      { opacity: 0; transform: translateX(40px) scale(0.92); }
+            31.4%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+        }
+
+        /* GHOST: a chip that flies from copilot item -> search input.
+           --pill-x/y measured already; we add --search-x/y for the
+           search box center. */
+        .scene-3 .stage {
+            --search-x: 50%; --search-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+        }
+        .s3-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(28, 30, 34, 0.74);
+            border: 1.5px solid var(--c-order);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            pointer-events: none;
+            opacity: 0;
+            transform-origin: center center;
+            white-space: nowrap;
+        }
+        .s3-ghost.g-bmp { animation: s3-g-bmp 12s linear infinite; }
+        .s3-ghost.g-mri { animation: s3-g-mri 12s linear infinite; }
+        @keyframes s3-g-bmp {
+            0%, 4.1%   { opacity: 0;
+                         left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            4.2%       { opacity: 1;
+                         left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            6.5%       { opacity: 0.6; }
+            7.4%       { opacity: 0.25;
+                         left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            7.5%, 100% { opacity: 0;
+                         left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s3-g-mri {
+            0%, 27.5%  { opacity: 0;
+                         left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            27.6%      { opacity: 1;
+                         left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            29.5%      { opacity: 0.6; }
+            30.8%      { opacity: 0.25;
+                         left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            30.9%, 100%{ opacity: 0;
+                         left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+
+        /* MODAL: shows for each order; fields paste in turn */
+        .s3-modal {
+            position: absolute;
+            z-index: 15;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 6px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.30);
+            padding: 10px 12px;
+            font-size: 10px;
             color: var(--emr-ink);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 240px;
         }
-        @keyframes s3-typeMriInd {
-            0%, 90%   { content: ""; }
-            90.5%     { content: "S"; }
-            90.8%     { content: "Su"; }
-            91.1%     { content: "Sur"; }
-            91.4%     { content: "Surv"; }
-            91.7%     { content: "Surve"; }
-            92%       { content: "Survei"; }
-            92.3%     { content: "Surveil"; }
-            92.6%     { content: "Surveill"; }
-            92.9%     { content: "Surveilla"; }
-            93.2%     { content: "Surveillan"; }
-            93.5%     { content: "Surveillance"; }
-            93.8%     { content: "Surveillance "; }
-            94.1%     { content: "Surveillance of"; }
-            94.4%     { content: "Surveillance of "; }
-            94.7%     { content: "Surveillance of r"; }
-            95%       { content: "Surveillance of re"; }
-            95.3%     { content: "Surveillance of ren"; }
-            95.6%     { content: "Surveillance of rena"; }
-            95.9%     { content: "Surveillance of renal"; }
-            96.2%     { content: "Surveillance of renal "; }
-            96.5%, 100% { content: "Surveillance of renal cell carcinoma"; }
+        .s3-modal .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 7px;
         }
-        .scene-3 .order-modal.mMri .accept {
-            animation: s3-acceptMri 16s steps(1, end) infinite;
+        .s3-modal h5 {
+            font-size: 9.5px; font-weight: 700;
+            color: var(--emr-accent);
+            text-transform: uppercase; letter-spacing: 0.06em;
         }
-        @keyframes s3-acceptMri {
-            0%, 96%  { opacity: 0; }
-            97%, 99% { opacity: 1; }
-            100%     { opacity: 0; }
+        .s3-modal .auto {
+            font-size: 8.5px; font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 2px 7px; border-radius: 999px;
         }
-        /* filled rows in the orders entry box */
-        .scene-3 .filled-bmp { animation: s3-fillBmp 16s ease-out infinite; }
-        .scene-3 .filled-mri { animation: s3-fillMri 16s ease-out infinite; }
-        @keyframes s3-fillBmp {
-            0%, 69%  { opacity: 0; transform: translateY(-3px); }
-            71%, 96% { opacity: 1; transform: none; }
-            100%     { opacity: 0; }
+        .s3-modal .field {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--emr-line);
+            align-items: center;
         }
-        @keyframes s3-fillMri {
-            0%, 97%  { opacity: 0; transform: translateY(-3px); }
-            98%, 99% { opacity: 1; transform: none; }
-            100%     { opacity: 0; }
+        .s3-modal .field:last-of-type { border-bottom: 0; }
+        .s3-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
-        /* F12 record flash at scene start */
-        .scene-3 .keyflash.kf-rec {
-            top: 14%; left: 50%;
-            transform: translate(-50%, 0);
-            animation: s3-kfRec 16s ease-out infinite;
+        .s3-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 10px;
+            min-height: 13px;
         }
-        @keyframes s3-kfRec {
-            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.9); }
-            2%   { opacity: 1; transform: translate(-50%, 0) scale(1); }
-            5%   { opacity: 0; transform: translate(-50%, -30%) scale(1.05); }
-            100% { opacity: 0; }
+        .s3-modal .field .v.empty { color: var(--emr-muted); font-style: italic; }
+        .s3-modal .field .v.locked { color: var(--emr-muted); font-style: italic; }
+        .s3-modal .field .v.paste {
+            background: var(--emr-accent-soft);
+            padding: 2px 5px;
+            border-radius: 2px;
+            opacity: 0;
+        }
+
+        /* Modal positioning - centered horizontally over the orders view */
+        .s3-modal.m-bmp,
+        .s3-modal.m-mri {
+            top: 30%; left: 25%;
+            width: 50%;
+        }
+        .scene-3 .stage.p .s3-modal.m-bmp,
+        .scene-3 .stage.p .s3-modal.m-mri {
+            top: 26%; left: 6%;
+            width: 88%;
+        }
+
+        /* BMP modal lifecycle:
+             1.10s open, 1.30s Date pastes, 3.30s close
+             = 9.2% open, 10.8% paste, 27.5% close   (% of 12s) */
+        .s3-modal.m-bmp { animation: s3-m-bmp 12s steps(1, end) infinite; }
+        @keyframes s3-m-bmp {
+            0%, 9.1%    { opacity: 0; transform: translateY(6px); }
+            9.2%, 27.4% { opacity: 1; transform: translateY(0); }
+            27.5%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        .s3-modal.m-bmp .v.paste-date { animation: s3-bmp-date 12s steps(1, end) infinite; }
+        @keyframes s3-bmp-date {
+            0%, 10.7%   { opacity: 0; }
+            10.8%, 27.4%{ opacity: 1; }
+            27.5%, 100% { opacity: 0; }
+        }
+
+        /* MRI modal lifecycle:
+             3.90s open, 4.10s Date paste, 6.10s Indication paste, 8.10s close
+             = 32.5%, 34.2%, 50.8%, 67.5%  (% of 12s) */
+        .s3-modal.m-mri { animation: s3-m-mri 12s steps(1, end) infinite; }
+        @keyframes s3-m-mri {
+            0%, 32.4%   { opacity: 0; transform: translateY(6px); }
+            32.5%, 67.4%{ opacity: 1; transform: translateY(0); }
+            67.5%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        .s3-modal.m-mri .v.paste-date { animation: s3-mri-date 12s steps(1, end) infinite; }
+        .s3-modal.m-mri .v.paste-ind  { animation: s3-mri-ind  12s steps(1, end) infinite; }
+        @keyframes s3-mri-date {
+            0%, 34.1%   { opacity: 0; }
+            34.2%, 67.4%{ opacity: 1; }
+            67.5%, 100% { opacity: 0; }
+        }
+        @keyframes s3-mri-ind {
+            0%, 50.7%   { opacity: 0; }
+            50.8%, 67.4%{ opacity: 1; }
+            67.5%, 100% { opacity: 0; }
         }
 
         /* ============================================================
@@ -1855,7 +2012,7 @@
         </section>
 
         <!-- ============================================================
-             SCENE 3
+             SCENE 3 (rebuilt: scripted, coordinate-driven)
              ============================================================ -->
         <section class="scene scene-3">
             <h2 class="scene-title">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</h2>
@@ -1876,18 +2033,27 @@
                         <div class="navrow active">Orders</div>
                         <div class="navrow">Diagnoses</div>
                     </div>
-                    <div class="emr-center" id="s3-orders-area">
-                        <h4>Encounter orders</h4>
-                        <div class="entry-box" style="min-height: 140px;">
-                            <div class="filled-bmp" style="display: flex; gap: 8px; padding: 4px 6px; border-bottom: 1px solid var(--emr-line); font-size: 9.5px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">Lab</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">BMP — 05/01/2027</span>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <h4>Orders</h4>
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search" data-target="search">
+                                <span class="lbl placeholder">Search order (lab, imaging, med, referral)…</span>
+                                <span class="lbl t-bmp">BMP</span>
+                                <span class="lbl t-mri">MRI abdomen</span>
                             </div>
-                            <div class="filled-mri" style="display: flex; gap: 8px; padding: 4px 6px; font-size: 9.5px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">Imaging</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">MRI abdomen — 05/01/2027 · Surveillance of renal cell carcinoma</span>
+                            <div class="s3-staged">
+                                <div class="row r-bmp">
+                                    <span class="name">BMP</span>
+                                    <span class="meta">05/01/2027</span>
+                                    <span class="tag">Lab</span>
+                                </div>
+                                <div class="row r-mri">
+                                    <span class="name">MRI abdomen</span>
+                                    <span class="meta">05/01/2027 · Surveillance of renal cell carcinoma</span>
+                                    <span class="tag">Imaging</span>
+                                </div>
                             </div>
-                            <span class="entry-placeholder" id="s3-empty-text">Awaiting orders from this visit…</span>
                         </div>
                     </div>
                     <div class="emr-right">
@@ -1898,52 +2064,47 @@
                     </div>
                 </div>
 
-                <div class="keyflash kf-rec">⌨ F12 · recording</div>
-
-                <div class="pill active">
+                <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
                         <span class="hk">F12 stop &nbsp; F11 pause</span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
-                        <div class="item bmp1 focus">
+                        <div class="item it-bmp focus">
                             <span class="bullet"></span>
                             <span class="label">BMP</span>
-                            <span class="keys"><span class="y">F6 ✓</span><span class="n">F3 ✗</span></span>
                             <span class="sub">In 1 year · routine</span>
                         </div>
-                        <div class="item mri1">
+                        <div class="item it-mri">
                             <span class="bullet"></span>
                             <span class="label">MRI abdomen</span>
-                            <span class="sub">In 1 year · RCC surveillance</span>
+                            <span class="sub">In 1 year · RCC surv.</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="ghost from-pill order gBmp">BMP</div>
-                <div class="ghost from-pill order gMri">MRI abdomen</div>
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
 
-                <!-- Lab modal: just one auto-typed field (Date) -->
-                <div class="order-modal mBmp">
-                    <div class="om-head">
+                <div class="s3-modal m-bmp">
+                    <div class="head">
                         <h5>New lab order</h5>
                         <span class="auto">Auto-fill</span>
                     </div>
                     <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
-                    <div class="field"><span class="k">Date</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="accept">✓ Accepted</div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v locked">Routine</span></div>
                 </div>
-                <!-- Imaging modal: two auto-typed fields (Date + Indication) -->
-                <div class="order-modal mMri">
-                    <div class="om-head">
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
                         <h5>New imaging order</h5>
                         <span class="auto">Auto-fill</span>
                     </div>
                     <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
-                    <div class="field"><span class="k">Date</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="field"><span class="k">Indication</span><span class="v f-ind"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="accept">✓ Accepted</div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">Surveillance of renal cell carcinoma</span></div>
                 </div>
 
                 <div class="dock">
@@ -1965,7 +2126,7 @@
                     <div class="emr-banner">
                         <span class="pmark">EHR</span>
                         <span class="name">Doe, John</span>
-                        <span class="meta">64M · h/o RCC</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
                     </div>
                     <div class="emr-left">
                         <h5>Chart</h5>
@@ -1975,65 +2136,70 @@
                         <div class="navrow active">Orders</div>
                         <div class="navrow">Dx</div>
                     </div>
-                    <div class="emr-center">
-                        <h4>Encounter orders</h4>
-                        <div class="entry-box" style="min-height: 110px;">
-                            <div class="filled-bmp" style="display: flex; gap: 6px; padding: 4px; border-bottom: 1px solid var(--emr-line); font-size: 9px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">Lab</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">BMP — 05/01/27</span>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <h4>Orders</h4>
+                            <div class="s3-search" data-target="search">
+                                <span class="lbl placeholder">Search order…</span>
+                                <span class="lbl t-bmp">BMP</span>
+                                <span class="lbl t-mri">MRI abdomen</span>
                             </div>
-                            <div class="filled-mri" style="display: flex; gap: 6px; padding: 4px; font-size: 9px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">Img</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">MRI abd — 05/01/27 · RCC surv.</span>
+                            <div class="s3-staged">
+                                <div class="row r-bmp">
+                                    <span class="name">BMP</span>
+                                    <span class="meta">05/01/27</span>
+                                    <span class="tag">Lab</span>
+                                </div>
+                                <div class="row r-mri">
+                                    <span class="name">MRI abdomen</span>
+                                    <span class="meta">05/01/27 · RCC surv.</span>
+                                    <span class="tag">Img</span>
+                                </div>
                             </div>
-                            <span class="entry-placeholder">Awaiting…</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="keyflash kf-rec">⌨ F12 · recording</div>
-
-                <div class="pill active">
+                <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
                         <span class="hk">F12 stop · F11 pause</span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
-                        <div class="item bmp1 focus">
+                        <div class="item it-bmp focus">
                             <span class="bullet"></span>
                             <span class="label">BMP</span>
-                            <span class="keys"><span class="y">F6</span><span class="n">F3</span></span>
                             <span class="sub">In 1 year</span>
                         </div>
-                        <div class="item mri1">
+                        <div class="item it-mri">
                             <span class="bullet"></span>
                             <span class="label">MRI abdomen</span>
-                            <span class="sub">In 1 year · RCC surv.</span>
+                            <span class="sub">In 1 year · RCC</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="ghost from-pill order gBmp">BMP</div>
-                <div class="ghost from-pill order gMri">MRI abdomen</div>
-                <div class="order-modal mBmp">
-                    <div class="om-head">
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
+
+                <div class="s3-modal m-bmp">
+                    <div class="head">
                         <h5>Lab order</h5>
                         <span class="auto">Auto</span>
                     </div>
                     <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
-                    <div class="field"><span class="k">Date</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="accept">✓ Accepted</div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
                 </div>
-                <div class="order-modal mMri">
-                    <div class="om-head">
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
                         <h5>Imaging order</h5>
                         <span class="auto">Auto</span>
                     </div>
                     <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
-                    <div class="field"><span class="k">Date</span><span class="v f-when"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="field"><span class="k">Indication</span><span class="v f-ind"><span class="typed"></span><span class="caret"></span></span></div>
-                    <div class="accept">✓ Accepted</div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/27</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">RCC surveillance</span></div>
                 </div>
 
                 <div class="dock">
