@@ -1259,22 +1259,27 @@
                - Below it: a stacked list of staged orders that
                  accumulate as items transfer over
 
-           Loop: 12.0 seconds
+           Loop: 12.0 seconds. Steps separated by ~0.5s for consistent
+           cadence. Both ghosts use the same 0.5s flight time.
+
            Beats:
-             0.00 - 0.50s   pill appears with 2 items (BMP, MRI)
-             0.50 - 0.90s   ghost flies from pill BMP -> search input
-                            (shrinks 100%->50%, fades 100%->25%)
-             0.90s          search input fills with "BMP"
-             1.10s          modal opens (Date field empty)
-             1.30s          modal Date field auto-pastes "05/01/2027"
-             3.30s          modal closes; BMP row appears in list
-             3.30 - 3.70s   ghost flies from pill MRI -> search input
-             3.70s          search input fills with "MRI abdomen"
-             3.90s          modal opens (Date + Indication fields)
-             4.10s          modal Date pastes
-             6.10s          modal Indication pastes
-             8.10s          modal closes; MRI row appears
-             8.10 - 12.00s  hold (both rows visible, copilot empty)
+             0.0s   loop start - pill empty (just header), no orders
+             1.0s   BMP item stages in pill
+             2.0s   MRI abdomen stages in pill (below BMP)
+             2.5s   BMP ghost lifts off pill, begins flight
+             3.0s   ghost arrives -> search box reads "BMP";
+                    BMP item disappears from pill
+             3.5s   modal opens (Date field empty)
+             4.0s   Date field pastes "05/01/2027"
+             4.5s   modal closes; BMP row appears in EMR list
+             5.0s   MRI ghost lifts off, begins flight (same 0.5s speed)
+             5.5s   ghost arrives -> search box reads "MRI abdomen";
+                    MRI item disappears from pill
+             6.0s   modal opens
+             6.5s   Date pastes "05/01/2027"
+             7.0s   Indication pastes "Surveillance of renal cell carcinoma"
+             7.5s   modal closes; MRI row appears in EMR list
+             7.5 - 12.0s   hold (4.5s); pill is just the header
            ============================================================ */
         .scene-3 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
         .scene-3 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
@@ -1289,18 +1294,23 @@
             padding: 14px 14px 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
+        }
+        /* Title + search input grouped together as one unit, vertically
+           centered on both desktop and phone (so the title is right above
+           the search box - not separated). */
+        .s3-spacer { flex: 1; }
+        .s3-search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .s3-orders-view h4 {
             font-size: 10.5px;
             font-weight: 700;
             color: var(--emr-ink);
-            margin-bottom: 2px;
+            margin: 0;
         }
-        /* Search input at the vertical midpoint of the orders view.
-           On mobile we anchor it nearer the top so the pill doesn't
-           overlap. */
-        .s3-spacer { flex: 1; }
         .s3-search {
             border: 1px solid var(--emr-line);
             background: #fff;
@@ -1340,21 +1350,26 @@
         .s3-search .lbl.placeholder { animation: s3-lbl-placeholder 12s steps(1, end) infinite; }
         .s3-search .lbl.t-bmp        { animation: s3-lbl-bmp        12s steps(1, end) infinite; }
         .s3-search .lbl.t-mri        { animation: s3-lbl-mri        12s steps(1, end) infinite; }
+        /* Search-box labels: placeholder (default), "BMP" 3.0-4.5s,
+           placeholder again 4.5-5.5s, "MRI abdomen" 5.5-7.5s, then
+           placeholder for the rest of the loop.
+           % of 12s: 3.0=25, 4.5=37.5, 5.5=45.83, 7.5=62.5 */
         @keyframes s3-lbl-placeholder {
-            /* visible 0->0.9s and 3.3->3.7s; hidden the rest */
-            0%, 7.4%   { opacity: 1; }
-            7.5%, 27.4%{ opacity: 0; }
-            27.5%, 30.8% { opacity: 1; }
-            30.9%, 100%{ opacity: 0; }
+            0%, 24.9%   { opacity: 1; }
+            25%, 37.4%  { opacity: 0; }
+            37.5%, 45.7%{ opacity: 1; }
+            45.8%, 62.4%{ opacity: 0; }
+            62.5%, 100% { opacity: 1; }
         }
         @keyframes s3-lbl-bmp {
-            0%, 7.4%    { opacity: 0; }
-            7.5%, 27.4% { opacity: 1; }
-            27.5%, 100% { opacity: 0; }
+            0%, 24.9%   { opacity: 0; }
+            25%, 37.4%  { opacity: 1; }
+            37.5%, 100% { opacity: 0; }
         }
         @keyframes s3-lbl-mri {
-            0%, 30.8%   { opacity: 0; }
-            30.9%, 100% { opacity: 1; }
+            0%, 45.7%   { opacity: 0; }
+            45.8%, 62.4%{ opacity: 1; }
+            62.5%, 100% { opacity: 0; }
         }
         .s3-search .lbl {
             position: absolute;
@@ -1395,30 +1410,37 @@
         .s3-staged .row.r-bmp { animation: s3-row-bmp 12s steps(1, end) infinite; }
         .s3-staged .row.r-mri { animation: s3-row-mri 12s steps(1, end) infinite; }
         @keyframes s3-row-bmp {
-            0%, 27.4%   { opacity: 0; }
-            27.5%, 100% { opacity: 1; }
+            0%, 37.4%   { opacity: 0; }
+            37.5%, 100% { opacity: 1; }
         }
         @keyframes s3-row-mri {
-            0%, 67.4%   { opacity: 0; }
-            67.5%, 100% { opacity: 1; }
+            0%, 62.4%   { opacity: 0; }
+            62.5%, 100% { opacity: 1; }
         }
 
-        /* Phone: search anchored nearer top so pill doesn't overlap */
-        .scene-3 .stage.p .s3-orders-view { padding-top: 38px; }
-        .scene-3 .stage.p .s3-spacer { display: none; }
+        /* Phone: search group still centered (same behavior as desktop).
+           The pill is anchored at top-right and the orders view is
+           centered with two spacers above and below. */
 
-        /* Pill items - shrink-out keyframes so they collapse the pill */
-        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 12s linear infinite both; }
-        .scene-3 .pill .item.it-mri { animation: s3-it-mri 12s linear infinite both; }
+        /* Pill items - stage in (grow) at 1s and 2s, leave (shrink and
+           collapse height) at 3.0s and 5.5s.
+           % of 12s loop:
+             1.0s = 8.33%   BMP appears
+             2.0s = 16.67%  MRI appears
+             3.0s = 25%     BMP leaves
+             5.5s = 45.83%  MRI leaves
+        */
+        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 12s steps(1, end) infinite both; }
+        .scene-3 .pill .item.it-mri { animation: s3-it-mri 12s steps(1, end) infinite both; }
         @keyframes s3-it-bmp {
-            0%, 7.4%   { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            7.5%       { opacity: 0; transform: translateX(40px) scale(0.92); }
-            8%, 100%   { opacity: 0; height: 0; padding: 0 10px; }
+            0%, 8.2%   { opacity: 0; height: 0; padding: 0 10px; }
+            8.3%, 24.9%{ opacity: 1; height: auto; padding: 5px 10px; }
+            25%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
         }
         @keyframes s3-it-mri {
-            0%, 30.8%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            30.9%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            31.4%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+            0%, 16.6%  { opacity: 0; height: 0; padding: 0 10px; }
+            16.7%, 45.7% { opacity: 1; height: auto; padding: 5px 10px; }
+            45.8%, 100% { opacity: 0; height: 0; padding: 0 10px; }
         }
 
         /* GHOST: a chip that flies from copilot item -> search input.
@@ -1444,35 +1466,38 @@
             transform-origin: center center;
             white-space: nowrap;
         }
+        /* Ghost flights: each 0.5s long, identical speed.
+           BMP: 2.5s -> 3.0s = 20.83% -> 25%
+           MRI: 5.0s -> 5.5s = 41.67% -> 45.83% */
         .s3-ghost.g-bmp { animation: s3-g-bmp 12s linear infinite; }
         .s3-ghost.g-mri { animation: s3-g-mri 12s linear infinite; }
         @keyframes s3-g-bmp {
-            0%, 4.1%   { opacity: 0;
+            0%, 20.7%  { opacity: 0;
                          left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            4.2%       { opacity: 1;
+            20.8%      { opacity: 1;
                          left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            6.5%       { opacity: 0.6; }
-            7.4%       { opacity: 0.25;
+            23%        { opacity: 0.6; }
+            24.9%      { opacity: 0.25;
                          left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            7.5%, 100% { opacity: 0;
+            25%, 100%  { opacity: 0;
                          left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes s3-g-mri {
-            0%, 27.5%  { opacity: 0;
+            0%, 41.6%  { opacity: 0;
                          left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            27.6%      { opacity: 1;
+            41.7%      { opacity: 1;
                          left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            29.5%      { opacity: 0.6; }
-            30.8%      { opacity: 0.25;
+            44%        { opacity: 0.6; }
+            45.7%      { opacity: 0.25;
                          left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            30.9%, 100%{ opacity: 0;
+            45.8%, 100%{ opacity: 0;
                          left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
         }
@@ -1554,42 +1579,42 @@
             width: 88%;
         }
 
-        /* BMP modal lifecycle:
-             1.10s open, 1.30s Date pastes, 3.30s close
-             = 9.2% open, 10.8% paste, 27.5% close   (% of 12s) */
+        /* BMP modal:
+             3.5s open, 4.0s Date pastes, 4.5s close
+             = 29.17% open, 33.33% paste, 37.5% close (% of 12s) */
         .s3-modal.m-bmp { animation: s3-m-bmp 12s steps(1, end) infinite; }
         @keyframes s3-m-bmp {
-            0%, 9.1%    { opacity: 0; transform: translateY(6px); }
-            9.2%, 27.4% { opacity: 1; transform: translateY(0); }
-            27.5%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 29.1%   { opacity: 0; transform: translateY(6px); }
+            29.2%, 37.4%{ opacity: 1; transform: translateY(0); }
+            37.5%, 100% { opacity: 0; transform: translateY(-4px); }
         }
         .s3-modal.m-bmp .v.paste-date { animation: s3-bmp-date 12s steps(1, end) infinite; }
         @keyframes s3-bmp-date {
-            0%, 10.7%   { opacity: 0; }
-            10.8%, 27.4%{ opacity: 1; }
-            27.5%, 100% { opacity: 0; }
+            0%, 33.2%   { opacity: 0; }
+            33.3%, 37.4%{ opacity: 1; }
+            37.5%, 100% { opacity: 0; }
         }
 
-        /* MRI modal lifecycle:
-             3.90s open, 4.10s Date paste, 6.10s Indication paste, 8.10s close
-             = 32.5%, 34.2%, 50.8%, 67.5%  (% of 12s) */
+        /* MRI modal:
+             6.0s open, 6.5s Date pastes, 7.0s Indication pastes, 7.5s close
+             = 50%, 54.17%, 58.33%, 62.5% (% of 12s) */
         .s3-modal.m-mri { animation: s3-m-mri 12s steps(1, end) infinite; }
         @keyframes s3-m-mri {
-            0%, 32.4%   { opacity: 0; transform: translateY(6px); }
-            32.5%, 67.4%{ opacity: 1; transform: translateY(0); }
-            67.5%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 49.9%   { opacity: 0; transform: translateY(6px); }
+            50%, 62.4%  { opacity: 1; transform: translateY(0); }
+            62.5%, 100% { opacity: 0; transform: translateY(-4px); }
         }
         .s3-modal.m-mri .v.paste-date { animation: s3-mri-date 12s steps(1, end) infinite; }
         .s3-modal.m-mri .v.paste-ind  { animation: s3-mri-ind  12s steps(1, end) infinite; }
         @keyframes s3-mri-date {
-            0%, 34.1%   { opacity: 0; }
-            34.2%, 67.4%{ opacity: 1; }
-            67.5%, 100% { opacity: 0; }
+            0%, 54.1%   { opacity: 0; }
+            54.2%, 62.4%{ opacity: 1; }
+            62.5%, 100% { opacity: 0; }
         }
         @keyframes s3-mri-ind {
-            0%, 50.7%   { opacity: 0; }
-            50.8%, 67.4%{ opacity: 1; }
-            67.5%, 100% { opacity: 0; }
+            0%, 58.2%   { opacity: 0; }
+            58.3%, 62.4%{ opacity: 1; }
+            62.5%, 100% { opacity: 0; }
         }
 
         /* ============================================================
@@ -2035,25 +2060,28 @@
                     </div>
                     <div class="emr-center" style="padding: 0; position: relative;">
                         <div class="s3-orders-view">
-                            <h4>Orders</h4>
                             <div class="s3-spacer"></div>
-                            <div class="s3-search" data-target="search">
-                                <span class="lbl placeholder">Search order (lab, imaging, med, referral)…</span>
-                                <span class="lbl t-bmp">BMP</span>
-                                <span class="lbl t-mri">MRI abdomen</span>
-                            </div>
-                            <div class="s3-staged">
-                                <div class="row r-bmp">
-                                    <span class="name">BMP</span>
-                                    <span class="meta">05/01/2027</span>
-                                    <span class="tag">Lab</span>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order (lab, imaging, med, referral)…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
                                 </div>
-                                <div class="row r-mri">
-                                    <span class="name">MRI abdomen</span>
-                                    <span class="meta">05/01/2027 · Surveillance of renal cell carcinoma</span>
-                                    <span class="tag">Imaging</span>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/2027</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/2027 · Surveillance of renal cell carcinoma</span>
+                                        <span class="tag">Imaging</span>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="s3-spacer"></div>
                         </div>
                     </div>
                     <div class="emr-right">
@@ -2067,7 +2095,7 @@
                 <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
-                        <span class="hk">F12 stop &nbsp; F11 pause</span>
+                        <span class="hk">Recording</span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
@@ -2138,24 +2166,28 @@
                     </div>
                     <div class="emr-center" style="padding: 0; position: relative;">
                         <div class="s3-orders-view">
-                            <h4>Orders</h4>
-                            <div class="s3-search" data-target="search">
-                                <span class="lbl placeholder">Search order…</span>
-                                <span class="lbl t-bmp">BMP</span>
-                                <span class="lbl t-mri">MRI abdomen</span>
-                            </div>
-                            <div class="s3-staged">
-                                <div class="row r-bmp">
-                                    <span class="name">BMP</span>
-                                    <span class="meta">05/01/27</span>
-                                    <span class="tag">Lab</span>
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
                                 </div>
-                                <div class="row r-mri">
-                                    <span class="name">MRI abdomen</span>
-                                    <span class="meta">05/01/27 · RCC surv.</span>
-                                    <span class="tag">Img</span>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/27</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/27 · RCC surv.</span>
+                                        <span class="tag">Img</span>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="s3-spacer"></div>
                         </div>
                     </div>
                 </div>
@@ -2163,7 +2195,7 @@
                 <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
-                        <span class="hk">F12 stop · F11 pause</span>
+                        <span class="hk">Recording</span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
