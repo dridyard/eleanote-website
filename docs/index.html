@@ -2449,21 +2449,42 @@
 
 
         /* ============== HOMEPAGE INTEGRATION OVERRIDES ============== */
-        /* Container holding the 4 scenes. Snap is set on <html> (proximity)
-           so the page can free-scroll until the user is near a scene
-           boundary, then snap. Less aggressive than 'mandatory' which
-           would also fight the hero/CTA. */
+        /* Container holding the 4 scenes. */
         .scenes-wrap {
             padding: 0 !important;
             max-width: none !important;
             background: var(--paper);
         }
+        /* MANDATORY snap on the page. Every page-section is a snap point:
+             - hero
+             - 4 animation scenes (each 100vh)
+             - CTA
+           Every scroll lands on one of these. You can never see two
+           animations at once. Same behavior on desktop and mobile.
+           Each section takes exactly 100vh so it fills the viewport. */
         html {
-            scroll-snap-type: y proximity;
+            scroll-snap-type: y mandatory;
+            /* allow scroll-padding to compensate for any fixed UI like
+               the floating progress indicator at the bottom */
+            scroll-padding-top: 0;
         }
-        /* Each scene takes (almost) the full viewport; snap-aligns to start */
+        .hero, .waitlist-cta {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+        .hero {
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .waitlist-cta {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
         .scenes-wrap .scene {
-            min-height: 90vh;
+            height: 100vh;
             margin: 0 !important;
             padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
             scroll-snap-align: start;
@@ -2474,9 +2495,7 @@
             justify-content: center;
             gap: clamp(20px, 3vh, 36px);
             box-sizing: border-box;
-        }
-        @media (max-width: 700px) {
-            .scenes-wrap .scene { min-height: 100vh; }
+            overflow: hidden;
         }
         /* Title: centered above the stage */
         .scenes-wrap .scene-title {
