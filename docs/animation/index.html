@@ -1618,121 +1618,427 @@
         }
 
         /* ============================================================
-           SCENE 4: end-of-encounter -> diagnoses fly into Dx tab,
-                    note flies and types itself into the note area.
-                    As each item leaves the copilot, the copilot shrinks.
-           Loop: 12s
+           SCENE 4 - SCRIPTED, COORDINATE-DRIVEN
+           ------------------------------------------------------------
+           End of encounter: diagnoses + note transfer to EHR.
+
+           Loop: 14.0 seconds. Cadence based on 0.5s steps.
+
+           Pill state phases:
+             0.0 - 0.5s   green dot, "Recording"
+             0.5 - 1.5s   orange dot, "Generating note..."
+             1.5s         dx + note items appear in pill, dot turns grey
+                          and label switches to "eleanote"
+             2.5s         RCC ghost flies to Dx search box
+             3.0s         search reads "RCC", item gone from pill, modal opens
+             3.5s         dx code field pastes, modal closes,
+                          RCC row appears in dx list
+             4.0s         CKD ghost flies (same flow)
+             4.5s         search reads "CKD-3", modal opens
+             5.0s         CKD row appears
+             5.5s         HTN ghost flies
+             6.0s         search reads "HTN", modal opens
+             6.5s         HTN row appears
+             7.0s         on PHONE: tab swaps from Diagnoses to Today's note
+             7.0s         note ghost lifts off pill
+             7.5s         ghost arrives at note entry box
+             8.0s         note text begins typing into note box, line by line
+             10.0s        note finishes typing
+             10.0 - 14.0s hold (4s)
            ============================================================ */
-        .scene-4 .emr {
-            top: 4%; left: 4%;
-            width: 92%; height: 84%;
+        .scene-4 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-4 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-4 .pill.active { top: 4%; right: 3%; opacity: 1; }
+        .scene-4 .stage.p .pill.active { top: 3%; right: 4%; }
+
+        /* PILL STATE: dot + label change with the recording lifecycle */
+        .scene-4 .pill.active .head .rec-dot {
+            animation: s4-dot 14s steps(1, end) infinite;
         }
-        .scene-4 .stage.p .emr {
-            top: 3%; left: 3%;
-            width: 94%; height: 86%;
+        @keyframes s4-dot {
+            /* 0-0.5s green (Recording), 0.5-1.5s orange (Generating),
+               1.5s onward grey (Idle/eleanote) */
+            0%, 3.5%   { background: var(--c-record); box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18); }
+            3.6%, 10.6%{ background: var(--c-note);   box-shadow: 0 0 0 2px rgba(240, 164, 74, 0.20); }
+            10.7%, 100%{ background: var(--pill-mute); box-shadow: none; }
         }
-        .scene-4 .pill.active {
-            top: 4%; right: 3%;
+        /* Pill text uses 3 stacked words toggled by opacity */
+        .scene-4 .pill .s4-w-recording { animation: s4-w-rec 14s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-generating { animation: s4-w-gen 14s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-eleanote { animation: s4-w-ele 14s steps(1, end) infinite; }
+        @keyframes s4-w-rec {
+            0%, 3.5%    { opacity: 1; }
+            3.6%, 100%  { opacity: 0; }
         }
-        .scene-4 .stage.p .pill.active {
-            top: 3%; right: 5%;
+        @keyframes s4-w-gen {
+            0%, 3.5%    { opacity: 0; }
+            3.6%, 10.6% { opacity: 1; }
+            10.7%, 100% { opacity: 0; }
         }
-        .scene-4 .pill .item.dx-rcc { animation: s4-dxRcc 12s linear infinite both; }
-        .scene-4 .pill .item.dx-ckd { animation: s4-dxCkd 12s linear infinite both; }
-        .scene-4 .pill .item.dx-htn { animation: s4-dxHtn 12s linear infinite both; }
-        .scene-4 .pill .item.note1  { animation: s4-noteI 12s linear infinite both; }
-        @keyframes s4-dxRcc {
-            0%, 14%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            18%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            20%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
-        }
-        @keyframes s4-dxCkd {
-            0%, 26%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            30%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            32%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
-        }
-        @keyframes s4-dxHtn {
-            0%, 38%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            42%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            44%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
-        }
-        @keyframes s4-noteI {
-            0%, 60%  { opacity: 1; height: auto; padding: 5px 10px; transform: none; }
-            64%      { opacity: 0; transform: translateX(40px) scale(0.92); }
-            66%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+        @keyframes s4-w-ele {
+            0%, 10.6%   { opacity: 0; }
+            10.7%, 100% { opacity: 1; }
         }
 
-        .scene-4 .ghost.gDxRcc { animation: s4-gDxRcc 12s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-4 .ghost.gDxCkd { animation: s4-gDxCkd 12s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-4 .ghost.gDxHtn { animation: s4-gDxHtn 12s cubic-bezier(.4,0,.2,1) infinite; }
-        .scene-4 .ghost.gNote  { animation: s4-gNote  12s cubic-bezier(.4,0,.2,1) infinite; }
-        @keyframes s4-gDxRcc {
-            0%, 14%  { opacity: 0; right: 8%; top: 14%; }
-            16%      { opacity: 1; right: 8%; top: 14%; }
-            21%      { opacity: 1; right: 8%; top: 50%; }
-            23%      { opacity: 0; }
-            100%     { opacity: 0; }
+        /* The pill items: dx + note appear at 1.5s = 10.7%, leave one
+           by one as they transfer.
+           Item leave times:
+             RCC at 2.5s = 17.85%
+             CKD at 4.0s = 28.6%
+             HTN at 5.5s = 39.3%
+             Note at 7.0s = 50% */
+        .scene-4 .pill .item.it-rcc  { animation: s4-it-rcc  14s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-ckd  { animation: s4-it-ckd  14s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-htn  { animation: s4-it-htn  14s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-note { animation: s4-it-note 14s steps(1, end) infinite both; }
+        @keyframes s4-it-rcc {
+            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
+            10.7%, 17.7% { opacity: 1; height: auto; padding: 5px 10px; }
+            17.8%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
-        @keyframes s4-gDxCkd {
-            0%, 26%  { opacity: 0; right: 8%; top: 18%; }
-            28%      { opacity: 1; right: 8%; top: 18%; }
-            33%      { opacity: 1; right: 8%; top: 55%; }
-            35%      { opacity: 0; }
-            100%     { opacity: 0; }
+        @keyframes s4-it-ckd {
+            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
+            10.7%, 28.5% { opacity: 1; height: auto; padding: 5px 10px; }
+            28.6%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
-        @keyframes s4-gDxHtn {
-            0%, 38%  { opacity: 0; right: 8%; top: 22%; }
-            40%      { opacity: 1; right: 8%; top: 22%; }
-            45%      { opacity: 1; right: 8%; top: 60%; }
-            47%      { opacity: 0; }
-            100%     { opacity: 0; }
+        @keyframes s4-it-htn {
+            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
+            10.7%, 39.2% { opacity: 1; height: auto; padding: 5px 10px; }
+            39.3%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
-        @keyframes s4-gNote {
-            0%, 60%  { opacity: 0; right: 8%; top: 30%; }
-            62%      { opacity: 1; right: 8%; top: 30%; }
-            68%      { opacity: 1; right: 28%; top: 60%; }
-            70%      { opacity: 0; }
-            100%     { opacity: 0; }
+        @keyframes s4-it-note {
+            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
+            10.7%, 49.9% { opacity: 1; height: auto; padding: 5px 10px; }
+            50%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
         }
 
-        /* dx slots fill in EMR right column */
-        .scene-4 .dx-fill-rcc { animation: s4-fillDxRcc 12s ease-out infinite; }
-        .scene-4 .dx-fill-ckd { animation: s4-fillDxCkd 12s ease-out infinite; }
-        .scene-4 .dx-fill-htn { animation: s4-fillDxHtn 12s ease-out infinite; }
-        @keyframes s4-fillDxRcc { 0%,21%{opacity:0;} 23%,96%{opacity:1;} 100%{opacity:0;} }
-        @keyframes s4-fillDxCkd { 0%,33%{opacity:0;} 35%,96%{opacity:1;} 100%{opacity:0;} }
-        @keyframes s4-fillDxHtn { 0%,45%{opacity:0;} 47%,96%{opacity:1;} 100%{opacity:0;} }
+        /* DIAGNOSES VIEW (mirrors scene 3's orders view) */
+        .s4-dx-view {
+            position: absolute;
+            inset: 0;
+            padding: 14px 14px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s4-spacer { flex: 1; }
+        .s4-search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s4-dx-view h4 {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--emr-ink);
+            margin: 0;
+        }
+        .s4-search {
+            border: 1px solid var(--emr-line);
+            background: #fff;
+            border-radius: 4px;
+            padding: 9px 11px;
+            font-size: 10px;
+            color: var(--emr-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+            min-height: 32px;
+        }
+        .s4-search::before {
+            content: "";
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: no-repeat center / contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236a7388' stroke-width='1.6'><circle cx='7' cy='7' r='5'/><path d='M11 11l3.5 3.5'/></svg>");
+            flex: 0 0 auto;
+        }
+        .s4-search .lbl {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+        }
+        .s4-search .lbl.placeholder { font-style: italic; }
+        .s4-search .lbl.t-rcc, .s4-search .lbl.t-ckd, .s4-search .lbl.t-htn {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-style: normal;
+            opacity: 0;
+        }
+        .s4-search .lbl.placeholder { animation: s4-lbl-ph  14s steps(1, end) infinite; }
+        .s4-search .lbl.t-rcc       { animation: s4-lbl-rcc 14s steps(1, end) infinite; }
+        .s4-search .lbl.t-ckd       { animation: s4-lbl-ckd 14s steps(1, end) infinite; }
+        .s4-search .lbl.t-htn       { animation: s4-lbl-htn 14s steps(1, end) infinite; }
+        @keyframes s4-lbl-ph {
+            /* visible everywhere except 21.4-25%, 28.6-32.1%, 39.3-42.8% */
+            0%, 21.3%   { opacity: 1; }
+            21.4%, 24.9%{ opacity: 0; }
+            25%, 28.5%  { opacity: 1; }
+            28.6%, 32%  { opacity: 0; }
+            32.1%, 39.2%{ opacity: 1; }
+            39.3%, 42.7%{ opacity: 0; }
+            42.8%, 100% { opacity: 1; }
+        }
+        @keyframes s4-lbl-rcc {
+            0%, 21.3%   { opacity: 0; }
+            21.4%, 24.9%{ opacity: 1; }
+            25%, 100%   { opacity: 0; }
+        }
+        @keyframes s4-lbl-ckd {
+            0%, 28.5%   { opacity: 0; }
+            28.6%, 32%  { opacity: 1; }
+            32.1%, 100% { opacity: 0; }
+        }
+        @keyframes s4-lbl-htn {
+            0%, 39.2%   { opacity: 0; }
+            39.3%, 42.7%{ opacity: 1; }
+            42.8%, 100% { opacity: 0; }
+        }
 
-        /* note types in */
-        .scene-4 .entry-typed.note-typed {
-            animation: s4-typeNote 12s steps(1) infinite;
+        /* Staged dx list (rows that persist) */
+        .s4-staged {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        @keyframes s4-typeNote {
-            0%, 70%   { content: ""; }
-            72%       { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3."; }
-            76%       { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3.\AO: BP 138/84."; }
-            80%       { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3.\AO: BP 138/84. Cr 1.5 (baseline)."; }
-            84%       { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3.\AO: BP 138/84. Cr 1.5 (baseline).\AA/P:\A 1) RCC surveillance — MRI abd in 1 yr."; }
-            88%       { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3.\AO: BP 138/84. Cr 1.5 (baseline).\AA/P:\A 1) RCC surveillance — MRI abd in 1 yr.\A 2) CKD-3 — BMP in 1 yr."; }
-            92%, 100% { content: "S: 64M w/ h/o RCC s/p partial nephrectomy, CKD-3.\AO: BP 138/84. Cr 1.5 (baseline).\AA/P:\A 1) RCC surveillance — MRI abd in 1 yr.\A 2) CKD-3 — BMP in 1 yr.\A 3) HTN — continue lisinopril."; }
+        .s4-staged .row {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 3px solid #5fc787;
+            border-radius: 3px;
+            padding: 7px 10px;
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            opacity: 0;
         }
-        .scene-4 .entry-typed.note-typed {
-            white-space: pre-line;
+        .s4-staged .row .name { font-weight: 600; }
+        .s4-staged .row .code {
+            font-size: 8.5px;
+            color: var(--emr-muted);
+            font-family: "SFMono-Regular", Consolas, monospace;
+            white-space: nowrap;
+        }
+        .s4-staged .row.r-rcc { animation: s4-row-rcc 14s steps(1, end) infinite; }
+        .s4-staged .row.r-ckd { animation: s4-row-ckd 14s steps(1, end) infinite; }
+        .s4-staged .row.r-htn { animation: s4-row-htn 14s steps(1, end) infinite; }
+        /* RCC row appears at 3.5s (modal closes) = 25%
+           CKD at 5.0s = 35.7%
+           HTN at 6.5s = 46.4% */
+        @keyframes s4-row-rcc { 0%, 24.9% { opacity: 0; } 25%, 100% { opacity: 1; } }
+        @keyframes s4-row-ckd { 0%, 35.6% { opacity: 0; } 35.7%, 100% { opacity: 1; } }
+        @keyframes s4-row-htn { 0%, 46.3% { opacity: 0; } 46.4%, 100% { opacity: 1; } }
+
+        /* Coordinate variables for ghost flights */
+        .scene-4 .stage {
+            --search-x: 50%; --search-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+            --notearea-x: 84%; --notearea-y: 50%;
+        }
+
+        /* Ghost: chip flies from pill -> search box (or note area) */
+        .s4-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(28, 30, 34, 0.74);
+            border: 1.5px solid var(--c-dx);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            pointer-events: none;
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .s4-ghost.g-note { border-color: var(--c-note); }
+
+        /* Ghost flights (each 0.5s):
+             RCC: 2.5s -> 3.0s = 17.85% -> 21.4%
+             CKD: 4.0s -> 4.5s = 28.6%  -> 32.1%
+             HTN: 5.5s -> 6.0s = 39.3%  -> 42.8%
+             Note: 7.0s -> 7.5s = 50%   -> 53.6% */
+        .s4-ghost.g-rcc  { animation: s4-g-rcc  14s linear infinite; }
+        .s4-ghost.g-ckd  { animation: s4-g-ckd  14s linear infinite; }
+        .s4-ghost.g-htn  { animation: s4-g-htn  14s linear infinite; }
+        .s4-ghost.g-note { animation: s4-g-note 14s linear infinite; }
+        @keyframes s4-g-rcc {
+            0%, 17.7%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            17.8%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            19.5%      { opacity: 0.6; }
+            21.3%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            21.4%, 100% { opacity: 0; left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-ckd {
+            0%, 28.5%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            28.6%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            30.3%      { opacity: 0.6; }
+            32%        { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            32.1%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-htn {
+            0%, 39.2%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            39.3%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            41%        { opacity: 0.6; }
+            42.7%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            42.8%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-note {
+            0%, 49.9%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            50%        { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            51.8%      { opacity: 0.6; }
+            53.5%      { opacity: 0.25; left: var(--notearea-x); top: var(--notearea-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            53.6%, 100%{ opacity: 0; left: var(--notearea-x); top: var(--notearea-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+
+        /* Modal: opens for each dx, closes after 0.5s, paste happens at open */
+        .s4-modal {
+            position: absolute;
+            z-index: 15;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 6px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.30);
+            padding: 10px 12px;
+            font-size: 10px;
+            color: var(--emr-ink);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 240px;
+            top: 30%; left: 25%; width: 50%;
+        }
+        .scene-4 .stage.p .s4-modal { top: 26%; left: 6%; width: 88%; }
+        .s4-modal .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 7px;
+        }
+        .s4-modal h5 {
+            font-size: 9.5px; font-weight: 700;
+            color: var(--emr-accent);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .s4-modal .auto {
+            font-size: 8.5px; font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 2px 7px; border-radius: 999px;
+        }
+        .s4-modal .field {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 8px;
+            padding: 4px 0;
+            align-items: center;
+        }
+        .s4-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .s4-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 10px;
+        }
+        .s4-modal .field .v.paste {
+            background: var(--emr-accent-soft);
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+
+        /* RCC modal: open 3.0-3.5s = 21.4%-25% */
+        .s4-modal.m-rcc { animation: s4-m-rcc 14s steps(1, end) infinite; }
+        @keyframes s4-m-rcc {
+            0%, 21.3%   { opacity: 0; transform: translateY(6px); }
+            21.4%, 24.9%{ opacity: 1; transform: translateY(0); }
+            25%, 100%   { opacity: 0; transform: translateY(-4px); }
+        }
+        /* CKD: 4.5-5.0s = 32.1-35.7% */
+        .s4-modal.m-ckd { animation: s4-m-ckd 14s steps(1, end) infinite; }
+        @keyframes s4-m-ckd {
+            0%, 32%     { opacity: 0; transform: translateY(6px); }
+            32.1%, 35.6%{ opacity: 1; transform: translateY(0); }
+            35.7%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        /* HTN: 6.0-6.5s = 42.8-46.4% */
+        .s4-modal.m-htn { animation: s4-m-htn 14s steps(1, end) infinite; }
+        @keyframes s4-m-htn {
+            0%, 42.7%   { opacity: 0; transform: translateY(6px); }
+            42.8%, 46.3%{ opacity: 1; transform: translateY(0); }
+            46.4%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+
+        /* PHONE: tab swap from Diagnoses to Today's note at 7.0s = 50%.
+           Implementation: two stacked center-pane views, opacity-toggled. */
+        .scene-4 .stage.p .s4-dx-view  { animation: s4-view-dx   14s steps(1, end) infinite; }
+        .scene-4 .stage.p .s4-note-view{ animation: s4-view-note 14s steps(1, end) infinite; }
+        @keyframes s4-view-dx {
+            0%, 49.9% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        @keyframes s4-view-note {
+            0%, 49.9% { opacity: 0; }
+            50%, 100% { opacity: 1; }
+        }
+
+        /* Note typing into the note entry box */
+        .s4-note-typed {
             display: block;
+            white-space: pre-line;
+            font-style: normal;
+            color: var(--emr-ink);
+            line-height: 1.5;
+            font-size: 9.5px;
+        }
+        .s4-note-typed .l { display: block; opacity: 0; }
+        /* Note ghost arrives at 7.5s = 53.6%; lines start typing at 8.0s = 57.1%
+           5 lines, 0.4s apart -> 8.0, 8.4, 8.8, 9.2, 9.6s
+           = 57.1%, 60%, 62.9%, 65.7%, 68.6% */
+        .s4-note-typed .l-1 { animation: s4-l1 14s steps(1, end) infinite; }
+        .s4-note-typed .l-2 { animation: s4-l2 14s steps(1, end) infinite; }
+        .s4-note-typed .l-3 { animation: s4-l3 14s steps(1, end) infinite; }
+        .s4-note-typed .l-4 { animation: s4-l4 14s steps(1, end) infinite; }
+        .s4-note-typed .l-5 { animation: s4-l5 14s steps(1, end) infinite; }
+        @keyframes s4-l1 { 0%, 57%   { opacity: 0; } 57.1%, 100% { opacity: 1; } }
+        @keyframes s4-l2 { 0%, 59.9% { opacity: 0; } 60%, 100%   { opacity: 1; } }
+        @keyframes s4-l3 { 0%, 62.8% { opacity: 0; } 62.9%, 100% { opacity: 1; } }
+        @keyframes s4-l4 { 0%, 65.6% { opacity: 0; } 65.7%, 100% { opacity: 1; } }
+        @keyframes s4-l5 { 0%, 68.5% { opacity: 0; } 68.6%, 100% { opacity: 1; } }
+
+        /* Hide the note entry box's placeholder once note arrives */
+        .scene-4 .entry-placeholder.s4-ph { animation: s4-ph 14s steps(1, end) infinite; }
+        @keyframes s4-ph {
+            0%, 53.5% { opacity: 1; }
+            53.6%, 100% { opacity: 0; }
         }
 
-        /* F9 transfer flash */
-        .scene-4 .keyflash.kf-end {
-            top: 14%; left: 50%;
-            transform: translate(-50%, 0);
-            animation: s4-kfEnd 12s ease-out infinite;
-        }
-        @keyframes s4-kfEnd {
-            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.9); }
-            3%   { opacity: 1; transform: translate(-50%, 0) scale(1); }
-            8%   { opacity: 0; transform: translate(-50%, -30%) scale(1.05); }
-            100% { opacity: 0; }
-        }
     </style>
 </head>
 <body>
@@ -2247,7 +2553,7 @@
         </section>
 
         <!-- ============================================================
-             SCENE 4
+             SCENE 4 (rebuilt)
              ============================================================ -->
         <section class="scene scene-4">
             <h2 class="scene-title">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</h2>
@@ -2268,69 +2574,91 @@
                         <div class="navrow">Orders</div>
                         <div class="navrow active">Diagnoses</div>
                     </div>
-                    <div class="emr-center">
-                        <h4>Visit diagnoses</h4>
-                        <div class="entry-box" style="min-height: 140px;">
-                            <div class="dx-fill-rcc" style="display: flex; gap: 8px; padding: 4px 6px; font-size: 9.5px; border-left: 2px solid #5fc787; padding-left: 8px; margin-bottom: 4px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">C64.9</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">Renal cell carcinoma — surveillance</span>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s4-dx-view">
+                            <div class="s4-spacer"></div>
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis (name or ICD-10)…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">Renal cell carcinoma</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">Chronic kidney disease, stage 3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">Essential hypertension</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="dx-fill-ckd" style="display: flex; gap: 8px; padding: 4px 6px; font-size: 9.5px; margin-bottom: 4px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">N18.3</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">Chronic kidney disease, stage 3</span>
-                            </div>
-                            <div class="dx-fill-htn" style="display: flex; gap: 8px; padding: 4px 6px; font-size: 9.5px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">I10</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">Essential hypertension</span>
-                            </div>
-                            <span class="entry-placeholder" style="display: block;">Awaiting diagnoses from this visit…</span>
+                            <div class="s4-spacer"></div>
                         </div>
                     </div>
-                    <div class="emr-right">
+                    <div class="emr-right" data-target="notearea">
                         <h5>Today's note</h5>
                         <div class="entry-box">
-                            <span class="entry-typed note-typed"></span><span class="caret"></span>
+                            <span class="entry-placeholder s4-ph">Click to begin note…</span>
+                            <span class="s4-note-typed">
+                                <span class="l l-1"><b>S:</b> 64M, end of encounter. h/o RCC s/p partial nephrectomy, CKD-3, HTN.</span>
+                                <span class="l l-2"><b>O:</b> BP 138/84, HR 76. Exam unremarkable.</span>
+                                <span class="l l-3"><b>A/P:</b></span>
+                                <span class="l l-4">1) RCC surveillance — MRI abd in 1 yr.</span>
+                                <span class="l l-5">2) CKD-3 — BMP in 1 yr. 3) HTN — continue lisinopril.</span>
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <div class="keyflash kf-end">⌨ F9 · transfer</div>
-
-                <div class="pill active">
+                <!-- copilot pill: state changes through Recording -> Generating -> eleanote -->
+                <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
-                        <span class="hk">F9 transfer &nbsp; F3 reject</span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating note…</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
-                        <div class="item dx dx-rcc">
-                            <span class="bullet"></span>
-                            <span class="label">RCC — surveillance</span>
-                            <span class="sub">C64.9</span>
-                        </div>
-                        <div class="item dx dx-ckd">
-                            <span class="bullet"></span>
-                            <span class="label">CKD, stage 3</span>
-                            <span class="sub">N18.3</span>
-                        </div>
-                        <div class="item dx dx-htn">
-                            <span class="bullet"></span>
-                            <span class="label">Hypertension</span>
-                            <span class="sub">I10</span>
-                        </div>
-                        <div class="item note note1 focus">
-                            <span class="bullet"></span>
-                            <span class="label">Clinical note (formatted)</span>
-                            <span class="keys"><span class="y">F6 ✓</span><span class="n">F3 ✗</span></span>
-                            <span class="sub">SOAP · 4 paragraphs</span>
-                        </div>
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
                     </div>
                 </div>
 
-                <div class="ghost from-pill dx gDxRcc">RCC · C64.9</div>
-                <div class="ghost from-pill dx gDxCkd">CKD-3 · N18.3</div>
-                <div class="ghost from-pill dx gDxHtn">HTN · I10</div>
-                <div class="ghost from-pill note gNote">SOAP note</div>
+                <!-- ghosts -->
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <!-- modals (one per dx) -->
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Renal cell carcinoma</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Chronic kidney disease, stage 3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Essential hypertension</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
 
                 <div class="dock">
                     <span class="dock-icon"></span>
@@ -2361,63 +2689,89 @@
                         <div class="navrow active">Dx</div>
                         <div class="navrow">Today's note</div>
                     </div>
-                    <div class="emr-center">
-                        <h4>Visit diagnoses</h4>
-                        <div class="entry-box" style="min-height: 100px;">
-                            <div class="dx-fill-rcc" style="display: flex; gap: 6px; padding: 3px; font-size: 9px; margin-bottom: 3px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">C64.9</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">RCC</span>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <!-- Diagnoses view (visible 0-7s, then swaps to note view) -->
+                        <div class="s4-dx-view">
+                            <div class="s4-spacer"></div>
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">RCC</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">CKD-3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">HTN</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="dx-fill-ckd" style="display: flex; gap: 6px; padding: 3px; font-size: 9px; margin-bottom: 3px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">N18.3</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">CKD-3</span>
+                            <div class="s4-spacer"></div>
+                        </div>
+                        <!-- Today's note view (visible 7-14s) -->
+                        <div class="s4-note-view" data-target="notearea" style="position: absolute; inset: 0; padding: 14px; opacity: 0;">
+                            <h4 style="font-size: 10.5px; font-weight: 700; color: var(--emr-ink); margin-bottom: 8px;">Today's note</h4>
+                            <div class="entry-box" style="min-height: 200px;">
+                                <span class="s4-note-typed">
+                                    <span class="l l-1"><b>S:</b> 64M, h/o RCC, CKD-3, HTN.</span>
+                                    <span class="l l-2"><b>O:</b> BP 138/84. Exam normal.</span>
+                                    <span class="l l-3"><b>A/P:</b></span>
+                                    <span class="l l-4">1) RCC surv. — MRI in 1 yr.</span>
+                                    <span class="l l-5">2) CKD — BMP in 1 yr. 3) HTN — lisinopril.</span>
+                                </span>
                             </div>
-                            <div class="dx-fill-htn" style="display: flex; gap: 6px; padding: 3px; font-size: 9px; background: #fff; border: 1px solid var(--emr-line); border-left: 3px solid #5fc787; border-radius: 3px; opacity: 0;">
-                                <span style="color: var(--emr-muted); font-weight: 600;">I10</span>
-                                <span style="color: var(--emr-ink); font-weight: 600;">HTN</span>
-                            </div>
-                            <span class="entry-placeholder">Awaiting…</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="keyflash kf-end">⌨ F9 · transfer</div>
-
-                <div class="pill active">
+                <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
-                        <span class="hk">F9 transfer · F3 reject</span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating…</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
                         <span class="x">×</span>
                     </div>
                     <div class="items">
-                        <div class="item dx dx-rcc">
-                            <span class="bullet"></span>
-                            <span class="label">RCC — surveillance</span>
-                            <span class="sub">C64.9</span>
-                        </div>
-                        <div class="item dx dx-ckd">
-                            <span class="bullet"></span>
-                            <span class="label">CKD, stage 3</span>
-                            <span class="sub">N18.3</span>
-                        </div>
-                        <div class="item dx dx-htn">
-                            <span class="bullet"></span>
-                            <span class="label">Hypertension</span>
-                            <span class="sub">I10</span>
-                        </div>
-                        <div class="item note note1 focus">
-                            <span class="bullet"></span>
-                            <span class="label">Clinical note</span>
-                            <span class="keys"><span class="y">F6</span><span class="n">F3</span></span>
-                            <span class="sub">SOAP</span>
-                        </div>
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
                     </div>
                 </div>
 
-                <div class="ghost from-pill dx gDxRcc">RCC</div>
-                <div class="ghost from-pill dx gDxCkd">CKD-3</div>
-                <div class="ghost from-pill dx gDxHtn">HTN</div>
-                <div class="ghost from-pill note gNote">SOAP note</div>
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">RCC</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">CKD-3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">HTN</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
 
                 <div class="dock">
                     <span class="dock-tab tab-ele running">
