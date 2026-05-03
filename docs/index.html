@@ -440,7 +440,7 @@
             --ink-soft: #324047;
             --muted: #6b7780;
 
-            /* Copilot pill (dark, ~50% translucent across all scenes) */
+            /* Assistant pill (dark, ~50% translucent across all scenes) */
             --pill-bg:    rgba(28, 30, 34, 0.50);
             --pill-line:  rgba(255, 255, 255, 0.14);
             --pill-text:  #ffffff;
@@ -747,7 +747,7 @@
         }
 
         /* ===========================================================
-           COPILOT PILL (consistent across all scenes)
+           ASSISTANT PILL (consistent across all scenes)
            =========================================================== */
         .pill {
             position: absolute;
@@ -1261,7 +1261,7 @@
         }
 
         /* ============================================================
-           SCENE 1: Eleanote opens -> minimizes -> copilot springs out
+           SCENE 1: Eleanote opens -> minimizes -> assistant springs out
            Loop: 9s
            ============================================================ */
         .scene-1 .ele-win {
@@ -1839,7 +1839,7 @@
             45.8%, 100% { opacity: 0; height: 0; padding: 0 10px; }
         }
 
-        /* GHOST: a chip that flies from copilot item -> search input.
+        /* GHOST: a chip that flies from assistant item -> search input.
            --pill-x/y measured already; we add --search-x/y for the
            search box center. */
         .scene-3 .stage {
@@ -2700,10 +2700,6 @@
         <!-- ============== HERO ============== -->
         <section class="hero">
             <div class="container hero-inner">
-                <span class="hero-label">
-                    <span class="dot"></span>
-                    Built and used by a practicing physician
-                </span>
                 <h1>An ambient AI scribe<br>built by a doctor, <span class="accent">for doctors.</span></h1>
                 <p class="hero-lede">
                     eleanote is a program installed on your clinic laptop. What it does:
@@ -2746,7 +2742,7 @@
              SCENE 1
              ============================================================ -->
         <section class="scene scene-1" data-scene-index="0">
-            <h2 class="scene-title">A small <span class="accent">copilot</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</h2>
+            <h2 class="scene-title">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</h2>
 
             <!-- DESKTOP -->
             <div class="stage d">
@@ -3300,7 +3296,7 @@
                     </div>
                 </div>
 
-                <!-- copilot pill: state changes through Recording -> Generating -> eleanote -->
+                <!-- assistant pill: state changes through Recording -> Generating -> eleanote -->
                 <div class="pill active" data-target="pill">
                     <div class="head">
                         <span class="rec-dot"></span>
