@@ -2468,13 +2468,22 @@
         @media (max-width: 768px) {
             html {
                 scroll-snap-type: y mandatory;
+                /* Offset every snap point by the fixed header height so
+                   content isn't hidden behind the 'eleanote / Menu' bar.
+                   --header-h is 64px; we use it so the snap target is
+                   the area BELOW the header, not the literal top of the
+                   viewport. */
+                scroll-padding-top: var(--header-h);
             }
             .hero, .waitlist-cta {
                 scroll-snap-align: start;
                 scroll-snap-stop: always;
             }
+            /* Subtract header height so each snap section truly fills
+               the visible area below the header (not 100vh which would
+               include the area behind the header). */
             .hero, .waitlist-cta {
-                min-height: 100vh;
+                min-height: calc(100vh - var(--header-h));
                 box-sizing: border-box;
             }
             .waitlist-cta {
@@ -2483,7 +2492,7 @@
                 justify-content: center;
             }
             .scenes-wrap .scene {
-                height: 100vh;
+                height: calc(100vh - var(--header-h));
                 margin: 0 !important;
                 padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
                 scroll-snap-align: start;
@@ -2505,10 +2514,11 @@
             /* No page-level snap; vertical scroll behaves normally */
             html { scroll-snap-type: none; }
 
-            /* The whole scenes-wrap is one viewport-tall stage */
+            /* The whole scenes-wrap is one viewport-tall stage,
+               minus the fixed header so it doesn't sit behind it. */
             .scenes-wrap {
                 position: relative;
-                height: 100vh;
+                height: calc(100vh - var(--header-h));
                 min-height: 600px;
                 overflow: hidden;
             }
