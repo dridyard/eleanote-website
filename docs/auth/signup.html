@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up — Eleanote</title>
+    <meta name="description" content="Create your Eleanote account.">
+    <meta name="theme-color" content="#14515c">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <a class="brand" href="/" aria-label="Eleanote home">
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#14515c"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
+            </a>
+            <a class="nav-back" href="/">&larr; Back to site</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="subtitle">Start using Eleanote in your clinic.</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="signupForm" novalidate>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                        placeholder="you@clinic.com">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="new-password"
+                        minlength="8">
+                    <div class="field-hint">
+                        At least 8 characters with uppercase, lowercase, number, and a symbol.
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="passwordConfirm">Confirm password</label>
+                    <input type="password" id="passwordConfirm" name="passwordConfirm" required
+                        autocomplete="new-password" minlength="8">
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">Create account</button>
+            </form>
+
+            <div class="auth-links">
+                Already have an account? <a href="login.html">Sign in</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+    <script>
+        const form = document.getElementById('signupForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            EleanoteAuth.hideAlert('alert');
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
+
+            if (password !== passwordConfirm) {
+                EleanoteAuth.showAlert('alert', 'error', 'Passwords do not match.');
+                return;
+            }
+
+            EleanoteAuth.setButtonLoading(submitBtn, true);
+
+            try {
+                await EleanoteAuth.signUp(email, password);
+                // Account created. Now navigate to verify page with email pre-filled.
+                window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+            } catch (err) {
+                EleanoteAuth.showAlert('alert', 'error', EleanoteAuth.friendlyError(err));
+                EleanoteAuth.setButtonLoading(submitBtn, false);
+            }
+        });
+    </script>
+</body>
+</html>

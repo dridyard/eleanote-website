@@ -1,0 +1,324 @@
+/* Eleanote Auth Pages — shared styling */
+/* Matches the brand from /docs/index.html */
+
+:root {
+    --ink: #0d2b30;
+    --teal: #14515c;
+    --teal-deep: #0e3d46;
+    --teal-soft: #e8efe8;
+    --teal-faint: #eef3ed;
+    --paper: #fbf7ec;
+    --paper-2: #f4eedd;
+    --surface: #ffffff;
+    --line: #e5dcc1;
+    --muted: #6a6e6a;
+    --gold: #a78449;
+    --error: #b03a2e;
+    --success: #1f6f4a;
+    --shadow-sm: 0 2px 8px rgba(13, 43, 48, 0.05);
+    --shadow-md: 0 12px 32px rgba(13, 43, 48, 0.08);
+    --radius: 1.1rem;
+    --radius-lg: 1.6rem;
+    --header-h: 64px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ----- HEADER (matches main site exactly) ----- */
+.site-header {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    height: var(--header-h);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav {
+    max-width: 1120px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand-mark { width: 28px; height: 28px; }
+
+.brand-word {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.nav-back {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.nav-back:hover { color: var(--teal-deep); }
+
+/* ----- MAIN AUTH CONTAINER ----- */
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.auth-card h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+}
+
+.auth-card .subtitle {
+    color: var(--muted);
+    font-size: 0.97rem;
+    margin-bottom: 2rem;
+}
+
+/* ----- FORM ELEMENTS ----- */
+.field {
+    margin-bottom: 1.25rem;
+}
+
+.field label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+}
+
+.field input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: var(--teal-deep);
+    box-shadow: 0 0 0 3px rgba(14, 61, 70, 0.10);
+}
+
+.field input::placeholder { color: #b8b8b0; }
+
+.field-hint {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+/* Code input — large centered for verification codes */
+.field-code input {
+    text-align: center;
+    font-size: 1.6rem;
+    letter-spacing: 6px;
+    font-weight: 600;
+    color: var(--teal-deep);
+    padding: 1rem;
+}
+
+/* ----- BUTTONS ----- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: var(--teal-deep);
+    color: #fff;
+    text-decoration: none;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.95rem 1.3rem;
+    border: 1px solid var(--teal-deep);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--teal);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(14, 61, 70, 0.20);
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+    background: transparent;
+    color: var(--teal-deep);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--teal-faint);
+    color: var(--teal-deep);
+    box-shadow: none;
+}
+
+/* ----- ALERTS ----- */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 0.7rem;
+    font-size: 0.92rem;
+    margin-bottom: 1.25rem;
+    display: none;
+}
+
+.alert.show { display: block; }
+
+.alert-error {
+    background: rgba(176, 58, 46, 0.08);
+    border: 1px solid rgba(176, 58, 46, 0.20);
+    color: var(--error);
+}
+
+.alert-success {
+    background: rgba(31, 111, 74, 0.08);
+    border: 1px solid rgba(31, 111, 74, 0.20);
+    color: var(--success);
+}
+
+.alert-info {
+    background: var(--teal-faint);
+    border: 1px solid rgba(14, 61, 70, 0.15);
+    color: var(--teal-deep);
+}
+
+/* ----- LINKS / FOOTER ----- */
+.auth-links {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.auth-links a {
+    color: var(--teal-deep);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-links a:hover { text-decoration: underline; }
+
+.divider {
+    height: 1px;
+    background: var(--line);
+    margin: 1.5rem 0;
+}
+
+/* ----- ACCOUNT PAGE SPECIFIC ----- */
+.account-info {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.account-info-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.account-info-value {
+    font-size: 1rem;
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.download-card {
+    background: var(--teal-faint);
+    border: 1px solid rgba(14, 61, 70, 0.15);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.download-card h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--teal-deep);
+    margin-bottom: 0.5rem;
+}
+
+.download-card p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ----- LOADING SPINNER ----- */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ----- MOBILE ----- */
+@media (max-width: 540px) {
+    .auth-card { padding: 2rem 1.5rem; }
+    .auth-card h1 { font-size: 1.5rem; }
+}

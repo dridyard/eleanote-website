@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in — Eleanote</title>
+    <meta name="description" content="Sign in to your Eleanote account.">
+    <meta name="theme-color" content="#14515c">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <a class="brand" href="/" aria-label="Eleanote home">
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#14515c"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
+            </a>
+            <a class="nav-back" href="/">&larr; Back to site</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Login form -->
+        <div class="auth-card" id="loginCard">
+            <h1>Sign in</h1>
+            <p class="subtitle">Welcome back to Eleanote.</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                        placeholder="you@clinic.com">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">Sign in</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="forgot-password.html">Forgot password?</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="auth-links">
+                Don't have an account? <a href="signup.html">Create one</a>
+            </div>
+        </div>
+
+        <!-- MFA challenge form (hidden by default, shown when adaptive auth requires it) -->
+        <div class="auth-card" id="mfaCard" style="display:none;">
+            <h1>Verify it's you</h1>
+            <p class="subtitle">For your security, we sent a one-time code to <strong id="mfaEmailDisplay"></strong>. Enter it to finish signing in.</p>
+
+            <div id="mfaAlert" class="alert"></div>
+
+            <form id="mfaForm" novalidate>
+                <div class="field field-code">
+                    <label for="mfaCode">Code</label>
+                    <input type="text" id="mfaCode" name="mfaCode" inputmode="numeric"
+                        autocomplete="one-time-code" required maxlength="6"
+                        pattern="[0-9]{6}" placeholder="000000">
+                </div>
+
+                <button type="submit" class="btn" id="mfaSubmitBtn">Verify</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="#" id="mfaCancel">Cancel and start over</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+    <script>
+        const loginCard = document.getElementById('loginCard');
+        const mfaCard = document.getElementById('mfaCard');
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const mfaForm = document.getElementById('mfaForm');
+        const mfaSubmitBtn = document.getElementById('mfaSubmitBtn');
+
+        // Pre-fill email if coming from signup verification
+        const incomingEmail = EleanoteAuth.getParam('email');
+        if (incomingEmail) {
+            document.getElementById('email').value = incomingEmail;
+        }
+        if (EleanoteAuth.getParam('verified') === '1') {
+            EleanoteAuth.showAlert('alert', 'success', 'Email verified! Sign in to continue.');
+        }
+
+        // If already logged in, skip straight to account
+        if (EleanoteAuth.isLoggedIn()) {
+            window.location.href = 'account.html';
+        }
+
+        let mfaSession = null;
+        let mfaUserEmail = null;
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            EleanoteAuth.hideAlert('alert');
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            EleanoteAuth.setButtonLoading(submitBtn, true);
+
+            try {
+                const result = await EleanoteAuth.signIn(email, password);
+
+                if (result.ChallengeName === 'EMAIL_OTP') {
+                    // Adaptive auth triggered MFA — show the code-entry form
+                    mfaSession = result.Session;
+                    mfaUserEmail = email;
+                    document.getElementById('mfaEmailDisplay').textContent = email;
+                    loginCard.style.display = 'none';
+                    mfaCard.style.display = '';
+                    EleanoteAuth.setButtonLoading(submitBtn, false);
+                    return;
+                }
+
+                if (result.AuthenticationResult) {
+                    EleanoteAuth.saveTokens(result.AuthenticationResult, email);
+                    window.location.href = 'account.html';
+                    return;
+                }
+
+                throw new Error('Unexpected response from sign-in.');
+            } catch (err) {
+                EleanoteAuth.showAlert('alert', 'error', EleanoteAuth.friendlyError(err));
+                EleanoteAuth.setButtonLoading(submitBtn, false);
+            }
+        });
+
+        mfaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            EleanoteAuth.hideAlert('mfaAlert');
+
+            const code = document.getElementById('mfaCode').value.trim();
+            EleanoteAuth.setButtonLoading(mfaSubmitBtn, true);
+
+            try {
+                const result = await EleanoteAuth.respondToMfaChallenge(mfaUserEmail, code, mfaSession);
+                if (result.AuthenticationResult) {
+                    EleanoteAuth.saveTokens(result.AuthenticationResult, mfaUserEmail);
+                    window.location.href = 'account.html';
+                    return;
+                }
+                throw new Error('Unexpected response from MFA challenge.');
+            } catch (err) {
+                EleanoteAuth.showAlert('mfaAlert', 'error', EleanoteAuth.friendlyError(err));
+                EleanoteAuth.setButtonLoading(mfaSubmitBtn, false);
+            }
+        });
+
+        document.getElementById('mfaCancel').addEventListener('click', (e) => {
+            e.preventDefault();
+            mfaSession = null;
+            mfaUserEmail = null;
+            mfaCard.style.display = 'none';
+            loginCard.style.display = '';
+        });
+    </script>
+</body>
+</html>
