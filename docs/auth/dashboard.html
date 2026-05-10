@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Eleanote</title>
+    <meta name="theme-color" content="#14515c">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <a class="brand" href="/" aria-label="Eleanote home">
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#14515c"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
+            </a>
+            <a class="nav-back" href="/">&larr; Back to site</a>
+        </nav>
+    </header>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>Your account</h1>
+            <p class="subtitle">Signed in as <strong id="userEmailDisplay"></strong></p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" role="tablist">
+            <button class="tab-btn active" data-tab="account" role="tab">Account</button>
+            <button class="tab-btn" data-tab="download" role="tab">Download</button>
+            <button class="tab-btn" data-tab="billing" role="tab">Billing</button>
+            <button class="tab-btn" data-tab="terms" role="tab">Terms of service</button>
+        </div>
+
+        <!-- ACCOUNT TAB -->
+        <section id="tab-account" class="tab-pane active" role="tabpanel">
+            <div class="tab-card">
+                <h2>Profile</h2>
+                <p class="tab-card-subtitle">This information helps personalize Eleanote for your practice.</p>
+
+                <div id="profileAlert" class="alert"></div>
+
+                <form id="profileForm" novalidate>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="firstName">First name</label>
+                            <input type="text" id="firstName" name="firstName" maxlength="60">
+                        </div>
+                        <div class="field">
+                            <label for="lastName">Last name</label>
+                            <input type="text" id="lastName" name="lastName" maxlength="60">
+                        </div>
+                        <div class="field field-full">
+                            <label for="specialty">Specialty</label>
+                            <select id="specialty" name="specialty">
+                                <option value="">— Select —</option>
+                                <option>Family Medicine</option>
+                                <option>Internal Medicine</option>
+                                <option>Pediatrics</option>
+                                <option>Cardiology</option>
+                                <option>Dermatology</option>
+                                <option>Emergency Medicine</option>
+                                <option>Endocrinology</option>
+                                <option>Gastroenterology</option>
+                                <option>General Surgery</option>
+                                <option>Geriatrics</option>
+                                <option>Hematology / Oncology</option>
+                                <option>Infectious Disease</option>
+                                <option>Nephrology</option>
+                                <option>Neurology</option>
+                                <option>OB/GYN</option>
+                                <option>Ophthalmology</option>
+                                <option>Orthopedics</option>
+                                <option>Otolaryngology</option>
+                                <option>Pain Medicine</option>
+                                <option>Psychiatry</option>
+                                <option>Pulmonology</option>
+                                <option>Radiology</option>
+                                <option>Rheumatology</option>
+                                <option>Sports Medicine</option>
+                                <option>Urgent Care</option>
+                                <option>Urology</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field field-full">
+                            <label for="organization">Practice / Clinic name</label>
+                            <input type="text" id="organization" name="organization" maxlength="200"
+                                placeholder="e.g. Lakeside Family Medicine">
+                        </div>
+                        <div class="field">
+                            <label for="phone">Phone (optional)</label>
+                            <input type="tel" id="phone" name="phone" maxlength="30"
+                                placeholder="(555) 123-4567">
+                        </div>
+                        <div class="field">
+                            <label for="npi">NPI (optional)</label>
+                            <input type="text" id="npi" name="npi" maxlength="20"
+                                placeholder="National Provider ID">
+                        </div>
+                    </div>
+
+                    <div class="btn-row" style="margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-inline" id="saveProfileBtn">Save</button>
+                        <span class="save-status" id="profileSavedStatus">Saved</span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-card">
+                <h2>Account info</h2>
+                <p class="tab-card-subtitle">Read-only details about your account.</p>
+                <div class="readonly-row">
+                    <span class="label">Email</span>
+                    <span class="value" id="readEmail"></span>
+                </div>
+                <div class="readonly-row">
+                    <span class="label">Plan</span>
+                    <span class="value" id="readTier"></span>
+                </div>
+                <div class="readonly-row">
+                    <span class="label">Member since</span>
+                    <span class="value" id="readCreated"></span>
+                </div>
+
+                <div class="btn-row" style="margin-top: 1.5rem;">
+                    <a href="#" class="btn btn-secondary btn-inline" id="signoutLink">Sign out</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- DOWNLOAD TAB -->
+        <section id="tab-download" class="tab-pane" role="tabpanel">
+            <div class="tab-card">
+                <h2>Download Eleanote</h2>
+                <p class="tab-card-subtitle">Install Eleanote on your clinic laptop. Sign in with the same email and password you used here.</p>
+                <div class="btn-row">
+                    <a href="#" class="btn btn-inline" id="downloadWindowsBtn">Download for Windows</a>
+                </div>
+                <p class="tab-card-subtitle" style="margin-top: 1rem; margin-bottom: 0;">
+                    The Windows installer is preparing for release. You'll receive an email when it's ready.
+                </p>
+            </div>
+        </section>
+
+        <!-- BILLING TAB -->
+        <section id="tab-billing" class="tab-pane" role="tabpanel">
+            <div class="tab-card">
+                <h2>Billing</h2>
+                <p class="tab-card-subtitle">Manage your subscription and payment method.</p>
+                <div class="readonly-row">
+                    <span class="label">Current plan</span>
+                    <span class="value" id="billingTier">Free trial</span>
+                </div>
+                <div class="readonly-row">
+                    <span class="label">Status</span>
+                    <span class="value" id="billingStatus">Active</span>
+                </div>
+                <p class="tab-card-subtitle" style="margin-top: 1.5rem; margin-bottom: 0;">
+                    Paid plans are coming soon. While Eleanote is in early access, your account is on the house.
+                </p>
+            </div>
+        </section>
+
+        <!-- TERMS TAB -->
+        <section id="tab-terms" class="tab-pane" role="tabpanel">
+            <div class="tab-card">
+                <h2>Terms of service</h2>
+                <p class="tab-card-subtitle">The terms you agreed to when you created your account.</p>
+
+                <div class="terms-content">
+                    <p class="terms-meta">Version 1.0 &middot; Last updated October 2026 &middot; <em>Draft for review.</em></p>
+
+                    <h3>1. Acceptance of terms</h3>
+                    <p>By creating an account or using Eleanote, you agree to these Terms of Service. If you do not agree, you may not use the service.</p>
+
+                    <h3>2. The service</h3>
+                    <p>Eleanote is an ambient AI scribe that helps physicians document clinical encounters. The service includes a desktop application and supporting cloud infrastructure.</p>
+
+                    <h3>3. HIPAA and protected health information</h3>
+                    <p>Eleanote is designed to handle protected health information (PHI) under the Health Insurance Portability and Accountability Act (HIPAA). Eleanote signs Business Associate Agreements (BAAs) with each healthcare provider that uses the service.</p>
+                    <p>You are responsible for ensuring that any PHI you process through Eleanote complies with HIPAA, applicable state privacy laws, and your organization's policies.</p>
+
+                    <h3>4. Authorized use</h3>
+                    <p>You may use Eleanote only for legitimate clinical documentation. You may not share your account credentials, attempt to reverse engineer the service, or use it for any unlawful purpose.</p>
+
+                    <h3>5. Subscription and fees</h3>
+                    <p>Eleanote may offer free trials, paid subscriptions, or both. Pricing and payment terms will be displayed at signup or upgrade. You authorize Eleanote to charge your designated payment method according to the subscription you select.</p>
+
+                    <h3>6. Limitation of liability</h3>
+                    <p>Eleanote provides clinical documentation assistance, not medical advice. You are the practicing clinician and remain responsible for the accuracy of every clinical note. Eleanote is not liable for clinical decisions or outcomes.</p>
+
+                    <h3>7. Termination</h3>
+                    <p>You may close your account at any time. Eleanote may suspend or terminate accounts that violate these terms or pose a security risk.</p>
+
+                    <h3>8. Changes to these terms</h3>
+                    <p>We may update these Terms of Service. Material changes will be communicated by email or via this page. Continued use of Eleanote after changes take effect constitutes acceptance.</p>
+
+                    <h3>9. Contact</h3>
+                    <p>Questions about these terms can be sent to <a href="mailto:eleanote@eleanote.ai" style="color: var(--teal-deep);">eleanote@eleanote.ai</a>.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // ----- Redirect if not signed in -----
+        if (!EleanoteAuth.isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userEmailDisplay').textContent = EleanoteAuth.getStoredEmail();
+        document.getElementById('readEmail').textContent = EleanoteAuth.getStoredEmail();
+
+        // ----- Tabs -----
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        function activateTab(tabName) {
+            tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+            tabPanes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabName));
+            // Reflect current tab in URL hash for bookmarking / deep links
+            if (window.location.hash !== '#' + tabName) {
+                history.replaceState(null, '', '#' + tabName);
+            }
+        }
+
+        tabBtns.forEach(b => b.addEventListener('click', () => activateTab(b.dataset.tab)));
+
+        // Honor hash on load
+        const initialTab = (window.location.hash || '#account').slice(1);
+        if (['account', 'download', 'billing', 'terms'].includes(initialTab)) {
+            activateTab(initialTab);
+        }
+
+        // ----- Profile load + save -----
+        async function loadProfile() {
+            try {
+                const profile = await EleanoteAuth.getProfile();
+                document.getElementById('firstName').value = profile.firstName || '';
+                document.getElementById('lastName').value = profile.lastName || '';
+                document.getElementById('specialty').value = profile.specialty || '';
+                document.getElementById('organization').value = profile.organization || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('npi').value = profile.npi || '';
+                document.getElementById('readTier').textContent = (profile.tier || 'free').replace(/^./, s => s.toUpperCase());
+                if (profile.createdAt) {
+                    document.getElementById('readCreated').textContent = new Date(profile.createdAt).toLocaleDateString();
+                }
+                document.getElementById('billingTier').textContent = (profile.tier === 'free') ? 'Free trial' : profile.tier;
+                document.getElementById('billingStatus').textContent = (profile.status || 'active').replace(/^./, s => s.toUpperCase());
+            } catch (err) {
+                if (err.status === 401) {
+                    await EleanoteAuth.signOut();
+                    window.location.href = 'login.html';
+                    return;
+                }
+                EleanoteAuth.showAlert('profileAlert', 'error', 'Could not load profile: ' + (err.message || 'unknown error'));
+            }
+        }
+        loadProfile();
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            EleanoteAuth.hideAlert('profileAlert');
+            const btn = document.getElementById('saveProfileBtn');
+            EleanoteAuth.setButtonLoading(btn, true);
+
+            const updates = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                specialty: document.getElementById('specialty').value,
+                organization: document.getElementById('organization').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                npi: document.getElementById('npi').value.trim(),
+            };
+
+            try {
+                await EleanoteAuth.updateProfile(updates);
+                EleanoteAuth.setButtonLoading(btn, false);
+                const status = document.getElementById('profileSavedStatus');
+                status.classList.add('show');
+                setTimeout(() => status.classList.remove('show'), 2000);
+            } catch (err) {
+                EleanoteAuth.setButtonLoading(btn, false);
+                EleanoteAuth.showAlert('profileAlert', 'error', err.message || 'Save failed');
+            }
+        });
+
+        // ----- Download placeholder -----
+        document.getElementById('downloadWindowsBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('The Windows installer is being prepared. We will email you when it is ready.');
+        });
+
+        // ----- Sign out -----
+        document.getElementById('signoutLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await EleanoteAuth.signOut();
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

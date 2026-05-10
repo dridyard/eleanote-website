@@ -11,6 +11,9 @@ const COGNITO_POOL_ID = 'us-east-1_3KRHkFb46';
 const COGNITO_CLIENT_ID = '7c1202jkhgdo3kdvunuvstm8ee';
 const COGNITO_ENDPOINT = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/`;
 
+// API base URL — Eleanote backend
+const API_URL = 'https://feqbkbqpkc.execute-api.us-east-1.amazonaws.com/prod';
+
 // Token storage keys in localStorage
 const STORAGE = {
     ID_TOKEN: 'eleanote.idToken',
@@ -235,6 +238,42 @@ function getParam(name) {
     return url.searchParams.get(name) || '';
 }
 
+// ----- API helpers (for calls to our server endpoints) -----
+async function apiCall(path, options = {}) {
+    const idToken = localStorage.getItem(STORAGE.ID_TOKEN);
+    if (!idToken) throw new Error('Not signed in');
+
+    const response = await fetch(API_URL + path, {
+        ...options,
+        headers: {
+            'Authorization': 'Bearer ' + idToken,
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+        },
+    });
+
+    let data;
+    try { data = await response.json(); } catch { data = null; }
+
+    if (!response.ok) {
+        const err = new Error((data && data.error) || `Request failed (${response.status})`);
+        err.status = response.status;
+        throw err;
+    }
+    return data;
+}
+
+async function getProfile() {
+    return apiCall('/profile', { method: 'GET' });
+}
+
+async function updateProfile(updates) {
+    return apiCall('/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+    });
+}
+
 // Expose everything as a namespace so the page scripts can use it
 window.EleanoteAuth = {
     signUp,
@@ -253,5 +292,8 @@ window.EleanoteAuth = {
     hideAlert,
     setButtonLoading,
     getParam,
+    getProfile,
+    updateProfile,
+    apiCall,
     STORAGE,
 };

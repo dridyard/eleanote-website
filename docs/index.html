@@ -2676,6 +2676,42 @@
             color: var(--teal-deep);
             box-shadow: 0 12px 24px rgba(0,0,0,0.18);
         }
+
+        /* User pill — shown in top right when signed in */
+        .user-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.4rem 0.85rem;
+            color: var(--ink);
+            font-size: 0.88rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-right: 0.5rem;
+            max-width: 220px;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .user-pill:hover {
+            background: var(--teal-faint);
+            border-color: rgba(14, 61, 70, 0.20);
+        }
+        .user-pill span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-pill-chevron {
+            width: 10px;
+            height: 7px;
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+        @media (max-width: 540px) {
+            .user-pill { max-width: 130px; padding: 0.35rem 0.7rem; font-size: 0.82rem; }
+        }
     </style>
 </head>
 <body>
@@ -2690,6 +2726,12 @@
                 </svg>
                 <span class="brand-word">eleanote</span>
             </a>
+            <a href="auth/dashboard.html" class="user-pill" id="userPill" hidden>
+                <span id="userPillEmail"></span>
+                <svg class="user-pill-chevron" viewBox="0 0 12 8" aria-hidden="true">
+                    <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
             <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">
                 <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
                 <span>Menu</span>
@@ -2701,8 +2743,13 @@
             <a href="#fit" role="menuitem">Who it's for <span class="arrow">→</span></a>
             <a href="#tradeoff" role="menuitem">The tradeoff <span class="arrow">→</span></a>
             <hr>
-            <a href="auth/login.html" role="menuitem">Sign in <span class="arrow">→</span></a>
-            <a href="auth/signup.html" role="menuitem">Create account <span class="arrow">→</span></a>
+            <!-- Auth-aware section: shows Sign in / Create account when signed out,
+                 or Account / Sign out when signed in. Toggled by the script below. -->
+            <a href="auth/login.html" role="menuitem" class="auth-out-only">Sign in <span class="arrow">→</span></a>
+            <a href="auth/signup.html" role="menuitem" class="auth-out-only">Create account <span class="arrow">→</span></a>
+            <a href="auth/dashboard.html" role="menuitem" class="auth-in-only" hidden>Account <span class="arrow">→</span></a>
+            <a href="auth/dashboard.html#download" role="menuitem" class="auth-in-only" hidden>Download <span class="arrow">→</span></a>
+            <a href="#" role="menuitem" class="auth-in-only" id="signoutMenuLink" hidden>Sign out <span class="arrow">→</span></a>
             <hr>
             <a href="mailto:eleanote@eleanote.ai" role="menuitem">Get in touch <span class="arrow">→</span></a>
         </div>
@@ -3677,5 +3724,49 @@
         <span class="dot"></span>
         <span class="label">1 of 4</span>
     </div>
+
+    <!-- ============== AUTH STATE ============== -->
+    <!-- Reads tokens from localStorage to decide whether to show signed-in UI.
+         Same storage keys as docs/auth/auth.js. No network calls — just a quick
+         visual swap based on whether a valid token exists. -->
+    <script>
+        (function() {
+            var idToken = localStorage.getItem('eleanote.idToken');
+            var expiresAt = parseInt(localStorage.getItem('eleanote.expiresAt') || '0', 10);
+            var email = localStorage.getItem('eleanote.email') || '';
+            var loggedIn = !!idToken && Date.now() < expiresAt;
+
+            // Show user pill in top right
+            var pill = document.getElementById('userPill');
+            var pillEmail = document.getElementById('userPillEmail');
+            if (loggedIn && pill) {
+                pillEmail.textContent = email;
+                pill.hidden = false;
+            }
+
+            // Toggle menu items based on auth state
+            document.querySelectorAll('.auth-out-only').forEach(function(el) {
+                el.hidden = loggedIn;
+            });
+            document.querySelectorAll('.auth-in-only').forEach(function(el) {
+                el.hidden = !loggedIn;
+            });
+
+            // Wire up sign-out from menu
+            var signoutLink = document.getElementById('signoutMenuLink');
+            if (signoutLink) {
+                signoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Clear local tokens (we don't bother calling Cognito GlobalSignOut
+                    // from the marketing page — the dashboard handles full sign-out)
+                    ['eleanote.idToken','eleanote.accessToken','eleanote.refreshToken',
+                     'eleanote.email','eleanote.expiresAt'].forEach(function(k) {
+                        localStorage.removeItem(k);
+                    });
+                    window.location.reload();
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

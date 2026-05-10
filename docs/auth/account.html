@@ -2,72 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your account — Eleanote</title>
-    <meta name="theme-color" content="#14515c">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="auth-style.css">
+    <title>Account — Eleanote</title>
+    <meta http-equiv="refresh" content="0; url=dashboard.html">
+    <link rel="canonical" href="dashboard.html">
+    <script>window.location.replace('dashboard.html');</script>
 </head>
 <body>
-    <header class="site-header">
-        <nav class="nav">
-            <a class="brand" href="/" aria-label="Eleanote home">
-                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-                    <circle cx="16" cy="16" r="15" fill="#14515c"/>
-                    <text x="16" y="22.5" text-anchor="middle"
-                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
-                        letter-spacing="-1" fill="#ffffff">e</text>
-                </svg>
-                <span class="brand-word">eleanote</span>
-            </a>
-            <a class="nav-back" href="/">&larr; Back to site</a>
-        </nav>
-    </header>
-
-    <main>
-        <div class="auth-card">
-            <h1>Your account</h1>
-            <p class="subtitle">Welcome to Eleanote.</p>
-
-            <div class="account-info">
-                <div class="account-info-label">Signed in as</div>
-                <div class="account-info-value" id="emailDisplay">&nbsp;</div>
-            </div>
-
-            <div class="download-card">
-                <h2>Download Eleanote</h2>
-                <p>Install Eleanote on the laptop you use in clinic. The app will use the credentials you just created to sign you in.</p>
-                <a href="#" class="btn" id="downloadBtn">Download for Windows</a>
-            </div>
-
-            <div class="auth-links" style="text-align: left;">
-                <a href="#" id="signoutLink">Sign out</a>
-            </div>
-        </div>
-    </main>
-
-    <script src="auth.js"></script>
-    <script>
-        // Redirect to login if not signed in
-        if (!EleanoteAuth.isLoggedIn()) {
-            window.location.href = 'login.html';
-        }
-
-        document.getElementById('emailDisplay').textContent = EleanoteAuth.getStoredEmail();
-
-        document.getElementById('downloadBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            // TODO: replace with the real download URL once the .exe is hosted
-            alert('Download coming soon. We will email you when the Windows installer is ready.');
-        });
-
-        document.getElementById('signoutLink').addEventListener('click', async (e) => {
-            e.preventDefault();
-            await EleanoteAuth.signOut();
-            window.location.href = '/';
-        });
-    </script>
+    <p>Redirecting to <a href="dashboard.html">your dashboard</a>&hellip;</p>
 </body>
 </html>
