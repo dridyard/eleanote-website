@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=1280, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#5b4b8a">
-    <title>Generic EMR — Eleanote demonstration</title>
+    <!-- PWA manifest — lets users install this demo as a standalone app -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Mauve Health</title>
     <style>
         :root {
             /* surfaces */
@@ -1171,7 +1175,48 @@
         </div>
     </div>
 
+    <!-- Install button — only visible when the browser thinks the demo can be installed -->
+    <button id="installBtn" type="button" hidden style="
+        position: fixed; bottom: 16px; right: 16px; z-index: 9999;
+        background: #5b4b8a; color: #fff;
+        border: 1px solid #473a72; border-radius: 999px;
+        padding: 0.55rem 1rem; font-size: 13px; font-weight: 500;
+        font-family: 'Segoe UI', system-ui, sans-serif; cursor: pointer;
+        box-shadow: 0 8px 20px rgba(31,37,51,0.15);">
+        Install as app
+    </button>
+
     <script>
+        // ===== PWA: register service worker so Chrome offers to install this demo =====
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.warn('Service worker registration failed:', err);
+            });
+        }
+
+        // Capture the install prompt and surface our own button.
+        // (Chrome won't auto-prompt the user — apps have to ask.)
+        let deferredInstallPrompt = null;
+        const installBtn = document.getElementById('installBtn');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            installBtn.hidden = false;
+        });
+        installBtn.addEventListener('click', async () => {
+            if (!deferredInstallPrompt) return;
+            installBtn.hidden = true;
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            // If they cancelled, show the button again so they can retry
+            if (outcome !== 'accepted') installBtn.hidden = false;
+        });
+        // When successfully installed, hide the install hint for good
+        window.addEventListener('appinstalled', () => { installBtn.hidden = true; });
+
+        // ===== Existing demo behavior below =====
+
         // left-nav view switcher
         const navItems = document.querySelectorAll('.nav-item');
         const views = document.querySelectorAll('.view');

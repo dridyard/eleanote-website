@@ -1,0 +1,31 @@
+{
+  "name": "Mauve Health",
+  "short_name": "Mauve Health",
+  "description": "Mauve Health patient chart — Eleanote demonstration EMR.",
+  "start_url": "/demo/",
+  "scope": "/demo/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#edeef3",
+  "theme_color": "#5b4b8a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
