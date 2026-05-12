@@ -2573,21 +2573,18 @@
                 pointer-events: auto;
                 display: inline-flex;
                 align-items: center;
-                gap: 0.55rem;
+                justify-content: center;
+                width: 52px;
                 height: 52px;
-                padding: 0 1.1rem;
-                border-radius: 999px;
+                border-radius: 50%;
                 border: 1px solid var(--teal-deep);
                 background: var(--teal-deep);
                 color: #fff;
-                font-family: inherit;
-                font-size: 0.95rem;
-                font-weight: 600;
-                letter-spacing: -0.005em;
                 cursor: pointer;
                 box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
                 transition: background 160ms ease, transform 160ms ease,
-                            box-shadow 160ms ease, opacity 200ms ease;
+                            box-shadow 160ms ease;
+                font-family: inherit;
             }
             .scenes-arrow:hover:not([disabled]) {
                 background: var(--teal);
@@ -2597,19 +2594,16 @@
             .scenes-arrow:active:not([disabled]) {
                 transform: translateY(0);
             }
+            /* When at the start/end of the carousel, hide the unusable
+               button entirely (visibility keeps the layout — flex space
+               between still pins the remaining button to its side). */
             .scenes-arrow[disabled] {
-                background: rgba(255, 255, 255, 0.85);
-                color: var(--muted);
-                border-color: var(--line);
-                box-shadow: none;
-                opacity: 0.7;
-                cursor: not-allowed;
+                visibility: hidden;
+                pointer-events: none;
             }
-            .scenes-arrow svg { display: block; width: 16px; height: 16px; }
-            .scenes-arrow .arrow-label {
-                /* Visible always — this is the whole point. */
-                white-space: nowrap;
-            }
+            .scenes-arrow svg { display: block; width: 20px; height: 20px; }
+            /* Old label spans hidden — we're icon-only now */
+            .scenes-arrow .arrow-label { display: none; }
             /* Gentle attention-getter on the Next button while on scene 1
                (prev is disabled there). Stops automatically once the user
                clicks Next (prev becomes enabled and this selector no longer
@@ -2643,11 +2637,21 @@
             margin: 0 auto !important;
             color: var(--teal-deep);
         }
-        /* Stage: width-bounded, centered */
+        /* Stage: bounded by BOTH width and viewport height so it always
+           looks like a laptop screen on screen, not an ultrawide TV.
+           - max-width 940px caps the absolute width on big monitors
+           - aspect-ratio 16/10 gives the modern laptop look
+           - max-height ties it to the available vertical space so a short
+             viewport shrinks the stage proportionally instead of overflowing
+           !important is needed because the per-scene rules below (defined
+           later in the cascade) sometimes set their own width values. */
         .scenes-wrap .stage {
-            max-width: 1080px;
-            margin: 0 auto;
+            max-width: 940px !important;
             width: 100%;
+            margin: 0 auto;
+        }
+        .scenes-wrap .stage.d {
+            max-height: calc(100vh - var(--header-h) - 220px);
         }
         /* Progress indicator (fixed to bottom of viewport while scrolling
            through the scenes). Hidden when out of the scenes section. */
