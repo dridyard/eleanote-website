@@ -1,7 +1,7 @@
 {
-  "name": "Mauve Health",
-  "short_name": "Mauve Health",
-  "description": "Mauve Health patient chart — Eleanote demonstration EMR.",
+  "name": "EHR",
+  "short_name": "EHR",
+  "description": "Generic EHR — Eleanote demonstration.",
   "start_url": "/demo/",
   "scope": "/demo/",
   "display": "standalone",
