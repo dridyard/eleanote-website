@@ -2677,7 +2677,20 @@
             }
         }
 
-        /* ---- MOBILE: hide arrows, lean on dots + swipe ---- */
+        /* ---- MOBILE: peek-card carousel + dots + swipe ----
+           Each scene becomes a bounded card (white background, rounded
+           corners, subtle shadow), narrower than the viewport so the
+           edge of the NEXT card is visible on the right -- that visible
+           edge is the affordance "there's more, swipe sideways."
+           Title moves BELOW the stage in smaller text. Active card is
+           centered, with ~10vw of each neighbor peeking at the edges.
+
+           Geometry:
+             Card width: 80vw
+             Track inline-padding: 10vw (centers card 0)
+             Gap between cards: 16px
+             Peek of next card on slide 0 ≈ 100 - 10 - 80 - (16px) ≈ 6vw
+             Step per scene: 80vw + 16px (used by JS drag math too) */
         @media (max-width: 768px) {
             /* Hero / CTA feel like their own screen but no scroll-snap --
                just natural page scroll past them. */
@@ -2691,9 +2704,57 @@
                 align-items: center;
                 justify-content: center;
             }
-            /* No arrow buttons on mobile -- the dot pill at the bottom of
-               the wrap shows progress and horizontal swipe drives change. */
             .scenes-arrows { display: none; }
+
+            /* Make space below the cards for the absolute-positioned dot
+               pill so cards don't overlap with it. */
+            .scenes-wrap {
+                padding-bottom: 64px;
+                box-sizing: border-box;
+            }
+
+            /* Track: a freely sized flex row with side padding so card 0
+               sits centered, and a per-scene step of (card + gap). */
+            .scenes-track {
+                width: auto;
+                gap: 16px;
+                padding: 0 10vw;
+                transform: translateX(calc(var(--active) * -1 * (80vw + 16px)));
+            }
+
+            /* Each scene becomes a bounded card. */
+            .scenes-wrap .scene {
+                flex: 0 0 80vw;
+                width: 80vw;
+                padding: 18px 16px 22px;
+                gap: 14px;
+                background: #fff;
+                border-radius: 18px;
+                border: 1px solid rgba(13, 43, 48, 0.08);
+                box-shadow: 0 6px 22px rgba(13, 43, 48, 0.10);
+            }
+            /* Inside the card: stage on top, title below in a smaller
+               caption-like font. The DOM order is title-first / stage-after,
+               but flex order swaps the visual order. */
+            .scenes-wrap .scene-title {
+                order: 2;
+                font-size: 0.92rem;
+                font-weight: 600;
+                line-height: 1.4;
+                margin: 0 !important;
+                text-align: center;
+                max-width: 100%;
+            }
+            .scenes-wrap .stage {
+                order: 1;
+            }
+            /* Shrink the stage a little more on mobile so the card stays
+               compact and the next card's edge is visible without the
+               page needing to scroll. */
+            .scenes-wrap .stage.p {
+                max-height: calc(100vh - var(--header-h) - 240px);   /* fallback */
+                max-height: calc(100dvh - var(--header-h) - 240px);  /* preferred */
+            }
         }
         /* Title: centered above the stage */
         .scenes-wrap .scene-title {
@@ -2729,32 +2790,31 @@
             max-height: calc(100vh - var(--header-h) - 200px);   /* fallback */
             max-height: calc(100dvh - var(--header-h) - 200px);  /* preferred */
         }
-        /* Progress indicator (fixed to bottom of viewport while scrolling
-           through the scenes). Hidden when out of the scenes section.
-           On mobile this is the ONLY carousel affordance, so it's bumped
-           up in size and padding -- see media query below. */
+        /* Progress indicator -- absolutely positioned at the bottom of
+           .scenes-wrap so it scrolls WITH the carousel section rather
+           than floating over the rest of the page. .scenes-wrap is
+           position: relative, so 'absolute' here anchors to the wrap. */
         .scene-progress {
-            position: fixed;
-            bottom: 18px;
+            position: absolute;
+            bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
-            display: none;
+            display: inline-flex;
             gap: 10px;
             justify-content: center;
             align-items: center;
             font-size: 11px;
             color: var(--ink);
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(13, 43, 48, 0.06);
+            border: 1px solid rgba(13, 43, 48, 0.08);
             border-radius: 999px;
             padding: 8px 16px;
-            box-shadow: 0 4px 12px rgba(13, 43, 48, 0.06);
-            z-index: 30;
+            box-shadow: 0 4px 12px rgba(13, 43, 48, 0.10);
+            z-index: 5;
         }
-        .scene-progress.is-visible { display: inline-flex; }
         .scene-progress .dot {
             width: 7px; height: 7px;
             border-radius: 50%;
@@ -2772,27 +2832,25 @@
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
-        /* On mobile, the dot pill is the primary carousel control --
-           make it noticeably larger, brighter, and lifted clear of the
-           iOS home indicator. */
+        /* Slightly larger / brighter on mobile so the affordance is clear,
+           and lifted clear of the iOS home indicator. */
         @media (max-width: 768px) {
             .scene-progress {
-                bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-                padding: 11px 20px;
-                gap: 14px;
+                bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+                padding: 9px 18px;
+                gap: 12px;
                 background: #ffffff;
-                box-shadow: 0 8px 22px rgba(13, 43, 48, 0.18);
-                border: 1px solid rgba(13, 43, 48, 0.08);
+                box-shadow: 0 6px 16px rgba(13, 43, 48, 0.14);
             }
             .scene-progress .dot {
-                width: 9px; height: 9px;
+                width: 8px; height: 8px;
             }
             .scene-progress .dot.active {
-                transform: scale(1.55);
+                transform: scale(1.5);
             }
             .scene-progress .label {
                 font-size: 11px;
-                margin-left: 10px;
+                margin-left: 8px;
             }
         }
 
@@ -3679,19 +3737,20 @@
         </section>
 
             </div><!-- /.scenes-track -->
-        </div><!-- /.scenes-wrap -->
 
-        <!-- Floating scene-progress indicator. Must appear BEFORE the
-             SCENE CONTROLLER <script> below so that getElementById finds
-             it; otherwise the IntersectionObserver never toggles the
-             'is-visible' class and the dots stay hidden. -->
-        <div class="scene-progress" id="sceneProgress" aria-hidden="true">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="label">1 of 4</span>
-        </div>
+            <!-- Scene-progress indicator (pill with 4 dots + 'N of 4').
+                 Sits INSIDE the wrap so it scrolls with the carousel
+                 section instead of floating over the rest of the page.
+                 Must appear before the SCENE CONTROLLER <script> below
+                 so getElementById finds it. -->
+            <div class="scene-progress" id="sceneProgress" aria-hidden="true">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="label">1 of 4</span>
+            </div>
+        </div><!-- /.scenes-wrap -->
 
         <!-- ============== WAITLIST CTA ============== -->
         <section class="waitlist-cta" id="waitlist">
@@ -3851,17 +3910,28 @@
             let dragging = false;      // committed to a horizontal drag
             let abandoned = false;     // gesture decided to be a vertical scroll
 
+            // Translation distance (in px) per scene step. Different on
+            // desktop (each scene fills the viewport) vs mobile (peek
+            // cards: card width + gap). Both numbers stay in sync with
+            // the CSS translateX rules so the inline drag transform
+            // hands off smoothly to the CSS-driven snap on release.
+            function getSceneStep() {
+                if (window.matchMedia('(max-width: 768px)').matches) {
+                    return 0.80 * window.innerWidth + 16;   // 80vw + 16px gap
+                }
+                return wrap.offsetWidth;                     // 100% of wrap per scene
+            }
+
             function applyDragTransform(dx) {
-                const wrapWidth = wrap.offsetWidth || 1;
-                const offsetPct = (dx / wrapWidth) * 25;   // 25% per scene
-                // Resist at the edges so it feels like there's "wall"
+                const step = getSceneStep();
+                // Resist at the edges so it feels like there's a "wall"
                 // beyond scene 0 and scene N-1 rather than free-running.
-                let target = (activeIdx * -25) + offsetPct;
-                const minT = -(total - 1) * 25;
+                let target = (activeIdx * -step) + dx;
+                const minT = -(total - 1) * step;
                 const maxT = 0;
                 if (target > maxT) target = maxT + (target - maxT) * 0.35;
                 else if (target < minT) target = minT + (target - minT) * 0.35;
-                trackEl.style.transform = `translateX(${target}%)`;
+                trackEl.style.transform = `translateX(${target}px)`;
             }
 
             function endDrag(committedTargetIdx) {
@@ -3952,15 +4022,13 @@
             // Initial state: scene 0 active and playing, others paused.
             setActive(0);
 
-            // Pause animations when the wrap scrolls off-screen (mobile);
-            // resume on the active scene when it comes back. Also toggles
-            // the visibility of the floating progress dots.
+            // Pause animations when the wrap scrolls off-screen, resume
+            // the active scene when it comes back. (The dots live inside
+            // the wrap now, so they scroll with it -- no separate
+            // visibility toggle needed.)
             const wrapObs = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     wrapInView = entry.isIntersecting;
-                    if (progressEl) {
-                        progressEl.classList.toggle('is-visible', wrapInView);
-                    }
                     setAllAnimationPlayState(
                         sceneEls[activeIdx],
                         wrapInView ? 'running' : 'paused'
