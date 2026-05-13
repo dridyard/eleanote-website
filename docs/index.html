@@ -1262,7 +1262,17 @@
 
         /* ============================================================
            SCENE 1: Eleanote opens -> minimizes -> assistant springs out
-           Loop: 9s
+           Loop: 9s (timing rebalanced — see the timestamped script in the
+           commit message for which second each phase occupies).
+
+           Phase budget:
+             0.0–1.5s  hold the open Eleanote window so the viewer reads it
+             1.5–2.4s  window shrinks toward the taskbar (slower than before)
+             2.4–2.55s pill pops into existence
+             2.55–3.9s pill travels to corner and grows (slower than before)
+             3.2–3.9s  EHR fades in behind the pill (overlap)
+             3.9–8.2s  idle state: EHR + pill in corner, viewer reads title
+             8.2–9.0s  soft fade out
            ============================================================ */
         .scene-1 .ele-win {
             top: 8%; left: 50%;
@@ -1272,8 +1282,9 @@
             animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
         }
         @keyframes s1-ele {
-            0%, 11%  { opacity: 1; transform: scale(1); }
-            17%      { opacity: 0; transform: scale(0.04); }
+            /* 0–1.5s open, 1.5–2.4s shrink, then invisible for the rest */
+            0%, 17%  { opacity: 1; transform: scale(1); }
+            27%      { opacity: 0; transform: scale(0.04); }
             100%     { opacity: 0; transform: scale(0.04); }
         }
         .scene-1 .pill.idle {
@@ -1283,18 +1294,23 @@
             opacity: 0;
         }
         @keyframes s1-pill {
-            0%, 16%   { opacity: 0;
+            /* hidden until window has shrunk (0–2.4s) */
+            0%, 27%   { opacity: 0;
                         top: calc(100% - 22px);
                         right: 48%;
                         transform: translateX(50%) scale(0.04); }
-            17%       { opacity: 1;
+            /* pops into existence at the taskbar position (2.55s) */
+            28%       { opacity: 1;
                         top: calc(100% - 22px);
                         right: 48%;
                         transform: translateX(50%) scale(0.4); }
-            28%, 96%  { opacity: 1;
+            /* travels to top-right corner, grows to full size by 3.9s,
+               then idles until 8.2s */
+            43%, 91%  { opacity: 1;
                         top: 4%;
                         right: 3%;
                         transform: translateX(0) scale(1); }
+            /* soft fade out 8.2–9.0s */
             100%      { opacity: 0;
                         top: 4%;
                         right: 3%;
@@ -1308,8 +1324,9 @@
             opacity: 0;
         }
         @keyframes s1-emr {
-            0%, 22%  { opacity: 0; transform: scale(0.05); }
-            30%, 96% { opacity: 1; transform: scale(1); }
+            /* hidden until 3.2s, then fades in by 3.9s, visible until 8.2s */
+            0%, 36%  { opacity: 0; transform: scale(0.05); }
+            43%, 91% { opacity: 1; transform: scale(1); }
             100%     { opacity: 0; transform: scale(1); }
         }
         .scene-1 .dock-tab.tab-ele {
@@ -1319,13 +1336,17 @@
             animation: s1-ehr-tab 9s cubic-bezier(.4,0,.2,1) infinite;
         }
         @keyframes s1-ele-tab {
-            0%, 16%  { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
-            18%,100% { background: rgba(0,0,0,0.05); border-color: transparent; }
+            /* highlighted while eleanote window is the active app (0–2.4s),
+               then dims once it minimizes */
+            0%, 27%  { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
+            28%,100% { background: rgba(0,0,0,0.05); border-color: transparent; }
         }
         @keyframes s1-ehr-tab {
-            0%, 28%  { background: rgba(0,0,0,0.05); border-color: transparent; }
-            30%, 96% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
-            97%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
+            /* dim until EHR is fully in (3.9s), highlighted while idle
+               (3.9–8.2s), then dim again for fade-out */
+            0%, 42%  { background: rgba(0,0,0,0.05); border-color: transparent; }
+            43%, 91% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
+            92%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
         }
 
         /* phone variant of scene 1 */
@@ -1342,16 +1363,19 @@
             transform-origin: 59% 113%;
         }
         @media (max-width: 700px) {
+            /* Phone variant — same retimed schedule as desktop, with
+               phone-specific positions for the bottom-center spawn point
+               (right: 53%) and the final corner (top: 3%, right: 5%). */
             @keyframes s1-pill {
-                0%, 16%   { opacity: 0;
+                0%, 27%   { opacity: 0;
                             top: calc(100% - 22px);
                             right: 53%;
                             transform: translateX(50%) scale(0.04); }
-                17%       { opacity: 1;
+                28%       { opacity: 1;
                             top: calc(100% - 22px);
                             right: 53%;
                             transform: translateX(50%) scale(0.4); }
-                28%, 96%  { opacity: 1;
+                43%, 91%  { opacity: 1;
                             top: 3%;
                             right: 5%;
                             transform: translateX(0) scale(1); }
