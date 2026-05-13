@@ -2530,26 +2530,39 @@
             background: var(--paper);
         }
 
-        /* ---- MOBILE: vertical snap ---- */
+        /* ---- MOBILE: vertical snap ----
+           Snap config notes:
+             - proximity (not mandatory): mandatory was fighting small
+               finger movements and yanking the page around. proximity
+               only snaps when the user is already close, so decisive
+               swipes still lock but tiny touches don't get whipped.
+             - no scroll-snap-stop:always: lets a hard flick cross
+               multiple sections at once instead of pillowy one-at-a-time.
+             - 100dvh (dynamic viewport height) instead of 100vh:
+               on iOS Safari 100vh is the chrome-retracted maximum, so
+               calc(100vh - 64px) ended up TALLER than the visible area
+               while the address bar was showing -- the bottom of each
+               animation sat below the fold even after snapping.
+               100dvh tracks the actual visible viewport. Plain 100vh
+               kept as a fallback for older browsers.
+             - overscroll-behavior-y: contain: kills iOS rubber-band past
+               the last snap point which can leave the page half-snapped. */
         @media (max-width: 768px) {
             html {
-                scroll-snap-type: y mandatory;
+                scroll-snap-type: y proximity;
                 /* Offset every snap point by the fixed header height so
-                   content isn't hidden behind the 'eleanote / Menu' bar.
-                   --header-h is 64px; we use it so the snap target is
-                   the area BELOW the header, not the literal top of the
-                   viewport. */
+                   content isn't hidden behind the 'eleanote / Menu' bar. */
                 scroll-padding-top: var(--header-h);
+                overscroll-behavior-y: contain;
             }
             .hero, .waitlist-cta {
                 scroll-snap-align: start;
-                scroll-snap-stop: always;
             }
             /* Subtract header height so each snap section truly fills
-               the visible area below the header (not 100vh which would
-               include the area behind the header). */
+               the visible area below the header. */
             .hero, .waitlist-cta {
-                min-height: calc(100vh - var(--header-h));
+                min-height: calc(100vh - var(--header-h));        /* fallback */
+                min-height: calc(100dvh - var(--header-h));       /* preferred */
                 box-sizing: border-box;
             }
             .waitlist-cta {
@@ -2558,11 +2571,11 @@
                 justify-content: center;
             }
             .scenes-wrap .scene {
-                height: calc(100vh - var(--header-h));
+                height: calc(100vh - var(--header-h));            /* fallback */
+                height: calc(100dvh - var(--header-h));           /* preferred */
                 margin: 0 !important;
                 padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
                 scroll-snap-align: start;
-                scroll-snap-stop: always;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
