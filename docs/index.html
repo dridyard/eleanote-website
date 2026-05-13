@@ -2532,12 +2532,10 @@
 
         /* ---- MOBILE: vertical snap ----
            Snap config notes:
-             - proximity (not mandatory): mandatory was fighting small
-               finger movements and yanking the page around. proximity
-               only snaps when the user is already close, so decisive
-               swipes still lock but tiny touches don't get whipped.
-             - no scroll-snap-stop:always: lets a hard flick cross
-               multiple sections at once instead of pillowy one-at-a-time.
+             - mandatory + scroll-snap-stop:always = strict carousel.
+               Any swipe (weak or strong) advances exactly one snap
+               point; a hard flick cannot skip past a scene; release
+               always lands aligned -- never between scenes.
              - 100dvh (dynamic viewport height) instead of 100vh:
                on iOS Safari 100vh is the chrome-retracted maximum, so
                calc(100vh - 64px) ended up TALLER than the visible area
@@ -2549,7 +2547,7 @@
                the last snap point which can leave the page half-snapped. */
         @media (max-width: 768px) {
             html {
-                scroll-snap-type: y proximity;
+                scroll-snap-type: y mandatory;
                 /* Offset every snap point by the fixed header height so
                    content isn't hidden behind the 'eleanote / Menu' bar. */
                 scroll-padding-top: var(--header-h);
@@ -2557,6 +2555,7 @@
             }
             .hero, .waitlist-cta {
                 scroll-snap-align: start;
+                scroll-snap-stop: always;
             }
             /* Subtract header height so each snap section truly fills
                the visible area below the header. */
@@ -2576,6 +2575,7 @@
                 margin: 0 !important;
                 padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
                 scroll-snap-align: start;
+                scroll-snap-stop: always;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
