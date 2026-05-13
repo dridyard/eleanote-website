@@ -1692,27 +1692,42 @@
                - Below it: a stacked list of staged orders that
                  accumulate as items transfer over
 
-           Loop: 12.0 seconds. Steps separated by ~0.5s for consistent
-           cadence. Both ghosts use the same 0.5s flight time.
+           Loop: 15.0 seconds. Ghost flights stretched to 0.8s. Holds
+           between events extended so the viewer can read each step
+           (especially the auto-fill moments — the whole point of the
+           scene). Big front-loaded holds (1.5s each) let the viewer
+           clearly see each item appear in the pill before action begins.
 
            Beats:
-             0.0s   loop start - pill empty (just header), no orders
-             1.0s   BMP item stages in pill
-             2.0s   MRI abdomen stages in pill (below BMP)
-             2.5s   BMP ghost lifts off pill, begins flight
-             3.0s   ghost arrives -> search box reads "BMP";
-                    BMP item disappears from pill
-             3.5s   modal opens (Date field empty)
-             4.0s   Date field pastes "05/01/2027"
-             4.5s   modal closes; BMP row appears in EMR list
-             5.0s   MRI ghost lifts off, begins flight (same 0.5s speed)
-             5.5s   ghost arrives -> search box reads "MRI abdomen";
-                    MRI item disappears from pill
-             6.0s   modal opens
-             6.5s   Date pastes "05/01/2027"
-             7.0s   Indication pastes "Surveillance of renal cell carcinoma"
-             7.5s   modal closes; MRI row appears in EMR list
-             7.5 - 12.0s   hold (4.5s); pill is just the header
+             0.0  - 1.5s   initial hold (1.5s)
+             1.5s          BMP item stages in pill
+             1.5  - 3.0s   hold with BMP visible (1.5s)
+             3.0s          MRI abdomen stages in pill (below BMP)
+             3.0  - 4.5s   hold with both items visible (1.5s)
+             4.5  - 5.3s   BMP ghost flies (0.8s)
+             5.3s          ghost arrives -> search reads "BMP";
+                           BMP item leaves pill
+             5.3  - 5.9s   hold (0.6s)
+             5.9s          modal opens (Date field empty)
+             5.9  - 6.7s   hold on empty modal (0.8s)
+             6.7s          Date pastes "05/01/2027"
+             6.7  - 7.7s   hold with date visible (1.0s)
+             7.7s          modal closes; BMP row appears in EMR list;
+                           search returns to placeholder
+             7.7  - 8.7s   hold (BMP confirmed in EMR) (1.0s)
+             8.7  - 9.5s   MRI ghost flies (0.8s)
+             9.5s          ghost arrives -> search reads "MRI abdomen";
+                           MRI item leaves pill
+             9.5  - 10.1s  hold (0.6s)
+             10.1s         modal opens
+             10.1 - 10.8s  hold on empty modal (0.7s)
+             10.8s         Date pastes
+             10.8 - 11.5s  hold (0.7s)
+             11.5s         Indication pastes
+                           "Surveillance of renal cell carcinoma"
+             11.5 - 12.5s  hold with indication visible (1.0s)
+             12.5s         modal closes; MRI row appears in EMR list
+             12.5 - 15.0s  final hold (2.5s)
            ============================================================ */
         .scene-3 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
         .scene-3 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
@@ -1773,36 +1788,37 @@
         .s3-search.is-mri .placeholder { display: none; }
         .s3-search.is-mri .typed.t-mri { display: inline; }
 
-        .s3-search-anim { animation: s3-search-state 12s steps(1, end) infinite; }
+        .s3-search-anim { animation: s3-search-state 15s steps(1, end) infinite; }
         @keyframes s3-search-state {
             /* class-toggle approximation via opacity on child labels */
             0%, 100% {}
         }
         /* Use opacity for placeholder/typed instead of class-toggle */
         .s3-search .lbl { transition: none; }
-        .s3-search .lbl.placeholder { animation: s3-lbl-placeholder 12s steps(1, end) infinite; }
-        .s3-search .lbl.t-bmp        { animation: s3-lbl-bmp        12s steps(1, end) infinite; }
-        .s3-search .lbl.t-mri        { animation: s3-lbl-mri        12s steps(1, end) infinite; }
-        /* Search-box labels: placeholder (default), "BMP" 3.0-4.5s,
-           placeholder again 4.5-5.5s, "MRI abdomen" 5.5-7.5s, then
-           placeholder for the rest of the loop.
-           % of 12s: 3.0=25, 4.5=37.5, 5.5=45.83, 7.5=62.5 */
+        .s3-search .lbl.placeholder { animation: s3-lbl-placeholder 15s steps(1, end) infinite; }
+        .s3-search .lbl.t-bmp        { animation: s3-lbl-bmp        15s steps(1, end) infinite; }
+        .s3-search .lbl.t-mri        { animation: s3-lbl-mri        15s steps(1, end) infinite; }
+        /* Search-box labels (% of 15s):
+             placeholder default, "BMP" 5.3-7.7s (35.3%-51.3%),
+             placeholder 7.7-9.5s (51.3%-63.3%),
+             "MRI abdomen" 9.5-12.5s (63.3%-83.3%),
+             placeholder 12.5-15.0s. */
         @keyframes s3-lbl-placeholder {
-            0%, 24.9%   { opacity: 1; }
-            25%, 37.4%  { opacity: 0; }
-            37.5%, 45.7%{ opacity: 1; }
-            45.8%, 62.4%{ opacity: 0; }
-            62.5%, 100% { opacity: 1; }
+            0%, 35.2%    { opacity: 1; }
+            35.3%, 51.2% { opacity: 0; }
+            51.3%, 63.2% { opacity: 1; }
+            63.3%, 83.2% { opacity: 0; }
+            83.3%, 100%  { opacity: 1; }
         }
         @keyframes s3-lbl-bmp {
-            0%, 24.9%   { opacity: 0; }
-            25%, 37.4%  { opacity: 1; }
-            37.5%, 100% { opacity: 0; }
+            0%, 35.2%    { opacity: 0; }
+            35.3%, 51.2% { opacity: 1; }
+            51.3%, 100%  { opacity: 0; }
         }
         @keyframes s3-lbl-mri {
-            0%, 45.7%   { opacity: 0; }
-            45.8%, 62.4%{ opacity: 1; }
-            62.5%, 100% { opacity: 0; }
+            0%, 63.2%    { opacity: 0; }
+            63.3%, 83.2% { opacity: 1; }
+            83.3%, 100%  { opacity: 0; }
         }
         .s3-search .lbl {
             position: absolute;
@@ -1840,40 +1856,40 @@
             padding: 1px 7px; border-radius: 3px;
             white-space: nowrap;
         }
-        .s3-staged .row.r-bmp { animation: s3-row-bmp 12s steps(1, end) infinite; }
-        .s3-staged .row.r-mri { animation: s3-row-mri 12s steps(1, end) infinite; }
+        /* EMR rows: BMP appears at 7.7s (51.3%), MRI at 12.5s (83.3%) */
+        .s3-staged .row.r-bmp { animation: s3-row-bmp 15s steps(1, end) infinite; }
+        .s3-staged .row.r-mri { animation: s3-row-mri 15s steps(1, end) infinite; }
         @keyframes s3-row-bmp {
-            0%, 37.4%   { opacity: 0; }
-            37.5%, 100% { opacity: 1; }
+            0%, 51.2%   { opacity: 0; }
+            51.3%, 100% { opacity: 1; }
         }
         @keyframes s3-row-mri {
-            0%, 62.4%   { opacity: 0; }
-            62.5%, 100% { opacity: 1; }
+            0%, 83.2%   { opacity: 0; }
+            83.3%, 100% { opacity: 1; }
         }
 
         /* Phone: search group still centered (same behavior as desktop).
            The pill is anchored at top-right and the orders view is
            centered with two spacers above and below. */
 
-        /* Pill items - stage in (grow) at 1s and 2s, leave (shrink and
-           collapse height) at 3.0s and 5.5s.
-           % of 12s loop:
-             1.0s = 8.33%   BMP appears
-             2.0s = 16.67%  MRI appears
-             3.0s = 25%     BMP leaves
-             5.5s = 45.83%  MRI leaves
+        /* Pill items - stage in (grow) and leave (shrink/collapse).
+           % of 15s loop:
+             1.5s = 10%      BMP appears
+             3.0s = 20%      MRI appears
+             5.3s = 35.3%    BMP leaves (ghost has arrived at search)
+             9.5s = 63.3%    MRI leaves
         */
-        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 12s steps(1, end) infinite both; }
-        .scene-3 .pill .item.it-mri { animation: s3-it-mri 12s steps(1, end) infinite both; }
+        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 15s steps(1, end) infinite both; }
+        .scene-3 .pill .item.it-mri { animation: s3-it-mri 15s steps(1, end) infinite both; }
         @keyframes s3-it-bmp {
-            0%, 8.2%   { opacity: 0; height: 0; padding: 0 10px; }
-            8.3%, 24.9%{ opacity: 1; height: auto; padding: 5px 10px; }
-            25%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
+            0%, 9.9%    { opacity: 0; height: 0; padding: 0 10px; }
+            10%, 35.2%  { opacity: 1; height: auto; padding: 5px 10px; }
+            35.3%, 100% { opacity: 0; height: 0; padding: 0 10px; }
         }
         @keyframes s3-it-mri {
-            0%, 16.6%  { opacity: 0; height: 0; padding: 0 10px; }
-            16.7%, 45.7% { opacity: 1; height: auto; padding: 5px 10px; }
-            45.8%, 100% { opacity: 0; height: 0; padding: 0 10px; }
+            0%, 19.9%   { opacity: 0; height: 0; padding: 0 10px; }
+            20%, 63.2%  { opacity: 1; height: auto; padding: 5px 10px; }
+            63.3%, 100% { opacity: 0; height: 0; padding: 0 10px; }
         }
 
         /* GHOST: a chip that flies from assistant item -> search input.
@@ -1899,40 +1915,42 @@
             transform-origin: center center;
             white-space: nowrap;
         }
-        /* Ghost flights: each 0.5s long, identical speed.
-           BMP: 2.5s -> 3.0s = 20.83% -> 25%
-           MRI: 5.0s -> 5.5s = 41.67% -> 45.83% */
-        .s3-ghost.g-bmp { animation: s3-g-bmp 12s linear infinite; }
-        .s3-ghost.g-mri { animation: s3-g-mri 12s linear infinite; }
+        /* Ghost flights: each 0.8s long (was 0.5s). Trajectory is more
+           readable across the screen now.
+           BMP: 4.5s -> 5.3s = 30%    -> 35.3% (of 15s)
+           MRI: 8.7s -> 9.5s = 58%    -> 63.3% (of 15s)
+           Midway opacity stop sits at the average of the two endpoints. */
+        .s3-ghost.g-bmp { animation: s3-g-bmp 15s linear infinite; }
+        .s3-ghost.g-mri { animation: s3-g-mri 15s linear infinite; }
         @keyframes s3-g-bmp {
-            0%, 20.7%  { opacity: 0;
-                         left: var(--pill-x); top: var(--pill-y);
-                         transform: translate(-50%, -50%) scale(1); }
-            20.8%      { opacity: 1;
-                         left: var(--pill-x); top: var(--pill-y);
-                         transform: translate(-50%, -50%) scale(1); }
-            23%        { opacity: 0.6; }
-            24.9%      { opacity: 0.25;
-                         left: var(--search-x); top: var(--search-y);
-                         transform: translate(-50%, -50%) scale(0.5); }
-            25%, 100%  { opacity: 0;
-                         left: var(--search-x); top: var(--search-y);
-                         transform: translate(-50%, -50%) scale(0.5); }
+            0%, 29.9%   { opacity: 0;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            30%         { opacity: 1;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            32.7%       { opacity: 0.6; }   /* mid-flight ~4.9s */
+            35.2%       { opacity: 0.25;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+            35.3%, 100% { opacity: 0;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes s3-g-mri {
-            0%, 41.6%  { opacity: 0;
-                         left: var(--pill-x); top: var(--pill-y);
-                         transform: translate(-50%, -50%) scale(1); }
-            41.7%      { opacity: 1;
-                         left: var(--pill-x); top: var(--pill-y);
-                         transform: translate(-50%, -50%) scale(1); }
-            44%        { opacity: 0.6; }
-            45.7%      { opacity: 0.25;
-                         left: var(--search-x); top: var(--search-y);
-                         transform: translate(-50%, -50%) scale(0.5); }
-            45.8%, 100%{ opacity: 0;
-                         left: var(--search-x); top: var(--search-y);
-                         transform: translate(-50%, -50%) scale(0.5); }
+            0%, 57.9%   { opacity: 0;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            58%         { opacity: 1;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            60.7%       { opacity: 0.6; }   /* mid-flight ~9.1s */
+            63.2%       { opacity: 0.25;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+            63.3%, 100% { opacity: 0;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
         }
 
         /* MODAL: shows for each order; fields paste in turn */
@@ -2013,41 +2031,42 @@
         }
 
         /* BMP modal:
-             3.5s open, 4.0s Date pastes, 4.5s close
-             = 29.17% open, 33.33% paste, 37.5% close (% of 12s) */
-        .s3-modal.m-bmp { animation: s3-m-bmp 12s steps(1, end) infinite; }
+             5.9s open, 6.7s Date pastes, 7.7s close
+             = 39.3% open, 44.7% paste, 51.3% close (% of 15s) */
+        .s3-modal.m-bmp { animation: s3-m-bmp 15s steps(1, end) infinite; }
         @keyframes s3-m-bmp {
-            0%, 29.1%   { opacity: 0; transform: translateY(6px); }
-            29.2%, 37.4%{ opacity: 1; transform: translateY(0); }
-            37.5%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 39.2%   { opacity: 0; transform: translateY(6px); }
+            39.3%, 51.2%{ opacity: 1; transform: translateY(0); }
+            51.3%, 100% { opacity: 0; transform: translateY(-4px); }
         }
-        .s3-modal.m-bmp .v.paste-date { animation: s3-bmp-date 12s steps(1, end) infinite; }
+        .s3-modal.m-bmp .v.paste-date { animation: s3-bmp-date 15s steps(1, end) infinite; }
         @keyframes s3-bmp-date {
-            0%, 33.2%   { opacity: 0; }
-            33.3%, 37.4%{ opacity: 1; }
-            37.5%, 100% { opacity: 0; }
+            0%, 44.6%   { opacity: 0; }
+            44.7%, 51.2%{ opacity: 1; }
+            51.3%, 100% { opacity: 0; }
         }
 
         /* MRI modal:
-             6.0s open, 6.5s Date pastes, 7.0s Indication pastes, 7.5s close
-             = 50%, 54.17%, 58.33%, 62.5% (% of 12s) */
-        .s3-modal.m-mri { animation: s3-m-mri 12s steps(1, end) infinite; }
+             10.1s open, 10.8s Date pastes, 11.5s Indication pastes,
+             12.5s close
+             = 67.3%, 72%, 76.7%, 83.3% (% of 15s) */
+        .s3-modal.m-mri { animation: s3-m-mri 15s steps(1, end) infinite; }
         @keyframes s3-m-mri {
-            0%, 49.9%   { opacity: 0; transform: translateY(6px); }
-            50%, 62.4%  { opacity: 1; transform: translateY(0); }
-            62.5%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 67.2%   { opacity: 0; transform: translateY(6px); }
+            67.3%, 83.2%{ opacity: 1; transform: translateY(0); }
+            83.3%, 100% { opacity: 0; transform: translateY(-4px); }
         }
-        .s3-modal.m-mri .v.paste-date { animation: s3-mri-date 12s steps(1, end) infinite; }
-        .s3-modal.m-mri .v.paste-ind  { animation: s3-mri-ind  12s steps(1, end) infinite; }
+        .s3-modal.m-mri .v.paste-date { animation: s3-mri-date 15s steps(1, end) infinite; }
+        .s3-modal.m-mri .v.paste-ind  { animation: s3-mri-ind  15s steps(1, end) infinite; }
         @keyframes s3-mri-date {
-            0%, 54.1%   { opacity: 0; }
-            54.2%, 62.4%{ opacity: 1; }
-            62.5%, 100% { opacity: 0; }
+            0%, 71.9%   { opacity: 0; }
+            72%, 83.2%  { opacity: 1; }
+            83.3%, 100% { opacity: 0; }
         }
         @keyframes s3-mri-ind {
-            0%, 58.2%   { opacity: 0; }
-            58.3%, 62.4%{ opacity: 1; }
-            62.5%, 100% { opacity: 0; }
+            0%, 76.6%   { opacity: 0; }
+            76.7%, 83.2%{ opacity: 1; }
+            83.3%, 100% { opacity: 0; }
         }
 
         /* ============================================================
