@@ -501,11 +501,14 @@
         .stage {
             position: relative;
             width: 100%;
-            background: linear-gradient(180deg, #d8d3c4 0%, #c9c2ad 100%);
+            /* Bezel: deep brand teal (a shade darker than --teal-deep)
+               so the laptop frame reads as part of the eleanote palette
+               instead of generic tan. */
+            background: linear-gradient(180deg, #1c4f58 0%, #133b43 100%);
             border-radius: 12px 12px 4px 4px;
             box-shadow:
-                0 1px 0 rgba(0,0,0,0.05) inset,
-                0 18px 40px rgba(0,0,0,0.18);
+                0 1px 0 rgba(255,255,255,0.04) inset,
+                0 18px 40px rgba(13, 43, 48, 0.22);
             overflow: hidden;
             font-size: 12px;
         }
@@ -513,10 +516,16 @@
             content: "";
             position: absolute;
             inset: 0 0 28px 0;
+            /* Pretend-computer "wallpaper". Soft sage/teal gradient
+               (brand colors) with two radial glows for depth:
+                 - upper-left: warm cream highlight
+                 - lower-right: dusty pink tint
+               This gives the wallpaper a modern mesh-gradient feel
+               that pops against the brand teal bezel. */
             background:
-                radial-gradient(60% 50% at 25% 30%, rgba(255,255,255,0.18), transparent 70%),
-                radial-gradient(70% 60% at 80% 70%, rgba(20, 81, 92, 0.10), transparent 70%),
-                linear-gradient(180deg, #cfc8b3 0%, #b9b39f 100%);
+                radial-gradient(65% 55% at 22% 22%, rgba(255, 248, 230, 0.45), transparent 70%),
+                radial-gradient(70% 60% at 82% 78%, rgba(220, 156, 178, 0.28), transparent 70%),
+                linear-gradient(135deg, #d6ece5 0%, #9ec6bc 55%, #6aa39b 100%);
             z-index: 0;
         }
         .stage.d { aspect-ratio: 16 / 10; display: block; }
@@ -2677,20 +2686,19 @@
             }
         }
 
-        /* ---- MOBILE: peek-card carousel + dots + swipe ----
-           Each scene becomes a bounded card (white background, rounded
-           corners, subtle shadow), narrower than the viewport so the
-           edge of the NEXT card is visible on the right -- that visible
-           edge is the affordance "there's more, swipe sideways."
-           Title moves BELOW the stage in smaller text. Active card is
-           centered, with ~10vw of each neighbor peeking at the edges.
+        /* ---- MOBILE: peek-stage carousel + dots + swipe ----
+           No card chrome -- the stage itself is the visual unit, with
+           the next stage peeking on the right as the swipe affordance.
+           Title sits below the stage in a smaller caption-style font.
 
            Geometry:
-             Card width: 80vw
-             Track inline-padding: 10vw (centers card 0)
-             Gap between cards: 16px
-             Peek of next card on slide 0 ≈ 100 - 10 - 80 - (16px) ≈ 6vw
-             Step per scene: 80vw + 16px (used by JS drag math too) */
+             Stage width: 82vw  (a bit wider than the white card it
+                                 used to live inside)
+             Track inline-padding: 9vw  (centers scene 0 in the viewport)
+             Gap between scenes: 16px
+             Peek of next scene on slide 0 ≈ 100 - 9 - 82 - (16/100vw)
+                                          ≈ 4.6vw  (~17px on 360px phone)
+             Step per scene: 82vw + 16px  (used by JS drag math too) */
         @media (max-width: 768px) {
             /* Hero / CTA feel like their own screen but no scroll-snap --
                just natural page scroll past them. */
@@ -2706,36 +2714,33 @@
             }
             .scenes-arrows { display: none; }
 
-            /* Make space below the cards for the absolute-positioned dot
-               pill so cards don't overlap with it. */
+            /* Reserve room below the scenes for the dot indicator so
+               the stages don't sit underneath it. */
             .scenes-wrap {
                 padding-bottom: 64px;
                 box-sizing: border-box;
             }
 
-            /* Track: a freely sized flex row with side padding so card 0
-               sits centered, and a per-scene step of (card + gap). */
+            /* Track: freely sized flex row with side padding so scene 0
+               is centered, and a per-scene step of (stage + gap). */
             .scenes-track {
                 width: auto;
                 gap: 16px;
-                padding: 0 10vw;
-                transform: translateX(calc(var(--active) * -1 * (80vw + 16px)));
+                padding: 0 9vw;
+                transform: translateX(calc(var(--active) * -1 * (82vw + 16px)));
             }
 
-            /* Each scene becomes a bounded card. */
+            /* Scene is just a flex column wrapper around the stage +
+               title -- no background, no border, no shadow. */
             .scenes-wrap .scene {
-                flex: 0 0 80vw;
-                width: 80vw;
-                padding: 18px 16px 22px;
-                gap: 14px;
-                background: #fff;
-                border-radius: 18px;
-                border: 1px solid rgba(13, 43, 48, 0.08);
-                box-shadow: 0 6px 22px rgba(13, 43, 48, 0.10);
+                flex: 0 0 82vw;
+                width: 82vw;
+                padding: 0;
+                gap: 12px;
             }
-            /* Inside the card: stage on top, title below in a smaller
-               caption-like font. The DOM order is title-first / stage-after,
-               but flex order swaps the visual order. */
+            /* Inside the scene: stage on top, title below in a smaller
+               caption-style font. DOM order stays title-first (matters
+               for desktop layout / a11y); flex 'order' swaps visuals. */
             .scenes-wrap .scene-title {
                 order: 2;
                 font-size: 0.92rem;
@@ -2748,9 +2753,9 @@
             .scenes-wrap .stage {
                 order: 1;
             }
-            /* Shrink the stage a little more on mobile so the card stays
-               compact and the next card's edge is visible without the
-               page needing to scroll. */
+            /* Shrink the stage a bit more on mobile so the whole scene
+               (stage + title + dot pill below) fits a typical phone
+               viewport without scrolling inside the carousel. */
             .scenes-wrap .stage.p {
                 max-height: calc(100vh - var(--header-h) - 240px);   /* fallback */
                 max-height: calc(100dvh - var(--header-h) - 240px);  /* preferred */
@@ -2825,13 +2830,8 @@
             background: var(--teal);
             transform: scale(1.4);
         }
-        .scene-progress .label {
-            margin-left: 6px;
-            color: var(--muted);
-            font-size: 10.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
+        /* "N of 4" label hidden -- the dots alone tell the story. */
+        .scene-progress .label { display: none; }
         /* Slightly larger / brighter on mobile so the affordance is clear,
            and lifted clear of the iOS home indicator. */
         @media (max-width: 768px) {
@@ -2847,10 +2847,6 @@
             }
             .scene-progress .dot.active {
                 transform: scale(1.5);
-            }
-            .scene-progress .label {
-                font-size: 11px;
-                margin-left: 8px;
             }
         }
 
@@ -3917,7 +3913,7 @@
             // hands off smoothly to the CSS-driven snap on release.
             function getSceneStep() {
                 if (window.matchMedia('(max-width: 768px)').matches) {
-                    return 0.80 * window.innerWidth + 16;   // 80vw + 16px gap
+                    return 0.82 * window.innerWidth + 16;   // 82vw + 16px gap
                 }
                 return wrap.offsetWidth;                     // 100% of wrap per scene
             }
