@@ -2565,7 +2565,10 @@
             width: 400%;
             height: 100%;
             transform: translateX(calc(var(--active) * -25%));
-            transition: transform 500ms cubic-bezier(.4, 0, .2, 1);
+            /* Snappier ease-out -- feels like an Apple-style flick rather
+               than a slow Material slide. ~350ms hits the sweet spot of
+               quick-but-not-jarring. */
+            transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .scenes-wrap .scene {
             flex: 0 0 25%;
@@ -2668,7 +2671,7 @@
             }
         }
 
-        /* ---- MOBILE: arrow row at the bottom + screen-tall hero/CTA ---- */
+        /* ---- MOBILE: hide arrows, lean on dots + swipe ---- */
         @media (max-width: 768px) {
             /* Hero / CTA feel like their own screen but no scroll-snap --
                just natural page scroll past them. */
@@ -2682,26 +2685,9 @@
                 align-items: center;
                 justify-content: center;
             }
-            /* Arrows sit in a row at the bottom of the wrap, in the
-               empty space below the centered stage. Slightly smaller
-               so they don't dominate the small stage. Floating dots
-               (#sceneProgress at bottom: 18px) sit just below the arrows. */
-            .scenes-arrows {
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 72px;
-                display: flex;
-                justify-content: space-between;
-                padding: 0 24px;
-                z-index: 5;
-                pointer-events: none;
-            }
-            .scenes-arrow {
-                width: 44px;
-                height: 44px;
-            }
-            .scenes-arrow svg { width: 18px; height: 18px; }
+            /* No arrow buttons on mobile -- the dot pill at the bottom of
+               the wrap shows progress and horizontal swipe drives change. */
+            .scenes-arrows { display: none; }
         }
         /* Title: centered above the stage */
         .scenes-wrap .scene-title {
@@ -2728,7 +2714,9 @@
             max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
         }
         /* Progress indicator (fixed to bottom of viewport while scrolling
-           through the scenes). Hidden when out of the scenes section. */
+           through the scenes). Hidden when out of the scenes section.
+           On mobile this is the ONLY carousel affordance, so it's bumped
+           up in size and padding -- see media query below. */
         .scene-progress {
             position: fixed;
             bottom: 18px;
@@ -2767,6 +2755,29 @@
             font-size: 10.5px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+        }
+        /* On mobile, the dot pill is the primary carousel control --
+           make it noticeably larger, brighter, and lifted clear of the
+           iOS home indicator. */
+        @media (max-width: 768px) {
+            .scene-progress {
+                bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+                padding: 11px 20px;
+                gap: 14px;
+                background: #ffffff;
+                box-shadow: 0 8px 22px rgba(13, 43, 48, 0.18);
+                border: 1px solid rgba(13, 43, 48, 0.08);
+            }
+            .scene-progress .dot {
+                width: 9px; height: 9px;
+            }
+            .scene-progress .dot.active {
+                transform: scale(1.55);
+            }
+            .scene-progress .label {
+                font-size: 11px;
+                margin-left: 10px;
+            }
         }
 
         /* WAITLIST CTA - styled to match the rest of the homepage */
@@ -3799,29 +3810,115 @@
                 else if (e.key === 'ArrowLeft') { setActive(activeIdx - 1); }
             });
 
-            // ---- Mobile/tablet: horizontal touch swipe ----
-            // Both listeners are passive so vertical page scroll is never
-            // delayed waiting for our JS. CSS touch-action: pan-y on the
-            // wrap tells the browser "vertical pans are yours, horizontal
-            // ones are mine" so we never fight the native scroll.
+            // ---- Mobile/tablet: follow-finger drag + snap ----
+            // Apple/Stripe-style carousel: the track moves with the finger
+            // as you drag, then snaps to the nearest scene at release --
+            // OR advances based on velocity if you flick. Listeners are
+            // passive so vertical page scroll is never blocked; CSS
+            // touch-action: pan-y on .scenes-wrap tells the browser
+            // "vertical pans are yours, horizontal ones are mine."
+            const trackEl = wrap.querySelector('.scenes-track');
             let tStartX = null, tStartY = null;
+            let lastMoveT = 0, lastMoveX = 0, velocity = 0;
+            let dragging = false;      // committed to a horizontal drag
+            let abandoned = false;     // gesture decided to be a vertical scroll
+
+            function applyDragTransform(dx) {
+                const wrapWidth = wrap.offsetWidth || 1;
+                const offsetPct = (dx / wrapWidth) * 25;   // 25% per scene
+                // Resist at the edges so it feels like there's "wall"
+                // beyond scene 0 and scene N-1 rather than free-running.
+                let target = (activeIdx * -25) + offsetPct;
+                const minT = -(total - 1) * 25;
+                const maxT = 0;
+                if (target > maxT) target = maxT + (target - maxT) * 0.35;
+                else if (target < minT) target = minT + (target - minT) * 0.35;
+                trackEl.style.transform = `translateX(${target}%)`;
+            }
+
+            function endDrag(committedTargetIdx) {
+                // Restore the CSS transition and let CSS take over the
+                // transform via --active. Clearing inline transform after
+                // the next frame ensures the browser sees the transition
+                // animate from the dragged position to the committed one.
+                trackEl.style.transition = '';
+                setActive(committedTargetIdx);
+                requestAnimationFrame(() => {
+                    trackEl.style.transform = '';
+                });
+                dragging = false;
+            }
+
             wrap.addEventListener('touchstart', (e) => {
                 tStartX = e.touches[0].clientX;
                 tStartY = e.touches[0].clientY;
+                lastMoveT = performance.now();
+                lastMoveX = tStartX;
+                velocity = 0;
+                dragging = false;
+                abandoned = false;
             }, { passive: true });
-            wrap.addEventListener('touchend', (e) => {
-                if (tStartX === null) return;
-                const dx = e.changedTouches[0].clientX - tStartX;
-                const dy = e.changedTouches[0].clientY - tStartY;
-                tStartX = null;
-                // Must be primarily horizontal AND past the threshold to
-                // count as a scene swipe. Otherwise the gesture was a tap
-                // or a vertical scroll and we do nothing.
-                const SWIPE_THRESHOLD = 40;
-                if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.3) {
-                    if (dx < 0) setActive(activeIdx + 1);   // swipe left -> next
-                    else        setActive(activeIdx - 1);   // swipe right -> previous
+
+            wrap.addEventListener('touchmove', (e) => {
+                if (tStartX === null || abandoned) return;
+                const x = e.touches[0].clientX;
+                const y = e.touches[0].clientY;
+                const dx = x - tStartX;
+                const dy = y - tStartY;
+
+                // First few px of motion: decide if this is a horizontal
+                // drag or a vertical scroll. Once decided, stick with it.
+                if (!dragging) {
+                    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+                    if (Math.abs(dy) > Math.abs(dx)) {
+                        // Vertical scroll wins -- abandon, let page scroll.
+                        abandoned = true;
+                        return;
+                    }
+                    dragging = true;
+                    trackEl.style.transition = 'none';
                 }
+
+                // Track velocity (px/ms) of the last frame -- used at
+                // release to detect quick flicks.
+                const now = performance.now();
+                const dt = now - lastMoveT;
+                if (dt > 0) {
+                    velocity = (x - lastMoveX) / dt;
+                }
+                lastMoveT = now;
+                lastMoveX = x;
+
+                applyDragTransform(dx);
+            }, { passive: true });
+
+            wrap.addEventListener('touchend', (e) => {
+                if (tStartX === null) { return; }
+                if (!dragging) {
+                    tStartX = null;
+                    return;
+                }
+                const dx = e.changedTouches[0].clientX - tStartX;
+                tStartX = null;
+
+                const wrapWidth = wrap.offsetWidth || 1;
+                // Commit if (a) the drag crossed ~15% of the wrap, OR
+                // (b) the user flicked fast (>0.4 px/ms is a casual flick).
+                // Otherwise snap back to where we started.
+                const DIST_THRESHOLD = wrapWidth * 0.15;
+                const VEL_THRESHOLD  = 0.4;
+                let targetIdx = activeIdx;
+                if (Math.abs(dx) > DIST_THRESHOLD || Math.abs(velocity) > VEL_THRESHOLD) {
+                    if (dx < 0 || velocity < -VEL_THRESHOLD) targetIdx = activeIdx + 1;
+                    else if (dx > 0 || velocity > VEL_THRESHOLD) targetIdx = activeIdx - 1;
+                }
+                endDrag(targetIdx);
+            }, { passive: true });
+
+            wrap.addEventListener('touchcancel', () => {
+                if (dragging) endDrag(activeIdx);   // snap back to where we started
+                tStartX = null;
+                abandoned = false;
             }, { passive: true });
 
             // Initial state: scene 0 active and playing, others paused.
