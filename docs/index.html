@@ -2552,7 +2552,10 @@
                                                               chrome-retracted maximum
                                                               and hide content under
                                                               the address bar. */
-            min-height: 540px;
+            /* No min-height -- on shorter phones we want the wrap to
+               match the actual visible viewport so the title stays on
+               screen. The stage inside uses max-height to shrink with
+               the available room rather than overflow it. */
             overflow: hidden;
             --active: 0;
             /* Let vertical pan happen natively (so the user can scroll
@@ -2575,12 +2578,15 @@
             width: 25%;
             height: 100%;
             margin: 0 !important;
-            padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
+            /* Tighter vertical padding on small viewports so the title
+               isn't pushed off-screen on short phones; desktop bumps
+               this back up via the (min-width: 769px) override below. */
+            padding: clamp(20px, 4vh, 60px) clamp(16px, 4vw, 48px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: clamp(16px, 2.5vh, 32px);
+            gap: clamp(12px, 2vh, 28px);
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -2712,6 +2718,16 @@
         .scenes-wrap .stage.d {
             max-height: calc(100vh - var(--header-h) - 220px);   /* fallback */
             max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
+        }
+        /* Phone stage gets the same shrink-to-fit treatment: cap its
+           height to whatever's left after we reserve room for the title
+           above, the dot pill below, and the scene's vertical padding.
+           Without this, the 9:13 aspect-ratio of the phone stage can
+           push the title off the top of the screen on shorter phones
+           (URL bar visible, smaller dvh). */
+        .scenes-wrap .stage.p {
+            max-height: calc(100vh - var(--header-h) - 200px);   /* fallback */
+            max-height: calc(100dvh - var(--header-h) - 200px);  /* preferred */
         }
         /* Progress indicator (fixed to bottom of viewport while scrolling
            through the scenes). Hidden when out of the scenes section.
