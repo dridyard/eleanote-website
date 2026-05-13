@@ -2516,13 +2516,14 @@
 
         /* ============== HOMEPAGE INTEGRATION OVERRIDES ============== */
         /* ============================================================
-           SCENES SECTION: responsive interaction model
-             - MOBILE (<=768px): vertical scroll-snap. iPhone-screen-swipe
-               feel. Hero / each scene / CTA each 100vh, snap-mandatory.
-             - DESKTOP (>=769px): horizontal carousel with click arrows.
-               One viewport-tall section. 4 scenes laid out in a flex row,
-               only one visible at a time, transform: translateX swaps.
-               Vertical page scroll behaves normally. No scroll-jacking.
+           SCENES SECTION: horizontal carousel at all viewport sizes.
+             - One viewport-tall section. 4 scenes laid out in a flex row
+               at 400% width; transform: translateX shows one at a time.
+             - Desktop: big arrow buttons float on the left/right edges.
+             - Mobile: smaller arrows in a row at the bottom + horizontal
+               touch swipe. Vertical page scroll is never hijacked --
+               users can swipe sideways for the carousel or up/down to
+               scroll the page like any normal section.
            ============================================================ */
         .scenes-wrap {
             padding: 0 !important;
@@ -2530,110 +2531,127 @@
             background: var(--paper);
         }
 
-        /* ---- MOBILE: vertical snap ----
-           Snap config notes:
-             - mandatory + scroll-snap-stop:always = strict carousel.
-               Any swipe (weak or strong) advances exactly one snap
-               point; a hard flick cannot skip past a scene; release
-               always lands aligned -- never between scenes.
-             - 100dvh (dynamic viewport height) instead of 100vh:
-               on iOS Safari 100vh is the chrome-retracted maximum, so
-               calc(100vh - 64px) ended up TALLER than the visible area
-               while the address bar was showing -- the bottom of each
-               animation sat below the fold even after snapping.
-               100dvh tracks the actual visible viewport. Plain 100vh
-               kept as a fallback for older browsers.
-             - overscroll-behavior-y: contain: kills iOS rubber-band past
-               the last snap point which can leave the page half-snapped. */
-        @media (max-width: 768px) {
-            html {
-                scroll-snap-type: y mandatory;
-                /* Offset every snap point by the fixed header height so
-                   content isn't hidden behind the 'eleanote / Menu' bar. */
-                scroll-padding-top: var(--header-h);
-                overscroll-behavior-y: contain;
-            }
-            .hero, .waitlist-cta {
-                scroll-snap-align: start;
-                scroll-snap-stop: always;
-            }
-            /* Subtract header height so each snap section truly fills
-               the visible area below the header. */
-            .hero, .waitlist-cta {
-                min-height: calc(100vh - var(--header-h));        /* fallback */
-                min-height: calc(100dvh - var(--header-h));       /* preferred */
-                box-sizing: border-box;
-            }
-            .waitlist-cta {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .scenes-wrap .scene {
-                height: calc(100vh - var(--header-h));            /* fallback */
-                height: calc(100dvh - var(--header-h));           /* preferred */
-                margin: 0 !important;
-                padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
-                scroll-snap-align: start;
-                scroll-snap-stop: always;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: clamp(20px, 3vh, 36px);
-                box-sizing: border-box;
-                overflow: hidden;
-            }
-            /* arrow buttons hidden on mobile */
-            .scenes-arrows { display: none; }
+        /* ---- CAROUSEL LAYOUT (shared at all viewport sizes) ----
+           Mobile and desktop both use the same horizontal carousel:
+             - .scenes-wrap is one viewport-tall stage (minus header).
+             - .scenes-track is a flex row at 400% width with 4 scenes.
+             - --active (0..3) on .scenes-wrap drives translateX.
+             - JS swaps --active via arrow buttons, keyboard, or (mobile)
+               horizontal touch swipe.
+           This replaces the earlier mobile vertical scroll-snap model.
+           iOS Safari ignores scroll-snap-stop: always during momentum
+           scrolls (a known WebKit limitation), so hard flicks could skip
+           past scenes. A horizontal carousel never conflicts with the
+           native vertical page scroll, so the user can swipe sideways
+           to change scene and scroll vertically to leave the section. */
+        .scenes-wrap {
+            position: relative;
+            height: calc(100vh - var(--header-h));        /* fallback */
+            height: calc(100dvh - var(--header-h));       /* preferred -- 100vh on iOS
+                                                              would otherwise be the
+                                                              chrome-retracted maximum
+                                                              and hide content under
+                                                              the address bar. */
+            min-height: 540px;
+            overflow: hidden;
+            --active: 0;
+            /* Let vertical pan happen natively (so the user can scroll
+               past the section), and keep horizontal swipes for our JS
+               handler -- it advances the carousel. */
+            touch-action: pan-y;
+        }
+        .scenes-track {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transform: translateX(calc(var(--active) * -25%));
+            transition: transform 500ms cubic-bezier(.4, 0, .2, 1);
+        }
+        .scenes-wrap .scene {
+            flex: 0 0 25%;
+            width: 25%;
+            height: 100%;
+            margin: 0 !important;
+            padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 48px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(16px, 2.5vh, 32px);
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* ---- DESKTOP: horizontal carousel ---- */
+        /* Arrow buttons -- shared styling. Positioning differs per
+           viewport (mobile: a row at the bottom; desktop: floating
+           big circles on the left/right edges). */
+        .scenes-arrow {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid var(--teal-deep);
+            background: var(--teal-deep);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            transition: background 160ms ease, transform 160ms ease,
+                        box-shadow 160ms ease;
+            font-family: inherit;
+        }
+        .scenes-arrow:hover:not([disabled]) {
+            background: var(--teal);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(14, 61, 70, 0.30);
+        }
+        .scenes-arrow:active:not([disabled]) {
+            transform: translateY(0);
+        }
+        /* Hide the unusable button at the start/end so it doesn't
+           sit there inert -- the other button stays pinned to its
+           side because of flex space-between. */
+        .scenes-arrow[disabled] {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .scenes-arrow svg { display: block; width: 20px; height: 20px; }
+        .scenes-arrow .arrow-label { display: none; }
+        /* Gentle attention-getter on the Next button while on scene 1
+           (prev is disabled there). Stops automatically once the user
+           advances (prev becomes enabled, this selector stops matching). */
+        .scenes-prev[disabled] ~ .scenes-next {
+            animation: scenesNudge 3s ease-in-out 0.6s infinite;
+        }
+        @keyframes scenesNudge {
+            0%, 55%, 100% {
+                transform: translateX(0);
+                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            }
+            65% {
+                transform: translateX(6px);
+                box-shadow: 0 10px 28px rgba(14, 61, 70, 0.40);
+            }
+            75% {
+                transform: translateX(0);
+                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .scenes-prev[disabled] ~ .scenes-next { animation: none; }
+        }
+
+        /* ---- DESKTOP arrow positioning ----
+           Big floating circles on the left/right edges of the stage,
+           vertically centered. Constrained to 1280px so they sit close
+           to the stage on very wide monitors rather than floating off
+           at the very edges of the screen. */
         @media (min-width: 769px) {
-            /* No page-level snap; vertical scroll behaves normally */
-            html { scroll-snap-type: none; }
-
-            /* The whole scenes-wrap is one viewport-tall stage,
-               minus the fixed header so it doesn't sit behind it. */
-            .scenes-wrap {
-                position: relative;
-                height: calc(100vh - var(--header-h));
-                min-height: 600px;
-                overflow: hidden;
-            }
-            /* The 4 scenes lay out in a horizontal row that slides via
-               transform: translateX. The active index is set on the
-               .scenes-wrap as --active (0..3) and the row width is 400%. */
-            .scenes-wrap {
-                --active: 0;
-            }
-            .scenes-track {
-                display: flex;
-                width: 400%;
-                height: 100%;
-                transform: translateX(calc(var(--active) * -25%));
-                transition: transform 500ms cubic-bezier(.4, 0, .2, 1);
-            }
             .scenes-wrap .scene {
-                flex: 0 0 25%;
-                width: 25%;
-                height: 100%;
-                margin: 0 !important;
                 padding: clamp(40px, 6vh, 80px) clamp(24px, 4vw, 64px);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: clamp(16px, 2.5vh, 32px);
-                box-sizing: border-box;
-                overflow: hidden;
             }
-
-            /* Arrow buttons — left/right of the carousel.
-               Pill shape with a text label so it's instantly obvious to
-               a first-time visitor that there's more to see. Constrained
-               to ~1280px so they sit close to the stage at large viewports
-               rather than floating off at the very edges of the screen. */
             .scenes-arrows {
                 position: absolute;
                 top: 0; bottom: 0;
@@ -2648,66 +2666,42 @@
                 padding: 0 clamp(12px, 2vw, 32px);
                 z-index: 5;
             }
-            .scenes-arrow {
-                pointer-events: auto;
-                display: inline-flex;
+        }
+
+        /* ---- MOBILE: arrow row at the bottom + screen-tall hero/CTA ---- */
+        @media (max-width: 768px) {
+            /* Hero / CTA feel like their own screen but no scroll-snap --
+               just natural page scroll past them. */
+            .hero, .waitlist-cta {
+                min-height: calc(100vh - var(--header-h));        /* fallback */
+                min-height: calc(100dvh - var(--header-h));       /* preferred */
+                box-sizing: border-box;
+            }
+            .waitlist-cta {
+                display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 52px;
-                height: 52px;
-                border-radius: 50%;
-                border: 1px solid var(--teal-deep);
-                background: var(--teal-deep);
-                color: #fff;
-                cursor: pointer;
-                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-                transition: background 160ms ease, transform 160ms ease,
-                            box-shadow 160ms ease;
-                font-family: inherit;
             }
-            .scenes-arrow:hover:not([disabled]) {
-                background: var(--teal);
-                transform: translateY(-1px);
-                box-shadow: 0 10px 24px rgba(14, 61, 70, 0.30);
-            }
-            .scenes-arrow:active:not([disabled]) {
-                transform: translateY(0);
-            }
-            /* When at the start/end of the carousel, hide the unusable
-               button entirely (visibility keeps the layout — flex space
-               between still pins the remaining button to its side). */
-            .scenes-arrow[disabled] {
-                visibility: hidden;
+            /* Arrows sit in a row at the bottom of the wrap, in the
+               empty space below the centered stage. Slightly smaller
+               so they don't dominate the small stage. Floating dots
+               (#sceneProgress at bottom: 18px) sit just below the arrows. */
+            .scenes-arrows {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 72px;
+                display: flex;
+                justify-content: space-between;
+                padding: 0 24px;
+                z-index: 5;
                 pointer-events: none;
             }
-            .scenes-arrow svg { display: block; width: 20px; height: 20px; }
-            /* Old label spans hidden — we're icon-only now */
-            .scenes-arrow .arrow-label { display: none; }
-            /* Gentle attention-getter on the Next button while on scene 1
-               (prev is disabled there). Stops automatically once the user
-               clicks Next (prev becomes enabled and this selector no longer
-               matches). */
-            .scenes-prev[disabled] ~ .scenes-next {
-                animation: scenesNudge 3s ease-in-out 0.6s infinite;
+            .scenes-arrow {
+                width: 44px;
+                height: 44px;
             }
-            @keyframes scenesNudge {
-                0%, 55%, 100% {
-                    transform: translateX(0);
-                    box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-                }
-                65% {
-                    transform: translateX(6px);
-                    box-shadow: 0 10px 28px rgba(14, 61, 70, 0.40);
-                }
-                75% {
-                    transform: translateX(0);
-                    box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-                }
-            }
-            /* Respect users who don't want motion */
-            @media (prefers-reduced-motion: reduce) {
-                .scenes-prev[disabled] ~ .scenes-next { animation: none; }
-            }
+            .scenes-arrow svg { width: 18px; height: 18px; }
         }
         /* Title: centered above the stage */
         .scenes-wrap .scene-title {
@@ -2730,7 +2724,8 @@
             margin: 0 auto;
         }
         .scenes-wrap .stage.d {
-            max-height: calc(100vh - var(--header-h) - 220px);
+            max-height: calc(100vh - var(--header-h) - 220px);   /* fallback */
+            max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
         }
         /* Progress indicator (fixed to bottom of viewport while scrolling
            through the scenes). Hidden when out of the scenes section. */
@@ -2909,15 +2904,15 @@
 
 
         <!-- ============== SCENES SECTION ==============
-             Mobile: vertical scroll-snap, swipe down between scenes.
-             Desktop: horizontal carousel. .scenes-track holds the 4 scenes
-             in a flex row; arrows + JS swap the active scene by setting
-             --active on .scenes-wrap (CSS uses translateX). -->
+             Horizontal carousel at all viewport sizes. .scenes-track holds
+             the 4 scenes in a flex row; arrows / keyboard / mobile swipe
+             update --active on .scenes-wrap and CSS translateX-es to the
+             new scene. -->
         <div class="scenes-wrap wrap" id="scenes">
 
-            <!-- Arrow buttons (desktop only, hidden on mobile).
-                 Labelled so first-time visitors immediately see there are
-                 multiple scenes to step through. -->
+            <!-- Arrow buttons. On desktop they float left/right of the
+                 stage; on mobile they sit in a row at the bottom of the
+                 wrap, below the stage. -->
             <div class="scenes-arrows">
                 <button class="scenes-arrow scenes-prev" type="button" aria-label="Previous scene" disabled>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
@@ -3733,12 +3728,14 @@
 
         // ============================================================
         // SCENE CONTROLLER
-        // - Mobile: vertical scroll-snap; track active scene via
-        //   IntersectionObserver, pause offscreen animations.
-        // - Desktop: horizontal carousel; arrow buttons set --active on
-        //   .scenes-wrap which translateX-es the .scenes-track. Only
-        //   the visible scene's animations play.
-        // - Both: floating progress indicator updates with current scene.
+        // - Horizontal carousel at all viewport sizes. Arrow buttons,
+        //   keyboard arrows, and mobile touch swipes all call setActive(idx)
+        //   which updates --active on .scenes-wrap; CSS translateX-es the
+        //   track to the new scene.
+        // - Only the active scene's animations run; everything else is
+        //   paused. When the wrap scrolls off-screen, even the active
+        //   scene pauses (saves battery on mobile).
+        // - Floating progress dots stay in sync with --active.
         // ============================================================
         (function(){
             const wrap = document.querySelector('.scenes-wrap');
@@ -3750,10 +3747,13 @@
             const labelEl = progressEl ? progressEl.querySelector('.label') : null;
             const total = sceneEls.length;
 
-            const isDesktop = () => window.matchMedia('(min-width: 769px)').matches;
-
             function setAllAnimationPlayState(scene, state) {
-                const stage = scene.querySelector(window.matchMedia('(max-width: 700px)').matches ? '.stage.p' : '.stage.d');
+                // Phone variant of the stage is shown on narrow screens;
+                // desktop variant on wider screens. Only touch the one
+                // that's actually rendered.
+                const stage = scene.querySelector(
+                    window.matchMedia('(max-width: 700px)').matches ? '.stage.p' : '.stage.d'
+                );
                 if (!stage) return;
                 stage.style.animationPlayState = state;
                 stage.querySelectorAll('*').forEach(el => {
@@ -3766,10 +3766,12 @@
                 if (labelEl) labelEl.textContent = (idx + 1) + ' of ' + total;
             }
 
-            // ---- Desktop carousel ----
             const prevBtn = document.querySelector('.scenes-prev');
             const nextBtn = document.querySelector('.scenes-next');
             let activeIdx = 0;
+            // Tracked by IntersectionObserver below so we can pause even
+            // the active scene's animations when the wrap is off-screen.
+            let wrapInView = true;
 
             function setActive(idx) {
                 activeIdx = Math.max(0, Math.min(total - 1, idx));
@@ -3777,20 +3779,19 @@
                 if (prevBtn) prevBtn.disabled = (activeIdx === 0);
                 if (nextBtn) nextBtn.disabled = (activeIdx === total - 1);
                 updateProgress(activeIdx);
-                // On desktop, only play the active scene's animations
-                if (isDesktop()) {
-                    sceneEls.forEach((s, i) => {
-                        setAllAnimationPlayState(s, i === activeIdx ? 'running' : 'paused');
-                    });
-                }
+                sceneEls.forEach((s, i) => {
+                    const shouldPlay = (i === activeIdx) && wrapInView;
+                    setAllAnimationPlayState(s, shouldPlay ? 'running' : 'paused');
+                });
             }
 
             if (prevBtn) prevBtn.addEventListener('click', () => setActive(activeIdx - 1));
             if (nextBtn) nextBtn.addEventListener('click', () => setActive(activeIdx + 1));
 
-            // Keyboard arrow navigation (only when wrap is in viewport on desktop)
+            // Keyboard arrow navigation when the wrap is roughly centered
+            // in the viewport. Useful on desktop and on tablets with an
+            // external keyboard.
             document.addEventListener('keydown', (e) => {
-                if (!isDesktop()) return;
                 const wr = wrap.getBoundingClientRect();
                 const inView = wr.top < window.innerHeight * 0.5 && wr.bottom > window.innerHeight * 0.5;
                 if (!inView) return;
@@ -3798,53 +3799,50 @@
                 else if (e.key === 'ArrowLeft') { setActive(activeIdx - 1); }
             });
 
-            // Initialize desktop state
-            if (isDesktop()) {
-                setActive(0);
-                // Pause all-but-first
-                sceneEls.forEach((s, i) => {
-                    setAllAnimationPlayState(s, i === 0 ? 'running' : 'paused');
-                });
-            }
-
-            // ---- Mobile: IntersectionObserver-driven ----
-            const obs = new IntersectionObserver((entries) => {
-                if (isDesktop()) return; // desktop is controlled by arrows
-                entries.forEach(entry => {
-                    const playState = entry.isIntersecting ? 'running' : 'paused';
-                    setAllAnimationPlayState(entry.target, playState);
-                    if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-                        const idx = parseInt(entry.target.dataset.sceneIndex || '0', 10);
-                        updateProgress(idx);
-                    }
-                });
-            }, { threshold: [0.2, 0.5, 0.7] });
-            sceneEls.forEach(s => obs.observe(s));
-
-            // ---- Show/hide progress indicator based on scenes-wrap visibility ----
-            if (progressEl) {
-                const wrapObs = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        progressEl.classList.toggle('is-visible', entry.isIntersecting);
-                    });
-                }, { threshold: 0.05 });
-                wrapObs.observe(wrap);
-            }
-
-            // Re-initialize on resize across the breakpoint
-            let lastIsDesktop = isDesktop();
-            window.addEventListener('resize', () => {
-                const nowDesktop = isDesktop();
-                if (nowDesktop !== lastIsDesktop) {
-                    lastIsDesktop = nowDesktop;
-                    if (nowDesktop) {
-                        setActive(activeIdx);
-                    } else {
-                        // Mobile: let all animations run; IO handles pause when offscreen
-                        sceneEls.forEach(s => setAllAnimationPlayState(s, 'running'));
-                    }
+            // ---- Mobile/tablet: horizontal touch swipe ----
+            // Both listeners are passive so vertical page scroll is never
+            // delayed waiting for our JS. CSS touch-action: pan-y on the
+            // wrap tells the browser "vertical pans are yours, horizontal
+            // ones are mine" so we never fight the native scroll.
+            let tStartX = null, tStartY = null;
+            wrap.addEventListener('touchstart', (e) => {
+                tStartX = e.touches[0].clientX;
+                tStartY = e.touches[0].clientY;
+            }, { passive: true });
+            wrap.addEventListener('touchend', (e) => {
+                if (tStartX === null) return;
+                const dx = e.changedTouches[0].clientX - tStartX;
+                const dy = e.changedTouches[0].clientY - tStartY;
+                tStartX = null;
+                // Must be primarily horizontal AND past the threshold to
+                // count as a scene swipe. Otherwise the gesture was a tap
+                // or a vertical scroll and we do nothing.
+                const SWIPE_THRESHOLD = 40;
+                if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.3) {
+                    if (dx < 0) setActive(activeIdx + 1);   // swipe left -> next
+                    else        setActive(activeIdx - 1);   // swipe right -> previous
                 }
-            });
+            }, { passive: true });
+
+            // Initial state: scene 0 active and playing, others paused.
+            setActive(0);
+
+            // Pause animations when the wrap scrolls off-screen (mobile);
+            // resume on the active scene when it comes back. Also toggles
+            // the visibility of the floating progress dots.
+            const wrapObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    wrapInView = entry.isIntersecting;
+                    if (progressEl) {
+                        progressEl.classList.toggle('is-visible', wrapInView);
+                    }
+                    setAllAnimationPlayState(
+                        sceneEls[activeIdx],
+                        wrapInView ? 'running' : 'paused'
+                    );
+                });
+            }, { threshold: 0.05 });
+            wrapObs.observe(wrap);
         })();
     </script>
 
