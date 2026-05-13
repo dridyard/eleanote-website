@@ -3681,6 +3681,18 @@
             </div><!-- /.scenes-track -->
         </div><!-- /.scenes-wrap -->
 
+        <!-- Floating scene-progress indicator. Must appear BEFORE the
+             SCENE CONTROLLER <script> below so that getElementById finds
+             it; otherwise the IntersectionObserver never toggles the
+             'is-visible' class and the dots stay hidden. -->
+        <div class="scene-progress" id="sceneProgress" aria-hidden="true">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="label">1 of 4</span>
+        </div>
+
         <!-- ============== WAITLIST CTA ============== -->
         <section class="waitlist-cta" id="waitlist">
             <div class="container container-narrow">
@@ -3958,15 +3970,6 @@
             wrapObs.observe(wrap);
         })();
     </script>
-
-    <!-- Floating scene-progress indicator (shown while inside the scenes section) -->
-    <div class="scene-progress" id="sceneProgress" aria-hidden="true">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="label">1 of 4</span>
-    </div>
 
     <!-- ============== AUTH STATE ============== -->
     <!-- Reads tokens from localStorage to decide whether to show signed-in UI.
