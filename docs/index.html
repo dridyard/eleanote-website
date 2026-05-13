@@ -2074,29 +2074,37 @@
            ------------------------------------------------------------
            End of encounter: diagnoses + note transfer to EHR.
 
-           Loop: 14.0 seconds. Cadence based on 0.5s steps.
+           Loop: 19.5 seconds. Slowed for legibility.
 
            Pill state phases:
-             0.0 - 0.5s   green dot, "Recording"
-             0.5 - 1.5s   orange dot, "Generating note..."
-             1.5s         dx + note items appear in pill, dot turns grey
-                          and label switches to "eleanote"
-             2.5s         RCC ghost flies to Dx search box
-             3.0s         search reads "RCC", item gone from pill, modal opens
-             3.5s         dx code field pastes, modal closes,
-                          RCC row appears in dx list
-             4.0s         CKD ghost flies (same flow)
-             4.5s         search reads "CKD-3", modal opens
-             5.0s         CKD row appears
-             5.5s         HTN ghost flies
-             6.0s         search reads "HTN", modal opens
-             6.5s         HTN row appears
-             7.0s         on PHONE: tab swaps from Diagnoses to Today's note
-             7.0s         note ghost lifts off pill
-             7.5s         ghost arrives at note entry box
-             8.0s         note text begins typing into note box, line by line
-             10.0s        note finishes typing
-             10.0 - 14.0s hold (4s)
+             0.0 - 1.5s    green dot, "Recording"
+             1.5 - 3.5s    orange dot, "Generating note..."
+             3.5s          dx + note items appear in pill, dot turns
+                           grey, label switches to "eleanote"
+             3.5 - 5.5s    hold (user reads the 4 items)
+             5.5 - 6.3s    RCC ghost flies to Dx search box (0.8s)
+             6.3s          search reads "RCC", item gone from pill,
+                           modal opens
+             6.3 - 7.1s    modal hold (0.8s)
+             7.1s          modal closes, RCC row appears in dx list
+             7.1 - 7.6s    hold (0.5s)
+             7.6 - 8.4s    CKD ghost flies (0.8s)
+             8.4s          search reads "CKD-3", modal opens
+             8.4 - 9.2s    modal hold (0.8s)
+             9.2s          CKD row appears
+             9.2 - 9.7s    hold (0.5s)
+             9.7 - 10.5s   HTN ghost flies (0.8s)
+             10.5s         search reads "HTN", modal opens
+             10.5 - 11.3s  modal hold (0.8s)
+             11.3s         HTN row appears
+             11.3 - 12.3s  3 diagnoses settled hold (1.0s)
+             12.3s         on PHONE: tab swaps Diagnoses -> Today's note,
+                           note ghost lifts off pill
+             12.3 - 13.1s  note ghost flies (0.8s)
+             13.1s         ghost arrives, placeholder fades
+             13.1 - 13.5s  pre-typing hold (0.4s)
+             13.5 - 16.0s  note lines type, one every 0.5s (6 lines)
+             16.0 - 19.5s  final hold (3.5s)
            ============================================================ */
         .scene-4 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
         .scene-4 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
@@ -2105,68 +2113,68 @@
 
         /* PILL STATE: dot + label change with the recording lifecycle */
         .scene-4 .pill.active .head .rec-dot {
-            animation: s4-dot 14s steps(1, end) infinite;
+            animation: s4-dot 19.5s steps(1, end) infinite;
         }
         @keyframes s4-dot {
-            /* 0-0.5s green (Recording), 0.5-1.5s orange (Generating note),
-               1.5s onward grey (eleanote - generation is done; the
+            /* 0-1.5s green (Recording), 1.5-3.5s orange (Generating note),
+               3.5s onward grey (eleanote - generation is done; the
                diagnoses + note are now in the pill ready to transfer).
-               % of 14s: 3.5%, 10.7% */
-            0%, 3.5%    { background: var(--c-record); box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18); }
-            3.6%, 10.6% { background: var(--c-note);   box-shadow: 0 0 0 2px rgba(240, 164, 74, 0.20); }
-            10.7%, 100% { background: var(--pill-mute); box-shadow: none; }
+               % of 19.5s: 7.7%, 17.9% */
+            0%, 7.6%    { background: var(--c-record); box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18); }
+            7.7%, 17.8% { background: var(--c-note);   box-shadow: 0 0 0 2px rgba(240, 164, 74, 0.20); }
+            17.9%, 100% { background: var(--pill-mute); box-shadow: none; }
         }
         /* Pill text uses 3 stacked words toggled by opacity */
-        .scene-4 .pill .s4-w-recording { animation: s4-w-rec 14s steps(1, end) infinite; }
-        .scene-4 .pill .s4-w-generating { animation: s4-w-gen 14s steps(1, end) infinite; }
-        .scene-4 .pill .s4-w-eleanote { animation: s4-w-ele 14s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-recording { animation: s4-w-rec 19.5s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-generating { animation: s4-w-gen 19.5s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-eleanote { animation: s4-w-ele 19.5s steps(1, end) infinite; }
         @keyframes s4-w-rec {
-            0%, 3.5%    { opacity: 1; }
-            3.6%, 100%  { opacity: 0; }
+            0%, 7.6%    { opacity: 1; }
+            7.7%, 100%  { opacity: 0; }
         }
         @keyframes s4-w-gen {
             /* 'Generating note' shown only while the AI is generating
-               (0.5-1.5s). Switches to 'eleanote' at 1.5s the instant
+               (1.5-3.5s). Switches to 'eleanote' at 3.5s the instant
                the dx + note items appear in the pill. */
-            0%, 3.5%    { opacity: 0; }
-            3.6%, 10.6% { opacity: 1; }
-            10.7%, 100% { opacity: 0; }
+            0%, 7.6%    { opacity: 0; }
+            7.7%, 17.8% { opacity: 1; }
+            17.9%, 100% { opacity: 0; }
         }
         @keyframes s4-w-ele {
-            0%, 10.6%   { opacity: 0; }
-            10.7%, 100% { opacity: 1; }
+            0%, 17.8%   { opacity: 0; }
+            17.9%, 100% { opacity: 1; }
         }
 
-        /* The pill items: dx + note appear at 1.5s = 10.7%, leave one
-           by one as they transfer.
-           Item leave times:
-             RCC at 2.5s = 17.85%
-             CKD at 4.0s = 28.6%
-             HTN at 5.5s = 39.3%
-             Note at 7.0s = 50% */
-        .scene-4 .pill .item.it-rcc  { animation: s4-it-rcc  14s steps(1, end) infinite both; }
-        .scene-4 .pill .item.it-ckd  { animation: s4-it-ckd  14s steps(1, end) infinite both; }
-        .scene-4 .pill .item.it-htn  { animation: s4-it-htn  14s steps(1, end) infinite both; }
-        .scene-4 .pill .item.it-note { animation: s4-it-note 14s steps(1, end) infinite both; }
+        /* The pill items: dx + note appear at 3.5s = 17.9%, leave one
+           by one as they transfer (item collapses as its ghost lifts).
+           Item leave times (ghost lift-off):
+             RCC at 5.5s  = 28.2%
+             CKD at 7.6s  = 39.0%
+             HTN at 9.7s  = 49.7%
+             Note at 12.3s = 63.1% */
+        .scene-4 .pill .item.it-rcc  { animation: s4-it-rcc  19.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-ckd  { animation: s4-it-ckd  19.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-htn  { animation: s4-it-htn  19.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-note { animation: s4-it-note 19.5s steps(1, end) infinite both; }
         @keyframes s4-it-rcc {
-            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
-            10.7%, 17.7% { opacity: 1; height: auto; padding: 5px 10px; }
-            17.8%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+            0%, 17.8%  { opacity: 0; height: 0; padding: 0 10px; }
+            17.9%, 28.1% { opacity: 1; height: auto; padding: 5px 10px; }
+            28.2%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
         @keyframes s4-it-ckd {
-            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
-            10.7%, 28.5% { opacity: 1; height: auto; padding: 5px 10px; }
-            28.6%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+            0%, 17.8%  { opacity: 0; height: 0; padding: 0 10px; }
+            17.9%, 38.9% { opacity: 1; height: auto; padding: 5px 10px; }
+            39.0%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
         @keyframes s4-it-htn {
-            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
-            10.7%, 39.2% { opacity: 1; height: auto; padding: 5px 10px; }
-            39.3%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+            0%, 17.8%  { opacity: 0; height: 0; padding: 0 10px; }
+            17.9%, 49.6% { opacity: 1; height: auto; padding: 5px 10px; }
+            49.7%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
         }
         @keyframes s4-it-note {
-            0%, 10.6%  { opacity: 0; height: 0; padding: 0 10px; }
-            10.7%, 49.9% { opacity: 1; height: auto; padding: 5px 10px; }
-            50%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
+            0%, 17.8%  { opacity: 0; height: 0; padding: 0 10px; }
+            17.9%, 63.0% { opacity: 1; height: auto; padding: 5px 10px; }
+            63.1%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
         }
 
         /* DIAGNOSES VIEW.
@@ -2227,34 +2235,37 @@
             font-style: normal;
             opacity: 0;
         }
-        .s4-search .lbl.placeholder { animation: s4-lbl-ph  14s steps(1, end) infinite; }
-        .s4-search .lbl.t-rcc       { animation: s4-lbl-rcc 14s steps(1, end) infinite; }
-        .s4-search .lbl.t-ckd       { animation: s4-lbl-ckd 14s steps(1, end) infinite; }
-        .s4-search .lbl.t-htn       { animation: s4-lbl-htn 14s steps(1, end) infinite; }
+        .s4-search .lbl.placeholder { animation: s4-lbl-ph  19.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-rcc       { animation: s4-lbl-rcc 19.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-ckd       { animation: s4-lbl-ckd 19.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-htn       { animation: s4-lbl-htn 19.5s steps(1, end) infinite; }
         @keyframes s4-lbl-ph {
-            /* visible everywhere except 21.4-25%, 28.6-32.1%, 39.3-42.8% */
-            0%, 21.3%   { opacity: 1; }
-            21.4%, 24.9%{ opacity: 0; }
-            25%, 28.5%  { opacity: 1; }
-            28.6%, 32%  { opacity: 0; }
-            32.1%, 39.2%{ opacity: 1; }
-            39.3%, 42.7%{ opacity: 0; }
-            42.8%, 100% { opacity: 1; }
+            /* visible everywhere except while a dx label is showing:
+               RCC 6.3-7.1s = 32.3-36.4%
+               CKD 8.4-9.2s = 43.1-47.2%
+               HTN 10.5-11.3s = 53.8-57.9% */
+            0%, 32.2%   { opacity: 1; }
+            32.3%, 36.3%{ opacity: 0; }
+            36.4%, 43.0%{ opacity: 1; }
+            43.1%, 47.1%{ opacity: 0; }
+            47.2%, 53.7%{ opacity: 1; }
+            53.8%, 57.8%{ opacity: 0; }
+            57.9%, 100% { opacity: 1; }
         }
         @keyframes s4-lbl-rcc {
-            0%, 21.3%   { opacity: 0; }
-            21.4%, 24.9%{ opacity: 1; }
-            25%, 100%   { opacity: 0; }
+            0%, 32.2%   { opacity: 0; }
+            32.3%, 36.3%{ opacity: 1; }
+            36.4%, 100% { opacity: 0; }
         }
         @keyframes s4-lbl-ckd {
-            0%, 28.5%   { opacity: 0; }
-            28.6%, 32%  { opacity: 1; }
-            32.1%, 100% { opacity: 0; }
+            0%, 43.0%   { opacity: 0; }
+            43.1%, 47.1%{ opacity: 1; }
+            47.2%, 100% { opacity: 0; }
         }
         @keyframes s4-lbl-htn {
-            0%, 39.2%   { opacity: 0; }
-            39.3%, 42.7%{ opacity: 1; }
-            42.8%, 100% { opacity: 0; }
+            0%, 53.7%   { opacity: 0; }
+            53.8%, 57.8%{ opacity: 1; }
+            57.9%, 100% { opacity: 0; }
         }
 
         /* Staged dx list (rows that persist) */
@@ -2283,15 +2294,15 @@
             font-family: "SFMono-Regular", Consolas, monospace;
             white-space: nowrap;
         }
-        .s4-staged .row.r-rcc { animation: s4-row-rcc 14s steps(1, end) infinite; }
-        .s4-staged .row.r-ckd { animation: s4-row-ckd 14s steps(1, end) infinite; }
-        .s4-staged .row.r-htn { animation: s4-row-htn 14s steps(1, end) infinite; }
-        /* RCC row appears at 3.5s (modal closes) = 25%
-           CKD at 5.0s = 35.7%
-           HTN at 6.5s = 46.4% */
-        @keyframes s4-row-rcc { 0%, 24.9% { opacity: 0; } 25%, 100% { opacity: 1; } }
-        @keyframes s4-row-ckd { 0%, 35.6% { opacity: 0; } 35.7%, 100% { opacity: 1; } }
-        @keyframes s4-row-htn { 0%, 46.3% { opacity: 0; } 46.4%, 100% { opacity: 1; } }
+        .s4-staged .row.r-rcc { animation: s4-row-rcc 19.5s steps(1, end) infinite; }
+        .s4-staged .row.r-ckd { animation: s4-row-ckd 19.5s steps(1, end) infinite; }
+        .s4-staged .row.r-htn { animation: s4-row-htn 19.5s steps(1, end) infinite; }
+        /* RCC row appears at 7.1s (modal closes) = 36.4%
+           CKD at 9.2s = 47.2%
+           HTN at 11.3s = 57.9% */
+        @keyframes s4-row-rcc { 0%, 36.3% { opacity: 0; } 36.4%, 100% { opacity: 1; } }
+        @keyframes s4-row-ckd { 0%, 47.1% { opacity: 0; } 47.2%, 100% { opacity: 1; } }
+        @keyframes s4-row-htn { 0%, 57.8% { opacity: 0; } 57.9%, 100% { opacity: 1; } }
 
         /* Coordinate variables for ghost flights */
         .scene-4 .stage {
@@ -2318,57 +2329,57 @@
         }
         .s4-ghost.g-note { border-color: var(--c-note); }
 
-        /* Ghost flights (each 0.5s):
-             RCC: 2.5s -> 3.0s = 17.85% -> 21.4%
-             CKD: 4.0s -> 4.5s = 28.6%  -> 32.1%
-             HTN: 5.5s -> 6.0s = 39.3%  -> 42.8%
-             Note: 7.0s -> 7.5s = 50%   -> 53.6% */
-        .s4-ghost.g-rcc  { animation: s4-g-rcc  14s linear infinite; }
-        .s4-ghost.g-ckd  { animation: s4-g-ckd  14s linear infinite; }
-        .s4-ghost.g-htn  { animation: s4-g-htn  14s linear infinite; }
-        .s4-ghost.g-note { animation: s4-g-note 14s linear infinite; }
+        /* Ghost flights (each 0.8s):
+             RCC: 5.5s  -> 6.3s  = 28.2% -> 32.3%
+             CKD: 7.6s  -> 8.4s  = 39.0% -> 43.1%
+             HTN: 9.7s  -> 10.5s = 49.7% -> 53.8%
+             Note: 12.3s -> 13.1s = 63.1% -> 67.2% */
+        .s4-ghost.g-rcc  { animation: s4-g-rcc  19.5s linear infinite; }
+        .s4-ghost.g-ckd  { animation: s4-g-ckd  19.5s linear infinite; }
+        .s4-ghost.g-htn  { animation: s4-g-htn  19.5s linear infinite; }
+        .s4-ghost.g-note { animation: s4-g-note 19.5s linear infinite; }
         @keyframes s4-g-rcc {
-            0%, 17.7%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+            0%, 28.1%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            17.8%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+            28.2%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            19.5%      { opacity: 0.6; }
-            21.3%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            30.3%      { opacity: 0.6; }
+            32.2%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            21.4%, 100% { opacity: 0; left: var(--search-x); top: var(--search-y);
+            32.3%, 100% { opacity: 0; left: var(--search-x); top: var(--search-y);
                           transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes s4-g-ckd {
-            0%, 28.5%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+            0%, 38.9%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            28.6%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+            39.0%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            30.3%      { opacity: 0.6; }
-            32%        { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            41.0%      { opacity: 0.6; }
+            43.0%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            32.1%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+            43.1%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes s4-g-htn {
-            0%, 39.2%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+            0%, 49.6%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            39.3%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+            49.7%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            41%        { opacity: 0.6; }
-            42.7%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            51.7%      { opacity: 0.6; }
+            53.7%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            42.8%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+            53.8%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
         }
         @keyframes s4-g-note {
-            0%, 49.9%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+            0%, 63.0%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            50%        { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+            63.1%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            51.8%      { opacity: 0.6; }
-            53.5%      { opacity: 0.25; left: var(--notearea-x); top: var(--notearea-y);
+            65.1%      { opacity: 0.6; }
+            67.1%      { opacity: 0.25; left: var(--notearea-x); top: var(--notearea-y);
                          transform: translate(-50%, -50%) scale(0.5); }
-            53.6%, 100%{ opacity: 0; left: var(--notearea-x); top: var(--notearea-y);
+            67.2%, 100%{ opacity: 0; left: var(--notearea-x); top: var(--notearea-y);
                          transform: translate(-50%, -50%) scale(0.5); }
         }
 
@@ -2433,39 +2444,39 @@
             border-radius: 2px;
         }
 
-        /* RCC modal: open 3.0-3.5s = 21.4%-25% */
-        .s4-modal.m-rcc { animation: s4-m-rcc 14s steps(1, end) infinite; }
+        /* RCC modal: open 6.3-7.1s = 32.3%-36.4% */
+        .s4-modal.m-rcc { animation: s4-m-rcc 19.5s steps(1, end) infinite; }
         @keyframes s4-m-rcc {
-            0%, 21.3%   { opacity: 0; transform: translateY(6px); }
-            21.4%, 24.9%{ opacity: 1; transform: translateY(0); }
-            25%, 100%   { opacity: 0; transform: translateY(-4px); }
+            0%, 32.2%   { opacity: 0; transform: translateY(6px); }
+            32.3%, 36.3%{ opacity: 1; transform: translateY(0); }
+            36.4%, 100% { opacity: 0; transform: translateY(-4px); }
         }
-        /* CKD: 4.5-5.0s = 32.1-35.7% */
-        .s4-modal.m-ckd { animation: s4-m-ckd 14s steps(1, end) infinite; }
+        /* CKD: 8.4-9.2s = 43.1-47.2% */
+        .s4-modal.m-ckd { animation: s4-m-ckd 19.5s steps(1, end) infinite; }
         @keyframes s4-m-ckd {
-            0%, 32%     { opacity: 0; transform: translateY(6px); }
-            32.1%, 35.6%{ opacity: 1; transform: translateY(0); }
-            35.7%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 43.0%   { opacity: 0; transform: translateY(6px); }
+            43.1%, 47.1%{ opacity: 1; transform: translateY(0); }
+            47.2%, 100% { opacity: 0; transform: translateY(-4px); }
         }
-        /* HTN: 6.0-6.5s = 42.8-46.4% */
-        .s4-modal.m-htn { animation: s4-m-htn 14s steps(1, end) infinite; }
+        /* HTN: 10.5-11.3s = 53.8-57.9% */
+        .s4-modal.m-htn { animation: s4-m-htn 19.5s steps(1, end) infinite; }
         @keyframes s4-m-htn {
-            0%, 42.7%   { opacity: 0; transform: translateY(6px); }
-            42.8%, 46.3%{ opacity: 1; transform: translateY(0); }
-            46.4%, 100% { opacity: 0; transform: translateY(-4px); }
+            0%, 53.7%   { opacity: 0; transform: translateY(6px); }
+            53.8%, 57.8%{ opacity: 1; transform: translateY(0); }
+            57.9%, 100% { opacity: 0; transform: translateY(-4px); }
         }
 
-        /* PHONE: tab swap from Diagnoses to Today's note at 7.0s = 50%.
+        /* PHONE: tab swap from Diagnoses to Today's note at 12.3s = 63.1%.
            Implementation: two stacked center-pane views, opacity-toggled. */
-        .scene-4 .stage.p .s4-dx-view  { animation: s4-view-dx   14s steps(1, end) infinite; }
-        .scene-4 .stage.p .s4-note-view{ animation: s4-view-note 14s steps(1, end) infinite; }
+        .scene-4 .stage.p .s4-dx-view  { animation: s4-view-dx   19.5s steps(1, end) infinite; }
+        .scene-4 .stage.p .s4-note-view{ animation: s4-view-note 19.5s steps(1, end) infinite; }
         @keyframes s4-view-dx {
-            0%, 49.9% { opacity: 1; }
-            50%, 100% { opacity: 0; }
+            0%, 63.0% { opacity: 1; }
+            63.1%, 100% { opacity: 0; }
         }
         @keyframes s4-view-note {
-            0%, 49.9% { opacity: 0; }
-            50%, 100% { opacity: 1; }
+            0%, 63.0% { opacity: 0; }
+            63.1%, 100% { opacity: 1; }
         }
 
         /* Note typing into the note entry box */
@@ -2478,29 +2489,28 @@
             font-size: 9.5px;
         }
         .s4-note-typed .l { display: block; opacity: 0; }
-        /* Note ghost arrives at 7.5s = 53.6%; lines start typing at 8.0s = 57.1%
-           5 lines, 0.4s apart -> 8.0, 8.4, 8.8, 9.2, 9.6s
-           = 57.1%, 60%, 62.9%, 65.7%, 68.6% */
-        /* 6 lines, 0.4s apart starting 8.0s -> 8.0, 8.4, 8.8, 9.2, 9.6, 10.0
-           % of 14s: 57.1, 60.0, 62.9, 65.7, 68.6, 71.4 */
-        .s4-note-typed .l-1 { animation: s4-l1 14s steps(1, end) infinite; }
-        .s4-note-typed .l-2 { animation: s4-l2 14s steps(1, end) infinite; }
-        .s4-note-typed .l-3 { animation: s4-l3 14s steps(1, end) infinite; }
-        .s4-note-typed .l-4 { animation: s4-l4 14s steps(1, end) infinite; }
-        .s4-note-typed .l-5 { animation: s4-l5 14s steps(1, end) infinite; }
-        .s4-note-typed .l-6 { animation: s4-l6 14s steps(1, end) infinite; }
-        @keyframes s4-l1 { 0%, 57%   { opacity: 0; } 57.1%, 100% { opacity: 1; } }
-        @keyframes s4-l2 { 0%, 59.9% { opacity: 0; } 60%, 100%   { opacity: 1; } }
-        @keyframes s4-l3 { 0%, 62.8% { opacity: 0; } 62.9%, 100% { opacity: 1; } }
-        @keyframes s4-l4 { 0%, 65.6% { opacity: 0; } 65.7%, 100% { opacity: 1; } }
-        @keyframes s4-l5 { 0%, 68.5% { opacity: 0; } 68.6%, 100% { opacity: 1; } }
-        @keyframes s4-l6 { 0%, 71.3% { opacity: 0; } 71.4%, 100% { opacity: 1; } }
+        /* Note ghost arrives at 13.1s = 67.2%. After a 0.4s pre-typing
+           hold, 6 lines type one every 0.5s starting at 13.5s:
+           13.5, 14.0, 14.5, 15.0, 15.5, 16.0s
+           % of 19.5s: 69.2, 71.8, 74.4, 76.9, 79.5, 82.1 */
+        .s4-note-typed .l-1 { animation: s4-l1 19.5s steps(1, end) infinite; }
+        .s4-note-typed .l-2 { animation: s4-l2 19.5s steps(1, end) infinite; }
+        .s4-note-typed .l-3 { animation: s4-l3 19.5s steps(1, end) infinite; }
+        .s4-note-typed .l-4 { animation: s4-l4 19.5s steps(1, end) infinite; }
+        .s4-note-typed .l-5 { animation: s4-l5 19.5s steps(1, end) infinite; }
+        .s4-note-typed .l-6 { animation: s4-l6 19.5s steps(1, end) infinite; }
+        @keyframes s4-l1 { 0%, 69.1% { opacity: 0; } 69.2%, 100% { opacity: 1; } }
+        @keyframes s4-l2 { 0%, 71.7% { opacity: 0; } 71.8%, 100% { opacity: 1; } }
+        @keyframes s4-l3 { 0%, 74.3% { opacity: 0; } 74.4%, 100% { opacity: 1; } }
+        @keyframes s4-l4 { 0%, 76.8% { opacity: 0; } 76.9%, 100% { opacity: 1; } }
+        @keyframes s4-l5 { 0%, 79.4% { opacity: 0; } 79.5%, 100% { opacity: 1; } }
+        @keyframes s4-l6 { 0%, 82.0% { opacity: 0; } 82.1%, 100% { opacity: 1; } }
 
-        /* Hide the note entry box's placeholder once note arrives */
-        .scene-4 .entry-placeholder.s4-ph { animation: s4-ph 14s steps(1, end) infinite; }
+        /* Hide the note entry box's placeholder once note arrives at 13.1s = 67.2% */
+        .scene-4 .entry-placeholder.s4-ph { animation: s4-ph 19.5s steps(1, end) infinite; }
         @keyframes s4-ph {
-            0%, 53.5% { opacity: 1; }
-            53.6%, 100% { opacity: 0; }
+            0%, 67.1% { opacity: 1; }
+            67.2%, 100% { opacity: 0; }
         }
 
 
