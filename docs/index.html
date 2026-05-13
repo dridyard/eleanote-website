@@ -1400,23 +1400,30 @@
               --line-start-x, --line-start-y  ('6' at start of note)
               --line-end-x,   --line-end-y    ('d' at end of note)
 
-           Loop: 4.0 seconds. Cursor speed: 0.30s per move.
+           Loop: 10.0 seconds. Cursor moves: 0.70s each. Drag: 1.30s.
            Script:
-             0.00 - 0.30s  cursor on Notes, center pane blank
-             0.30 - 0.50s  Notes click flash
-             0.50s         center swaps to prior-notes list
-             0.50 - 0.65s  brief hold
-             0.65 - 0.95s  cursor moves Notes -> Office (0.30s)
-             0.95 - 1.15s  Office click flash
-             1.15s         center swaps to June 2025 visit
-             1.15 - 1.30s  brief hold
-             1.30 - 1.60s  cursor moves to '6' at line start (0.30s)
-             1.60 - 1.80s  click flash on '6'
-             1.80 - 2.10s  cursor moves diagonally to '.' at end (0.30s)
-                           ALSO: 6 note lines highlight in sequence,
-                           one every 0.05s (0.30s total - matches travel)
-             2.10 - 2.30s  click flash on '.'
-             2.30 - 4.00s  hold (final state visible for reading)
+             0.00 - 0.60s  cursor on Notes, center pane blank (hold)
+             0.60 - 1.00s  Notes click flash (0.40s)
+             1.00s         center swaps to prior-notes list
+             1.00 - 1.60s  hold on notes list (0.60s)
+             1.60 - 2.30s  cursor moves Notes -> Office (0.70s)
+             2.30 - 2.70s  Office click flash (0.40s)
+             2.70s         center swaps to June 2025 visit
+             2.70 - 3.30s  hold on opened visit (0.60s)
+             3.30 - 4.00s  cursor moves to '6' at line start (0.70s)
+             4.00 - 4.40s  click flash on '6' (0.40s)
+             4.40 - 5.70s  cursor drags diagonally to '.' at end (1.30s)
+                           DURING this: 6 note lines highlight in
+                           sequence, one every 1.30/6 ~= 0.217s, so
+                           they light up at 4.40, 4.62, 4.83, 5.05,
+                           5.27, 5.48s (last line ~83% through drag).
+             5.70 - 6.10s  click flash on '.' (0.40s)
+             6.10 - 6.40s  hold (selection visible, before ghost flies)
+             6.40 - 7.30s  ghost chip flies to pill (0.90s)
+             7.30s         pill text -> 'Text precharted'
+             7.30 - 9.60s  pill says 'Text precharted' (2.30s)
+             9.60s         pill text -> 'eleanote'
+             9.60 - 10.00s final hold (0.40s)
              (loop)
            ============================================================ */
         .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
@@ -1431,25 +1438,25 @@
             padding: 8px 12px;
             opacity: 0;
         }
-        /* View visibility timeline (4s loop):
-             blank   visible 0.00 - 0.50s   (0% - 12.5%)
-             notes   visible 0.50 - 1.15s   (12.5% - 28.75%)
-             visit   visible 1.15 - 4.00s   (28.75% - 100%) */
-        .s2-view-blank { animation: s2v-blank 4s steps(1, end) infinite; }
-        .s2-view-notes { animation: s2v-notes 4s steps(1, end) infinite; }
-        .s2-view-visit { animation: s2v-visit 4s steps(1, end) infinite; }
+        /* View visibility timeline (10s loop):
+             blank   visible 0.00 - 1.00s   (0% - 10%)
+             notes   visible 1.00 - 2.70s   (10% - 27%)
+             visit   visible 2.70 - 10.00s  (27% - 100%) */
+        .s2-view-blank { animation: s2v-blank 10s steps(1, end) infinite; }
+        .s2-view-notes { animation: s2v-notes 10s steps(1, end) infinite; }
+        .s2-view-visit { animation: s2v-visit 10s steps(1, end) infinite; }
         @keyframes s2v-blank {
-            0%, 12.4%   { opacity: 1; }
-            12.5%, 100% { opacity: 0; }
+            0%, 9.9%    { opacity: 1; }
+            10%, 100%   { opacity: 0; }
         }
         @keyframes s2v-notes {
-            0%, 12.4%    { opacity: 0; }
-            12.5%, 28.6% { opacity: 1; }
-            28.7%, 100%  { opacity: 0; }
+            0%, 9.9%    { opacity: 0; }
+            10%, 26.9%  { opacity: 1; }
+            27%, 100%   { opacity: 0; }
         }
         @keyframes s2v-visit {
-            0%, 28.6%   { opacity: 0; }
-            28.7%, 100% { opacity: 1; }
+            0%, 26.9%   { opacity: 0; }
+            27%, 100%   { opacity: 1; }
         }
 
         /* Cursor coordinates measured from DOM. Fallbacks here. */
@@ -1463,77 +1470,81 @@
             left: var(--notes-x);
             top: var(--notes-y);
             opacity: 1;
-            animation: s2-cursor 4s linear infinite;
+            animation: s2-cursor 10s linear infinite;
         }
-        /* Cursor path (% of 4s loop):
-             0.00 - 0.65s  hold at Notes               (0% - 16.25%)
-             0.65 - 0.95s  move Notes -> Office        (16.25% - 23.75%)
-             0.95 - 1.30s  hold at Office              (23.75% - 32.5%)
-             1.30 - 1.60s  move Office -> line-start   (32.5% - 40%)
-             1.60 - 1.80s  hold at line-start          (40% - 45%)
-             1.80 - 2.10s  move line-start -> line-end (45% - 52.5%)
-             2.10 - 4.00s  hold at line-end            (52.5% - 100%) */
+        /* Cursor path (% of 10s loop):
+             0.00 - 1.60s  hold at Notes               (0% - 16%)
+             1.60 - 2.30s  move Notes -> Office        (16% - 23%)
+             2.30 - 3.30s  hold at Office              (23% - 33%)
+             3.30 - 4.00s  move Office -> line-start   (33% - 40%)
+             4.00 - 4.40s  hold at line-start          (40% - 44%)
+             4.40 - 5.70s  drag line-start -> line-end (44% - 57%)
+             5.70 - 10.00s hold at line-end            (57% - 100%) */
         @keyframes s2-cursor {
-            0%     { left: var(--notes-x);      top: var(--notes-y); }
-            16.25% { left: var(--notes-x);      top: var(--notes-y); }
-            23.75% { left: var(--office-x);     top: var(--office-y); }
-            32.5%  { left: var(--office-x);     top: var(--office-y); }
-            40%    { left: var(--line-start-x); top: var(--line-start-y); }
-            45%    { left: var(--line-start-x); top: var(--line-start-y); }
-            52.5%  { left: var(--line-end-x);   top: var(--line-end-y); }
-            100%   { left: var(--line-end-x);   top: var(--line-end-y); }
+            0%   { left: var(--notes-x);      top: var(--notes-y); }
+            16%  { left: var(--notes-x);      top: var(--notes-y); }
+            23%  { left: var(--office-x);     top: var(--office-y); }
+            33%  { left: var(--office-x);     top: var(--office-y); }
+            40%  { left: var(--line-start-x); top: var(--line-start-y); }
+            44%  { left: var(--line-start-x); top: var(--line-start-y); }
+            57%  { left: var(--line-end-x);   top: var(--line-end-y); }
+            100% { left: var(--line-end-x);   top: var(--line-end-y); }
         }
 
-        /* Click flash 1 - Notes, 7.5% - 12.5% */
+        /* Click flash 1 - Notes, fires at 0.60s (6%), fades by 1.00s (10%) */
         .scene-2 .click-flash.cf-notes {
             left: var(--notes-x); top: var(--notes-y);
-            animation: s2-cf-notes 4s steps(1, end) infinite;
+            animation: s2-cf-notes 10s steps(1, end) infinite;
         }
         @keyframes s2-cf-notes {
-            0%, 7.4%    { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            7.5%        { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
-            12.4%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            0%, 5.9%    { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            6%          { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            9.9%        { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%        { opacity: 0; }
         }
-        /* Click flash 2 - Office, 23.75% - 28.75% */
+        /* Click flash 2 - Office, fires at 2.30s (23%), fades by 2.70s (27%) */
         .scene-2 .click-flash.cf-office {
             left: var(--office-x); top: var(--office-y);
-            animation: s2-cf-office 4s steps(1, end) infinite;
+            animation: s2-cf-office 10s steps(1, end) infinite;
         }
         @keyframes s2-cf-office {
-            0%, 23.7%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            23.75%      { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
-            28.7%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            0%, 22.9%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            23%         { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            26.9%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%        { opacity: 0; }
         }
-        /* Click flash 3 - '6' at line start, 40% - 45% */
+        /* Click flash 3 - '6' at line start, fires at 4.00s (40%), fades by 4.40s (44%) */
         .scene-2 .click-flash.cf-line-start {
             left: var(--line-start-x); top: var(--line-start-y);
-            animation: s2-cf-ls 4s steps(1, end) infinite;
+            animation: s2-cf-ls 10s steps(1, end) infinite;
         }
         @keyframes s2-cf-ls {
             0%, 39.9%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
             40%         { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
-            44.9%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            43.9%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%        { opacity: 0; }
         }
-        /* Click flash 4 - '.' at line end, 52.5% - 57.5% */
+        /* Click flash 4 - '.' at line end, fires at 5.70s (57%), fades by 6.10s (61%) */
         .scene-2 .click-flash.cf-line-end {
             left: var(--line-end-x); top: var(--line-end-y);
-            animation: s2-cf-le 4s steps(1, end) infinite;
+            animation: s2-cf-le 10s steps(1, end) infinite;
         }
         @keyframes s2-cf-le {
-            0%, 52.4%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            52.5%       { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
-            57.4%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            0%, 56.9%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            57%         { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            60.9%       { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
             100%        { opacity: 0; }
         }
 
         /* NOTE LINE HIGHLIGHTS
-           6 lines, each lights up at 0.05s intervals starting at 1.80s.
-           Stays highlighted until end of loop.
-           Beat times: 1.80, 1.85, 1.90, 1.95, 2.00, 2.05s
-           % of 4s:    45,   46.25, 47.5, 48.75, 50,   51.25 */
+           Drag spans 4.40s -> 5.70s (1.30s). 6 lines light up evenly
+           across that window so each highlight matches roughly where the
+           cursor is at that moment. Spacing = 1.30s / 6 = 0.2167s.
+           Last (line 6) lights at 5.483s, ~83% through the drag — the
+           remaining ~0.22s is the cursor finishing its trajectory.
+           Once highlighted, lines stay highlighted until end of loop.
+           Beat times: 4.40, 4.62, 4.83, 5.05, 5.27, 5.48s
+           % of 10s:   44.0, 46.2, 48.3, 50.5, 52.7, 54.8 */
         .s2-noteblock {
             margin-top: 6px;
         }
@@ -1544,35 +1555,35 @@
             padding: 1px 2px;
             background: transparent;
         }
-        .s2-line:nth-child(1) { animation: s2-hl-1 4s steps(1, end) infinite; }
-        .s2-line:nth-child(2) { animation: s2-hl-2 4s steps(1, end) infinite; }
-        .s2-line:nth-child(3) { animation: s2-hl-3 4s steps(1, end) infinite; }
-        .s2-line:nth-child(4) { animation: s2-hl-4 4s steps(1, end) infinite; }
-        .s2-line:nth-child(5) { animation: s2-hl-5 4s steps(1, end) infinite; }
-        .s2-line:nth-child(6) { animation: s2-hl-6 4s steps(1, end) infinite; }
+        .s2-line:nth-child(1) { animation: s2-hl-1 10s steps(1, end) infinite; }
+        .s2-line:nth-child(2) { animation: s2-hl-2 10s steps(1, end) infinite; }
+        .s2-line:nth-child(3) { animation: s2-hl-3 10s steps(1, end) infinite; }
+        .s2-line:nth-child(4) { animation: s2-hl-4 10s steps(1, end) infinite; }
+        .s2-line:nth-child(5) { animation: s2-hl-5 10s steps(1, end) infinite; }
+        .s2-line:nth-child(6) { animation: s2-hl-6 10s steps(1, end) infinite; }
         @keyframes s2-hl-1 {
-            0%, 44.9%  { background: transparent; }
-            45%, 100%  { background: var(--emr-select); }
+            0%, 43.9%   { background: transparent; }
+            44%, 100%   { background: var(--emr-select); }
         }
         @keyframes s2-hl-2 {
-            0%, 46.2%  { background: transparent; }
-            46.25%, 100% { background: var(--emr-select); }
+            0%, 46.1%   { background: transparent; }
+            46.2%, 100% { background: var(--emr-select); }
         }
         @keyframes s2-hl-3 {
-            0%, 47.4%  { background: transparent; }
-            47.5%, 100% { background: var(--emr-select); }
+            0%, 48.2%   { background: transparent; }
+            48.3%, 100% { background: var(--emr-select); }
         }
         @keyframes s2-hl-4 {
-            0%, 48.7%  { background: transparent; }
-            48.75%, 100% { background: var(--emr-select); }
+            0%, 50.4%   { background: transparent; }
+            50.5%, 100% { background: var(--emr-select); }
         }
         @keyframes s2-hl-5 {
-            0%, 49.9%  { background: transparent; }
-            50%, 100%  { background: var(--emr-select); }
+            0%, 52.6%   { background: transparent; }
+            52.7%, 100% { background: var(--emr-select); }
         }
         @keyframes s2-hl-6 {
-            0%, 51.2%  { background: transparent; }
-            51.25%, 100% { background: var(--emr-select); }
+            0%, 54.7%   { background: transparent; }
+            54.8%, 100% { background: var(--emr-select); }
         }
 
         /* ============================================================
@@ -1582,11 +1593,11 @@
            to the center of the pill, shrinking 100% -> 20% in size and
            fading 100% -> 75% opacity along the way, vanishing at arrival.
 
-           Timing inside the 4s loop:
-             2.30s (57.5%)  ghost appears at hlblock center, full size
-             2.80s (70%)    ghost arrives at pill center, 20% size, 0% opacity
-             2.80s (70%)    pill text changes to 'Text precharted'
-             3.80s (95%)    pill text changes back to 'eleanote'
+           Timing inside the 10s loop:
+             6.40s (64%)   ghost appears at hlblock center, full size
+             7.30s (73%)   ghost arrives at pill center, 20% size, 0% opacity
+             7.30s (73%)   pill text changes to 'Text precharted'
+             9.60s (96%)   pill text changes back to 'eleanote'
         */
         .scene-2 .stage {
             --hlblock-x: 50%; --hlblock-y: 50%;
@@ -1604,29 +1615,29 @@
             box-shadow: 0 10px 24px rgba(91, 75, 138, 0.45);
             pointer-events: none;
             transform-origin: center center;
-            animation: s2-ghost-fly 4s linear infinite;
+            animation: s2-ghost-fly 10s linear infinite;
         }
         @keyframes s2-ghost-fly {
-            0%, 57.4% {
+            0%, 63.9% {
                 opacity: 0;
                 left: var(--hlblock-x); top: var(--hlblock-y);
                 transform: translate(-50%, -50%) scale(1);
             }
-            57.5% {
+            64% {
                 opacity: 1;
                 left: var(--hlblock-x); top: var(--hlblock-y);
                 transform: translate(-50%, -50%) scale(1);
             }
-            65% {
+            68.5% {
                 opacity: 0.75;
                 /* halfway: position auto-interpolates between hlblock and pill */
             }
-            69.9% {
+            72.9% {
                 opacity: 0.5;
                 left: var(--pill-x); top: var(--pill-y);
                 transform: translate(-50%, -50%) scale(0.2);
             }
-            70%, 100% {
+            73%, 100% {
                 opacity: 0;
                 left: var(--pill-x); top: var(--pill-y);
                 transform: translate(-50%, -50%) scale(0.2);
@@ -1634,9 +1645,9 @@
         }
 
         /* Pill text: two pre-rendered words stacked at the same place,
-           toggled via opacity. 'eleanote' visible by default; at 70% of
-           loop (2.80s) 'Text precharted' takes over for 1 second, then
-           'eleanote' returns at 95%.
+           toggled via opacity. 'eleanote' visible by default; at 73% of
+           loop (7.30s, when the ghost arrives at the pill) 'Text precharted'
+           takes over for 2.30s, then 'eleanote' returns at 96% (9.60s).
            NB: don't override .pill's position: absolute - the pill needs
            to remain absolutely positioned within the stage. */
         .s2-pill-word {
@@ -1655,17 +1666,17 @@
             .s2-pill-word.w-precharted .full  { display: none; }
             .s2-pill-word.w-precharted .short { display: inline; }
         }
-        .scene-2 .s2-pill-word.w-eleanote { animation: s2-w-ele 4s steps(1, end) infinite; }
-        .scene-2 .s2-pill-word.w-precharted { animation: s2-w-pre 4s steps(1, end) infinite; }
+        .scene-2 .s2-pill-word.w-eleanote { animation: s2-w-ele 10s steps(1, end) infinite; }
+        .scene-2 .s2-pill-word.w-precharted { animation: s2-w-pre 10s steps(1, end) infinite; }
         @keyframes s2-w-ele {
-            0%, 69.9%  { opacity: 1; }
-            70%, 94.9% { opacity: 0; }
-            95%, 100%  { opacity: 1; }
+            0%, 72.9%   { opacity: 1; }
+            73%, 95.9%  { opacity: 0; }
+            96%, 100%   { opacity: 1; }
         }
         @keyframes s2-w-pre {
-            0%, 69.9%  { opacity: 0; }
-            70%, 94.9% { opacity: 1; }
-            95%, 100%  { opacity: 0; }
+            0%, 72.9%   { opacity: 0; }
+            73%, 95.9%  { opacity: 1; }
+            96%, 100%   { opacity: 0; }
         }
 
 
