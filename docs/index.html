@@ -516,16 +516,16 @@
             content: "";
             position: absolute;
             inset: 0 0 28px 0;
-            /* Pretend-computer "wallpaper". Soft sage/teal gradient
-               (brand colors) with two radial glows for depth:
-                 - upper-left: warm cream highlight
-                 - lower-right: dusty pink tint
-               This gives the wallpaper a modern mesh-gradient feel
-               that pops against the brand teal bezel. */
+            /* Pretend-computer "wallpaper". Brand teal gradient
+               (tints / shades of --teal #14515c) with two radial glows
+               for depth -- a warm cream highlight upper-left and a
+               dusty pink tint lower-right. Reads as the same teal
+               family as the rest of the site rather than its own
+               sage-green direction. */
             background:
-                radial-gradient(65% 55% at 22% 22%, rgba(255, 248, 230, 0.45), transparent 70%),
-                radial-gradient(70% 60% at 82% 78%, rgba(220, 156, 178, 0.28), transparent 70%),
-                linear-gradient(135deg, #d6ece5 0%, #9ec6bc 55%, #6aa39b 100%);
+                radial-gradient(65% 55% at 22% 22%, rgba(255, 248, 230, 0.42), transparent 70%),
+                radial-gradient(70% 60% at 82% 78%, rgba(220, 156, 178, 0.26), transparent 70%),
+                linear-gradient(135deg, #c8e1e5 0%, #87b3bb 55%, #4d808a 100%);
             z-index: 0;
         }
         .stage.d { aspect-ratio: 16 / 10; display: block; }
@@ -2691,74 +2691,99 @@
            the next stage peeking on the right as the swipe affordance.
            Title sits below the stage in a smaller caption-style font.
 
+           Layout: .scenes-wrap is a flex column that vertically centers
+           the (track + dots) group. The track is auto-height so the
+           dots sit right under the title with consistent spacing. Each
+           scene has the SAME height because the title area has a
+           min-height -- this keeps all stages perfectly level when
+           swiping, regardless of how many lines a given title wraps to.
+
            Geometry:
-             Stage width: 82vw  (a bit wider than the white card it
-                                 used to live inside)
+             Stage width: 82vw
              Track inline-padding: 9vw  (centers scene 0 in the viewport)
              Gap between scenes: 16px
-             Peek of next scene on slide 0 ≈ 100 - 9 - 82 - (16/100vw)
-                                          ≈ 4.6vw  (~17px on 360px phone)
-             Step per scene: 82vw + 16px  (used by JS drag math too) */
+             Peek of next scene ≈ 4.6vw  (~17px on 360px phone)
+             Step per scene: 82vw + 16px  (matches JS drag math) */
         @media (max-width: 768px) {
-            /* Hero / CTA feel like their own screen but no scroll-snap --
-               just natural page scroll past them. */
+            /* Hero / CTA no longer forced viewport-tall -- they size
+               to content. Removes the perceived "vertical snap" between
+               sections and tightens the gap between the hero CTA and
+               the first animation. */
             .hero, .waitlist-cta {
-                min-height: calc(100vh - var(--header-h));        /* fallback */
-                min-height: calc(100dvh - var(--header-h));       /* preferred */
-                box-sizing: border-box;
+                min-height: 0;
             }
             .waitlist-cta {
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                display: block;
             }
             .scenes-arrows { display: none; }
 
-            /* Reserve room below the scenes for the dot indicator so
-               the stages don't sit underneath it. */
+            /* Vertically center the (track + dots) group inside the
+               viewport-tall scenes wrap. */
             .scenes-wrap {
-                padding-bottom: 64px;
-                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding-bottom: 0;
             }
 
-            /* Track: freely sized flex row with side padding so scene 0
-               is centered, and a per-scene step of (stage + gap). */
+            /* Track: auto height (content-sized), inline padding centers
+               scene 0, per-scene step = 82vw + 16px gap. */
             .scenes-track {
                 width: auto;
+                height: auto;
                 gap: 16px;
                 padding: 0 9vw;
                 transform: translateX(calc(var(--active) * -1 * (82vw + 16px)));
             }
 
-            /* Scene is just a flex column wrapper around the stage +
-               title -- no background, no border, no shadow. */
+            /* Scene: auto height, just a flex column wrapping stage +
+               title. No background / border / shadow / padding. */
             .scenes-wrap .scene {
                 flex: 0 0 82vw;
                 width: 82vw;
+                height: auto;
                 padding: 0;
-                gap: 12px;
+                gap: 10px;
             }
             /* Inside the scene: stage on top, title below in a smaller
                caption-style font. DOM order stays title-first (matters
-               for desktop layout / a11y); flex 'order' swaps visuals. */
+               for desktop layout); flex 'order' swaps the visual order.
+               The min-height on the title area is what keeps all scenes
+               the same height so stages stay level across swipes -- the
+               longest title (scene 1) sets the floor; shorter titles
+               are vertically centered in the same height block. */
             .scenes-wrap .scene-title {
                 order: 2;
                 font-size: 0.92rem;
                 font-weight: 600;
-                line-height: 1.4;
+                line-height: 1.35;
                 margin: 0 !important;
                 text-align: center;
                 max-width: 100%;
+                min-height: 3.2em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             .scenes-wrap .stage {
                 order: 1;
             }
-            /* Shrink the stage a bit more on mobile so the whole scene
-               (stage + title + dot pill below) fits a typical phone
-               viewport without scrolling inside the carousel. */
+            /* Phone stage cap leaves room for: title (~3.2em) + gap +
+               dot pill + small breathing margin on each side. */
             .scenes-wrap .stage.p {
-                max-height: calc(100vh - var(--header-h) - 240px);   /* fallback */
-                max-height: calc(100dvh - var(--header-h) - 240px);  /* preferred */
+                max-height: calc(100vh - var(--header-h) - 200px);   /* fallback */
+                max-height: calc(100dvh - var(--header-h) - 200px);  /* preferred */
+            }
+
+            /* Dots in flow, right below the track. Sit ~10px under the
+               caption -- close enough that they read as part of the
+               carousel block, not a floating overlay. */
+            .scene-progress {
+                position: static;
+                transform: none;
+                bottom: auto;
+                left: auto;
+                margin: 10px auto 0;
             }
         }
         /* Title: centered above the stage */
