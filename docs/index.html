@@ -2782,14 +2782,10 @@
                 max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
             }
 
-            /* Dots in flow, tight under the caption. */
-            .scene-progress {
-                position: static;
-                transform: none;
-                bottom: auto;
-                left: auto;
-                margin: 6px auto 0;
-            }
+            /* (Mobile .scene-progress overrides live LATER in the file
+               so they cascade after the base 'position: absolute' rule.
+               See the dedicated mobile media block right after
+               .scene-progress definitions.) */
         }
         /* Title: centered above the stage */
         .scenes-wrap .scene-title {
@@ -2862,11 +2858,22 @@
         }
         /* "N of 4" label hidden -- the dots alone tell the story. */
         .scene-progress .label { display: none; }
-        /* Slightly larger / brighter on mobile so the affordance is clear,
-           and lifted clear of the iOS home indicator. */
+        /* Mobile: dot pill flows INLINE below the carousel track so it
+           reads as part of the section and scrolls in unison with the
+           page (instead of floating absolute over the wrap, which made
+           it sit on top of the caption and shift around as the iOS
+           address bar moved). Display: flex + width: fit-content +
+           margin auto centers the pill horizontally without the base
+           rule's left:50% / translateX:-50% trick. */
         @media (max-width: 768px) {
             .scene-progress {
-                bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+                position: static;
+                transform: none;
+                bottom: auto;
+                left: auto;
+                display: flex;
+                width: fit-content;
+                margin: 6px auto 0;
                 padding: 9px 18px;
                 gap: 12px;
                 background: #ffffff;
