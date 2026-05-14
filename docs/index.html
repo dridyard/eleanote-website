@@ -2774,12 +2774,13 @@
             .scenes-wrap .stage {
                 order: 1;
             }
-            /* Phone stage cap: enough room for title + dot pill on a
-               typical phone without overflow. Capped against dvh so it
-               shrinks gracefully on short viewports. */
+            /* Phone stage sized purely by aspect-ratio + 82vw width.
+               No dvh-based max-height -- on iOS the dvh value changes
+               as the address bar shows/hides, which would reflow the
+               carousel under the user's finger and feel "shifty". With
+               wrap now height:auto the stage doesn't need a cap. */
             .scenes-wrap .stage.p {
-                max-height: calc(100vh - var(--header-h) - 220px);   /* fallback */
-                max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
+                max-height: none;
             }
 
             /* (Mobile .scene-progress overrides live LATER in the file
@@ -2867,11 +2868,14 @@
            rule's left:50% / translateX:-50% trick. */
         @media (max-width: 768px) {
             .scene-progress {
-                position: static;
-                transform: none;
-                bottom: auto;
-                left: auto;
-                display: flex;
+                /* !important is defensive -- the base rule sets these
+                   properties for desktop and the cascade has burned us
+                   here before. Lock the mobile values down. */
+                position: static !important;
+                transform: none !important;
+                bottom: auto !important;
+                left: auto !important;
+                display: flex !important;
                 width: fit-content;
                 margin: 6px auto 0;
                 padding: 9px 18px;
