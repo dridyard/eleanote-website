@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1300" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#225862"/>
+      <stop offset="1" stop-color="#143a42"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="790" cy="1170" r="936" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="rgba(140, 200, 210, 0.20)"/>
+      <stop offset="1" stop-color="rgba(140, 200, 210, 0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="1300" fill="url(#bg)"/>
+  <rect width="900" height="1300" fill="url(#glow)"/>
+  <g stroke="#dff0f3" fill="none" stroke-linecap="round">
+    <path d="M 790 1170 C 814 643, 780 -129, 529 -894" opacity="0.070" stroke-width="1.05"/>
+    <path d="M 790 1170 C 809 639, 754 -132, 438 -880" opacity="0.084" stroke-width="1.01"/>
+    <path d="M 790 1170 C 802 635, 724 -135, 347 -862" opacity="0.097" stroke-width="0.89"/>
+    <path d="M 790 1170 C 790 632, 686 -137, 257 -841" opacity="0.111" stroke-width="0.72"/>
+    <path d="M 790 1170 C 772 631, 639 -134, 169 -815" opacity="0.124" stroke-width="0.55"/>
+    <path d="M 790 1170 C 748 632, 581 -126, 81 -785" opacity="0.137" stroke-width="0.42"/>
+    <path d="M 790 1170 C 718 637, 513 -111, -5 -752" opacity="0.150" stroke-width="0.35"/>
+    <path d="M 790 1170 C 683 646, 437 -88, -90 -715" opacity="0.162" stroke-width="0.37"/>
+    <path d="M 790 1170 C 645 659, 357 -58, -173 -674" opacity="0.174" stroke-width="0.47"/>
+    <path d="M 790 1170 C 607 675, 275 -22, -254 -629" opacity="0.185" stroke-width="0.63"/>
+    <path d="M 790 1170 C 569 694, 195 19, -333 -581" opacity="0.195" stroke-width="0.80"/>
+    <path d="M 790 1170 C 534 714, 122 63, -409 -529" opacity="0.204" stroke-width="0.95"/>
+    <path d="M 790 1170 C 505 733, 57 107, -484 -474" opacity="0.213" stroke-width="1.04"/>
+    <path d="M 790 1170 C 481 750, 2 147, -555 -416" opacity="0.221" stroke-width="1.04"/>
+    <path d="M 790 1170 C 463 764, -42 183, -625 -355" opacity="0.228" stroke-width="0.96"/>
+    <path d="M 790 1170 C 450 774, -77 213, -691 -291" opacity="0.234" stroke-width="0.82"/>
+    <path d="M 790 1170 C 441 781, -105 236, -754 -223" opacity="0.239" stroke-width="0.65"/>
+    <path d="M 790 1170 C 435 784, -127 255, -815 -153" opacity="0.244" stroke-width="0.49"/>
+    <path d="M 790 1170 C 429 785, -147 271, -872 -81" opacity="0.247" stroke-width="0.38"/>
+    <path d="M 790 1170 C 423 786, -168 287, -926 -6" opacity="0.249" stroke-width="0.35"/>
+    <path d="M 790 1170 C 415 788, -192 307, -976 72" opacity="0.250" stroke-width="0.41"/>
+    <path d="M 790 1170 C 404 795, -219 334, -1023 151" opacity="0.250" stroke-width="0.53"/>
+    <path d="M 790 1170 C 391 807, -251 370, -1067 233" opacity="0.249" stroke-width="0.70"/>
+    <path d="M 790 1170 C 375 825, -286 418, -1107 316" opacity="0.247" stroke-width="0.87"/>
+    <path d="M 790 1170 C 357 851, -322 477, -1143 401" opacity="0.244" stroke-width="1.00"/>
+    <path d="M 790 1170 C 340 882, -359 547, -1175 488" opacity="0.239" stroke-width="1.05"/>
+    <path d="M 790 1170 C 322 918, -394 626, -1203 576" opacity="0.234" stroke-width="1.02"/>
+    <path d="M 790 1170 C 307 958, -424 711, -1228 665" opacity="0.228" stroke-width="0.91"/>
+    <path d="M 790 1170 C 294 998, -450 796, -1248 755" opacity="0.221" stroke-width="0.75"/>
+    <path d="M 790 1170 C 285 1036, -470 879, -1265 846" opacity="0.213" stroke-width="0.58"/>
+    <path d="M 790 1170 C 278 1071, -484 956, -1277 938" opacity="0.204" stroke-width="0.43"/>
+    <path d="M 790 1170 C 274 1099, -493 1023, -1285 1030" opacity="0.195" stroke-width="0.36"/>
+    <path d="M 790 1170 C 271 1122, -498 1079, -1289 1122" opacity="0.185" stroke-width="0.36"/>
+    <path d="M 790 1170 C 269 1138, -501 1124, -1290 1215" opacity="0.174" stroke-width="0.45"/>
+    <path d="M 790 1170 C 267 1148, -503 1160, -1285 1307" opacity="0.162" stroke-width="0.60"/>
+    <path d="M 790 1170 C 265 1155, -505 1189, -1277 1399" opacity="0.150" stroke-width="0.78"/>
+    <path d="M 790 1170 C 262 1159, -508 1215, -1265 1491" opacity="0.137" stroke-width="0.93"/>
+    <path d="M 790 1170 C 258 1165, -511 1241, -1249 1582" opacity="0.124" stroke-width="1.03"/>
+    <path d="M 790 1170 C 255 1172, -514 1272, -1229 1672" opacity="0.111" stroke-width="1.05"/>
+    <path d="M 790 1170 C 252 1185, -513 1311, -1204 1761" opacity="0.097" stroke-width="0.98"/>
+    <path d="M 790 1170 C 251 1203, -509 1359, -1176 1849" opacity="0.084" stroke-width="0.84"/>
+    <path d="M 790 1170 C 254 1228, -499 1418, -1144 1936" opacity="0.070" stroke-width="0.67"/>
+  </g>
+</svg>
