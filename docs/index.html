@@ -80,20 +80,17 @@
         .brand {
             display: inline-flex;
             align-items: center;
-            gap: 0.55rem;
             text-decoration: none;
             color: var(--teal-deep);
         }
 
-        .brand-mark {
-            width: 28px;
-            height: 28px;
-            display: inline-block;
-            flex: 0 0 auto;
-        }
+        /* .brand-mark removed -- the wordmark alone is the brand now */
 
         .brand-word {
-            font-size: 1.35rem;
+            /* Halfway between the old header size (1.35rem) and the hero
+               h1 (clamp 2.4-4.2rem). Clamp scales gracefully across
+               viewports so the header still fits at narrow widths. */
+            font-size: clamp(1.7rem, 2.6vw, 2.1rem);
             font-weight: 600;
             letter-spacing: -0.045em;
             color: #173D47;
@@ -2985,12 +2982,6 @@
     <header class="site-header">
         <nav class="nav" aria-label="Primary">
             <a class="brand" href="#top" aria-label="Eleanote home">
-                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-                    <circle cx="16" cy="16" r="15" fill="#173D47"/>
-                    <text x="16" y="22.5" text-anchor="middle"
-                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
-                        letter-spacing="-1" fill="#ffffff">e</text>
-                </svg>
                 <span class="brand-word">eleanote</span>
             </a>
             <a href="auth/dashboard.html" class="user-pill" id="userPill" hidden>
