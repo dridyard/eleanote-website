@@ -2558,18 +2558,26 @@
            to change scene and scroll vertically to leave the section. */
         .scenes-wrap {
             position: relative;
-            height: calc(100vh - var(--header-h));        /* fallback */
-            height: calc(100dvh - var(--header-h));       /* preferred -- 100vh on iOS
-                                                              would otherwise be the
-                                                              chrome-retracted maximum
-                                                              and hide content under
-                                                              the address bar. */
-            /* No min-height -- on shorter phones we want the wrap to
-               match the actual visible viewport so the title stays on
-               screen. The stage inside uses max-height to shrink with
-               the available room rather than overflow it. */
+            /* min-height (not height) so the wrap can GROW past one
+               viewport when the user zooms in. Browser zoom shrinks the
+               CSS viewport, which would otherwise force the stage into
+               a wide-but-short box -- the aspect-ratio'd stage gets
+               clipped by a fixed-height wrap and looks squished.
+               With min-height, the wrap fills the viewport at normal
+               zoom AND grows with the stage at high zoom (page just
+               scrolls -- expected behaviour for any zoomed-in user). */
+            min-height: calc(100vh - var(--header-h));        /* fallback */
+            min-height: calc(100dvh - var(--header-h));       /* preferred */
             overflow: hidden;
             --active: 0;
+            /* Flex column centering: at normal zoom the wrap is taller
+               than its content so this vertically centers the
+               (track + dots) group, preserving the previous
+               viewport-tall section feel. At zoom the content fills
+               the wrap and the centering becomes a no-op. */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             /* Let vertical pan happen natively (so the user can scroll
                past the section), and keep horizontal swipes for our JS
                handler -- it advances the carousel. */
@@ -2578,7 +2586,10 @@
         .scenes-track {
             display: flex;
             width: 400%;
-            height: 100%;
+            /* height: auto -- track is sized by its tallest scene. With
+               wrap as a flex column, height:100% can't resolve cleanly
+               (parent's height is min-height, not height), so we let
+               the content size it. */
             transform: translateX(calc(var(--active) * -25%));
             /* Snappier ease-out -- feels like an Apple-style flick rather
                than a slow Material slide. ~350ms hits the sweet spot of
@@ -2588,7 +2599,9 @@
         .scenes-wrap .scene {
             flex: 0 0 25%;
             width: 25%;
-            height: 100%;
+            /* height: auto -- scene is sized by its content
+               (title + stage). At zoom the stage grows via its
+               aspect-ratio and the scene grows with it. */
             margin: 0 !important;
             /* Tighter vertical padding on small viewports so the title
                isn't pushed off-screen on short phones; desktop bumps
@@ -2811,9 +2824,15 @@
             width: 100%;
             margin: 0 auto;
         }
+        /* Desktop stage: aspect-ratio (16:10) is the ONLY height
+           constraint -- no max-height cap. Browser zoom shrinks the
+           CSS viewport, the stage's width-driven height needs to grow
+           in lockstep, otherwise zoom-in produces a squashed wide-but-
+           short box. With min-height on the wrap (above) the page just
+           gets taller when the user zooms; the stage stays a proper
+           laptop-shape rectangle. */
         .scenes-wrap .stage.d {
-            max-height: calc(100vh - var(--header-h) - 220px);   /* fallback */
-            max-height: calc(100dvh - var(--header-h) - 220px);  /* preferred */
+            /* max-height removed -- see comment above */
         }
         /* Phone stage gets the same shrink-to-fit treatment: cap its
            height to whatever's left after we reserve room for the title
