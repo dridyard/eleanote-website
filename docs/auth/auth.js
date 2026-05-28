@@ -274,6 +274,20 @@ async function updateProfile(updates) {
     });
 }
 
+// ----- Required agreement versions -----
+// These MUST match the server's REQUIRED_*_VERSION env vars on the
+// /download-url endpoint. When a legal document is revised, bump the version
+// both here and on the server; users will then be required to re-accept.
+const REQUIRED_AGREEMENTS = { terms: '1.1', privacy: '0.1', baa: '0.1' };
+
+// True only if the profile has accepted the CURRENT version of all three docs.
+function agreementsAccepted(profile) {
+    return !!profile
+        && profile.termsAcceptedVersion === REQUIRED_AGREEMENTS.terms
+        && profile.privacyAcceptedVersion === REQUIRED_AGREEMENTS.privacy
+        && profile.baaAcceptedVersion === REQUIRED_AGREEMENTS.baa;
+}
+
 // Expose everything as a namespace so the page scripts can use it
 window.EleanoteAuth = {
     signUp,
@@ -295,5 +309,7 @@ window.EleanoteAuth = {
     getProfile,
     updateProfile,
     apiCall,
+    REQUIRED_AGREEMENTS,
+    agreementsAccepted,
     STORAGE,
 };

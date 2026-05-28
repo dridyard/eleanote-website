@@ -146,7 +146,7 @@
                     <a href="#" class="btn btn-inline" id="downloadWindowsBtn">Download for Windows</a>
                 </div>
                 <p class="tab-card-subtitle" style="margin-top: 1rem; margin-bottom: 0;">
-                    The Windows installer is preparing for release. You'll receive an email when it's ready.
+                    Windows 10 or 11 &middot; one-time installer (~42&nbsp;MB). After installing, open Eleanote and sign in with this same email and password.
                 </p>
             </div>
         </section>
@@ -247,6 +247,13 @@
         async function loadProfile() {
             try {
                 const profile = await EleanoteAuth.getProfile();
+                // Gate: a user who hasn't accepted the current agreements is
+                // sent to the acceptance page before they can use the dashboard
+                // or download. (The server independently enforces this too.)
+                if (!EleanoteAuth.agreementsAccepted(profile)) {
+                    window.location.href = 'agreements.html';
+                    return;
+                }
                 document.getElementById('firstName').value = profile.firstName || '';
                 document.getElementById('lastName').value = profile.lastName || '';
                 document.getElementById('specialty').value = profile.specialty || '';
@@ -297,10 +304,37 @@
             }
         });
 
-        // ----- Download placeholder -----
-        document.getElementById('downloadWindowsBtn').addEventListener('click', (e) => {
+        // ----- Download: fetch a presigned URL from the server, then download -----
+        document.getElementById('downloadWindowsBtn').addEventListener('click', async (e) => {
             e.preventDefault();
-            alert('The Windows installer is being prepared. We will email you when it is ready.');
+            const btn = e.currentTarget;
+            const original = btn.textContent;
+            btn.textContent = 'Preparing download…';
+            btn.style.pointerEvents = 'none';
+            try {
+                const res = await EleanoteAuth.apiCall('/download-url', { method: 'GET' });
+                if (res && res.url) {
+                    // Presigned URL responds with Content-Disposition: attachment,
+                    // so navigating to it triggers the download and keeps this page.
+                    window.location.assign(res.url);
+                } else {
+                    alert('Download is not available right now. Please try again shortly.');
+                }
+            } catch (err) {
+                if (err.status === 403) {
+                    window.location.href = 'agreements.html'; // agreements not accepted
+                } else if (err.status === 401) {
+                    await EleanoteAuth.signOut();
+                    window.location.href = 'login.html';
+                } else if (err.status === 503) {
+                    alert('The installer is not available yet. Please check back shortly.');
+                } else {
+                    alert('Could not start the download: ' + (err.message || 'unknown error'));
+                }
+            } finally {
+                btn.textContent = original;
+                btn.style.pointerEvents = '';
+            }
         });
 
         // ----- Sign out -----

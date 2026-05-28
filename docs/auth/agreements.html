@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review &amp; accept — Eleanote</title>
+    <meta name="description" content="Review and accept the Eleanote agreements.">
+    <meta name="theme-color" content="#14515c">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="auth-style.css">
+    <style>
+        .agree-intro { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.3rem; }
+        .agree-row {
+            display: flex; gap: 0.7rem; align-items: flex-start;
+            padding: 0.9rem 1rem; border: 1px solid var(--line);
+            border-radius: 0.7rem; margin-bottom: 0.75rem; background: var(--surface);
+        }
+        .agree-row input[type="checkbox"] {
+            margin-top: 0.2rem; width: 18px; height: 18px; flex: 0 0 auto; accent-color: var(--teal);
+        }
+        .agree-row label { font-size: 0.95rem; line-height: 1.5; }
+        .agree-row a { color: var(--teal); font-weight: 600; text-decoration: none; }
+        .agree-row a:hover { text-decoration: underline; }
+        .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <a class="brand" href="/" aria-label="Eleanote home">
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#173D47"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
+            </a>
+            <a class="nav-back" href="#" id="signoutLink">Sign out</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-card">
+            <h1>One step before you download</h1>
+            <p class="subtitle">Please review and accept the agreements below. You can read each document in full, then confirm to unlock your download.</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="agreementsForm" novalidate>
+                <div class="field">
+                    <label for="organization">Practice or organization (legal name)</label>
+                    <input type="text" id="organization" name="organization" required
+                        placeholder="e.g., Riverside Family Medicine, PLLC" maxlength="200">
+                    <div class="field-hint">The legal entity entering into the Business Associate Agreement (the covered entity).</div>
+                </div>
+
+                <p class="agree-intro">I have read and agree to each of the following:</p>
+
+                <div class="agree-row">
+                    <input type="checkbox" id="agreeTos">
+                    <label for="agreeTos">The Eleanote <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a>.</label>
+                </div>
+                <div class="agree-row">
+                    <input type="checkbox" id="agreePrivacy">
+                    <label for="agreePrivacy">The Eleanote <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</label>
+                </div>
+                <div class="agree-row">
+                    <input type="checkbox" id="agreeBaa">
+                    <label for="agreeBaa">The Eleanote <a href="/legal/baa.html" target="_blank" rel="noopener">Business Associate Agreement</a>, and I am authorized to enter into it on behalf of the practice or organization named above.</label>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn" disabled>I Agree &amp; Continue</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+    <script>
+        const form = document.getElementById('agreementsForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const orgInput = document.getElementById('organization');
+        const boxes = ['agreeTos', 'agreePrivacy', 'agreeBaa'].map(id => document.getElementById(id));
+
+        // Must be signed in to be here.
+        if (!EleanoteAuth.isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('signoutLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await EleanoteAuth.signOut();
+            window.location.href = '/';
+        });
+
+        // Enable the button only when all boxes are checked and an org is given.
+        function refreshButton() {
+            const allChecked = boxes.every(b => b.checked);
+            submitBtn.disabled = !(allChecked && orgInput.value.trim().length > 0);
+        }
+        boxes.forEach(b => b.addEventListener('change', refreshButton));
+        orgInput.addEventListener('input', refreshButton);
+
+        // On load: if the user has already accepted the current versions, skip
+        // straight to the dashboard; otherwise pre-fill the org field.
+        (async function init() {
+            try {
+                const profile = await EleanoteAuth.getProfile();
+                if (EleanoteAuth.agreementsAccepted(profile)) {
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+                orgInput.value = profile.organization || '';
+                refreshButton();
+            } catch (err) {
+                if (err.status === 401) {
+                    await EleanoteAuth.signOut();
+                    window.location.href = 'login.html';
+                }
+                // Otherwise let them proceed to accept; the save will surface errors.
+            }
+        })();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            EleanoteAuth.hideAlert('alert');
+            if (submitBtn.disabled) return;
+            EleanoteAuth.setButtonLoading(submitBtn, true);
+
+            const req = EleanoteAuth.REQUIRED_AGREEMENTS;
+            try {
+                await EleanoteAuth.updateProfile({
+                    organization: orgInput.value.trim(),
+                    termsAcceptedVersion: req.terms,
+                    privacyAcceptedVersion: req.privacy,
+                    baaAcceptedVersion: req.baa,
+                });
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                EleanoteAuth.setButtonLoading(submitBtn, false);
+                EleanoteAuth.showAlert('alert', 'error', err.message || 'Could not save your acceptance. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
