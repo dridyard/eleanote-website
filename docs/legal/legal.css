@@ -1,0 +1,118 @@
+/* Eleanote legal pages — shared styling. Matches the brand tokens from
+   the main site and the auth pages (cream paper, brand teal, Inter). */
+:root {
+  --ink: #0d2b30;
+  --teal: #14515c;
+  --teal-deep: #0e3d46;
+  --paper: #fbf7ec;
+  --line: #e5dcc1;
+  --muted: #6a6e6a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header — mirrors the site header */
+.legal-header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand { text-decoration: none; }
+.brand-word {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #173D47;
+}
+.back {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.back:hover { color: var(--teal-deep); }
+
+/* Document column */
+.legal-doc {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+.legal-doc h1 {
+  font-size: 2rem;
+  color: var(--teal-deep);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+.doc-meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 2.4rem;
+}
+.legal-doc h2 {
+  font-size: 1.15rem;
+  color: var(--teal-deep);
+  margin: 2.2rem 0 0.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  letter-spacing: -0.01em;
+}
+.legal-doc p { margin-bottom: 1rem; }
+.legal-doc a { color: var(--teal); }
+
+/* Draft / status banner */
+.draft-banner {
+  border-radius: 10px;
+  padding: 0.8rem 1.1rem;
+  font-size: 0.92rem;
+  margin-bottom: 2rem;
+  background: #fdf3d8;
+  border: 1px solid #e6d9a8;
+  color: #6b5618;
+}
+.draft-banner.strong {
+  background: #fbe6e2;
+  border-color: #e7b9b0;
+  color: #8a2e22;
+  font-weight: 500;
+}
+
+/* Placeholder body */
+.placeholder-note {
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+.placeholder-note ul { margin: 1rem 0 1rem 1.3rem; }
+.placeholder-note li { margin-bottom: 0.4rem; }
+
+/* Footer */
+.legal-footer {
+  border-top: 1px solid var(--line);
+  padding: 1.6rem 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.legal-footer a { color: var(--teal); text-decoration: none; }
+.legal-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .legal-doc { padding: 1.6rem 1.1rem 3rem; }
+  .legal-doc h1 { font-size: 1.6rem; }
+}
