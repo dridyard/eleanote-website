@@ -3,15 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review &amp; accept — Eleanote</title>
-    <meta name="description" content="Review and accept the Eleanote agreements.">
+    <title>Complete your profile — Eleanote</title>
+    <meta name="description" content="Tell us about yourself and accept the Eleanote agreements.">
     <meta name="theme-color" content="#14515c">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="auth-style.css">
     <style>
-        .agree-intro { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.3rem; }
+        /* Wider card — this page collects a small form plus agreements. */
+        .onboard-card { max-width: 560px; }
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        }
+        .form-grid .field { margin-bottom: 0; }
+        .form-grid .field-full { grid-column: 1 / -1; }
+        @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .section-label {
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em;
+            text-transform: uppercase; color: var(--muted);
+            margin: 1.8rem 0 0.8rem;
+        }
         .agree-row {
             display: flex; gap: 0.7rem; align-items: flex-start;
             padding: 0.9rem 1rem; border: 1px solid var(--line);
@@ -43,45 +56,97 @@
     </header>
 
     <main>
-        <div class="auth-card">
-            <h1>One step before you download</h1>
-            <p class="subtitle">Please review and accept the agreements below. You can read each document in full, then confirm to unlock your download.</p>
+        <div class="auth-card onboard-card">
+            <h1>Complete your profile</h1>
+            <p class="subtitle">A few details and agreements before you download Eleanote. This takes about a minute.</p>
 
             <div id="alert" class="alert"></div>
 
-            <form id="agreementsForm" novalidate>
-                <div class="field">
-                    <label for="organization">Practice or organization (legal name)</label>
-                    <input type="text" id="organization" name="organization" required
-                        placeholder="e.g., Riverside Family Medicine, PLLC" maxlength="200">
-                    <div class="field-hint">The legal entity entering into the Business Associate Agreement (the covered entity).</div>
+            <form id="onboardingForm" novalidate>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="firstName">First name</label>
+                        <input type="text" id="firstName" name="firstName" required
+                            autocomplete="given-name" maxlength="60">
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last name</label>
+                        <input type="text" id="lastName" name="lastName" required
+                            autocomplete="family-name" maxlength="60">
+                    </div>
+                    <div class="field">
+                        <label for="role">Role</label>
+                        <select id="role" name="role">
+                            <option value="">— Select —</option>
+                            <option>Physician</option>
+                            <option>NP / PA</option>
+                            <option>Resident</option>
+                            <option>Medical student</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="specialty">Specialty</label>
+                        <select id="specialty" name="specialty">
+                            <option value="">— Select —</option>
+                            <option>Family Medicine</option>
+                            <option>Internal Medicine</option>
+                            <option>Pediatrics</option>
+                            <option>Cardiology</option>
+                            <option>Dermatology</option>
+                            <option>Emergency Medicine</option>
+                            <option>Endocrinology</option>
+                            <option>Gastroenterology</option>
+                            <option>General Surgery</option>
+                            <option>Geriatrics</option>
+                            <option>Hematology / Oncology</option>
+                            <option>Infectious Disease</option>
+                            <option>Nephrology</option>
+                            <option>Neurology</option>
+                            <option>OB/GYN</option>
+                            <option>Ophthalmology</option>
+                            <option>Orthopedics</option>
+                            <option>Otolaryngology</option>
+                            <option>Pain Medicine</option>
+                            <option>Psychiatry</option>
+                            <option>Pulmonology</option>
+                            <option>Radiology</option>
+                            <option>Rheumatology</option>
+                            <option>Sports Medicine</option>
+                            <option>Urgent Care</option>
+                            <option>Urology</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
                 </div>
 
-                <p class="agree-intro">I have read and agree to each of the following:</p>
-
+                <p class="section-label">Agreements</p>
                 <div class="agree-row">
                     <input type="checkbox" id="agreeTos">
-                    <label for="agreeTos">The Eleanote <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a>.</label>
+                    <label for="agreeTos">I have read and agree to the Eleanote <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a>.</label>
                 </div>
                 <div class="agree-row">
                     <input type="checkbox" id="agreePrivacy">
-                    <label for="agreePrivacy">The Eleanote <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</label>
+                    <label for="agreePrivacy">I have read and agree to the Eleanote <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</label>
                 </div>
                 <div class="agree-row">
                     <input type="checkbox" id="agreeBaa">
-                    <label for="agreeBaa">The Eleanote <a href="/legal/baa.html" target="_blank" rel="noopener">Business Associate Agreement</a>, and I am authorized to enter into it on behalf of the practice or organization named above.</label>
+                    <label for="agreeBaa">I have read and agree to the Eleanote <a href="/legal/baa.html" target="_blank" rel="noopener">Business Associate Agreement</a>, which I am entering into as an individual healthcare provider.</label>
                 </div>
 
-                <button type="submit" class="btn" id="submitBtn" disabled>I Agree &amp; Continue</button>
+                <button type="submit" class="btn" id="submitBtn" style="margin-top: 1.5rem;" disabled>I Agree &amp; Continue</button>
             </form>
         </div>
     </main>
 
     <script src="auth.js"></script>
     <script>
-        const form = document.getElementById('agreementsForm');
+        const form = document.getElementById('onboardingForm');
         const submitBtn = document.getElementById('submitBtn');
-        const orgInput = document.getElementById('organization');
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const roleInput = document.getElementById('role');
+        const specialtyInput = document.getElementById('specialty');
         const boxes = ['agreeTos', 'agreePrivacy', 'agreeBaa'].map(id => document.getElementById(id));
 
         // Must be signed in to be here.
@@ -95,31 +160,37 @@
             window.location.href = '/';
         });
 
-        // Enable the button only when all boxes are checked and an org is given.
+        // Enable the button only when both names are filled and all boxes checked.
         function refreshButton() {
+            const namesFilled = firstNameInput.value.trim().length > 0
+                && lastNameInput.value.trim().length > 0;
             const allChecked = boxes.every(b => b.checked);
-            submitBtn.disabled = !(allChecked && orgInput.value.trim().length > 0);
+            submitBtn.disabled = !(namesFilled && allChecked);
         }
         boxes.forEach(b => b.addEventListener('change', refreshButton));
-        orgInput.addEventListener('input', refreshButton);
+        firstNameInput.addEventListener('input', refreshButton);
+        lastNameInput.addEventListener('input', refreshButton);
 
-        // On load: if the user has already accepted the current versions, skip
-        // straight to the dashboard; otherwise pre-fill the org field.
+        // On load: if onboarding is already complete, skip straight to the
+        // dashboard; otherwise pre-fill any details the user already has.
         (async function init() {
             try {
                 const profile = await EleanoteAuth.getProfile();
-                if (EleanoteAuth.agreementsAccepted(profile)) {
+                if (EleanoteAuth.onboardingComplete(profile)) {
                     window.location.href = 'dashboard.html';
                     return;
                 }
-                orgInput.value = profile.organization || '';
+                firstNameInput.value = profile.firstName || '';
+                lastNameInput.value = profile.lastName || '';
+                if (profile.role) roleInput.value = profile.role;
+                if (profile.specialty) specialtyInput.value = profile.specialty;
                 refreshButton();
             } catch (err) {
                 if (err.status === 401) {
                     await EleanoteAuth.signOut();
                     window.location.href = 'login.html';
                 }
-                // Otherwise let them proceed to accept; the save will surface errors.
+                // Otherwise let them proceed to fill it out; the save will surface errors.
             }
         })();
 
@@ -132,7 +203,10 @@
             const req = EleanoteAuth.REQUIRED_AGREEMENTS;
             try {
                 await EleanoteAuth.updateProfile({
-                    organization: orgInput.value.trim(),
+                    firstName: firstNameInput.value.trim(),
+                    lastName: lastNameInput.value.trim(),
+                    role: roleInput.value,
+                    specialty: specialtyInput.value,
                     termsAcceptedVersion: req.terms,
                     privacyAcceptedVersion: req.privacy,
                     baaAcceptedVersion: req.baa,
@@ -140,7 +214,7 @@
                 window.location.href = 'dashboard.html';
             } catch (err) {
                 EleanoteAuth.setButtonLoading(submitBtn, false);
-                EleanoteAuth.showAlert('alert', 'error', err.message || 'Could not save your acceptance. Please try again.');
+                EleanoteAuth.showAlert('alert', 'error', err.message || 'Could not save your details. Please try again.');
             }
         });
     </script>

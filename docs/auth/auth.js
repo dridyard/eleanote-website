@@ -288,6 +288,16 @@ function agreementsAccepted(profile) {
         && profile.baaAcceptedVersion === REQUIRED_AGREEMENTS.baa;
 }
 
+// True only if the user has finished onboarding: provided their name AND
+// accepted the current agreements. This is the gate for reaching the dashboard
+// and downloading. The server enforces the same rule on /download-url.
+function onboardingComplete(profile) {
+    return !!profile
+        && !!(profile.firstName && profile.firstName.trim())
+        && !!(profile.lastName && profile.lastName.trim())
+        && agreementsAccepted(profile);
+}
+
 // Expose everything as a namespace so the page scripts can use it
 window.EleanoteAuth = {
     signUp,
@@ -311,5 +321,6 @@ window.EleanoteAuth = {
     apiCall,
     REQUIRED_AGREEMENTS,
     agreementsAccepted,
+    onboardingComplete,
     STORAGE,
 };

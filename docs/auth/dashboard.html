@@ -9,8 +9,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="auth-style.css">
+    <style>
+        /* Hide the dashboard until the onboarding/auth check finishes, so the
+           profile form never flashes before a redirect to onboarding. */
+        body.auth-loading .dashboard { display: none; }
+
+        /* Right-side header links (Back to site + Sign out) */
+        .nav-actions { display: flex; align-items: center; gap: 1.25rem; }
+
+        /* Terms tab: legal documents with read links + accepted status */
+        .legal-row {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+        }
+        .legal-row:last-child { border-bottom: none; }
+        .legal-doc { display: flex; flex-direction: column; gap: 0.15rem; }
+        .legal-name { font-weight: 600; color: var(--ink); }
+        .legal-name a { color: var(--teal-deep); text-decoration: none; }
+        .legal-name a:hover { text-decoration: underline; }
+        .legal-status { font-size: 0.85rem; color: var(--muted); }
+        @media (max-width: 540px) {
+            .legal-row { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
 </head>
-<body>
+<body class="auth-loading">
     <header class="site-header">
         <nav class="nav">
             <a class="brand" href="/" aria-label="Eleanote home">
@@ -22,7 +45,10 @@
                 </svg>
                 <span class="brand-word">eleanote</span>
             </a>
-            <a class="nav-back" href="/">&larr; Back to site</a>
+            <div class="nav-actions">
+                <a class="nav-back" href="/">&larr; Back to site</a>
+                <a class="nav-back" href="#" id="signoutLink">Sign out</a>
+            </div>
         </nav>
     </header>
 
@@ -36,15 +62,14 @@
         <div class="tabs" role="tablist">
             <button class="tab-btn active" data-tab="account" role="tab">Account</button>
             <button class="tab-btn" data-tab="download" role="tab">Download</button>
-            <button class="tab-btn" data-tab="billing" role="tab">Billing</button>
-            <button class="tab-btn" data-tab="terms" role="tab">Terms of service</button>
+            <button class="tab-btn" data-tab="terms" role="tab">Terms &amp; agreements</button>
         </div>
 
         <!-- ACCOUNT TAB -->
         <section id="tab-account" class="tab-pane active" role="tabpanel">
             <div class="tab-card">
                 <h2>Profile</h2>
-                <p class="tab-card-subtitle">This information helps personalize Eleanote for your practice.</p>
+                <p class="tab-card-subtitle">This information helps personalize Eleanote for you.</p>
 
                 <div id="profileAlert" class="alert"></div>
 
@@ -58,7 +83,18 @@
                             <label for="lastName">Last name</label>
                             <input type="text" id="lastName" name="lastName" maxlength="60">
                         </div>
-                        <div class="field field-full">
+                        <div class="field">
+                            <label for="role">Role</label>
+                            <select id="role" name="role">
+                                <option value="">— Select —</option>
+                                <option>Physician</option>
+                                <option>NP / PA</option>
+                                <option>Resident</option>
+                                <option>Medical student</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field">
                             <label for="specialty">Specialty</label>
                             <select id="specialty" name="specialty">
                                 <option value="">— Select —</option>
@@ -91,21 +127,6 @@
                                 <option>Other</option>
                             </select>
                         </div>
-                        <div class="field field-full">
-                            <label for="organization">Practice / Clinic name</label>
-                            <input type="text" id="organization" name="organization" maxlength="200"
-                                placeholder="e.g. Lakeside Family Medicine">
-                        </div>
-                        <div class="field">
-                            <label for="phone">Phone (optional)</label>
-                            <input type="tel" id="phone" name="phone" maxlength="30"
-                                placeholder="(555) 123-4567">
-                        </div>
-                        <div class="field">
-                            <label for="npi">NPI (optional)</label>
-                            <input type="text" id="npi" name="npi" maxlength="20"
-                                placeholder="National Provider ID">
-                        </div>
                     </div>
 
                     <div class="btn-row" style="margin-top: 1.5rem;">
@@ -113,27 +134,6 @@
                         <span class="save-status" id="profileSavedStatus">Saved</span>
                     </div>
                 </form>
-            </div>
-
-            <div class="tab-card">
-                <h2>Account info</h2>
-                <p class="tab-card-subtitle">Read-only details about your account.</p>
-                <div class="readonly-row">
-                    <span class="label">Email</span>
-                    <span class="value" id="readEmail"></span>
-                </div>
-                <div class="readonly-row">
-                    <span class="label">Plan</span>
-                    <span class="value" id="readTier"></span>
-                </div>
-                <div class="readonly-row">
-                    <span class="label">Member since</span>
-                    <span class="value" id="readCreated"></span>
-                </div>
-
-                <div class="btn-row" style="margin-top: 1.5rem;">
-                    <a href="#" class="btn btn-secondary btn-inline" id="signoutLink">Sign out</a>
-                </div>
             </div>
         </section>
 
@@ -151,61 +151,34 @@
             </div>
         </section>
 
-        <!-- BILLING TAB -->
-        <section id="tab-billing" class="tab-pane" role="tabpanel">
-            <div class="tab-card">
-                <h2>Billing</h2>
-                <p class="tab-card-subtitle">Manage your subscription and payment method.</p>
-                <div class="readonly-row">
-                    <span class="label">Current plan</span>
-                    <span class="value" id="billingTier">Free trial</span>
-                </div>
-                <div class="readonly-row">
-                    <span class="label">Status</span>
-                    <span class="value" id="billingStatus">Active</span>
-                </div>
-                <p class="tab-card-subtitle" style="margin-top: 1.5rem; margin-bottom: 0;">
-                    Paid plans are coming soon. While Eleanote is in early access, your account is on the house.
-                </p>
-            </div>
-        </section>
-
         <!-- TERMS TAB -->
         <section id="tab-terms" class="tab-pane" role="tabpanel">
             <div class="tab-card">
-                <h2>Terms of service</h2>
-                <p class="tab-card-subtitle">The terms you agreed to when you created your account.</p>
+                <h2>Terms &amp; agreements</h2>
+                <p class="tab-card-subtitle">The documents you accepted to use Eleanote. Open any of them to read the full text.</p>
 
-                <div class="terms-content">
-                    <p class="terms-meta">Version 1.0 &middot; Last updated October 2026 &middot; <em>Draft for review.</em></p>
-
-                    <h3>1. Acceptance of terms</h3>
-                    <p>By creating an account or using Eleanote, you agree to these Terms of Service. If you do not agree, you may not use the service.</p>
-
-                    <h3>2. The service</h3>
-                    <p>Eleanote is an ambient AI scribe that helps physicians document clinical encounters. The service includes a desktop application and supporting cloud infrastructure.</p>
-
-                    <h3>3. HIPAA and protected health information</h3>
-                    <p>Eleanote is designed to handle protected health information (PHI) under the Health Insurance Portability and Accountability Act (HIPAA). Eleanote signs Business Associate Agreements (BAAs) with each healthcare provider that uses the service.</p>
-                    <p>You are responsible for ensuring that any PHI you process through Eleanote complies with HIPAA, applicable state privacy laws, and your organization's policies.</p>
-
-                    <h3>4. Authorized use</h3>
-                    <p>You may use Eleanote only for legitimate clinical documentation. You may not share your account credentials, attempt to reverse engineer the service, or use it for any unlawful purpose.</p>
-
-                    <h3>5. Subscription and fees</h3>
-                    <p>Eleanote may offer free trials, paid subscriptions, or both. Pricing and payment terms will be displayed at signup or upgrade. You authorize Eleanote to charge your designated payment method according to the subscription you select.</p>
-
-                    <h3>6. Limitation of liability</h3>
-                    <p>Eleanote provides clinical documentation assistance, not medical advice. You are the practicing clinician and remain responsible for the accuracy of every clinical note. Eleanote is not liable for clinical decisions or outcomes.</p>
-
-                    <h3>7. Termination</h3>
-                    <p>You may close your account at any time. Eleanote may suspend or terminate accounts that violate these terms or pose a security risk.</p>
-
-                    <h3>8. Changes to these terms</h3>
-                    <p>We may update these Terms of Service. Material changes will be communicated by email or via this page. Continued use of Eleanote after changes take effect constitutes acceptance.</p>
-
-                    <h3>9. Contact</h3>
-                    <p>Questions about these terms can be sent to <a href="mailto:eleanote@eleanote.ai" style="color: var(--teal-deep);">eleanote@eleanote.ai</a>.</p>
+                <div id="legalList">
+                    <div class="legal-row">
+                        <div class="legal-doc">
+                            <span class="legal-name"><a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a></span>
+                            <span class="legal-status" id="termsStatus">&mdash;</span>
+                        </div>
+                        <a class="btn btn-secondary btn-inline" href="/legal/terms.html" target="_blank" rel="noopener">Read</a>
+                    </div>
+                    <div class="legal-row">
+                        <div class="legal-doc">
+                            <span class="legal-name"><a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a></span>
+                            <span class="legal-status" id="privacyStatus">&mdash;</span>
+                        </div>
+                        <a class="btn btn-secondary btn-inline" href="/legal/privacy.html" target="_blank" rel="noopener">Read</a>
+                    </div>
+                    <div class="legal-row">
+                        <div class="legal-doc">
+                            <span class="legal-name"><a href="/legal/baa.html" target="_blank" rel="noopener">Business Associate Agreement</a></span>
+                            <span class="legal-status" id="baaStatus">&mdash;</span>
+                        </div>
+                        <a class="btn btn-secondary btn-inline" href="/legal/baa.html" target="_blank" rel="noopener">Read</a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -220,7 +193,6 @@
         }
 
         document.getElementById('userEmailDisplay').textContent = EleanoteAuth.getStoredEmail();
-        document.getElementById('readEmail').textContent = EleanoteAuth.getStoredEmail();
 
         // ----- Tabs -----
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -239,39 +211,49 @@
 
         // Honor hash on load
         const initialTab = (window.location.hash || '#account').slice(1);
-        if (['account', 'download', 'billing', 'terms'].includes(initialTab)) {
+        if (['account', 'download', 'terms'].includes(initialTab)) {
             activateTab(initialTab);
         }
 
         // ----- Profile load + save -----
+        // Format an "accepted" status line for the Terms & agreements tab.
+        function formatAccepted(version, at) {
+            if (!version) return 'Not yet accepted';
+            if (!at) return 'Accepted (v' + version + ')';
+            const d = new Date(at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+            return 'Accepted v' + version + ' on ' + d;
+        }
+
         async function loadProfile() {
             try {
                 const profile = await EleanoteAuth.getProfile();
-                // Gate: a user who hasn't accepted the current agreements is
-                // sent to the acceptance page before they can use the dashboard
-                // or download. (The server independently enforces this too.)
-                if (!EleanoteAuth.agreementsAccepted(profile)) {
+                // Gate: a user who hasn't finished onboarding (name + accepted
+                // agreements) is sent to the onboarding page before they can use
+                // the dashboard or download. (The server enforces this too.)
+                if (!EleanoteAuth.onboardingComplete(profile)) {
                     window.location.href = 'agreements.html';
                     return;
                 }
                 document.getElementById('firstName').value = profile.firstName || '';
                 document.getElementById('lastName').value = profile.lastName || '';
+                document.getElementById('role').value = profile.role || '';
                 document.getElementById('specialty').value = profile.specialty || '';
-                document.getElementById('organization').value = profile.organization || '';
-                document.getElementById('phone').value = profile.phone || '';
-                document.getElementById('npi').value = profile.npi || '';
-                document.getElementById('readTier').textContent = (profile.tier || 'free').replace(/^./, s => s.toUpperCase());
-                if (profile.createdAt) {
-                    document.getElementById('readCreated').textContent = new Date(profile.createdAt).toLocaleDateString();
-                }
-                document.getElementById('billingTier').textContent = (profile.tier === 'free') ? 'Free trial' : profile.tier;
-                document.getElementById('billingStatus').textContent = (profile.status || 'active').replace(/^./, s => s.toUpperCase());
+
+                // Terms & agreements tab — show accepted version + date.
+                document.getElementById('termsStatus').textContent = formatAccepted(profile.termsAcceptedVersion, profile.termsAcceptedAt);
+                document.getElementById('privacyStatus').textContent = formatAccepted(profile.privacyAcceptedVersion, profile.privacyAcceptedAt);
+                document.getElementById('baaStatus').textContent = formatAccepted(profile.baaAcceptedVersion, profile.baaAcceptedAt);
+
+                // Onboarding confirmed — reveal the dashboard.
+                document.body.classList.remove('auth-loading');
             } catch (err) {
                 if (err.status === 401) {
                     await EleanoteAuth.signOut();
                     window.location.href = 'login.html';
                     return;
                 }
+                // Reveal the dashboard so the error message is visible.
+                document.body.classList.remove('auth-loading');
                 EleanoteAuth.showAlert('profileAlert', 'error', 'Could not load profile: ' + (err.message || 'unknown error'));
             }
         }
@@ -286,10 +268,8 @@
             const updates = {
                 firstName: document.getElementById('firstName').value.trim(),
                 lastName: document.getElementById('lastName').value.trim(),
+                role: document.getElementById('role').value,
                 specialty: document.getElementById('specialty').value,
-                organization: document.getElementById('organization').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                npi: document.getElementById('npi').value.trim(),
             };
 
             try {
