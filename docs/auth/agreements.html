@@ -37,6 +37,21 @@
         .agree-row a { color: var(--teal); font-weight: 600; text-decoration: none; }
         .agree-row a:hover { text-decoration: underline; }
         .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+        /* Plain-language "what you're signing" summary */
+        .tos-summary {
+            margin-top: 1.8rem; padding: 1.1rem 1.25rem;
+            background: var(--teal-faint);
+            border: 1px solid rgba(14, 61, 70, 0.15);
+            border-radius: 0.8rem;
+        }
+        .tos-summary h2 {
+            font-size: 1rem; font-weight: 600; color: var(--teal-deep); margin: 0 0 0.5rem;
+        }
+        .tos-summary .intro { font-size: 0.92rem; line-height: 1.5; margin: 0 0 0.7rem; color: var(--ink); }
+        .tos-summary ul { margin: 0 0 0.7rem 1.15rem; padding: 0; }
+        .tos-summary li { font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.5rem; color: var(--ink); }
+        .tos-summary .fine { font-size: 0.82rem; line-height: 1.45; color: var(--muted); margin: 0; }
     </style>
 </head>
 <body>
@@ -118,6 +133,20 @@
                             <option>Other</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="tos-summary">
+                    <h2>Before you sign — the short version</h2>
+                    <p class="intro">We take privacy and HIPAA seriously. Here are the highlights — but please read the full documents below, because those are what actually govern your use of Eleanote.</p>
+                    <ul>
+                        <li>Our platform does not keep your patients' health information. It passes through only to generate your notes.</li>
+                        <li>We have agreements (BAAs) with our AI and infrastructure vendors requiring them to handle that information in accordance with HIPAA.</li>
+                        <li>Eleanote does not provide medical advice. It is a documentation and workflow tool, and every output requires your review before you use it.</li>
+                        <li>You must obtain your patients' consent to be recorded.</li>
+                        <li>We enter into a Business Associate Agreement with you to handle the health information you give us in accordance with HIPAA.</li>
+                        <li>If you are employed by a hospital or other institution, that institution may have its own rules about which outside vendors and AI tools you are permitted to use. Checking and following those rules is your responsibility.</li>
+                    </ul>
+                    <p class="fine">This summary is provided as a courtesy and is not legal advice; it is not a substitute for the full Terms of Service, Privacy Policy, and Business Associate Agreement below. If anything here seems to differ from those documents, the documents control.</p>
                 </div>
 
                 <p class="section-label">Agreements</p>
