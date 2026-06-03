@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Guide — Eleanote</title>
+<link rel="stylesheet" href="legal/legal.css">
+<style>
+  .guide-intro { color: var(--muted); font-size: 1rem; line-height: 1.6; margin-bottom: 1.4rem; }
+  .guide-group { font-size: 1.05rem; color: var(--teal-deep); margin: 2.2rem 0 0.7rem; padding-top: 1.3rem; border-top: 1px solid var(--line); letter-spacing: -0.01em; }
+  .guide-group:first-of-type { border-top: none; padding-top: 0; margin-top: 1rem; }
+  .guide-item { border: 1px solid var(--line); border-radius: 0.7rem; margin-bottom: 0.6rem; background: #fff; }
+  .guide-item summary { list-style: none; cursor: pointer; padding: 0.9rem 1.1rem; font-weight: 600; color: var(--ink); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .guide-item summary::-webkit-details-marker { display: none; }
+  .guide-item summary::after { content: "+"; color: var(--teal); font-weight: 600; font-size: 1.3rem; line-height: 1; flex: 0 0 auto; }
+  .guide-item[open] summary::after { content: "\2013"; }
+  .guide-item summary:hover { background: rgba(20, 81, 92, 0.05); }
+  .guide-item[open] summary { border-bottom: 1px solid var(--line); }
+  .guide-body { padding: 0.9rem 1.1rem 1rem; }
+  .guide-body p { margin: 0 0 0.8rem; }
+  .guide-body p:last-child { margin-bottom: 0; }
+  .guide-body ul { margin: 0.2rem 0 0.8rem 1.3rem; padding: 0; }
+  .guide-body li { margin-bottom: 0.4rem; }
+</style>
+</head>
+<body>
+<header class="legal-header">
+  <a class="brand" href="/"><span class="brand-word">eleanote</span></a>
+  <a class="back" href="/">&larr; Back to site</a>
+</header>
+<main class="legal-doc">
+  <h1>User Guide</h1>
+  <p class="guide-intro">Welcome to Eleanote. This guide walks you through the app, from first-time setup to advanced features. Topics are ordered from simplest to most advanced — click any topic to expand it.</p>
+      <details class="guide-item">
+        <summary>Download &amp; install</summary>
+        <div class="guide-body">
+          <p>Eleanote is designed to run on a providers personal laptop for clinic. It is a desktop application installed onto the computer. To download, Go to the download tab on the website. The program is new so your browser may flag this as a suspicious download as it is not commonly downloaded. It is safe to download. Once downloaded open the installer, it is possible Windows may flag the program as an unsafe install, the program is safe to install on your computer.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Getting Started</h2>
+      <details class="guide-item">
+        <summary>Set up your documentation preferences (the interview)</summary>
+        <div class="guide-body">
+          <p>The first thing to do is tell Eleanote how you like your notes written. Open Tools → Documentation Preferences. This starts a chat-based interview that asks about how you structure a note, your phrasing/voice, and your formatting.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Choose your microphone / dictation device</summary>
+        <div class="guide-body">
+          <p>Open Tools → Microphone to pick which microphone Eleanote listens to. Use this if you have more than one mic, or a dedicated dictation device (such as a handheld dictation microphone), so Eleanote always uses the right one.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Set your hotkeys</summary>
+        <div class="guide-body">
+          <p>Hotkeys let you control Eleanote without clicking — useful when your hands are on the keyboard or you’re working inside your EMR. Open Tools → Hotkey Settings to assign keys for the main actions:</p>
+          <ul>
+          <li>Precharting (you must hit ctrl + C to put text in clipboard before transferring to eleanote)</li>
+          <li>Record / Stop</li>
+          <li>Pause / Resume</li>
+          <li>Transfer/Skip automated entries into EMR</li>
+          <li>Dictation</li>
+          <li>End Encounter</li>
+          </ul>
+          <p>Pick hotkeys that won’t clash with your EMR’s own shortcuts. Choose uncommon keys (F11, F12, insert, or key combinations such as “ctrl + x)</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Seeing a Patient</h2>
+      <details class="guide-item">
+        <summary>Start an encounter and add pre-charting</summary>
+        <div class="guide-body">
+          <p>Each patient is an “encounter,” shown as a tab at the top of the window. Before or during the visit you can paste prior notes, labs, or other context into the pre-charting area. Precharting can be done without toggling between windows, just highlight text, hit ctrl + C to put on clipboard and hit precharting hotkey.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Record</summary>
+        <div class="guide-body">
+          <p>Click Record (or your hotkey) to start capturing the visit. Eleanote transcribes in real time and, when you generate, turns the conversation into a structured note in your style. Click again to Stop and note will be generated in around 10-20 seconds.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Pause / Resume</summary>
+        <div class="guide-body">
+          <p>Click Pause to temporarily stop capturing — for a private aside, a phone call, or stepping out of the room. While paused, nothing you say is transcribed or saved. Click Resume to continue the same encounter. Pausing keeps things ready in the background, so resuming is instant.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Refresh (regenerate the note)</summary>
+        <div class="guide-body">
+          <p>Refresh re-generates the note (and the orders and diagnoses) from everything captured so far, without ending the encounter. Use it to get an updated draft partway through a visit, or after you’ve added more conversation or pre-charting. Think of it as “make me the current best version of this note right now.”</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>The Floating Assistant &amp; transferring outputs into your EMR</summary>
+        <div class="guide-body">
+          <p>The Floating Assistant is a small, always-on-top window that shows your generated note, diagnoses, and orders. From it, you transfer each output straight into your EMR — Eleanote types or pastes each piece into the right place using the automation you’ve set up (see “Automating EMR Entry”). You can show it anytime via Tools → Show Floating Assistant.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Give feedback / save preferences</summary>
+        <div class="guide-body">
+          <p>If a note isn’t quite right, tell Eleanote in plain language — for example, “don’t include a review of systems,” or “keep the assessment shorter.” Eleanote learns from your feedback and updates your preferences so future notes improve. This is how the app gradually gets better at sounding exactly like you. If the feedback is something you want Eleanote to remember hit save preferences and Eleanote will learn from your documentation preferences over time. Not all feedback should be saved, if it is a very unique circumstance trying to teach Eleanote this preference may confuse the AI.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>End encounter</summary>
+        <div class="guide-body">
+          <p>When you’re finished with a patient, click End Encounter. This clears the current visit so you’re ready for the next patient. Your preferences, saved text, training, and profiles are not affected — only the current encounter is cleared.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Quick Dictation (dictate anywhere)</summary>
+        <div class="guide-body">
+          <p>Dictation mode is for quick, free-form dictation that isn’t a full patient note — a way to type by voice into any field. Press your assigned hotkey, speak, then tap the hotkey to paste the dictated text into the desired field. Eleanote cleans up the text (punctuation, medical terms, your spoken commands) and places it where your cursor is.</p>
+          <p>Spoken commands like “period,” “comma,” “new line,” and “new paragraph” are honored, and it won’t add punctuation you didn’t dictate. It also tries to drop obvious background chatter that isn’t part of your dictation.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Work with multiple patients (tabs)</summary>
+        <div class="guide-body">
+          <p>You can keep several encounters open as tabs and switch between them — handy when you’re interrupted or moving between rooms. Each tab is its own independent encounter with its own recording and outputs.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Fine-Tuning How Notes Are Written</h2>
+      <details class="guide-item">
+        <summary>The Preference Database (advanced preferences)</summary>
+        <div class="guide-body">
+          <p>For fine control beyond the interview, open Tools → Preference Database. This is a visual editor of every preference Eleanote uses — note structure, section rules, voice/phrasing, diagnoses and preferred ICD-10 codes, formatting, and more. Edit any field directly and save. Most people start with the interview and only come here to tweak specifics. If you need help describing how you want something documented hit the “Ask for Help” button, this will open a chatbot and help you develop the instructions for Eleanote.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Saved Text (smart phrases)</summary>
+        <div class="guide-body">
+          <p>Saved Text lets you store reusable blocks of text — like smart phrases or dot-phrases. Standard exam templates, counseling language, return precautions, and so on. Open Tools → Saved Text to add, edit, or remove them. Eleanote will pull in this smart text to your note if it is relevant to the visit. You can give Eleanote permission to edit the text slightly, fill in variable fields within the text, or copy the text exactly as is.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Keyterms (transcription accuracy)</summary>
+        <div class="guide-body">
+          <p>Keyterms are words you want the transcription to get right — names, procedures, or unusual terms it tends to mishear. Open Tools → Keyterms Editor to review and add them. Eleanote already learns many automatically from your interview and sample notes; this is where you curate the list (remove a stray term, add a new medication).</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Trim your preferences (when they get too big)</summary>
+        <div class="guide-body">
+          <p>Over time your preferences can grow large. If they get too big, Eleanote will let you know and may pause saving until you trim them. Open the Preference Database and remove or combine rules you no longer need. Keeping preferences focused also makes your notes faster and more consistent.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Automating EMR Entry</h2>
+      <details class="guide-item">
+        <summary>Automated inputs — diagnoses &amp; formatting (Training Center)</summary>
+        <div class="guide-body">
+          <p>The Training Center (Tools → Training Center) is where you teach Eleanote how to put things into your EMR using keystrokes. You can:</p>
+          <ul>
+          <li>Build keystroke sequences for diagnoses (e.g., search and select an ICD-10 or diagnosis name in your EMR). Most important function is programming the box called “default diagnosis pattern”</li>
+          <li>Set formatting behavior for how text is entered.</li>
+          <li>Tune the timing/pauses between steps so the automation keeps pace with your EMR.</li>
+          </ul>
+          <p>Once set, transferring a diagnosis from the Floating Assistant runs your sequence automatically.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Custom Outputs (“wild cards”)</summary>
+        <div class="guide-body">
+          <p>Custom Outputs are extra, you-defined outputs beyond the standard note, diagnoses, and orders — your “wild cards.” You define what each one generates (with its own instructions) and how it’s placed in your EMR. Use them for anything recurring that isn’t a standard note section — patient instructions, a billing snippet, a letter, and so on.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Advanced — real-time orders</summary>
+        <div class="guide-body">
+          <p>Eleanote can detect orders you mention during the visit in real time (labs, imaging, medications) and prepare these orders for transfer into the EMR before the visit is completed. Orders are transferred by a sequence of keystrokes that are determined by the user. Eleanote detects that a user is trying to place an order by listening for a trigger word such as “order.” The user can talk naturally with the details of the order and Eleanote stages the order for transfer into the EMR. A chat bot is built in to this part of the program to help the user develop the keystroke recipe.</p>
+          <p>This is the most advanced automation. Build and test one order at a time, and give your EMR enough pause time between steps.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Profiles &amp; Sharing</h2>
+      <details class="guide-item">
+        <summary>Preference &amp; order profiles, versions, and sharing</summary>
+        <div class="guide-body">
+          <p>Your preferences and your order setups are saved as profiles, and every time you save, Eleanote keeps a timestamped version — so you can always go back to an earlier one. Open Tools → Profile Manager to:</p>
+          <ul>
+          <li>Switch between saved versions (select one and click Use This Version).</li>
+          <li>Save your current setup as a new named profile.</li>
+          <li>Rename or delete profiles.</li>
+          <li>Import a profile from a file, or export one to share.</li>
+          </ul>
+          <p>Sharing: export a profile to a file and send it to a colleague (or import one they send you). It’s a great way for a group to start from the same proven setup. Inspect all preference files before sharing with others, preferences are specifically designed not to include any protected health information but it is technically possible for the AI to make a mistake. Thus, all preferences files should be inspected by the user before sharing.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Help &amp; Good to Know</h2>
+      <details class="guide-item">
+        <summary>Troubleshooting</summary>
+        <div class="guide-body">
+          <ul>
+          <li>No transcription / no text appears: check Tools → Microphone is set to the right device, and that you’re connected to the internet.</li>
+          <li>A note is missing a diagnosis or detail: click Refresh to regenerate, or add the detail through pre-charting or feedback.</li>
+          <li>Outputs aren’t landing in the right EMR fields: re-check the keystroke steps and the pause timing in the Training Center — EMRs sometimes need longer pauses.</li>
+          <li>“Preferences are too large” message: trim them in the Preference Database.</li>
+          <li>Something looks off after an update: your data is preserved; if needed you can reinstall the previous version.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Keeping Eleanote updated</summary>
+        <div class="guide-body">
+          <p>Eleanote is updated by installing a new version when one is available (we’ll send you the download link). Your preferences, saved text, training, and profiles all carry over automatically — updating never erases your setup. Always run the latest version so you have the newest improvements and fixes.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Your data &amp; privacy (good to know)</summary>
+        <div class="guide-body">
+          <p>Eleanote is built to keep patient information safe: the audio and the generated note are not kept on your computer after use, and nothing patient-identifiable is written to disk. Your own settings (preferences, saved text, training, and profiles) are stored locally so the app remembers your setup. See the Terms of Service and Business Associate Agreement for full details.</p>
+        </div>
+      </details>
+</main>
+<footer class="legal-footer">
+  <p>&copy; Eleanote LLC &middot; <a href="legal/terms.html">Terms of Service</a> &middot; <a href="legal/privacy.html">Privacy Policy</a> &middot; <a href="legal/baa.html">Business Associate Agreement</a> &middot; <a href="mailto:support@eleanote.ai">support@eleanote.ai</a></p>
+</footer>
+</body>
+</html>
