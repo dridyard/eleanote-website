@@ -355,6 +355,7 @@ main {
     border-bottom: 1px solid var(--line);
     margin-bottom: 2rem;
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
