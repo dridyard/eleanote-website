@@ -278,7 +278,7 @@ async function updateProfile(updates) {
 // These MUST match the server's REQUIRED_*_VERSION env vars on the
 // /download-url endpoint. When a legal document is revised, bump the version
 // both here and on the server; users will then be required to re-accept.
-const REQUIRED_AGREEMENTS = { terms: '1.2', privacy: '1.0', baa: '1.0' };
+const REQUIRED_AGREEMENTS = { terms: '1.2', privacy: '1.0', baa: '1.1' };
 
 // True only if the profile has accepted the CURRENT version of all three docs.
 function agreementsAccepted(profile) {
