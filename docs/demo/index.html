@@ -1433,6 +1433,25 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
         });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeOrderModal(); closeDoc(); } });
 
+        // ===== demo hotkeys: keyboard-driven order entry =====
+        // Ctrl/Cmd + O -> jump into the order entry box (switches to "This visit" first)
+        // Alt + A       -> accept the open order popup
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && !e.altKey && e.code === 'KeyO') {
+                e.preventDefault();
+                showView('visit', 'block-orders');
+                navItems.forEach(x => x.classList.remove('active'));
+                const ordersNav = document.querySelector('.nav-item[data-scroll="block-orders"]');
+                if (ordersNav) ordersNav.classList.add('active');
+                orderSearch.focus();
+                return;
+            }
+            if (e.altKey && e.code === 'KeyA' && orderModal.classList.contains('open')) {
+                e.preventDefault();
+                acceptOrder();
+            }
+        });
+
         // rich-text note editor
         const noteBody = document.getElementById('noteBody');
         const toolbar  = document.getElementById('toolbar');
