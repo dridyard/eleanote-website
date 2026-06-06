@@ -2942,6 +2942,41 @@
         }
 
         /* User pill — shown in top right when signed in */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .nav-link {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 500;
+            padding: 0.3rem 0.45rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            transition: color 0.15s ease;
+        }
+        .nav-link:hover { color: var(--teal-deep); }
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            background: var(--teal-deep);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            height: 40px;
+            padding: 0 1.05rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+        }
+        .nav-cta:hover { background: var(--teal); box-shadow: var(--shadow-sm); }
+        /* The [hidden] attribute (set by the auth-state script) must win over the
+           explicit display rules above, or hidden controls still render. */
+        .nav-cta[hidden], .user-pill[hidden], .nav-link[hidden] { display: none !important; }
+
         .user-pill {
             display: inline-flex;
             align-items: center;
@@ -2954,7 +2989,6 @@
             font-size: 0.88rem;
             font-weight: 500;
             text-decoration: none;
-            margin-right: 0.5rem;
             max-width: 220px;
             transition: background 0.15s ease, border-color 0.15s ease;
         }
@@ -2974,7 +3008,12 @@
             flex-shrink: 0;
         }
         @media (max-width: 540px) {
+            .nav { padding: 0 1rem; }
+            .brand-word { font-size: 1.5rem; }
             .user-pill { max-width: 130px; padding: 0.35rem 0.7rem; font-size: 0.82rem; }
+            .nav-right { gap: 0.45rem; }
+            .nav-link { display: none; }
+            .nav-cta { font-size: 0.82rem; height: 36px; padding: 0 0.8rem; }
         }
     </style>
 </head>
@@ -2984,29 +3023,31 @@
             <a class="brand" href="#top" aria-label="Eleanote home">
                 <span class="brand-word">eleanote</span>
             </a>
-            <a href="auth/dashboard.html" class="user-pill" id="userPill" hidden>
-                <span id="userPillEmail"></span>
-                <svg class="user-pill-chevron" viewBox="0 0 12 8" aria-hidden="true">
-                    <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-            <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">
-                <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-                <span>Menu</span>
-            </button>
+            <div class="nav-right">
+                <!-- Signed out: sign in + create account -->
+                <a href="auth/login.html" class="nav-link auth-out-only">Sign in</a>
+                <a href="auth/signup.html" class="nav-cta auth-out-only">Create account</a>
+
+                <!-- Signed in: account pill (email) + sign out -->
+                <a href="auth/dashboard.html" class="user-pill auth-in-only" id="userPill" hidden>
+                    <span id="userPillEmail"></span>
+                    <svg class="user-pill-chevron" viewBox="0 0 12 8" aria-hidden="true">
+                        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <a href="#" class="nav-link auth-in-only" id="navSignout" hidden>Sign out</a>
+
+                <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">
+                    <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+                    <span>Menu</span>
+                </button>
+            </div>
         </nav>
         <div class="menu-panel" id="menuPanel" role="menu" aria-label="Site menu">
             <a href="guide.html" role="menuitem">User guide <span class="arrow">→</span></a>
             <a href="security.html" role="menuitem">Privacy &amp; security <span class="arrow">→</span></a>
             <a href="about.html" role="menuitem">About <span class="arrow">→</span></a>
-            <hr>
-            <!-- Auth-aware section: shows Sign in / Create account when signed out,
-                 or Account / Sign out when signed in. Toggled by the script below. -->
-            <a href="auth/login.html" role="menuitem" class="auth-out-only">Sign in <span class="arrow">→</span></a>
-            <a href="auth/signup.html" role="menuitem" class="auth-out-only">Create account <span class="arrow">→</span></a>
-            <a href="auth/dashboard.html" role="menuitem" class="auth-in-only" hidden>Account <span class="arrow">→</span></a>
-            <a href="auth/dashboard.html#download" role="menuitem" class="auth-in-only" hidden>Download <span class="arrow">→</span></a>
-            <a href="#" role="menuitem" class="auth-in-only" id="signoutMenuLink" hidden>Sign out <span class="arrow">→</span></a>
+            <a href="auth/dashboard.html#download" role="menuitem">Download program <span class="arrow">→</span></a>
             <hr>
             <a href="mailto:eleanote@eleanote.ai" role="menuitem">Get in touch <span class="arrow">→</span></a>
         </div>
@@ -3025,9 +3066,9 @@
                     <li><b>Precharting in seconds.</b></li>
                     <li><b>Notes written with frontier-quality AI.</b></li>
                     <li><b>Personalize your notes</b> exactly the way you want them.</li>
-                    <li><b>Immediate feedback</b> can be applied to any note. The AI learns your preferences quickly.</li>
+                    <li><b>Immediate feedback</b> can be applied to any note. Eleanote learns your preferences quickly.</li>
                     <li><b>Transfer diagnosis codes, orders, and other programmable inputs</b> into your EMR with the push of a button.</li>
-                    <li><b>Real-time order capture.</b> The AI can be programmed to listen during a visit and stage orders so they're entered before the visit ends.</li>
+                    <li><b>Real-time order capture.</b> Eleanote can be programmed to listen during a visit and stage orders so they're entered before the visit ends.</li>
                 </ul>
                 <div class="hero-actions">
                     <a class="btn" href="#scenes">See how it works</a>
@@ -4116,7 +4157,7 @@
             });
 
             // Wire up sign-out from menu
-            var signoutLink = document.getElementById('signoutMenuLink');
+            var signoutLink = document.getElementById('navSignout');
             if (signoutLink) {
                 signoutLink.addEventListener('click', function(e) {
                     e.preventDefault();
