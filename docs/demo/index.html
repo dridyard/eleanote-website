@@ -1109,7 +1109,7 @@
                 role="textbox"
                 aria-multiline="true"
                 spellcheck="true"
-                data-placeholder="Start typing the note. Bold (Ctrl+B), italic (Ctrl+I), underline (Ctrl+U). Accepts pasted HTML and rich text."
+                data-placeholder="Start typing the note. Bold (Ctrl+B), italic (Ctrl+I), underline (Ctrl+U). Pasted text picks up the current formatting."
             ></div>
 
             <div class="note-foot">
@@ -1494,6 +1494,21 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
             e.preventDefault();          // suppress the browser's own toggle
             if (e.repeat) return;        // held chord: don't toggle again
             document.execCommand(cmd, false, null);
+            updateToolbarState();
+        });
+
+        // Paste = typing. The Eleanote transfer function inserts note text via
+        // clipboard paste (Ctrl+V) between Ctrl+B/I/U toggles. A native browser
+        // paste IGNORES the pending toggle state and inherits whatever inline
+        // formatting surrounds the cursor — so after "bold off" the pasted text
+        // still lands inside the <b> and the whole note comes out bold. Routing
+        // the paste through insertText gives it typing semantics, which DO
+        // consume the toggles: bold-on -> paste is bold; bold-off -> it isn't.
+        noteBody.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const dt = e.clipboardData || window.clipboardData;
+            const text = dt ? dt.getData('text/plain') : '';
+            if (text) document.execCommand('insertText', false, text);
             updateToolbarState();
         });
         ['mouseup','keyup','focus','input'].forEach(ev =>
