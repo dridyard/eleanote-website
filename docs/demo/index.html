@@ -70,7 +70,9 @@
         /* ====== APP SHELL ====== */
         .app {
             display: grid;
-            grid-template-columns: 230px 1fr 380px;
+            /* Note panel defaults to ~1/3 of the screen; --note-w is set live
+               by the drag handle on the panel's left edge. */
+            grid-template-columns: 230px 1fr var(--note-w, clamp(380px, 33vw, 800px));
             grid-template-rows: 64px 1fr;
             height: 100vh;
             background: var(--bg);
@@ -485,6 +487,7 @@
 
         /* ----- RIGHT (NOTE EDITOR) ----- */
         .right {
+            position: relative;
             background: var(--pane);
             margin: 12px 12px 12px 4px;
             border: 1px solid var(--line);
@@ -755,9 +758,36 @@
         }
         .modal-actions button.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 
+        /* ----- NOTE PANEL RESIZE HANDLE ----- */
+        /* Thin grab strip on the note panel's left edge. Drag to resize;
+           double-click to reset to the default (~1/3 screen) width. */
+        .note-resizer {
+            position: absolute;
+            left: -8px; top: 0; bottom: 0;
+            width: 14px;
+            cursor: col-resize;
+            z-index: 5;
+        }
+        .note-resizer::after {
+            content: '';
+            position: absolute;
+            left: 6px; top: 0; bottom: 0;
+            width: 2px;
+            border-radius: 2px;
+            background: var(--accent);
+            opacity: 0;
+            transition: opacity 120ms ease;
+        }
+        .note-resizer:hover::after,
+        body.note-resizing .note-resizer::after { opacity: 0.45; }
+        body.note-resizing { cursor: col-resize; user-select: none; }
+        @media (max-width: 1000px) {
+            .note-resizer { display: none; }   /* stacked layout — nothing to drag */
+        }
+
         /* responsive */
         @media (max-width: 1180px) {
-            .app { grid-template-columns: 210px 1fr 340px; }
+            .app { grid-template-columns: 210px 1fr var(--note-w, 340px); }
         }
         @media (max-width: 1000px) {
             .app {
@@ -1514,6 +1544,48 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
         ['mouseup','keyup','focus','input'].forEach(ev =>
             noteBody.addEventListener(ev, updateToolbarState)
         );
+
+        // ===== resizable note panel =====
+        // Drag the strip on the panel's left edge to resize; width persists
+        // across reloads (localStorage). Double-click the strip to reset.
+        const appEl = document.querySelector('.app');
+        const rightPane = document.querySelector('.right');
+        const noteResizer = document.createElement('div');
+        noteResizer.className = 'note-resizer';
+        noteResizer.title = 'Drag to resize the note panel · double-click to reset';
+        rightPane.appendChild(noteResizer);
+
+        const NOTE_W_KEY = 'eleanote-demo-notew';
+        const savedNoteW = parseInt(localStorage.getItem(NOTE_W_KEY), 10);
+        if (savedNoteW) appEl.style.setProperty('--note-w', savedNoteW + 'px');
+
+        let noteResizing = false;
+        noteResizer.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            noteResizing = true;
+            document.body.classList.add('note-resizing');
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!noteResizing) return;
+            // Column width = distance from cursor to the right viewport edge,
+            // clamped so neither the note nor the chart gets crushed.
+            const w = Math.min(
+                Math.max(window.innerWidth - e.clientX, 320),
+                Math.round(window.innerWidth * 0.6)
+            );
+            appEl.style.setProperty('--note-w', w + 'px');
+        });
+        document.addEventListener('mouseup', () => {
+            if (!noteResizing) return;
+            noteResizing = false;
+            document.body.classList.remove('note-resizing');
+            const cur = parseInt(appEl.style.getPropertyValue('--note-w'), 10);
+            if (cur) localStorage.setItem(NOTE_W_KEY, cur);
+        });
+        noteResizer.addEventListener('dblclick', () => {
+            appEl.style.removeProperty('--note-w');
+            localStorage.removeItem(NOTE_W_KEY);
+        });
 
         const STORAGE_KEY = 'eleanote-demo-note-v2';
         const saved = localStorage.getItem(STORAGE_KEY);
