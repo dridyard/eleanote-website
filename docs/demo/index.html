@@ -990,7 +990,7 @@
                 <div class="row"><strong>05/29/2026</strong><span><a data-doc="mri-2026">MRI abdomen report — Radiology</a> · surveillance (pre-visit)</span></div>
                 <div class="row"><strong>11/20/2025</strong><span>Office Visit — Dr. Carter (PCP) · annual exam</span></div>
                 <div class="row"><strong>06/12/2025</strong><span><a data-doc="surveillance-2025">Urology surveillance visit — Dr. Ridyard</a> · RCC follow-up, CKD</span></div>
-                <div class="row"><strong>01/15/2025</strong><span>Nephrology consult — Dr. Patel · CKD stage 3b co-management</span></div>
+                <div class="row"><strong>01/15/2025</strong><span>Nephrology consult — Dr. Patel · CKD stage 3a co-management</span></div>
                 <div class="row"><strong>03/10/2024</strong><span><a data-doc="path-2024">Surgical pathology — Pathology</a> · left radical nephrectomy</span></div>
                 <div class="row"><strong>03/08/2024</strong><span><a data-doc="op-note">Operative note — Dr. Ridyard</a> · left laparoscopic radical nephrectomy</span></div>
                 <div class="row"><strong>02/12/2024</strong><span>Office Visit — Dr. Ridyard · renal mass, pre-operative</span></div>
@@ -1008,7 +1008,7 @@
                     </thead>
                     <tbody>
                         <tr><td>05/29/2026</td><td>Creatinine</td><td>1.6 mg/dL</td><td>0.7–1.3</td><td><span class="pill high">High</span></td></tr>
-                        <tr><td>05/29/2026</td><td>eGFR</td><td>44 mL/min</td><td>&gt;60</td><td><span class="pill high">Low</span></td></tr>
+                        <tr><td>05/29/2026</td><td>eGFR</td><td>45 mL/min</td><td>&gt;60</td><td><span class="pill high">Low</span></td></tr>
                         <tr><td>05/29/2026</td><td>BUN</td><td>27 mg/dL</td><td>7–20</td><td><span class="pill high">High</span></td></tr>
                         <tr><td>05/29/2026</td><td>Potassium</td><td>4.6 mmol/L</td><td>3.5–5.1</td><td><span class="pill normal">Normal</span></td></tr>
                         <tr><td>05/29/2026</td><td>Sodium</td><td>139 mmol/L</td><td>135–145</td><td><span class="pill normal">Normal</span></td></tr>
@@ -1050,7 +1050,7 @@
             <section class="view" data-view="problems">
                 <div class="view-head"><h2>Problem list</h2></div>
                 <div class="row"><strong>C64.9</strong><span>Renal cell carcinoma, left kidney — s/p radical nephrectomy (2024)</span></div>
-                <div class="row"><strong>N18.32</strong><span>Chronic kidney disease, stage 3b — chronic</span></div>
+                <div class="row"><strong>N18.31</strong><span>Chronic kidney disease, stage 3a — chronic</span></div>
                 <div class="row"><strong>Z90.5</strong><span>Acquired absence of kidney (solitary kidney)</span></div>
                 <div class="row"><strong>I10</strong><span>Essential hypertension — chronic</span></div>
                 <div class="row"><strong>E78.5</strong><span>Hyperlipidemia — chronic</span></div>
@@ -1215,7 +1215,7 @@
         }
         const DX_DB = [
             { match: ['renal cell carcinoma', 'rcc', 'c64'], name: 'Renal cell carcinoma', code: 'C64.9' },
-            { match: ['chronic kidney disease, stage 3b', 'chronic kidney disease stage 3b', 'chronic kidney disease', 'ckd stage 3b', 'ckd 3b', 'ckd', 'n18.32'], name: 'Chronic kidney disease, stage 3b', code: 'N18.32' },
+            { match: ['chronic kidney disease, stage 3a', 'chronic kidney disease stage 3a', 'chronic kidney disease', 'ckd stage 3a', 'ckd 3a', 'ckd', 'n18.31'], name: 'Chronic kidney disease, stage 3a', code: 'N18.31' },
         ];
         const ORDER_DB = [
             { match: ['bmp', 'basic metabolic panel'], name: 'BMP (Basic Metabolic Panel)', otype: 'lab',
@@ -1339,18 +1339,18 @@ RENAL FUNCTION TREND
     02/2024   Creatinine 1.0 mg/dL   (pre-operative baseline)
     04/2024   Creatinine 1.4 mg/dL   (early post-operative)
     12/2024   Creatinine 1.5 mg/dL
-    06/2025   Creatinine 1.5 mg/dL   eGFR ~44 mL/min/1.73m2
-Estimated GFR has been stable in the mid-40s, consistent with CKD stage 3b in a functionally solitary kidney.
+    06/2025   Creatinine 1.5 mg/dL   eGFR ~47 mL/min/1.73m2
+Estimated GFR has been stable in the upper-40s, consistent with CKD stage 3a in a functionally solitary kidney.
 
 ASSESSMENT AND PLAN
 
-1. Clear cell renal cell carcinoma, left kidney — status post left laparoscopic radical nephrectomy (03/2024), pT1b, margins negative.
+1. Renal cell carcinoma — status post left laparoscopic radical nephrectomy (03/2024), pT1b, margins negative.
    - No evidence of recurrence or metastasis on surveillance to date.
    - Continue surveillance: cross-sectional abdominal imaging and renal function at the current interval.
    - Surveillance MRI of the abdomen and a basic metabolic panel ordered; results to be reviewed at the next visit.
 
-2. Chronic kidney disease, stage 3b (post-nephrectomy, functionally solitary kidney).
-   - eGFR stable in the mid-40s.
+2. Chronic kidney disease, stage 3a (post-nephrectomy, functionally solitary kidney).
+   - eGFR stable in the upper-40s.
    - Avoid nephrotoxins; renally dose medications where applicable.
    - Continue co-management with nephrology; monitor BMP at each surveillance visit.
 
