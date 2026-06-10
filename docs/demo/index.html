@@ -1439,6 +1439,8 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && !e.altKey && e.code === 'KeyO') {
                 e.preventDefault();
+                // Don't yank focus out of an open popup (order fields / document viewer)
+                if (orderModal.classList.contains('open') || docModal.classList.contains('open')) return;
                 showView('visit', 'block-orders');
                 navItems.forEach(x => x.classList.remove('active'));
                 const ordersNav = document.querySelector('.nav-item[data-scroll="block-orders"]');
@@ -1477,11 +1479,22 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
         });
         blockSel.addEventListener('change', () => { exec('formatBlock', blockSel.value); });
 
+        // Deterministic formatting shortcuts. The browser's native Ctrl+B/I/U
+        // toggles on EVERY keydown — including auto-repeat while the chord is
+        // held. An automated typer (Eleanote transferring a note) holds the
+        // chord long enough to fire repeats, so the format flips on/off
+        // unpredictably. We own the shortcut instead: suppress the native
+        // toggle, ignore repeats, and apply exactly one toggle per press.
+        const FORMAT_KEYS = { KeyB: 'bold', KeyI: 'italic', KeyU: 'underline' };
         noteBody.addEventListener('keydown', (e) => {
             const mod = e.ctrlKey || e.metaKey;
-            if (!mod) return;
-            const k = e.key.toLowerCase();
-            if (k === 'b' || k === 'i' || k === 'u') setTimeout(updateToolbarState, 0);
+            if (!mod || e.altKey || e.shiftKey) return;
+            const cmd = FORMAT_KEYS[e.code];
+            if (!cmd) return;
+            e.preventDefault();          // suppress the browser's own toggle
+            if (e.repeat) return;        // held chord: don't toggle again
+            document.execCommand(cmd, false, null);
+            updateToolbarState();
         });
         ['mouseup','keyup','focus','input'].forEach(ev =>
             noteBody.addEventListener(ev, updateToolbarState)
