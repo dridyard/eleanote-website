@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo video — Eleanote</title>
+<link rel="stylesheet" href="legal/legal.css">
+<style>
+  .legal-doc p { font-size: 1.05rem; }
+  .demo-video-wrap {
+    margin-top: 1.6rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 10px 34px rgba(13, 43, 48, 0.16);
+    aspect-ratio: 16 / 9;
+  }
+  .demo-video-wrap video { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<header class="legal-header">
+  <a class="brand" href="/"><span class="brand-word">eleanote</span></a>
+  <a class="back" href="/">&larr; Back to site</a>
+</header>
+<main class="legal-doc">
+  <h1>See Eleanote in action</h1>
+  <p>Below is a brief introduction to the program's capabilities. <a href="auth/signup.html">Sign up here</a> to test the program.</p>
+  <div class="demo-video-wrap">
+    <video controls preload="metadata" playsinline>
+      <source src="eleanote-demo.mp4" type="video/mp4">
+      Your browser doesn&rsquo;t support embedded video.
+      <a href="eleanote-demo.mp4">Download the video</a> instead.
+    </video>
+  </div>
+</main>
+<footer class="legal-footer">
+  <p>&copy; Eleanote LLC &middot; <a href="legal/terms.html">Terms of Service</a> &middot; <a href="legal/privacy.html">Privacy Policy</a> &middot; <a href="legal/baa.html">Business Associate Agreement</a> &middot; <a href="mailto:support@eleanote.ai">support@eleanote.ai</a></p>
+</footer>
+</body>
+</html>
