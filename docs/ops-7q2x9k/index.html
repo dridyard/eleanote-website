@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Keep this page out of search engines. Obscurity is NOT the security here
+     (the admin Cognito pool + enforced TOTP + read-only API are) — it just
+     keeps the page from being indexed or casually stumbled upon. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Eleanote Admin</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --accent:#2563eb; --accent-d:#1d4ed8;
+    --ok:#0f766e; --err:#b91c1c; --err-bg:#fef2f2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(1200px 600px at 50% -10%, #1e293b, var(--bg));
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); padding:24px;
+  }
+  .card{
+    width:100%; max-width:420px; background:var(--card); border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.35); padding:32px 28px;
+  }
+  .brand{font-size:22px; font-weight:700; margin:0 0 4px; letter-spacing:-.02em}
+  .brand span{color:var(--accent); font-weight:600}
+  .sub{color:var(--muted); margin:0 0 20px}
+  label{display:block; font-weight:600; font-size:13px; margin:14px 0 6px}
+  input{
+    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:10px;
+    font-size:15px; outline:none; transition:border-color .15s,box-shadow .15s;
+  }
+  input:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+  button.primary{
+    width:100%; margin-top:20px; padding:12px; border:0; border-radius:10px;
+    background:var(--accent); color:#fff; font-size:15px; font-weight:600; cursor:pointer;
+    transition:background .15s;
+  }
+  button.primary:hover{background:var(--accent-d)}
+  button.primary:disabled{opacity:.6; cursor:default}
+  .alert{display:none; margin:14px 0 0; padding:10px 12px; border-radius:10px;
+    font-size:13.5px; background:var(--err-bg); color:var(--err)}
+  .alert.show{display:block}
+  .hint{color:var(--muted); font-size:12.5px; margin:8px 0 0}
+  .steps{color:var(--muted); font-size:13.5px; padding-left:20px; margin:0 0 12px}
+  .steps li{margin:4px 0}
+  .secret{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:18px;
+    letter-spacing:1px; text-align:center; padding:14px; background:#f1f5f9;
+    border:1px dashed var(--line); border-radius:10px; word-break:break-all; user-select:all;
+  }
+  .dash-head{display:flex; justify-content:space-between; align-items:center;
+    color:var(--muted); font-size:13px; margin-bottom:18px}
+  .dash-head strong{color:var(--ink)}
+  button.link{background:none; border:0; color:var(--accent); cursor:pointer; font-size:13px; padding:0}
+  .metric{border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:12px; text-align:center}
+  .metric-num{font-size:40px; font-weight:700; letter-spacing:-.03em; line-height:1}
+  .metric-label{color:var(--muted); font-size:13px; margin-top:6px}
+  button.ghost{width:100%; padding:10px; border:1px solid var(--line); border-radius:10px;
+    background:#fff; color:var(--ink); font-weight:600; cursor:pointer}
+  button.ghost:hover{background:#f8fafc}
+  .ts{color:var(--muted); font-size:12px; text-align:center; margin:12px 0 0}
+  .foot{color:var(--muted); font-size:11.5px; text-align:center; margin:18px 0 0; border-top:1px solid var(--line); padding-top:12px}
+</style>
+</head>
+<body>
+<main class="card">
+  <h1 class="brand">Eleanote <span>Admin</span></h1>
+
+  <!-- Sign in -->
+  <section id="sec-login">
+    <p class="sub">Sign in to the admin dashboard.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" autocapitalize="off" spellcheck="false">
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <div class="alert" id="alert"></div>
+    <button class="primary" id="btn-login">Sign in</button>
+  </section>
+
+  <!-- First sign-in: set a new password -->
+  <section id="sec-newpw" hidden>
+    <p class="sub">First sign-in — choose your password.</p>
+    <label for="newpw">New password</label>
+    <input id="newpw" type="password" autocomplete="new-password">
+    <label for="newpw2">Confirm password</label>
+    <input id="newpw2" type="password" autocomplete="new-password">
+    <p class="hint">At least 12 characters, with uppercase, lowercase, a number, and a symbol.</p>
+    <div class="alert" id="alert-newpw"></div>
+    <button class="primary" id="btn-newpw">Set password</button>
+  </section>
+
+  <!-- One-time TOTP enrollment -->
+  <section id="sec-mfasetup" hidden>
+    <p class="sub">Set up your authenticator app (one time).</p>
+    <ol class="steps">
+      <li>Open an authenticator app (Google Authenticator, Authy, 1Password&hellip;).</li>
+      <li>Add account &rarr; <em>Enter a setup key</em> &rarr; paste the key below.</li>
+    </ol>
+    <div class="secret" id="secret">&hellip;</div>
+    <p class="hint">Account name: <strong>Eleanote Admin</strong> &middot; Type: time-based.</p>
+    <label for="setupcode">6-digit code from the app</label>
+    <input id="setupcode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+    <div class="alert" id="alert-mfasetup"></div>
+    <button class="primary" id="btn-mfasetup">Verify &amp; finish</button>
+  </section>
+
+  <!-- Returning sign-in: TOTP code -->
+  <section id="sec-mfa" hidden>
+    <p class="sub">Enter the 6-digit code from your authenticator app.</p>
+    <label for="mfacode">6-digit code</label>
+    <input id="mfacode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+    <div class="alert" id="alert-mfa"></div>
+    <button class="primary" id="btn-mfa">Verify</button>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="sec-dash" hidden>
+    <div class="dash-head">
+      <span>Signed in as <strong id="who"></strong></span>
+      <button class="link" id="btn-logout">Sign out</button>
+    </div>
+    <div class="metric"><div class="metric-num" id="m-total">&mdash;</div><div class="metric-label">Total signups</div></div>
+    <div class="metric"><div class="metric-num" id="m-confirmed">&mdash;</div><div class="metric-label">Confirmed accounts</div></div>
+    <button class="ghost" id="btn-refresh">Refresh</button>
+    <p class="ts" id="ts"></p>
+    <p class="foot">Read-only &middot; no patient data &middot; eleanote-admin</p>
+  </section>
+</main>
+
+<script>
+// ---- Config (none of these are secrets) ----
+var REGION = 'us-east-1';
+var CLIENT_ID = 'afn9sbgth9paclcjmrsi3mot';                                   // admin pool app client
+var COGNITO = 'https://cognito-idp.' + REGION + '.amazonaws.com/';
+var API = 'https://hwwf5rf210.execute-api.us-east-1.amazonaws.com/prod';       // eleanote-admin API
+var SS = { ID:'eleanote.admin.idToken', RT:'eleanote.admin.rt', EXP:'eleanote.admin.exp', EMAIL:'eleanote.admin.email' };
+
+var session = null, challengeUser = null, typedEmail = null;
+
+function $(id){ return document.getElementById(id); }
+function show(name){ ['login','newpw','mfasetup','mfa','dash'].forEach(function(s){ $('sec-'+s).hidden = (s !== name); }); }
+function note(id, msg){ var e=$(id); e.textContent = msg||''; e.classList.toggle('show', !!msg); }
+function busy(btn, on){ btn.disabled = on; if(!btn.dataset.t) btn.dataset.t = btn.textContent; btn.textContent = on ? 'Working…' : btn.dataset.t; }
+
+// ---- Cognito REST call (mirrors the customer site's approach) ----
+async function cog(op, body){
+  var r = await fetch(COGNITO, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/x-amz-json-1.1', 'X-Amz-Target':'AWSCognitoIdentityProviderService.'+op },
+    body: JSON.stringify(body)
+  });
+  var d = await r.json();
+  if(!r.ok){ var e = new Error(d.message || 'Error'); e.code = d.__type || ''; throw e; }
+  return d;
+}
+function friendly(e){
+  var c = e.code || '', m = e.message || '';
+  if(c.indexOf('NotAuthorized')>=0 || c.indexOf('UserNotFound')>=0) return 'Email or password is incorrect.';
+  if(c.indexOf('CodeMismatch')>=0) return 'That code is incorrect. Check your authenticator and try the current one.';
+  if(c.indexOf('ExpiredCode')>=0 || c.indexOf('EnableSoftwareTokenMFA')>=0) return 'That code expired — enter the current 6 digits.';
+  if(c.indexOf('InvalidPassword')>=0) return 'Password needs 12+ chars with upper, lower, a number, and a symbol.';
+  if(c.indexOf('LimitExceeded')>=0 || c.indexOf('TooManyRequests')>=0) return 'Too many attempts. Wait a minute and try again.';
+  return m || 'Something went wrong. Please try again.';
+}
+
+// ---- Token handling (sessionStorage: cleared when the tab closes) ----
+function saveAuth(r){
+  var a = r.AuthenticationResult;
+  sessionStorage.setItem(SS.ID, a.IdToken);
+  if(a.RefreshToken) sessionStorage.setItem(SS.RT, a.RefreshToken);
+  sessionStorage.setItem(SS.EXP, String(Date.now() + (a.ExpiresIn ? a.ExpiresIn*1000 : 25*60*1000)));
+  if(typedEmail) sessionStorage.setItem(SS.EMAIL, typedEmail);
+  enterDash();
+}
+function logout(){
+  Object.keys(SS).forEach(function(k){ sessionStorage.removeItem(SS[k]); });
+  session = challengeUser = typedEmail = null;
+  $('password').value = '';
+  show('login');
+}
+
+// ---- Challenge router ----
+function route(r){
+  if(r.AuthenticationResult){ saveAuth(r); return; }
+  session = r.Session;
+  challengeUser = (r.ChallengeParameters && r.ChallengeParameters.USERNAME) || challengeUser || typedEmail;
+  switch(r.ChallengeName){
+    case 'NEW_PASSWORD_REQUIRED': show('newpw'); $('newpw').focus(); break;
+    case 'MFA_SETUP': startSetup(); break;
+    case 'SOFTWARE_TOKEN_MFA': show('mfa'); $('mfacode').focus(); break;
+    default: note('alert', 'Unsupported sign-in step: ' + r.ChallengeName);
+  }
+}
+
+// ---- Sign in ----
+$('btn-login').onclick = async function(){
+  note('alert','');
+  typedEmail = $('email').value.trim().toLowerCase();
+  var pw = $('password').value;
+  if(!typedEmail || !pw){ note('alert','Enter your email and password.'); return; }
+  busy(this, true);
+  try{ route(await cog('InitiateAuth', { AuthFlow:'USER_PASSWORD_AUTH', ClientId:CLIENT_ID, AuthParameters:{ USERNAME:typedEmail, PASSWORD:pw } })); }
+  catch(e){ note('alert', friendly(e)); }
+  finally{ busy(this, false); }
+};
+
+// ---- New password (first sign-in) ----
+$('btn-newpw').onclick = async function(){
+  note('alert-newpw','');
+  var p1 = $('newpw').value, p2 = $('newpw2').value;
+  if(p1 !== p2){ note('alert-newpw','Passwords do not match.'); return; }
+  if(p1.length < 12){ note('alert-newpw','Use at least 12 characters.'); return; }
+  busy(this, true);
+  try{ route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'NEW_PASSWORD_REQUIRED', Session:session, ChallengeResponses:{ USERNAME:challengeUser, NEW_PASSWORD:p1 } })); }
+  catch(e){ note('alert-newpw', friendly(e)); }
+  finally{ busy(this, false); }
+};
+
+// ---- TOTP enrollment ----
+async function startSetup(){
+  show('mfasetup'); note('alert-mfasetup','');
+  $('secret').textContent = '…';
+  try{
+    var r = await cog('AssociateSoftwareToken', { Session:session });
+    session = r.Session;
+    $('secret').textContent = (r.SecretCode || '').replace(/(.{4})/g, '$1 ').trim();
+  }catch(e){ note('alert-mfasetup', friendly(e)); }
+}
+$('btn-mfasetup').onclick = async function(){
+  note('alert-mfasetup','');
+  var code = $('setupcode').value.replace(/\D/g,'');
+  if(!/^\d{6}$/.test(code)){ note('alert-mfasetup','Enter the 6-digit code.'); return; }
+  busy(this, true);
+  try{
+    var v = await cog('VerifySoftwareToken', { Session:session, UserCode:code, FriendlyDeviceName:'Eleanote Admin' });
+    if(v.Status !== 'SUCCESS'){ note('alert-mfasetup','Could not verify. Try the next code.'); return; }
+    session = v.Session;
+    route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'MFA_SETUP', Session:session, ChallengeResponses:{ USERNAME:challengeUser } }));
+  }catch(e){ note('alert-mfasetup', friendly(e)); }
+  finally{ busy(this, false); }
+};
+
+// ---- Returning sign-in: TOTP code ----
+$('btn-mfa').onclick = async function(){
+  note('alert-mfa','');
+  var code = $('mfacode').value.replace(/\D/g,'');
+  if(!/^\d{6}$/.test(code)){ note('alert-mfa','Enter the 6-digit code.'); return; }
+  busy(this, true);
+  try{ route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'SOFTWARE_TOKEN_MFA', Session:session, ChallengeResponses:{ USERNAME:challengeUser, SOFTWARE_TOKEN_MFA_CODE:code } })); }
+  catch(e){ note('alert-mfa', friendly(e)); }
+  finally{ busy(this, false); }
+};
+
+// ---- Dashboard ----
+function enterDash(){
+  show('dash');
+  $('who').textContent = sessionStorage.getItem(SS.EMAIL) || '';
+  loadOverview();
+}
+async function api(path){
+  var id = sessionStorage.getItem(SS.ID);
+  var r = await fetch(API + path, { headers:{ 'Authorization':'Bearer ' + id } });
+  if(r.status === 401 || r.status === 403){ var e = new Error('auth'); e.status = r.status; throw e; }
+  var d = null; try{ d = await r.json(); }catch(_){}
+  if(!r.ok) throw new Error((d && d.error) || ('Request failed (' + r.status + ')'));
+  return d;
+}
+async function loadOverview(){
+  $('ts').textContent = 'Loading…';
+  try{
+    var d = await api('/admin/overview');
+    $('m-total').textContent = d.signups.total;
+    $('m-confirmed').textContent = d.signups.confirmed;
+    $('ts').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  }catch(e){
+    if(e.status === 401 || e.status === 403){ logout(); return; }
+    $('ts').textContent = 'Could not load: ' + e.message;
+  }
+}
+$('btn-refresh').onclick = loadOverview;
+$('btn-logout').onclick = logout;
+
+// ---- Submit-on-Enter for every input ----
+[['email','btn-login'],['password','btn-login'],['newpw','btn-newpw'],['newpw2','btn-newpw'],
+ ['setupcode','btn-mfasetup'],['mfacode','btn-mfa']].forEach(function(pair){
+  $(pair[0]).addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); $(pair[1]).click(); } });
+});
+
+// ---- On load: reuse a live session, or silently refresh, else show login ----
+(async function init(){
+  var id = sessionStorage.getItem(SS.ID), exp = parseInt(sessionStorage.getItem(SS.EXP) || '0', 10);
+  if(id && Date.now() < exp){ enterDash(); return; }
+  var rt = sessionStorage.getItem(SS.RT);
+  if(rt){
+    try{
+      var r = await cog('InitiateAuth', { AuthFlow:'REFRESH_TOKEN_AUTH', ClientId:CLIENT_ID, AuthParameters:{ REFRESH_TOKEN:rt } });
+      if(r.AuthenticationResult){ typedEmail = sessionStorage.getItem(SS.EMAIL); saveAuth(r); return; }
+    }catch(_){ /* fall through */ }
+  }
+  show('login');
+})();
+</script>
+</body>
+</html>
