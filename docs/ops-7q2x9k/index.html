@@ -102,6 +102,7 @@
     </ol>
     <div class="secret" id="secret">&hellip;</div>
     <p class="hint">Account name: <strong>Eleanote Admin</strong> &middot; Type: time-based.</p>
+    <p class="hint"><strong>Finish now:</strong> for security this step expires after a few minutes. If it times out, just sign in again and redo it.</p>
     <label for="setupcode">6-digit code from the app</label>
     <input id="setupcode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
     <div class="alert" id="alert-mfasetup"></div>
@@ -182,6 +183,15 @@ function logout(){
   $('password').value = '';
   show('login');
 }
+// A sign-in / MFA-setup Session lives only a few minutes. If it expires
+// mid-flow (e.g. you step away during authenticator setup), send the user
+// cleanly back to sign-in with an explanation instead of a cryptic error.
+function restart(msg){ logout(); note('alert', msg); }
+function sessionExpired(e){
+  var c = e.code || '', m = e.message || '';
+  return (c.indexOf('NotAuthorized') >= 0 && /session/i.test(m)) || /session is expired|invalid session/i.test(m);
+}
+var SETUP_TIMEOUT_MSG = 'Your setup session timed out. Sign in again and finish the authenticator step in one sitting (it expires after a few minutes).';
 
 // ---- Challenge router ----
 function route(r){
@@ -216,7 +226,7 @@ $('btn-newpw').onclick = async function(){
   if(p1.length < 12){ note('alert-newpw','Use at least 12 characters.'); return; }
   busy(this, true);
   try{ route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'NEW_PASSWORD_REQUIRED', Session:session, ChallengeResponses:{ USERNAME:challengeUser, NEW_PASSWORD:p1 } })); }
-  catch(e){ note('alert-newpw', friendly(e)); }
+  catch(e){ if(sessionExpired(e)){ restart('Your sign-in session timed out. Please sign in again.'); return; } note('alert-newpw', friendly(e)); }
   finally{ busy(this, false); }
 };
 
@@ -228,7 +238,7 @@ async function startSetup(){
     var r = await cog('AssociateSoftwareToken', { Session:session });
     session = r.Session;
     $('secret').textContent = (r.SecretCode || '').replace(/(.{4})/g, '$1 ').trim();
-  }catch(e){ note('alert-mfasetup', friendly(e)); }
+  }catch(e){ if(sessionExpired(e)){ restart(SETUP_TIMEOUT_MSG); return; } note('alert-mfasetup', friendly(e)); }
 }
 $('btn-mfasetup').onclick = async function(){
   note('alert-mfasetup','');
@@ -240,7 +250,7 @@ $('btn-mfasetup').onclick = async function(){
     if(v.Status !== 'SUCCESS'){ note('alert-mfasetup','Could not verify. Try the next code.'); return; }
     session = v.Session;
     route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'MFA_SETUP', Session:session, ChallengeResponses:{ USERNAME:challengeUser } }));
-  }catch(e){ note('alert-mfasetup', friendly(e)); }
+  }catch(e){ if(sessionExpired(e)){ restart(SETUP_TIMEOUT_MSG); return; } note('alert-mfasetup', friendly(e)); }
   finally{ busy(this, false); }
 };
 
@@ -251,7 +261,7 @@ $('btn-mfa').onclick = async function(){
   if(!/^\d{6}$/.test(code)){ note('alert-mfa','Enter the 6-digit code.'); return; }
   busy(this, true);
   try{ route(await cog('RespondToAuthChallenge', { ClientId:CLIENT_ID, ChallengeName:'SOFTWARE_TOKEN_MFA', Session:session, ChallengeResponses:{ USERNAME:challengeUser, SOFTWARE_TOKEN_MFA_CODE:code } })); }
-  catch(e){ note('alert-mfa', friendly(e)); }
+  catch(e){ if(sessionExpired(e)){ restart(SETUP_TIMEOUT_MSG); return; } note('alert-mfa', friendly(e)); }
   finally{ busy(this, false); }
 };
 
