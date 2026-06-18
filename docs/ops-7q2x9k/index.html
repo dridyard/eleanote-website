@@ -64,6 +64,28 @@
   button.ghost:hover{background:#f8fafc}
   .ts{color:var(--muted); font-size:12px; text-align:center; margin:12px 0 0}
   .foot{color:var(--muted); font-size:11.5px; text-align:center; margin:18px 0 0; border-top:1px solid var(--line); padding-top:12px}
+  /* --- M2 dashboard --- */
+  .card.wide{max-width:780px}
+  .group-title{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:24px 0 10px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px}
+  .tile{border:1px solid var(--line); border-radius:12px; padding:14px 16px}
+  .tile-num{font-size:30px; font-weight:700; letter-spacing:-.02em; line-height:1.05}
+  .tile-label{color:var(--muted); font-size:12.5px; margin-top:4px}
+  .tile-sub{color:var(--muted); font-size:12px; margin-top:6px}
+  .triple{display:flex; gap:14px}
+  .triple div{flex:1}
+  .triple b{display:block; font-size:24px; font-weight:700; line-height:1}
+  .triple span{color:var(--muted); font-size:11px}
+  .funnel{display:flex; flex-direction:column; gap:8px}
+  .frow{display:grid; grid-template-columns:84px 1fr auto; align-items:center; gap:10px; font-size:13px}
+  .flabel{font-weight:600}
+  .ftrack{background:#f1f5f9; border-radius:6px; height:22px; overflow:hidden}
+  .ffill{background:linear-gradient(90deg,var(--accent),#60a5fa); height:100%; width:0; border-radius:6px; transition:width .4s ease}
+  .fcount{color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .fcount b{color:var(--ink)}
+  .dash-foot{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:22px}
+  .dash-foot .ts{margin:0; text-align:left}
+  .dash-foot .ghost{width:auto; padding:8px 18px}
 </style>
 </head>
 <body>
@@ -118,17 +140,45 @@
     <button class="primary" id="btn-mfa">Verify</button>
   </section>
 
-  <!-- Dashboard -->
+  <!-- Dashboard (M2) -->
   <section id="sec-dash" hidden>
     <div class="dash-head">
       <span>Signed in as <strong id="who"></strong></span>
       <button class="link" id="btn-logout">Sign out</button>
     </div>
-    <div class="metric"><div class="metric-num" id="m-total">&mdash;</div><div class="metric-label">Total signups</div></div>
-    <div class="metric"><div class="metric-num" id="m-confirmed">&mdash;</div><div class="metric-label">Confirmed accounts</div></div>
-    <button class="ghost" id="btn-refresh">Refresh</button>
-    <p class="ts" id="ts"></p>
-    <p class="foot">Read-only &middot; no patient data &middot; eleanote-admin</p>
+
+    <div class="group-title">Signups</div>
+    <div class="grid">
+      <div class="tile"><div class="tile-num" id="m-total">&mdash;</div><div class="tile-label">Total signups</div></div>
+      <div class="tile"><div class="tile-num" id="m-confirmed">&mdash;</div><div class="tile-label">Confirmed</div></div>
+      <div class="tile"><div class="tile-num" id="m-unconfirmed">&mdash;</div><div class="tile-label">Unconfirmed</div><div class="tile-sub" id="m-rate"></div></div>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div class="tile"><div class="tile-num" id="m-24h">&mdash;</div><div class="tile-label">New &middot; last 24h</div></div>
+      <div class="tile"><div class="tile-num" id="m-7d">&mdash;</div><div class="tile-label">New &middot; last 7 days</div></div>
+      <div class="tile"><div class="tile-num" id="m-30d">&mdash;</div><div class="tile-label">New &middot; last 30 days</div></div>
+    </div>
+
+    <div class="group-title">Onboarding funnel</div>
+    <div class="funnel">
+      <div class="frow"><span class="flabel">Signed up</span><div class="ftrack"><div class="ffill" id="f0"></div></div><span class="fcount"><b id="fc0">&mdash;</b></span></div>
+      <div class="frow"><span class="flabel">Confirmed</span><div class="ftrack"><div class="ffill" id="f1"></div></div><span class="fcount"><b id="fc1">&mdash;</b> <span id="fp1"></span></span></div>
+      <div class="frow"><span class="flabel">Profiled</span><div class="ftrack"><div class="ffill" id="f2"></div></div><span class="fcount"><b id="fc2">&mdash;</b> <span id="fp2"></span></span></div>
+      <div class="frow"><span class="flabel">Onboarded</span><div class="ftrack"><div class="ffill" id="f3"></div></div><span class="fcount"><b id="fc3">&mdash;</b> <span id="fp3"></span></span></div>
+    </div>
+
+    <div class="group-title">Usage &amp; cost</div>
+    <div class="grid">
+      <div class="tile"><div class="tile-num" id="m-notes">&mdash;</div><div class="tile-label">Notes generated</div><div class="tile-sub" id="m-notes-mo"></div></div>
+      <div class="tile"><div class="tile-num" id="m-spend">&mdash;</div><div class="tile-label">Est. AI spend</div><div class="tile-sub" id="m-spend-mo"></div></div>
+      <div class="tile"><div class="tile-label" style="margin:0 0 8px">Active users</div><div class="triple"><div><b id="m-dau">&mdash;</b><span>today</span></div><div><b id="m-wau">&mdash;</b><span>7&nbsp;days</span></div><div><b id="m-mau">&mdash;</b><span>30&nbsp;days</span></div></div></div>
+    </div>
+
+    <div class="dash-foot">
+      <p class="ts" id="ts"></p>
+      <button class="ghost" id="btn-refresh">Refresh</button>
+    </div>
+    <p class="foot">Read-only &middot; no patient data &middot; AI spend is an estimate, not billed actuals</p>
   </section>
 </main>
 
@@ -181,6 +231,7 @@ function logout(){
   Object.keys(SS).forEach(function(k){ sessionStorage.removeItem(SS[k]); });
   session = challengeUser = typedEmail = null;
   $('password').value = '';
+  document.querySelector('.card').classList.remove('wide');
   show('login');
 }
 // A sign-in / MFA-setup Session lives only a few minutes. If it expires
@@ -267,6 +318,7 @@ $('btn-mfa').onclick = async function(){
 
 // ---- Dashboard ----
 function enterDash(){
+  document.querySelector('.card').classList.add('wide');
   show('dash');
   $('who').textContent = sessionStorage.getItem(SS.EMAIL) || '';
   loadOverview();
@@ -279,13 +331,51 @@ async function api(path){
   if(!r.ok) throw new Error((d && d.error) || ('Request failed (' + r.status + ')'));
   return d;
 }
+function num(n){ return (n === null || n === undefined) ? '—' : String(n); }
+function money(n){
+  if(n === null || n === undefined) return '—';
+  if(n > 0 && n < 0.01) return '$' + n.toFixed(4);
+  return '$' + n.toFixed(2);
+}
+// Funnel bar i: fill width = count/total, plus the count and % of total.
+function setFunnel(i, count, total){
+  $('fc'+i).textContent = (count === null || count === undefined) ? '—' : count;
+  var pct = (total && count != null) ? Math.round(count / total * 100) : 0;
+  $('f'+i).style.width = (total ? pct : 0) + '%';
+  if(i > 0) $('fp'+i).textContent = (total && count != null) ? '(' + pct + '%)' : '';
+}
+function renderOverview(d){
+  var s = d.signups, o = d.onboarding, u = d.usage;
+  // Signups
+  $('m-total').textContent = s ? num(s.total) : '—';
+  $('m-confirmed').textContent = s ? num(s.confirmed) : '—';
+  $('m-unconfirmed').textContent = s ? num(s.unconfirmed) : '—';
+  $('m-rate').textContent = s ? (s.confirmRatePct + '% confirmed') : '';
+  $('m-24h').textContent = s ? num(s.new24h) : '—';
+  $('m-7d').textContent = s ? num(s.new7d) : '—';
+  $('m-30d').textContent = s ? num(s.new30d) : '—';
+  // Funnel (denominator = total signups)
+  var total = s ? s.total : 0;
+  setFunnel(0, s ? s.total : null, total);
+  setFunnel(1, s ? s.confirmed : null, total);
+  setFunnel(2, o ? o.profiled : null, total);
+  setFunnel(3, o ? o.onboarded : null, total);
+  // Usage & cost
+  $('m-notes').textContent = u ? num(u.notesAllTime) : '—';
+  $('m-notes-mo').textContent = u ? (num(u.notesThisMonth) + ' this month') : '';
+  $('m-spend').textContent = u ? money(u.spendAllTimeUsd) : '—';
+  $('m-spend-mo').textContent = u ? (money(u.spendThisMonthUsd) + ' this month') : '';
+  $('m-dau').textContent = u ? num(u.activeDau) : '—';
+  $('m-wau').textContent = u ? num(u.activeWau) : '—';
+  $('m-mau').textContent = u ? num(u.activeMau) : '—';
+}
 async function loadOverview(){
   $('ts').textContent = 'Loading…';
   try{
     var d = await api('/admin/overview');
-    $('m-total').textContent = d.signups.total;
-    $('m-confirmed').textContent = d.signups.confirmed;
-    $('ts').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    renderOverview(d);
+    var partial = (!d.signups || !d.onboarding || !d.usage) ? ' — some sections unavailable' : '';
+    $('ts').textContent = 'Updated ' + new Date().toLocaleTimeString() + partial;
   }catch(e){
     if(e.status === 401 || e.status === 403){ logout(); return; }
     $('ts').textContent = 'Could not load: ' + e.message;
