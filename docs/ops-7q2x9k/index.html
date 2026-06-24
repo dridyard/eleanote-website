@@ -86,6 +86,36 @@
   .dash-foot{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:22px}
   .dash-foot .ts{margin:0; text-align:left}
   .dash-foot .ghost{width:auto; padding:8px 18px}
+  /* --- M3 console: tabs, tables, user detail --- */
+  .card.wide{max-width:960px}
+  .tabs{display:flex; gap:4px; flex-wrap:wrap}
+  .tab{background:none; border:0; padding:7px 12px; border-radius:8px; font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer}
+  .tab:hover{background:#f1f5f9}
+  .tab.active{background:var(--accent); color:#fff}
+  .dash-head{flex-wrap:wrap; gap:8px}
+  .view{overflow-x:auto}
+  .dt{width:100%; border-collapse:collapse; font-size:13px}
+  .dt th{text-align:left; color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap}
+  .dt td{padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap}
+  .dt td.num, .dt th.num{text-align:right; font-variant-numeric:tabular-nums}
+  .dt tbody tr.rowlink{cursor:pointer}
+  .dt tbody tr.rowlink:hover{background:#f8fafc}
+  .u-email{font-weight:600} .u-name{color:var(--muted); font-size:12px}
+  .dt.mini{margin:2px 0 6px} .dt.mini td{padding:4px 10px; border-bottom:1px solid #f1f5f9; white-space:normal}
+  .pill{display:inline-block; font-size:11px; font-weight:600; padding:2px 7px; border-radius:20px}
+  .pill-ok{background:#dcfce7; color:#166534} .pill-info{background:#dbeafe; color:#1e40af}
+  .pill-warn{background:#fef9c3; color:#854d0e} .pill-off{background:#fee2e2; color:#991b1b}
+  .empty{color:var(--muted); text-align:center; padding:24px}
+  .ud-head{margin-bottom:12px} .ud-title{font-size:20px; font-weight:700; letter-spacing:-.02em} .ud-sub{color:var(--muted); font-size:13px}
+  .ud-facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin:0 0 18px}
+  .fact{border:1px solid var(--line); border-radius:8px; padding:8px 10px}
+  .fk{display:block; color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em}
+  .fv{font-weight:600; font-size:13px}
+  .ud-day{border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px}
+  .ud-dayhead{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .ud-date{font-weight:700} .ud-daysum{color:var(--muted); font-size:12.5px}
+  .ud-grp{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:8px; margin-bottom:2px}
+  #btn-back{margin-bottom:12px; display:inline-block}
 </style>
 </head>
 <body>
@@ -140,38 +170,57 @@
     <button class="primary" id="btn-mfa">Verify</button>
   </section>
 
-  <!-- Dashboard (M2) -->
+  <!-- Dashboard (M3 console) -->
   <section id="sec-dash" hidden>
     <div class="dash-head">
-      <span>Signed in as <strong id="who"></strong></span>
-      <button class="link" id="btn-logout">Sign out</button>
+      <div class="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="daily">Daily</button>
+        <button class="tab" data-tab="users">Users</button>
+      </div>
+      <span>Signed in as <strong id="who"></strong> &middot; <button class="link" id="btn-logout">Sign out</button></span>
     </div>
 
-    <div class="group-title">Signups</div>
-    <div class="grid">
-      <div class="tile"><div class="tile-num" id="m-total">&mdash;</div><div class="tile-label">Total signups</div></div>
-      <div class="tile"><div class="tile-num" id="m-confirmed">&mdash;</div><div class="tile-label">Confirmed</div></div>
-      <div class="tile"><div class="tile-num" id="m-unconfirmed">&mdash;</div><div class="tile-label">Unconfirmed</div><div class="tile-sub" id="m-rate"></div></div>
-    </div>
-    <div class="grid" style="margin-top:10px">
-      <div class="tile"><div class="tile-num" id="m-24h">&mdash;</div><div class="tile-label">New &middot; last 24h</div></div>
-      <div class="tile"><div class="tile-num" id="m-7d">&mdash;</div><div class="tile-label">New &middot; last 7 days</div></div>
-      <div class="tile"><div class="tile-num" id="m-30d">&mdash;</div><div class="tile-label">New &middot; last 30 days</div></div>
+    <!-- Overview tab -->
+    <div class="view" id="view-overview">
+      <div class="group-title">Signups</div>
+      <div class="grid">
+        <div class="tile"><div class="tile-num" id="m-total">&mdash;</div><div class="tile-label">Total signups</div></div>
+        <div class="tile"><div class="tile-num" id="m-confirmed">&mdash;</div><div class="tile-label">Confirmed</div></div>
+        <div class="tile"><div class="tile-num" id="m-unconfirmed">&mdash;</div><div class="tile-label">Unconfirmed</div><div class="tile-sub" id="m-rate"></div></div>
+      </div>
+      <div class="grid" style="margin-top:10px">
+        <div class="tile"><div class="tile-num" id="m-24h">&mdash;</div><div class="tile-label">New &middot; last 24h</div></div>
+        <div class="tile"><div class="tile-num" id="m-7d">&mdash;</div><div class="tile-label">New &middot; last 7 days</div></div>
+        <div class="tile"><div class="tile-num" id="m-30d">&mdash;</div><div class="tile-label">New &middot; last 30 days</div></div>
+      </div>
+
+      <div class="group-title">Onboarding funnel</div>
+      <div class="funnel">
+        <div class="frow"><span class="flabel">Signed up</span><div class="ftrack"><div class="ffill" id="f0"></div></div><span class="fcount"><b id="fc0">&mdash;</b></span></div>
+        <div class="frow"><span class="flabel">Confirmed</span><div class="ftrack"><div class="ffill" id="f1"></div></div><span class="fcount"><b id="fc1">&mdash;</b> <span id="fp1"></span></span></div>
+        <div class="frow"><span class="flabel">Profiled</span><div class="ftrack"><div class="ffill" id="f2"></div></div><span class="fcount"><b id="fc2">&mdash;</b> <span id="fp2"></span></span></div>
+        <div class="frow"><span class="flabel">Onboarded</span><div class="ftrack"><div class="ffill" id="f3"></div></div><span class="fcount"><b id="fc3">&mdash;</b> <span id="fp3"></span></span></div>
+      </div>
+
+      <div class="group-title">Usage &amp; cost</div>
+      <div class="grid">
+        <div class="tile"><div class="tile-num" id="m-notes">&mdash;</div><div class="tile-label">Notes generated</div><div class="tile-sub" id="m-notes-mo"></div></div>
+        <div class="tile"><div class="tile-num" id="m-spend">&mdash;</div><div class="tile-label">Est. AI spend</div><div class="tile-sub" id="m-spend-mo"></div></div>
+        <div class="tile"><div class="tile-label" style="margin:0 0 8px">Active users</div><div class="triple"><div><b id="m-dau">&mdash;</b><span>today</span></div><div><b id="m-wau">&mdash;</b><span>7&nbsp;days</span></div><div><b id="m-mau">&mdash;</b><span>30&nbsp;days</span></div></div></div>
+      </div>
     </div>
 
-    <div class="group-title">Onboarding funnel</div>
-    <div class="funnel">
-      <div class="frow"><span class="flabel">Signed up</span><div class="ftrack"><div class="ffill" id="f0"></div></div><span class="fcount"><b id="fc0">&mdash;</b></span></div>
-      <div class="frow"><span class="flabel">Confirmed</span><div class="ftrack"><div class="ffill" id="f1"></div></div><span class="fcount"><b id="fc1">&mdash;</b> <span id="fp1"></span></span></div>
-      <div class="frow"><span class="flabel">Profiled</span><div class="ftrack"><div class="ffill" id="f2"></div></div><span class="fcount"><b id="fc2">&mdash;</b> <span id="fp2"></span></span></div>
-      <div class="frow"><span class="flabel">Onboarded</span><div class="ftrack"><div class="ffill" id="f3"></div></div><span class="fcount"><b id="fc3">&mdash;</b> <span id="fp3"></span></span></div>
-    </div>
+    <!-- Daily tab -->
+    <div class="view" id="view-daily" hidden><div id="daily-body"></div></div>
 
-    <div class="group-title">Usage &amp; cost</div>
-    <div class="grid">
-      <div class="tile"><div class="tile-num" id="m-notes">&mdash;</div><div class="tile-label">Notes generated</div><div class="tile-sub" id="m-notes-mo"></div></div>
-      <div class="tile"><div class="tile-num" id="m-spend">&mdash;</div><div class="tile-label">Est. AI spend</div><div class="tile-sub" id="m-spend-mo"></div></div>
-      <div class="tile"><div class="tile-label" style="margin:0 0 8px">Active users</div><div class="triple"><div><b id="m-dau">&mdash;</b><span>today</span></div><div><b id="m-wau">&mdash;</b><span>7&nbsp;days</span></div><div><b id="m-mau">&mdash;</b><span>30&nbsp;days</span></div></div></div>
+    <!-- Users tab -->
+    <div class="view" id="view-users" hidden><div id="users-body"></div></div>
+
+    <!-- User detail -->
+    <div class="view" id="view-userdetail" hidden>
+      <button class="link" id="btn-back">&larr; Back to users</button>
+      <div id="userdetail-body"></div>
     </div>
 
     <div class="dash-foot">
@@ -230,6 +279,7 @@ function saveAuth(r){
 function logout(){
   Object.keys(SS).forEach(function(k){ sessionStorage.removeItem(SS[k]); });
   session = challengeUser = typedEmail = null;
+  usersCache = null;
   $('password').value = '';
   document.querySelector('.card').classList.remove('wide');
   show('login');
@@ -321,7 +371,12 @@ function enterDash(){
   document.querySelector('.card').classList.add('wide');
   show('dash');
   $('who').textContent = sessionStorage.getItem(SS.EMAIL) || '';
-  loadOverview();
+  if(!enterDash.wired){
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.addEventListener('click', function(){ showTab(b.dataset.tab); }); });
+    $('btn-back').addEventListener('click', function(){ showTab('users'); });
+    enterDash.wired = true;
+  }
+  showTab('overview');
 }
 async function api(path){
   var id = sessionStorage.getItem(SS.ID);
@@ -381,7 +436,126 @@ async function loadOverview(){
     $('ts').textContent = 'Could not load: ' + e.message;
   }
 }
-$('btn-refresh').onclick = loadOverview;
+// ---- M3 console: tabs, users table, daily totals, per-user detail ----
+var currentTab = 'overview';
+var usersCache = null;
+var TAGS = {
+  llm_notes:'Note generation', note_formatting:'Note formatting', llm_note_formatter:'Note formatting',
+  order_fill:'Order entry fill', llm_order_training:'Order training', phrase_selection:'Phrase selection',
+  dictation_cleanup:'Dictation cleanup', llm_feedback:'Feedback', llm_feedback_incorporator:'Feedback incorporation',
+  llm_preferences_chat:'Preferences training (chat)', llm_preferences_save_chat:'Preferences (save)',
+  llm_custom_output_chat:'Custom output (chat)', llm_database_chat:'Database chat'
+};
+function tagLabel(t){ return TAGS[t] || t; }
+function esc(s){ var d = document.createElement('div'); d.textContent = (s == null ? '' : String(s)); return d.innerHTML; }
+function fmtDate(iso){ if(!iso) return '—'; var d = new Date(iso); return isNaN(d.getTime()) ? '—' : d.toLocaleDateString(); }
+
+function showTab(name){
+  currentTab = name;
+  ['overview','daily','users','userdetail'].forEach(function(v){ $('view-'+v).hidden = (v !== name); });
+  var active = (name === 'userdetail') ? 'users' : name;
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.classList.toggle('active', b.dataset.tab === active); });
+  if(name === 'overview') loadOverview();
+  else if(name === 'daily') loadUsers().then(renderDaily);
+  else if(name === 'users') loadUsers().then(renderUsers);
+}
+
+async function loadUsers(){
+  if(usersCache) return usersCache;
+  $('ts').textContent = 'Loading…';
+  try{
+    usersCache = await api('/admin/users');
+    $('ts').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  }catch(e){
+    if(e.status === 401 || e.status === 403){ logout(); return null; }
+    $('ts').textContent = 'Could not load: ' + e.message;
+    return null;
+  }
+  return usersCache;
+}
+
+function badge(u){
+  if(!u.enabled) return '<span class="pill pill-off">disabled</span>';
+  if(u.status === 'CONFIRMED') return '<span class="pill pill-ok">confirmed</span>' + (u.onboarded ? ' <span class="pill pill-info">onboarded</span>' : '');
+  return '<span class="pill pill-warn">' + esc((u.status || '').toLowerCase()) + '</span>';
+}
+function renderUsers(data){
+  if(!data){ $('users-body').innerHTML = '<p class="empty">No data.</p>'; return; }
+  var rows = data.users.slice().sort(function(a,b){ return (b.calls||0) - (a.calls||0); });
+  var h = '<table class="dt"><thead><tr><th>User</th><th>Status</th><th>Signed up</th><th class="num">Calls</th><th class="num">Notes</th><th class="num">Rec min</th><th class="num">Est $</th><th>Last active</th></tr></thead><tbody>';
+  rows.forEach(function(u){
+    h += '<tr class="rowlink" data-uid="' + esc(u.userId) + '">'
+      + '<td><div class="u-email">' + esc(u.email) + '</div>' + (u.name ? '<div class="u-name">' + esc(u.name) + (u.specialty ? ' &middot; ' + esc(u.specialty) : '') + '</div>' : '') + '</td>'
+      + '<td>' + badge(u) + '</td>'
+      + '<td>' + fmtDate(u.signedUpAt) + '</td>'
+      + '<td class="num">' + (u.calls||0) + '</td>'
+      + '<td class="num">' + (u.notes||0) + '</td>'
+      + '<td class="num">' + (u.recordingMin||0) + '</td>'
+      + '<td class="num">' + money(u.costUsd) + '</td>'
+      + '<td>' + (u.lastActive || '—') + '</td></tr>';
+  });
+  h += '</tbody></table>';
+  $('users-body').innerHTML = h;
+  Array.prototype.forEach.call($('users-body').querySelectorAll('.rowlink'), function(tr){
+    tr.addEventListener('click', function(){ loadUserDetail(tr.dataset.uid); });
+  });
+}
+
+function renderDaily(data){
+  if(!data){ $('daily-body').innerHTML = '<p class="empty">No data.</p>'; return; }
+  var d = data.daily || [];
+  if(!d.length){ $('daily-body').innerHTML = '<p class="empty">No usage recorded yet.</p>'; return; }
+  var h = '<table class="dt"><thead><tr><th>Date (UTC)</th><th class="num">Calls</th><th class="num">Notes</th><th class="num">Rec min</th><th class="num">Active</th><th class="num">Est $</th></tr></thead><tbody>';
+  d.forEach(function(r){ h += '<tr><td>' + esc(r.date) + '</td><td class="num">' + r.calls + '</td><td class="num">' + r.notes + '</td><td class="num">' + r.recordingMin + '</td><td class="num">' + r.activeUsers + '</td><td class="num">' + money(r.costUsd) + '</td></tr>'; });
+  h += '</tbody></table>';
+  $('daily-body').innerHTML = h;
+}
+
+async function loadUserDetail(uid){
+  showTab('userdetail');
+  $('userdetail-body').innerHTML = '<p class="empty">Loading…</p>';
+  var u = usersCache && usersCache.users.filter(function(x){ return x.userId === uid; })[0];
+  try{
+    var d = await api('/admin/users/' + encodeURIComponent(uid));
+    renderUserDetail(u, d);
+  }catch(e){
+    if(e.status === 401 || e.status === 403){ logout(); return; }
+    $('userdetail-body').innerHTML = '<p class="empty">Could not load: ' + esc(e.message) + '</p>';
+  }
+}
+function fact(k, v){ return '<div class="fact"><span class="fk">' + esc(k) + '</span><span class="fv">' + esc(v) + '</span></div>'; }
+function rowsTable(arr, kind){
+  var h = '<table class="dt mini"><tbody>';
+  arr.forEach(function(x){ h += '<tr><td>' + esc(kind === 'tag' ? tagLabel(x.tag) : x.model) + '</td><td class="num">' + x.requests + '</td><td class="num">' + ((x.inTok||0) + (x.outTok||0)) + ' tok</td><td class="num">' + money(x.costUsd) + '</td></tr>'; });
+  return h + '</tbody></table>';
+}
+function renderUserDetail(u, d){
+  var p = d.profile || {};
+  var email = (u && u.email) || p.email || '';
+  var name = (u && u.name) || [p.firstName, p.lastName].filter(Boolean).join(' ');
+  var h = '<div class="ud-head"><div class="ud-title">' + esc(name || email || 'User') + '</div><div class="ud-sub">' + esc(email) + '</div></div>';
+  h += '<div class="ud-facts">';
+  if(u){ h += fact('Status', (u.enabled ? '' : 'disabled · ') + (u.status || '')); h += fact('Signed up', fmtDate(u.signedUpAt)); h += fact('Onboarded', u.onboarded ? 'Yes' : 'No'); }
+  if(p.specialty) h += fact('Specialty', p.specialty);
+  if(p.organization) h += fact('Organization', p.organization);
+  if(p.role) h += fact('Role', p.role);
+  if(p.npi) h += fact('NPI', p.npi);
+  h += fact('Agreements', 'TOS ' + (p.termsAcceptedVersion || '—') + ' · Privacy ' + (p.privacyAcceptedVersion || '—') + ' · BAA ' + (p.baaAcceptedVersion || '—'));
+  h += '</div>';
+  var days = d.byDay || [];
+  if(!days.length){ h += '<p class="empty">No usage recorded for this user yet.</p>'; }
+  else {
+    days.forEach(function(day){
+      h += '<div class="ud-day"><div class="ud-dayhead"><span class="ud-date">' + esc(day.date) + '</span><span class="ud-daysum">' + day.calls + ' calls · ' + day.recordingMin + ' min · ' + money(day.costUsd) + '</span></div>';
+      if(day.features && day.features.length){ h += '<div class="ud-grp">By feature</div>' + rowsTable(day.features, 'tag'); }
+      if(day.models && day.models.length){ h += '<div class="ud-grp">By model</div>' + rowsTable(day.models, 'model'); }
+      h += '</div>';
+    });
+  }
+  $('userdetail-body').innerHTML = h;
+}
+
+$('btn-refresh').onclick = function(){ usersCache = null; showTab(currentTab === 'userdetail' ? 'users' : currentTab); };
 $('btn-logout').onclick = logout;
 
 // ---- Submit-on-Enter for every input ----
