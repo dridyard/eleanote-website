@@ -3766,9 +3766,13 @@
         <!-- ============== CONTACT / GET STARTED CTA ============== -->
         <style>
             .cta-row{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:6px}
+            .pill-cta{display:inline-flex;align-items:center;justify-content:center;font:inherit;font-size:1rem;font-weight:600;
+                border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;
+                padding:13px 22px;line-height:1.5;white-space:nowrap;text-decoration:none;transition:background .15s,border-color .15s}
+            .pill-cta:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.55)}
             .email-copy{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font:inherit;font-size:1rem;
                 border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;
-                padding:13px 22px;transition:background .15s,border-color .15s}
+                padding:13px 22px;line-height:1.5;white-space:nowrap;transition:background .15s,border-color .15s}
             .email-copy:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.55)}
             .email-copy__addr{font-weight:600}
             .email-copy__label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
@@ -3779,9 +3783,9 @@
             <div class="container container-narrow">
                 <p class="eyebrow">Get started</p>
                 <h2>Free to try during testing.</h2>
-                <p>Eleanote is in its testing phase — it's free to sign up and try the program. Set it up, train it to your style, and see if it earns a place in your workflow. Questions? Reach out anytime.</p>
+                <p>Eleanote is in its testing phase — it's free to sign up and try the program. Set it up, train it to your style, and see if it earns a place in your workflow. Questions or feedback? Reach out anytime.</p>
                 <div class="cta-row">
-                    <a class="btn cta-btn" href="auth/signup.html">Create account</a>
+                    <a class="pill-cta" href="auth/signup.html">Create account</a>
                     <button class="email-copy" type="button" id="copyEmailBtn" data-email="support@eleanote.ai" aria-label="Copy support@eleanote.ai to clipboard">
                         <span class="email-copy__addr">support@eleanote.ai</span>
                         <span class="email-copy__label">Copy</span>
