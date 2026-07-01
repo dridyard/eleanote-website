@@ -31,7 +31,7 @@
       '<a href="/auth/dashboard.html" role="menuitem" class="auth-in-only" hidden>Account <span class="arrow">→</span></a>' +
       '<a href="#" role="menuitem" class="auth-in-only" id="menuSignout" hidden>Sign out <span class="arrow">→</span></a>' +
       '<hr>' +
-      '<a href="mailto:eleanote@eleanote.ai" role="menuitem">Get in touch <span class="arrow">→</span></a>' +
+      '<a href="/index.html#contact" role="menuitem">Contact <span class="arrow">→</span></a>' +
     '</div>';
   header.appendChild(wrap);
 
