@@ -116,6 +116,17 @@
   .ud-date{font-weight:700} .ud-daysum{color:var(--muted); font-size:12.5px}
   .ud-grp{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:8px; margin-bottom:2px}
   #btn-back{margin-bottom:12px; display:inline-block}
+  /* --- users spreadsheet --- */
+  .winbar{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:10px; font-size:12.5px; color:var(--muted)}
+  .winbtn{background:#f1f5f9; border:0; border-radius:7px; padding:5px 11px; font-size:12.5px; font-weight:600; color:var(--muted); cursor:pointer}
+  .winbtn:hover{background:#e2e8f0}
+  .winbtn.active{background:var(--accent); color:#fff}
+  .winbar-note{margin-left:auto; font-size:11px; opacity:.85; font-weight:400}
+  .dt.sheet th.sortable{cursor:pointer; user-select:none; white-space:nowrap}
+  .dt.sheet th.sortable:hover{color:var(--ink)}
+  .dt.sheet th.sorted{color:var(--accent)}
+  .dt.sheet td.rank{color:var(--muted); font-weight:600}
+  .dt.sheet tbody tr:nth-child(even){background:#fbfcfe}
 </style>
 </head>
 <body>
@@ -439,6 +450,10 @@ async function loadOverview(){
 // ---- M3 console: tabs, users table, daily totals, per-user detail ----
 var currentTab = 'overview';
 var usersCache = null;
+var uWindow = 'd30';        // Users tab time window: today | d7 | d30 | all
+var uSortKey = 'calls';     // active sort column
+var uSortDir = -1;          // -1 = descending, 1 = ascending
+function fmtMins(m){ m = Math.round(m || 0); if(m < 60) return m + 'm'; return Math.floor(m/60) + 'h ' + (m%60) + 'm'; }
 var TAGS = {
   llm_notes:'Note generation', note_formatting:'Note formatting', llm_note_formatter:'Note formatting',
   order_fill:'Order entry fill', llm_order_training:'Order training', phrase_selection:'Phrase selection',
@@ -479,24 +494,67 @@ function badge(u){
   if(u.status === 'CONFIRMED') return '<span class="pill pill-ok">confirmed</span>' + (u.onboarded ? ' <span class="pill pill-info">onboarded</span>' : '');
   return '<span class="pill pill-warn">' + esc((u.status || '').toLowerCase()) + '</span>';
 }
+function usersSortVal(u, key){
+  var w = (u.m && u.m[uWindow]) || {};
+  switch(key){
+    case 'calls': return w.calls || 0;
+    case 'notes': return w.notes || 0;
+    case 'rec': return w.recordingMin || 0;
+    case 'cost': return w.costUsd || 0;
+    case 'signedUp': return u.signedUpAt || '';
+    case 'lastActive': return u.lastActive || '';
+    case 'email': return (u.email || '').toLowerCase();
+    default: return 0;
+  }
+}
 function renderUsers(data){
   if(!data){ $('users-body').innerHTML = '<p class="empty">No data.</p>'; return; }
-  var rows = data.users.slice().sort(function(a,b){ return (b.calls||0) - (a.calls||0); });
-  var h = '<table class="dt"><thead><tr><th>User</th><th>Status</th><th>Version</th><th>Signed up</th><th class="num">Calls</th><th class="num">Notes</th><th class="num">Rec min</th><th class="num">Est $</th><th>Last active</th></tr></thead><tbody>';
-  rows.forEach(function(u){
+  var wins = [['today','Today'],['d7','7 days'],['d30','30 days'],['all','All time']];
+  var toggle = '<div class="winbar"><span>Window:</span>'
+    + wins.map(function(w){ return '<button class="winbtn' + (uWindow===w[0]?' active':'') + '" data-win="' + w[0] + '">' + w[1] + '</button>'; }).join('')
+    + '<span class="winbar-note">Calls / Notes / Transcription / $ reflect the selected window</span></div>';
+  var rows = data.users.slice().sort(function(a,b){
+    var va = usersSortVal(a, uSortKey), vb = usersSortVal(b, uSortKey);
+    if(va < vb) return -uSortDir; if(va > vb) return uSortDir; return 0;
+  });
+  function th(key, label, numeric){
+    var on = uSortKey === key;
+    var arrow = on ? (uSortDir < 0 ? ' ▼' : ' ▲') : '';
+    return '<th class="' + (numeric?'num ':'') + 'sortable' + (on?' sorted':'') + '" data-sort="' + key + '">' + label + arrow + '</th>';
+  }
+  var h = toggle + '<table class="dt sheet"><thead><tr>'
+    + '<th class="num">#</th>'
+    + th('email','User')
+    + '<th>Status</th><th>Version</th>'
+    + th('signedUp','Signed up')
+    + th('calls','Calls', true)
+    + th('notes','Notes', true)
+    + th('rec','Transcription', true)
+    + th('cost','Est $', true)
+    + th('lastActive','Last active')
+    + '</tr></thead><tbody>';
+  rows.forEach(function(u, i){
+    var w = (u.m && u.m[uWindow]) || {};
     h += '<tr class="rowlink" data-uid="' + esc(u.userId) + '">'
+      + '<td class="num rank">' + (i+1) + '</td>'
       + '<td><div class="u-email">' + esc(u.email) + '</div>' + (u.name ? '<div class="u-name">' + esc(u.name) + (u.specialty ? ' &middot; ' + esc(u.specialty) : '') + '</div>' : '') + '</td>'
       + '<td>' + badge(u) + '</td>'
       + '<td>' + esc(u.appVersion || '—') + '</td>'
       + '<td>' + fmtDate(u.signedUpAt) + '</td>'
-      + '<td class="num">' + (u.calls||0) + '</td>'
-      + '<td class="num">' + (u.notes||0) + '</td>'
-      + '<td class="num">' + (u.recordingMin||0) + '</td>'
-      + '<td class="num">' + money(u.costUsd) + '</td>'
+      + '<td class="num">' + (w.calls||0) + '</td>'
+      + '<td class="num">' + (w.notes||0) + '</td>'
+      + '<td class="num">' + fmtMins(w.recordingMin||0) + '</td>'
+      + '<td class="num">' + money(w.costUsd) + '</td>'
       + '<td>' + (u.lastActive || '—') + '</td></tr>';
   });
   h += '</tbody></table>';
   $('users-body').innerHTML = h;
+  Array.prototype.forEach.call($('users-body').querySelectorAll('.winbtn'), function(b){
+    b.addEventListener('click', function(e){ e.stopPropagation(); uWindow = b.dataset.win; renderUsers(usersCache); });
+  });
+  Array.prototype.forEach.call($('users-body').querySelectorAll('th.sortable'), function(t){
+    t.addEventListener('click', function(){ var k = t.dataset.sort; if(uSortKey === k){ uSortDir = -uSortDir; } else { uSortKey = k; uSortDir = (k === 'email') ? 1 : -1; } renderUsers(usersCache); });
+  });
   Array.prototype.forEach.call($('users-body').querySelectorAll('.rowlink'), function(tr){
     tr.addEventListener('click', function(){ loadUserDetail(tr.dataset.uid); });
   });
