@@ -482,11 +482,12 @@ function badge(u){
 function renderUsers(data){
   if(!data){ $('users-body').innerHTML = '<p class="empty">No data.</p>'; return; }
   var rows = data.users.slice().sort(function(a,b){ return (b.calls||0) - (a.calls||0); });
-  var h = '<table class="dt"><thead><tr><th>User</th><th>Status</th><th>Signed up</th><th class="num">Calls</th><th class="num">Notes</th><th class="num">Rec min</th><th class="num">Est $</th><th>Last active</th></tr></thead><tbody>';
+  var h = '<table class="dt"><thead><tr><th>User</th><th>Status</th><th>Version</th><th>Signed up</th><th class="num">Calls</th><th class="num">Notes</th><th class="num">Rec min</th><th class="num">Est $</th><th>Last active</th></tr></thead><tbody>';
   rows.forEach(function(u){
     h += '<tr class="rowlink" data-uid="' + esc(u.userId) + '">'
       + '<td><div class="u-email">' + esc(u.email) + '</div>' + (u.name ? '<div class="u-name">' + esc(u.name) + (u.specialty ? ' &middot; ' + esc(u.specialty) : '') + '</div>' : '') + '</td>'
       + '<td>' + badge(u) + '</td>'
+      + '<td>' + esc(u.appVersion || '—') + '</td>'
       + '<td>' + fmtDate(u.signedUpAt) + '</td>'
       + '<td class="num">' + (u.calls||0) + '</td>'
       + '<td class="num">' + (u.notes||0) + '</td>'
