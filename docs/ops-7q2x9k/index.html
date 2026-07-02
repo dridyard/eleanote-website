@@ -127,6 +127,13 @@
   .dt.sheet th.sorted{color:var(--accent)}
   .dt.sheet td.rank{color:var(--muted); font-weight:600}
   .dt.sheet tbody tr:nth-child(even){background:#fbfcfe}
+  /* --- cost view --- */
+  .barlist{display:flex; flex-direction:column; gap:5px; margin-bottom:6px}
+  .brow{display:grid; grid-template-columns:96px 1fr auto; align-items:center; gap:10px; font-size:12.5px}
+  .blabel{color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .cbar-track{background:#f1f5f9; border-radius:5px; height:14px; overflow:hidden}
+  .cbar-fill{background:linear-gradient(90deg,var(--accent),#60a5fa); height:100%; border-radius:5px}
+  .bval{font-variant-numeric:tabular-nums; white-space:nowrap; min-width:64px; text-align:right; font-weight:600}
 </style>
 </head>
 <body>
@@ -188,6 +195,7 @@
         <button class="tab active" data-tab="overview">Overview</button>
         <button class="tab" data-tab="daily">Daily</button>
         <button class="tab" data-tab="users">Users</button>
+        <button class="tab" data-tab="cost">Cost</button>
       </div>
       <span>Signed in as <strong id="who"></strong> &middot; <button class="link" id="btn-logout">Sign out</button></span>
     </div>
@@ -233,6 +241,9 @@
       <button class="link" id="btn-back">&larr; Back to users</button>
       <div id="userdetail-body"></div>
     </div>
+
+    <!-- Cost -->
+    <div class="view" id="view-cost" hidden><div id="cost-body"></div></div>
 
     <div class="dash-foot">
       <p class="ts" id="ts"></p>
@@ -291,6 +302,7 @@ function logout(){
   Object.keys(SS).forEach(function(k){ sessionStorage.removeItem(SS[k]); });
   session = challengeUser = typedEmail = null;
   usersCache = null;
+  costsCache = null;
   $('password').value = '';
   document.querySelector('.card').classList.remove('wide');
   show('login');
@@ -453,6 +465,8 @@ var usersCache = null;
 var uWindow = 'd30';        // Users tab time window: today | d7 | d30 | all
 var uSortKey = 'calls';     // active sort column
 var uSortDir = -1;          // -1 = descending, 1 = ascending
+var costsCache = null;
+var cWindow = 'mtd';        // Cost tab: window for the by-service breakdown
 function fmtMins(m){ m = Math.round(m || 0); if(m < 60) return m + 'm'; return Math.floor(m/60) + 'h ' + (m%60) + 'm'; }
 var TAGS = {
   llm_notes:'Note generation', note_formatting:'Note formatting', llm_note_formatter:'Note formatting',
@@ -467,12 +481,13 @@ function fmtDate(iso){ if(!iso) return '—'; var d = new Date(iso); return isNa
 
 function showTab(name){
   currentTab = name;
-  ['overview','daily','users','userdetail'].forEach(function(v){ $('view-'+v).hidden = (v !== name); });
+  ['overview','daily','users','userdetail','cost'].forEach(function(v){ $('view-'+v).hidden = (v !== name); });
   var active = (name === 'userdetail') ? 'users' : name;
   Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.classList.toggle('active', b.dataset.tab === active); });
   if(name === 'overview') loadOverview();
   else if(name === 'daily') loadUsers().then(renderDaily);
   else if(name === 'users') loadUsers().then(renderUsers);
+  else if(name === 'cost') loadCosts();
 }
 
 async function loadUsers(){
@@ -614,7 +629,41 @@ function renderUserDetail(u, d){
   $('userdetail-body').innerHTML = h;
 }
 
-$('btn-refresh').onclick = function(){ usersCache = null; showTab(currentTab === 'userdetail' ? 'users' : currentTab); };
+// ---- Cost tab (AWS spend via Cost Explorer) ----
+function costCard(label, w){ return '<div class="tile"><div class="tile-num">' + money(w ? w.total : 0) + '</div><div class="tile-label">' + label + '</div></div>'; }
+function costBar(val, max){ var pct = max > 0 ? Math.round(val / max * 100) : 0; return '<div class="cbar-track"><div class="cbar-fill" style="width:' + pct + '%"></div></div>'; }
+function renderCosts(d){
+  if(!d){ $('cost-body').innerHTML = '<p class="empty">Could not load cost data.</p>'; return; }
+  var w = d.windows || {};
+  var h = '<div class="grid">' + costCard('Today', w.today) + costCard('Last 7 days', w.d7) + costCard('Month to date', w.mtd) + costCard('Last 30 days', w.d30) + '</div>';
+  var wins = [['today','Today'],['d7','7 days'],['mtd','This month'],['d30','30 days']];
+  h += '<div class="group-title">Spend by service</div><div class="winbar"><span>Window:</span>'
+     + wins.map(function(x){ return '<button class="winbtn cwin' + (cWindow===x[0]?' active':'') + '" data-cwin="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  var cur = w[cWindow] || { total: 0, services: [] };
+  h += '<table class="dt sheet"><thead><tr><th>Service</th><th class="num">Cost</th><th class="num">%</th></tr></thead><tbody>';
+  (cur.services || []).forEach(function(s){ var pct = cur.total > 0 ? Math.round(s.cost / cur.total * 100) : 0; h += '<tr><td>' + esc(s.name) + '</td><td class="num">' + money(s.cost) + '</td><td class="num">' + pct + '%</td></tr>'; });
+  if(!(cur.services || []).length) h += '<tr><td colspan="3" class="empty">No spend in this window.</td></tr>';
+  h += '</tbody></table>';
+  var dmax = Math.max.apply(null, (d.daily || []).map(function(x){ return x.total; }).concat([0.0001]));
+  h += '<div class="group-title">Daily spend &middot; last 30 days</div><div class="barlist">';
+  (d.daily || []).slice().reverse().forEach(function(x){ h += '<div class="brow"><span class="blabel">' + esc(x.date) + '</span>' + costBar(x.total, dmax) + '<span class="bval">' + money(x.total) + '</span></div>'; });
+  h += '</div>';
+  var mmax = Math.max.apply(null, (d.months || []).map(function(x){ return x.total; }).concat([0.0001]));
+  h += '<div class="group-title">Monthly &middot; last 6 months</div><div class="barlist">';
+  (d.months || []).slice().reverse().forEach(function(x){ h += '<div class="brow"><span class="blabel">' + esc(x.month) + '</span>' + costBar(x.total, mmax) + '<span class="bval">' + money(x.total) + '</span></div>'; });
+  h += '</div>';
+  h += '<p class="foot" style="border:0">Unblended AWS cost (USD). Today &amp; this month are partial; data can lag ~24h.</p>';
+  $('cost-body').innerHTML = h;
+  Array.prototype.forEach.call($('cost-body').querySelectorAll('.cwin'), function(b){ b.addEventListener('click', function(){ cWindow = b.dataset.cwin; renderCosts(costsCache); }); });
+}
+async function loadCosts(){
+  if(costsCache){ renderCosts(costsCache); return; }
+  $('cost-body').innerHTML = '<p class="empty">Loading…</p>';
+  try{ costsCache = await api('/admin/costs'); renderCosts(costsCache); $('ts').textContent = 'Updated ' + new Date().toLocaleTimeString(); }
+  catch(e){ if(e.status === 401 || e.status === 403){ logout(); return; } $('cost-body').innerHTML = '<p class="empty">Could not load cost data: ' + esc(e.message) + '</p>'; }
+}
+
+$('btn-refresh').onclick = function(){ usersCache = null; costsCache = null; showTab(currentTab === 'userdetail' ? 'users' : currentTab); };
 $('btn-logout').onclick = logout;
 
 // ---- Submit-on-Enter for every input ----
