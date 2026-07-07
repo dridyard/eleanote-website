@@ -1,0 +1,3869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>eleanote — video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap">
+<style>
+
+        :root {
+            --ink: #0d2b30;
+            --teal: #14515c;
+            --teal-deep: #0e3d46;
+            --teal-soft: #e8efe8;
+            --teal-faint: #eef3ed;
+            /* Warm cream/tan palette - matches the program UI */
+            --paper: #fbf7ec;        /* main body cream (= program --workspace) */
+            --paper-2: #f4eedd;      /* deeper cream band (= program --chrome) */
+            --surface: #ffffff;       /* elevated white cards */
+            --line: #e5dcc1;          /* warm hairline (= program --chrome-edge) */
+            --muted: #6a6e6a;
+            --gold: #a78449;
+            --shadow-sm: 0 2px 8px rgba(13, 43, 48, 0.05);
+            --shadow-md: 0 12px 32px rgba(13, 43, 48, 0.08);
+            --shadow-lg: 0 28px 64px rgba(13, 43, 48, 0.10);
+            --radius: 1.1rem;
+            --radius-lg: 1.6rem;
+            --max: 1120px;
+            --header-h: 64px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 17px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a { color: inherit; }
+
+        ::selection { background: var(--teal); color: #fff; }
+
+        /* ---------- HEADER ---------- */
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--header-h);
+            background: rgba(250, 250, 247, 0.86);
+            backdrop-filter: saturate(160%) blur(14px);
+            -webkit-backdrop-filter: saturate(160%) blur(14px);
+            border-bottom: 1px solid rgba(13, 43, 48, 0.06);
+            z-index: 50;
+        }
+
+        .nav {
+            max-width: var(--max);
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.4rem;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--teal-deep);
+        }
+
+        /* .brand-mark removed -- the wordmark alone is the brand now */
+
+        .brand-word {
+            /* Halfway between the old header size (1.35rem) and the hero
+               h1 (clamp 2.4-4.2rem). Clamp scales gracefully across
+               viewports so the header still fits at narrow widths. */
+            font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+            font-weight: 600;
+            letter-spacing: -0.045em;
+            color: #173D47;
+        }
+
+        .menu-btn {
+            -webkit-appearance: none;
+            appearance: none;
+            border: 1px solid rgba(13, 43, 48, 0.12);
+            background: var(--surface);
+            border-radius: 999px;
+            height: 40px;
+            padding: 0 0.95rem 0 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            cursor: pointer;
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .menu-btn:hover {
+            border-color: rgba(13, 43, 48, 0.22);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .menu-btn:focus-visible {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
+        }
+
+        .menu-icon {
+            position: relative;
+            width: 16px;
+            height: 12px;
+        }
+
+        .menu-icon span {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1.6px;
+            background: var(--ink);
+            border-radius: 999px;
+            transition: transform 220ms ease, opacity 160ms ease, top 220ms ease;
+        }
+        .menu-icon span:nth-child(1) { top: 0; }
+        .menu-icon span:nth-child(2) { top: 5px; }
+        .menu-icon span:nth-child(3) { top: 10px; }
+
+        body.menu-open .menu-icon span:nth-child(1) { top: 5px; transform: rotate(45deg); }
+        body.menu-open .menu-icon span:nth-child(2) { opacity: 0; }
+        body.menu-open .menu-icon span:nth-child(3) { top: 5px; transform: rotate(-45deg); }
+
+        /* dropdown */
+        .menu-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .menu-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: min(320px, calc(100vw - 2rem));
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 0.5rem;
+            opacity: 0;
+            transform: translateY(-6px) scale(0.98);
+            transform-origin: top right;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 49;
+        }
+
+        body.menu-open .menu-panel {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .menu-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 0.95rem;
+            border-radius: 0.8rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            font-size: 0.98rem;
+        }
+
+        .menu-panel a:hover { background: var(--teal-faint); color: var(--teal-deep); }
+
+        .menu-panel a span.arrow { color: var(--muted); font-weight: 400; }
+
+        .menu-panel hr {
+            border: 0;
+            height: 1px;
+            background: rgba(13, 43, 48, 0.06);
+            margin: 0.35rem 0.4rem;
+        }
+
+        /* ---------- LAYOUT ---------- */
+        main { padding-top: var(--header-h); }
+
+        section {
+            padding: 5rem 1.4rem;
+            position: relative;
+        }
+
+        .container {
+            max-width: var(--max);
+            margin: 0 auto;
+        }
+
+        .container-narrow {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            color: var(--teal);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 1.1rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+            line-height: 1.02;
+            letter-spacing: -0.035em;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: clamp(1.85rem, 3.4vw, 2.6rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        p { color: var(--muted); }
+
+        .lead {
+            font-size: clamp(1.08rem, 1.6vw, 1.22rem);
+            line-height: 1.55;
+            color: #2d4448;
+            max-width: 38rem;
+        }
+
+        /* ---------- HERO ---------- */
+        .hero {
+            padding: clamp(4rem, 9vw, 7rem) 1.4rem 4rem;
+            background:
+                radial-gradient(60% 40% at 12% 0%, rgba(20, 81, 92, 0.10), transparent 70%),
+                radial-gradient(60% 50% at 100% 30%, rgba(20, 81, 92, 0.05), transparent 70%),
+                linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+        }
+
+        .hero-inner {
+            max-width: 880px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--surface);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: 999px;
+            padding: 0.4rem 0.85rem 0.4rem 0.55rem;
+            color: var(--teal-deep);
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-bottom: 1.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-label .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--teal);
+            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
+        }
+
+        .hero h1 .accent {
+            color: var(--teal-deep);
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .hero-sub {
+            margin-top: 1.4rem;
+            font-size: clamp(1.05rem, 1.55vw, 1.18rem);
+            line-height: 1.55;
+            color: #2d4448;
+            max-width: 36rem;
+        }
+
+        /* hero bullet list - 'just the facts' */
+        .hero-lede {
+            margin-top: 1.6rem;
+            font-size: clamp(1.02rem, 1.45vw, 1.12rem);
+            line-height: 1.5;
+            color: var(--ink);
+            max-width: 38rem;
+            font-weight: 500;
+        }
+        .hero-bullets {
+            list-style: none;
+            margin: 1.1rem 0 0;
+            padding: 0;
+            max-width: 40rem;
+        }
+        .hero-bullets li {
+            position: relative;
+            padding: 0.5rem 0 0.5rem 1.6rem;
+            font-size: clamp(0.98rem, 1.4vw, 1.06rem);
+            line-height: 1.5;
+            color: #2d4448;
+            border-bottom: 1px solid var(--line);
+        }
+        .hero-bullets li:last-child { border-bottom: 0; }
+        .hero-bullets li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.95rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+        .hero-bullets b {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            background: var(--teal-deep);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.97rem;
+            padding: 0.85rem 1.3rem;
+            border-radius: 999px;
+            border: 1px solid var(--teal-deep);
+            transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .btn:hover {
+            background: var(--teal);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(14, 61, 70, 0.20);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--teal-deep);
+            border-color: rgba(14, 61, 70, 0.18);
+        }
+
+        .btn-ghost:hover {
+            background: var(--teal-faint);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: #0a2025;
+            color: rgba(255,255,255,0.55);
+            padding: 1.8rem 1.4rem;
+            font-size: 0.85rem;
+        }
+        .footer-inner {
+            max-width: var(--max);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .footer-inner a { color: rgba(255,255,255,0.78); text-decoration: none; }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 520px) {
+            body { font-size: 16px; }
+            .hero { padding-top: 3rem; padding-bottom: 3rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+        .scenes-wrap {
+            /* Brand */
+            --teal: #14515c;
+            --teal-deep: #0e3d46;
+            --teal-soft: #d6e4e6;
+            --teal-tint: #eaf1f1;
+
+            /* Cream / paper (matches website + program) */
+            --paper:    #fbf7ec;
+            --paper-2:  #f4eedd;
+            --line:     #e5dcc1;
+
+            /* Ink */
+            --ink: #1a2429;
+            --ink-soft: #324047;
+            --muted: #6b7780;
+
+            /* Assistant pill (dark, ~50% translucent across all scenes) */
+            --pill-bg:    rgba(28, 30, 34, 0.50);
+            --pill-line:  rgba(255, 255, 255, 0.14);
+            --pill-text:  #ffffff;
+            --pill-mute:  #c0c4cc;
+            /* 33% narrower than the previous 220/150 widths.
+               Phone needs slight bump from 100px so 'Text precharted' fits. */
+            --pill-width: 148px;
+            --pill-width-phone: 130px;
+
+            /* Output type colors */
+            --c-order:   #4ea3ff;
+            --c-dx:      #5fc787;
+            --c-note:    #f0a44a;
+            --c-record:  #38d27a;
+
+            /* EHR (lavender/grey, consistent across all scenes) */
+            --emr-bg: #edeef3;
+            --emr-pane: #ffffff;
+            --emr-line: #e3e5ec;
+            --emr-ink: #1f2533;
+            --emr-muted: #6a7388;
+            --emr-accent: #5b4b8a;
+            --emr-accent-soft: #ece9f3;
+            --emr-tint: #f6f4fa;
+            --emr-select: rgba(91, 75, 138, 0.32);
+        }
+
+        
+
+
+        .scenes-wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 56px 22px 96px;
+        }
+
+        .scene {
+            margin-bottom: 88px;
+        }
+        .scene:last-child { margin-bottom: 0; }
+
+        .scene-title {
+            color: var(--teal-deep);
+            font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+            font-weight: 700;
+            letter-spacing: -0.018em;
+            line-height: 1.25;
+            margin: 0 0 22px;
+            max-width: 30rem;
+        }
+        .scene-title .accent {
+            color: var(--teal);
+        }
+
+        /* ===========================================================
+           STAGE
+           =========================================================== */
+        .stage {
+            position: relative;
+            width: 100%;
+            /* Bezel: deep brand teal (a shade darker than --teal-deep)
+               so the laptop frame reads as part of the eleanote palette
+               instead of generic tan. */
+            background: linear-gradient(180deg, #1c4f58 0%, #133b43 100%);
+            border-radius: 12px 12px 4px 4px;
+            box-shadow:
+                0 1px 0 rgba(255,255,255,0.04) inset,
+                0 18px 40px rgba(13, 43, 48, 0.22);
+            overflow: hidden;
+            font-size: 12px;
+        }
+        .stage::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 28px 0;
+            /* Pretend-computer wallpaper -- Windows-11-"Bloom"-style
+               flowing curves over deep brand teal. Two variants exist
+               (16:10 for the desktop stage, 9:13 for the phone stage);
+               the matching SVG is picked by .stage.d / .stage.p below.
+               Solid teal background-color shows during image load so
+               there's no flash of bare HTML. SVGs are generated by
+               tools/gen-wallpapers.js -- re-run that to tune the look. */
+            background-color: #14515c;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+        .stage.d::before { background-image: url('img/wallpaper-d.svg'); }
+        .stage.p::before { background-image: url('img/wallpaper-p.svg'); }
+        .stage.d { aspect-ratio: 16 / 10; display: block; }
+        .stage.p { aspect-ratio: 9 / 13; display: none; }
+
+        @media (max-width: 700px) {
+            .stage.d { display: none; }
+            .stage.p { display: block; }
+            .scenes-wrap { padding: 36px 14px 72px; }
+            .scene { margin-bottom: 56px; }
+            .scene-title { margin-bottom: 16px; }
+        }
+
+        /* ===========================================================
+           DOCK (windows-11-style taskbar)
+           =========================================================== */
+        .dock {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 30px;
+            background: rgba(238, 240, 244, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-top: 1px solid rgba(0,0,0,0.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 12px;
+            z-index: 2;
+        }
+        .dock-icon {
+            width: 22px; height: 22px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .dock-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 22px;
+            padding: 0 10px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid transparent;
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 600;
+            position: relative;
+        }
+        .dock-tab.active {
+            background: rgba(20, 81, 92, 0.10);
+            border-color: rgba(20, 81, 92, 0.18);
+        }
+        .dock-tab::after {
+            content: "";
+            position: absolute;
+            left: 25%; right: 25%;
+            bottom: -3px;
+            height: 2px;
+            background: var(--teal);
+            border-radius: 1px;
+            opacity: 0;
+        }
+        .dock-tab.running::after { opacity: 1; }
+
+        .dock-tab .ele-logo {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dock-tab .ehr-logo {
+            min-width: 22px; height: 12px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
+
+        /* ===========================================================
+           ELEANOTE WINDOW (used in scene 1 only)
+           =========================================================== */
+        .ele-win {
+            position: absolute;
+            z-index: 5;
+            background: var(--paper);
+            border: 1px solid rgba(0,0,0,0.18);
+            border-radius: 6px;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 9px;
+        }
+        .ele-titlebar {
+            background: var(--paper-2);
+            border-bottom: 1px solid var(--line);
+            height: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            gap: 5px;
+            flex: 0 0 auto;
+            position: relative;
+        }
+        .ele-mark {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.06em;
+        }
+        .ele-title-text {
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .ele-winctl {
+            margin-left: auto;
+            display: inline-flex;
+            gap: 3px;
+        }
+        .ele-winctl span {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.16);
+        }
+        .ele-toolbar {
+            background: var(--paper-2);
+            border-bottom: 1px solid var(--line);
+            padding: 3px 6px;
+            display: flex;
+            gap: 3px;
+            flex: 0 0 auto;
+            justify-content: center;
+        }
+        .ele-ctl {
+            font-size: 8px;
+            font-weight: 600;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 2px 5px;
+            border-radius: 2px;
+            color: var(--ink);
+            display: inline-flex;
+            gap: 3px;
+        }
+        .ele-ctl em {
+            font-style: normal;
+            color: var(--teal);
+            font-weight: 700;
+            font-size: 7px;
+        }
+        .ele-tabs {
+            background: var(--paper-2);
+            padding: 3px 6px 0;
+            display: flex;
+            min-height: 16px;
+            border-bottom: 1px solid var(--line);
+            flex: 0 0 auto;
+        }
+        .ele-tab {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-bottom: 0;
+            border-radius: 4px 4px 0 0;
+            padding: 3px 8px 4px;
+            font-size: 8px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: -1px;
+            position: relative;
+        }
+        .ele-tab::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 5px; right: 5px;
+            height: 1.2px;
+            background: var(--teal);
+            border-radius: 2px;
+        }
+        .ele-body {
+            flex: 1;
+            padding: 7px 9px;
+            min-height: 0;
+            background: var(--paper);
+        }
+        .ele-blk-title {
+            font-size: 7.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.10em;
+            color: var(--teal-deep);
+            margin-bottom: 4px;
+        }
+        .ele-input {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            padding: 6px 8px;
+            font-size: 9px;
+            color: var(--muted);
+            line-height: 1.4;
+            height: calc(100% - 14px);
+        }
+
+        /* ===========================================================
+           ASSISTANT PILL (consistent across all scenes)
+           =========================================================== */
+        .pill {
+            position: absolute;
+            z-index: 9;
+            background: var(--pill-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--pill-line);
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.40);
+            color: var(--pill-text);
+            overflow: hidden;
+            font-family: "Inter", "Segoe UI", sans-serif;
+        }
+        .pill.idle {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: var(--pill-width);
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .pill.idle::before {
+            content: "";
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--pill-mute);
+            margin-right: 10px;
+            flex: 0 0 auto;
+        }
+        .pill.active {
+            width: var(--pill-width);
+            padding: 0;
+        }
+        @media (max-width: 700px) {
+            .pill.idle, .pill.active { width: var(--pill-width-phone); }
+            /* Mobile-only: ~33% thinner (height) so stacked items take less
+               vertical space. Desktop unchanged. */
+            .pill.idle      { padding: 5px 10px; font-size: 10px; }
+            .pill.active .head { padding: 5px 8px; font-size: 9.5px; }
+            .pill.active .head .hk { font-size: 9px; gap: 6px; }
+            .pill.active .item { padding: 3px 8px; font-size: 10px; }
+            .pill.active .item .bullet { width: 6px; height: 6px; margin-top: 4px; }
+            .pill.active .item .sub { font-size: 9px; }
+        }
+        .pill .head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--pill-line);
+            font-size: 10.5px;
+            font-weight: 600;
+        }
+        .pill .head .rec-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--c-record);
+            box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18);
+            flex: 0 0 auto;
+        }
+        .pill .head .hk {
+            display: inline-flex;
+            gap: 8px;
+            font-size: 10px;
+            color: var(--pill-text);
+        }
+        .pill .head .x {
+            margin-left: auto;
+            color: var(--pill-mute);
+            font-size: 12px;
+            line-height: 1;
+        }
+        .pill .items {
+            display: flex;
+            flex-direction: column;
+        }
+        .pill .item {
+            display: grid;
+            grid-template-columns: 14px 1fr auto;
+            column-gap: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            line-height: 1.25;
+            position: relative;
+        }
+        .pill .item .bullet {
+            grid-row: 1 / 2;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-top: 5px;
+            background: var(--c-order);
+            justify-self: center;
+        }
+        .pill .item.dx .bullet { background: var(--c-dx); }
+        .pill .item.note .bullet { background: var(--c-note); }
+        .pill .item .label {
+            grid-row: 1 / 2;
+            color: var(--pill-text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pill .item .sub {
+            grid-row: 2 / 3;
+            grid-column: 2 / 3;
+            color: var(--pill-mute);
+            font-size: 9.5px;
+            margin-top: 1px;
+        }
+        .pill .item .keys {
+            grid-row: 1 / 2;
+            grid-column: 3 / 4;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9.5px;
+            color: var(--pill-mute);
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .pill .item.focus .keys { opacity: 1; }
+        .pill .item .keys .y { color: var(--c-record); }
+        .pill .item .keys .n { color: #e15b5b; }
+
+        /* ===========================================================
+           EHR (consistent template across all scenes)
+           Patient: Doe, John · 64M · h/o renal cell carcinoma + CKD
+           Desktop = 3 columns (nav | content | today's note)
+           Phone   = 2 columns (nav | stacked content)
+           =========================================================== */
+        .emr {
+            position: absolute;
+            z-index: 4;
+            background: var(--emr-pane);
+            border: 1px solid rgba(0,0,0,0.18);
+            border-radius: 6px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.20);
+            overflow: hidden;
+            display: grid;
+            font-size: 9.5px;
+        }
+        /* desktop 3-column */
+        .emr.emr-3col {
+            grid-template-rows: 22px 1fr;
+            grid-template-columns: 22% 1fr 32%;
+        }
+        .emr.emr-3col .emr-banner { grid-column: 1 / -1; }
+        .emr.emr-3col .emr-left   { grid-row: 2 / 3; grid-column: 1 / 2; }
+        .emr.emr-3col .emr-center { grid-row: 2 / 3; grid-column: 2 / 3; }
+        .emr.emr-3col .emr-right  { grid-row: 2 / 3; grid-column: 3 / 4; }
+
+        /* phone 2-column */
+        .emr.emr-2col {
+            grid-template-rows: 22px 1fr;
+            grid-template-columns: 32% 1fr;
+        }
+        .emr.emr-2col .emr-banner { grid-column: 1 / -1; }
+        .emr.emr-2col .emr-left {
+            grid-row: 2 / 3;
+            grid-column: 1 / 2;
+        }
+        .emr.emr-2col .emr-center {
+            grid-row: 2 / 3;
+            grid-column: 2 / 3;
+        }
+
+        .emr-banner {
+            background: var(--emr-pane);
+            border-bottom: 1px solid var(--emr-line);
+            display: flex;
+            align-items: center;
+            padding: 0 9px;
+            gap: 9px;
+            color: var(--emr-ink);
+        }
+        .pmark {
+            min-width: 22px; height: 14px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+            color: #fff;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        .emr-banner .name { font-weight: 700; font-size: 10px; }
+        .emr-banner .meta { color: var(--emr-muted); font-size: 9px; }
+
+        .emr-left {
+            background: var(--emr-tint);
+            border-right: 1px solid var(--emr-line);
+            padding: 6px 8px;
+            font-size: 9px;
+        }
+        .emr-left h5 {
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+        .emr-left .navrow {
+            padding: 3px 6px;
+            color: var(--emr-ink);
+            border-radius: 3px;
+            margin-bottom: 1px;
+        }
+        .emr-left .navrow.active {
+            background: var(--emr-accent-soft);
+            color: var(--emr-accent);
+            font-weight: 600;
+        }
+
+        .emr-center {
+            padding: 8px 12px;
+            font-size: 9.5px;
+            line-height: 1.55;
+            color: var(--emr-ink);
+            overflow: hidden;
+            position: relative;
+            background: var(--emr-pane);
+        }
+        .emr-center h4 {
+            font-size: 10.5px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .emr-center h4 + h5 { margin-top: 8px; }
+
+        .emr-right {
+            background: var(--emr-pane);
+            border-left: 1px solid var(--emr-line);
+            padding: 8px 10px;
+            font-size: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .emr-right h5 {
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            margin-bottom: 0;
+            font-weight: 700;
+        }
+        .entry-box {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 4px;
+            flex: 1;
+            min-height: 80px;
+            padding: 8px 10px;
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            line-height: 1.5;
+            position: relative;
+            overflow: hidden;
+        }
+        .entry-placeholder {
+            color: var(--emr-muted);
+            font-style: italic;
+        }
+        .entry-typed {
+            display: inline;
+            color: var(--emr-ink);
+        }
+        .entry-typed em {
+            color: var(--emr-accent);
+            font-style: normal;
+            font-weight: 600;
+        }
+        .caret {
+            display: inline-block;
+            width: 1px;
+            height: 11px;
+            background: var(--emr-accent);
+            margin-left: 1px;
+            vertical-align: -2px;
+            animation: caretBlink 0.8s steps(2) infinite;
+        }
+        @keyframes caretBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* prior-notes / labs / imaging list rows */
+        .clinical-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--emr-line);
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            line-height: 1.4;
+            border-radius: 2px;
+        }
+        .clinical-row:last-child { border-bottom: 0; }
+        .clinical-row .d {
+            color: var(--emr-muted);
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            font-size: 8.5px;
+        }
+        .clinical-row .t { color: var(--emr-ink); font-weight: 500; }
+        .clinical-row.high .t::after {
+            content: " · High";
+            color: #b8443d;
+            font-weight: 700;
+            font-size: 8.5px;
+        }
+        .clinical-row .v {
+            justify-self: end;
+            font-size: 8.5px;
+            color: var(--emr-muted);
+            font-weight: 600;
+            grid-column: 3 / 4;
+        }
+        .clinical-row.with-value {
+            grid-template-columns: auto 1fr auto;
+        }
+
+        /* phone stacked content */
+        .emr-stack-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px 8px;
+        }
+        .emr-stack-section h5 {
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emr-muted);
+            font-weight: 700;
+        }
+        .emr-stack-section + .emr-stack-section {
+            border-top: 1px solid var(--emr-line);
+        }
+
+        /* selectable highlighted blocks */
+        .selectable { position: relative; }
+        .selectable .hl {
+            position: absolute;
+            background: var(--emr-select);
+            opacity: 0;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        /* arrow cursor.
+           The visual click point (arrow tip) is at SVG coords (2,1).
+           We use translate(-2px, -1px) so the element's left/top values
+           refer to where the click actually lands, not the bounding box. */
+        .cursor {
+            position: absolute;
+            z-index: 11;
+            width: 18px;
+            height: 24px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-2px, -1px);
+        }
+        .cursor svg {
+            width: 100%; height: 100%; display: block;
+            filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.35));
+        }
+        .click-flash {
+            position: absolute;
+            z-index: 10;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(91, 75, 138, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        /* flying ghost chip */
+        .ghost {
+            position: absolute;
+            z-index: 10;
+            background: var(--emr-accent-soft);
+            border: 1px solid var(--emr-accent);
+            color: var(--emr-accent);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 3px 7px;
+            border-radius: 4px;
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            box-shadow: 0 6px 14px rgba(91, 75, 138, 0.30);
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ghost.from-pill {
+            background: rgba(28, 30, 34, 0.94);
+            border-color: rgba(255,255,255,0.18);
+            color: var(--pill-text);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.40);
+        }
+        .ghost.from-pill.order  { border-left: 3px solid var(--c-order); }
+        .ghost.from-pill.dx     { border-left: 3px solid var(--c-dx); }
+        .ghost.from-pill.note   { border-left: 3px solid var(--c-note); }
+
+        /* Order modal that opens in the center "Orders" view */
+        .order-modal {
+            position: absolute;
+            z-index: 12;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 5px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.30);
+            padding: 8px 10px;
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            opacity: 0;
+            min-width: 220px;
+        }
+        .order-modal .om-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 6px;
+        }
+        .order-modal .om-head h5 {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--emr-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .order-modal .om-head .auto {
+            font-size: 8px;
+            font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 1px 6px;
+            border-radius: 999px;
+        }
+        .order-modal .field {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 6px;
+            padding: 3px 0;
+            border-bottom: 1px dashed var(--emr-line);
+            align-items: center;
+        }
+        .order-modal .field:last-of-type { border-bottom: 0; }
+        .order-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .order-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 9.5px;
+            min-height: 12px;
+        }
+        .order-modal .field .v.locked {
+            color: var(--emr-muted);
+            font-style: italic;
+        }
+        .order-modal .accept {
+            margin-top: 5px;
+            text-align: right;
+            font-size: 8.5px;
+            color: var(--emr-accent);
+            font-weight: 700;
+            opacity: 0;
+        }
+
+        /* hotkey flash banner */
+        .keyflash {
+            position: absolute;
+            z-index: 13;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(20, 81, 92, 0.94);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 11px;
+            border-radius: 6px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.30);
+            opacity: 0;
+            white-space: nowrap;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .stage * { animation: none !important; transition: none !important; }
+            .pill, .ele-win, .emr { opacity: 1 !important; }
+        }
+
+        /* ============================================================
+           SCENE 1: Eleanote opens -> minimizes -> assistant springs out
+           Loop: 9s (timing rebalanced — see the timestamped script in the
+           commit message for which second each phase occupies).
+
+           Phase budget:
+             0.0–1.5s  hold the open Eleanote window so the viewer reads it
+             1.5–2.4s  window shrinks toward the taskbar (slower than before)
+             2.4–2.55s pill pops into existence
+             2.55–3.9s pill travels to corner and grows (slower than before)
+             3.2–3.9s  EHR fades in behind the pill (overlap)
+             3.9–8.2s  idle state: EHR + pill in corner, viewer reads title
+             8.2–9.0s  soft fade out
+           ============================================================ */
+        .scene-1 .ele-win {
+            top: 8%; left: 50%;
+            width: 56%; height: 64%;
+            margin-left: -28%;
+            transform-origin: 48% 144%;
+            animation: s1-ele 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s1-ele {
+            /* 0–1.5s open, 1.5–2.4s shrink, then invisible for the rest */
+            0%, 17%  { opacity: 1; transform: scale(1); }
+            27%      { opacity: 0; transform: scale(0.04); }
+            100%     { opacity: 0; transform: scale(0.04); }
+        }
+        .scene-1 .pill.idle {
+            position: absolute;
+            transform-origin: 47% 100%;
+            animation: s1-pill 9s cubic-bezier(.4,0,.2,1) infinite;
+            opacity: 0;
+        }
+        @keyframes s1-pill {
+            /* hidden until window has shrunk (0–2.4s) */
+            0%, 27%   { opacity: 0;
+                        top: calc(100% - 22px);
+                        right: 48%;
+                        transform: translateX(50%) scale(0.04); }
+            /* pops into existence at the taskbar position (2.55s) */
+            28%       { opacity: 1;
+                        top: calc(100% - 22px);
+                        right: 48%;
+                        transform: translateX(50%) scale(0.4); }
+            /* travels to top-right corner, grows to full size by 3.9s,
+               then idles until 8.2s */
+            43%, 91%  { opacity: 1;
+                        top: 4%;
+                        right: 3%;
+                        transform: translateX(0) scale(1); }
+            /* soft fade out 8.2–9.0s */
+            100%      { opacity: 0;
+                        top: 4%;
+                        right: 3%;
+                        transform: translateX(0) scale(1); }
+        }
+        .scene-1 .emr {
+            top: 4%; left: 4%;
+            width: 92%; height: 84%;
+            transform-origin: 55% 114%;
+            animation: s1-emr 9s cubic-bezier(.4,0,.2,1) infinite;
+            opacity: 0;
+        }
+        @keyframes s1-emr {
+            /* hidden until 3.2s, then fades in by 3.9s, visible until 8.2s */
+            0%, 36%  { opacity: 0; transform: scale(0.05); }
+            43%, 91% { opacity: 1; transform: scale(1); }
+            100%     { opacity: 0; transform: scale(1); }
+        }
+        .scene-1 .dock-tab.tab-ele {
+            animation: s1-ele-tab 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        .scene-1 .dock-tab.tab-ehr {
+            animation: s1-ehr-tab 9s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes s1-ele-tab {
+            /* highlighted while eleanote window is the active app (0–2.4s),
+               then dims once it minimizes */
+            0%, 27%  { background: rgba(20, 81, 92, 0.14); border-color: rgba(20, 81, 92, 0.22); }
+            28%,100% { background: rgba(0,0,0,0.05); border-color: transparent; }
+        }
+        @keyframes s1-ehr-tab {
+            /* dim until EHR is fully in (3.9s), highlighted while idle
+               (3.9–8.2s), then dim again for fade-out */
+            0%, 42%  { background: rgba(0,0,0,0.05); border-color: transparent; }
+            43%, 91% { background: rgba(91, 75, 138, 0.14); border-color: rgba(91, 75, 138, 0.22); }
+            92%, 100%{ background: rgba(0,0,0,0.05); border-color: transparent; }
+        }
+
+        /* phone variant of scene 1 */
+        .scene-1 .stage.p .ele-win {
+            top: 6%; left: 50%;
+            width: 84%; height: 50%;
+            margin-left: -42%;
+            transform-origin: 40% 188%;
+        }
+        .scene-1 .stage.p .pill.idle { top: 3%; right: 5%; }
+        .scene-1 .stage.p .emr {
+            top: 3%; left: 3%;
+            width: 94%; height: 86%;
+            transform-origin: 59% 113%;
+        }
+        @media (max-width: 700px) {
+            /* Phone variant — same retimed schedule as desktop, with
+               phone-specific positions for the bottom-center spawn point
+               (right: 53%) and the final corner (top: 3%, right: 5%). */
+            @keyframes s1-pill {
+                0%, 27%   { opacity: 0;
+                            top: calc(100% - 22px);
+                            right: 53%;
+                            transform: translateX(50%) scale(0.04); }
+                28%       { opacity: 1;
+                            top: calc(100% - 22px);
+                            right: 53%;
+                            transform: translateX(50%) scale(0.4); }
+                43%, 91%  { opacity: 1;
+                            top: 3%;
+                            right: 5%;
+                            transform: translateX(0) scale(1); }
+                100%      { opacity: 0;
+                            top: 3%;
+                            right: 5%;
+                            transform: translateX(0) scale(1); }
+            }
+        }
+
+        /* On phone: clicking a nav item opens the list/entry on the right.
+           For scene 1 this is illustrative only - the static state shows
+           the prior-notes list visible. */
+
+        /* ============================================================
+           SCENE 2 - SCRIPTED, COORDINATE-DRIVEN
+
+           Target coordinates are MEASURED FROM THE DOM at page load.
+           CSS variables on the stage:
+              --notes-x,      --notes-y       (Notes nav row text)
+              --office-x,     --office-y      (Office word, 06/12/25)
+              --line-start-x, --line-start-y  ('6' at start of note)
+              --line-end-x,   --line-end-y    ('d' at end of note)
+
+           Loop: 8.65 seconds. Cursor moves halved (0.35s each);
+           drag halved (0.65s). All pauses unchanged.
+           Script:
+             0.00 - 0.60s  cursor on Notes, center pane blank (hold)
+             0.60 - 1.00s  Notes click flash (0.40s)
+             1.00s         center swaps to prior-notes list
+             1.00 - 1.60s  hold on notes list (0.60s)
+             1.60 - 1.95s  cursor moves Notes -> Office (0.35s)
+             1.95 - 2.35s  Office click flash (0.40s)
+             2.35s         center swaps to June 2025 visit
+             2.35 - 2.95s  hold on opened visit (0.60s)
+             2.95 - 3.30s  cursor moves to '6' at line start (0.35s)
+             3.30 - 3.70s  click flash on '6' (0.40s)
+             3.70 - 4.35s  cursor drags diagonally to '.' at end (0.65s)
+                           DURING this: 6 note lines highlight in
+                           sequence, one every 0.65/6 ~= 0.108s, so
+                           they light up at 3.70, 3.81, 3.92, 4.03,
+                           4.13, 4.24s (last line ~83% through drag).
+             4.35 - 4.75s  click flash on '.' (0.40s)
+             4.75 - 5.05s  hold (selection visible, before ghost flies)
+             5.05 - 5.95s  ghost chip flies to pill (0.90s)
+             5.95s         pill text -> 'Text precharted'
+             5.95 - 8.25s  pill says 'Text precharted' (2.30s)
+             8.25s         pill text -> 'eleanote'
+             8.25 - 8.65s  final hold (0.40s)
+             (loop)
+           ============================================================ */
+        .scene-2 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-2 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-2 .pill.idle { top: 4%; right: 3%; }
+        .scene-2 .stage.p .pill.idle { top: 3%; right: 4%; }
+
+        /* The center pane: blank initially, prior-notes list shown after click */
+        .s2-view {
+            position: absolute;
+            inset: 0;
+            padding: 8px 12px;
+            opacity: 0;
+        }
+        /* View visibility timeline (8.65s loop):
+             blank   visible 0.00 - 1.00s   (0%    - 11.6%)
+             notes   visible 1.00 - 2.35s   (11.6% - 27.2%)
+             visit   visible 2.35 - 8.65s   (27.2% - 100%) */
+        .s2-view-blank { animation: s2v-blank 8.65s steps(1, end) infinite; }
+        .s2-view-notes { animation: s2v-notes 8.65s steps(1, end) infinite; }
+        .s2-view-visit { animation: s2v-visit 8.65s steps(1, end) infinite; }
+        @keyframes s2v-blank {
+            0%, 11.5%    { opacity: 1; }
+            11.6%, 100%  { opacity: 0; }
+        }
+        @keyframes s2v-notes {
+            0%, 11.5%    { opacity: 0; }
+            11.6%, 27.1% { opacity: 1; }
+            27.2%, 100%  { opacity: 0; }
+        }
+        @keyframes s2v-visit {
+            0%, 27.1%    { opacity: 0; }
+            27.2%, 100%  { opacity: 1; }
+        }
+
+        /* Cursor coordinates measured from DOM. Fallbacks here. */
+        .scene-2 .stage {
+            --notes-x: 9%;       --notes-y: 12%;
+            --office-x: 17%;     --office-y: 26%;
+            --line-start-x: 32%; --line-start-y: 33%;
+            --line-end-x: 65%;   --line-end-y: 60%;
+        }
+        .scene-2 .cursor.c1 {
+            left: var(--notes-x);
+            top: var(--notes-y);
+            opacity: 1;
+            animation: s2-cursor 8.65s linear infinite;
+        }
+        /* Cursor path (% of 8.65s loop):
+             0.00 - 1.60s  hold at Notes               (0%    - 18.5%)
+             1.60 - 1.95s  move Notes -> Office        (18.5% - 22.5%)
+             1.95 - 2.95s  hold at Office              (22.5% - 34.1%)
+             2.95 - 3.30s  move Office -> line-start   (34.1% - 38.2%)
+             3.30 - 3.70s  hold at line-start          (38.2% - 42.8%)
+             3.70 - 4.35s  drag line-start -> line-end (42.8% - 50.3%)
+             4.35 - 8.65s  hold at line-end            (50.3% - 100%) */
+        @keyframes s2-cursor {
+            0%      { left: var(--notes-x);      top: var(--notes-y); }
+            18.5%   { left: var(--notes-x);      top: var(--notes-y); }
+            22.5%   { left: var(--office-x);     top: var(--office-y); }
+            34.1%   { left: var(--office-x);     top: var(--office-y); }
+            38.2%   { left: var(--line-start-x); top: var(--line-start-y); }
+            42.8%   { left: var(--line-start-x); top: var(--line-start-y); }
+            50.3%   { left: var(--line-end-x);   top: var(--line-end-y); }
+            100%    { left: var(--line-end-x);   top: var(--line-end-y); }
+        }
+
+        /* Click flash 1 - Notes, fires at 0.60s (6.9%), fades by 1.00s (11.6%) */
+        .scene-2 .click-flash.cf-notes {
+            left: var(--notes-x); top: var(--notes-y);
+            animation: s2-cf-notes 8.65s steps(1, end) infinite;
+        }
+        @keyframes s2-cf-notes {
+            0%, 6.8%     { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            6.9%         { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            11.5%        { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            100%         { opacity: 0; }
+        }
+        /* Click flash 2 - Office, fires at 1.95s (22.5%), fades by 2.35s (27.2%) */
+        .scene-2 .click-flash.cf-office {
+            left: var(--office-x); top: var(--office-y);
+            animation: s2-cf-office 8.65s steps(1, end) infinite;
+        }
+        @keyframes s2-cf-office {
+            0%, 22.4%    { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            22.5%        { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            27.1%        { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            100%         { opacity: 0; }
+        }
+        /* Click flash 3 - '6' at line start, fires at 3.30s (38.2%), fades by 3.70s (42.8%) */
+        .scene-2 .click-flash.cf-line-start {
+            left: var(--line-start-x); top: var(--line-start-y);
+            animation: s2-cf-ls 8.65s steps(1, end) infinite;
+        }
+        @keyframes s2-cf-ls {
+            0%, 38.1%    { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            38.2%        { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            42.7%        { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            100%         { opacity: 0; }
+        }
+        /* Click flash 4 - '.' at line end, fires at 4.35s (50.3%), fades by 4.75s (54.9%) */
+        .scene-2 .click-flash.cf-line-end {
+            left: var(--line-end-x); top: var(--line-end-y);
+            animation: s2-cf-le 8.65s steps(1, end) infinite;
+        }
+        @keyframes s2-cf-le {
+            0%, 50.2%    { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            50.3%        { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            54.8%        { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+            100%         { opacity: 0; }
+        }
+
+        /* NOTE LINE HIGHLIGHTS
+           Drag spans 3.70s -> 4.35s (0.65s, halved from before). 6 lines
+           light up evenly across that window so each highlight matches
+           roughly where the cursor is at that moment.
+           Spacing = 0.65s / 6 = 0.1083s.
+           Last (line 6) lights at 4.242s, ~83% through the drag — the
+           remaining ~0.11s is the cursor finishing its trajectory.
+           Once highlighted, lines stay highlighted until end of loop.
+           Beat times: 3.700, 3.808, 3.917, 4.025, 4.133, 4.242s
+           % of 8.65s: 42.8, 44.0, 45.3, 46.5, 47.8, 49.0 */
+        .s2-noteblock {
+            margin-top: 6px;
+        }
+        .s2-line {
+            font-size: 10px;
+            line-height: 1.6;
+            color: var(--emr-ink);
+            padding: 1px 2px;
+            background: transparent;
+        }
+        .s2-line:nth-child(1) { animation: s2-hl-1 8.65s steps(1, end) infinite; }
+        .s2-line:nth-child(2) { animation: s2-hl-2 8.65s steps(1, end) infinite; }
+        .s2-line:nth-child(3) { animation: s2-hl-3 8.65s steps(1, end) infinite; }
+        .s2-line:nth-child(4) { animation: s2-hl-4 8.65s steps(1, end) infinite; }
+        .s2-line:nth-child(5) { animation: s2-hl-5 8.65s steps(1, end) infinite; }
+        .s2-line:nth-child(6) { animation: s2-hl-6 8.65s steps(1, end) infinite; }
+        @keyframes s2-hl-1 {
+            0%, 42.7%   { background: transparent; }
+            42.8%, 100% { background: var(--emr-select); }
+        }
+        @keyframes s2-hl-2 {
+            0%, 43.9%   { background: transparent; }
+            44.0%, 100% { background: var(--emr-select); }
+        }
+        @keyframes s2-hl-3 {
+            0%, 45.2%   { background: transparent; }
+            45.3%, 100% { background: var(--emr-select); }
+        }
+        @keyframes s2-hl-4 {
+            0%, 46.4%   { background: transparent; }
+            46.5%, 100% { background: var(--emr-select); }
+        }
+        @keyframes s2-hl-5 {
+            0%, 47.7%   { background: transparent; }
+            47.8%, 100% { background: var(--emr-select); }
+        }
+        @keyframes s2-hl-6 {
+            0%, 48.9%   { background: transparent; }
+            49.0%, 100% { background: var(--emr-select); }
+        }
+
+        /* ============================================================
+           GHOST TRANSFER (step 4)
+           A small chip representing the highlighted block flies on a
+           straight diagonal from the center of the highlighted block
+           to the center of the pill, shrinking 100% -> 20% in size and
+           fading 100% -> 75% opacity along the way, vanishing at arrival.
+
+           Timing inside the 8.65s loop:
+             5.05s (58.4%) ghost appears at hlblock center, full size
+             5.95s (68.8%) ghost arrives at pill center, 20% size, 0% opacity
+             5.95s (68.8%) pill text changes to 'Text precharted'
+             8.25s (95.4%) pill text changes back to 'eleanote'
+        */
+        .scene-2 .stage {
+            --hlblock-x: 50%; --hlblock-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+        }
+        .s2-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(91, 75, 138, 0.40);
+            border: 1.5px solid var(--emr-accent);
+            border-radius: 4px;
+            width: 90px;
+            height: 56px;
+            opacity: 0;
+            box-shadow: 0 10px 24px rgba(91, 75, 138, 0.45);
+            pointer-events: none;
+            transform-origin: center center;
+            animation: s2-ghost-fly 8.65s linear infinite;
+        }
+        @keyframes s2-ghost-fly {
+            0%, 58.3% {
+                opacity: 0;
+                left: var(--hlblock-x); top: var(--hlblock-y);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            58.4% {
+                opacity: 1;
+                left: var(--hlblock-x); top: var(--hlblock-y);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            63.6% {
+                opacity: 0.75;
+                /* halfway: position auto-interpolates between hlblock and pill */
+            }
+            68.7% {
+                opacity: 0.5;
+                left: var(--pill-x); top: var(--pill-y);
+                transform: translate(-50%, -50%) scale(0.2);
+            }
+            68.8%, 100% {
+                opacity: 0;
+                left: var(--pill-x); top: var(--pill-y);
+                transform: translate(-50%, -50%) scale(0.2);
+            }
+        }
+
+        /* Pill text: two pre-rendered words stacked at the same place,
+           toggled via opacity. 'eleanote' visible by default; at 68.8% of
+           loop (5.95s, when the ghost arrives at the pill) 'Text precharted'
+           takes over for 2.30s, then 'eleanote' returns at 95.4% (8.25s).
+           NB: don't override .pill's position: absolute - the pill needs
+           to remain absolutely positioned within the stage. */
+        .s2-pill-word {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .s2-pill-word.w-precharted {
+            position: absolute;
+            left: 28px; top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+        /* Show full label on desktop, short label on phone */
+        .s2-pill-word.w-precharted .short { display: none; }
+        @media (max-width: 700px) {
+            .s2-pill-word.w-precharted .full  { display: none; }
+            .s2-pill-word.w-precharted .short { display: inline; }
+        }
+        .scene-2 .s2-pill-word.w-eleanote { animation: s2-w-ele 8.65s steps(1, end) infinite; }
+        .scene-2 .s2-pill-word.w-precharted { animation: s2-w-pre 8.65s steps(1, end) infinite; }
+        @keyframes s2-w-ele {
+            0%, 68.7%    { opacity: 1; }
+            68.8%, 95.3% { opacity: 0; }
+            95.4%, 100%  { opacity: 1; }
+        }
+        @keyframes s2-w-pre {
+            0%, 68.7%    { opacity: 0; }
+            68.8%, 95.3% { opacity: 1; }
+            95.4%, 100%  { opacity: 0; }
+        }
+
+
+        /* ============================================================
+           SCENE 3 - SCRIPTED, COORDINATE-DRIVEN
+
+           Stage layout:
+             EMR center pane shows the Orders view:
+               - 'Search order...' input box positioned at vertical
+                 midpoint (so the pill at top-right doesn't overlap)
+               - Below it: a stacked list of staged orders that
+                 accumulate as items transfer over
+
+           Loop: 15.0 seconds. Ghost flights stretched to 0.8s. Holds
+           between events extended so the viewer can read each step
+           (especially the auto-fill moments — the whole point of the
+           scene). Big front-loaded holds (1.5s each) let the viewer
+           clearly see each item appear in the pill before action begins.
+
+           Beats:
+             0.0  - 1.5s   initial hold (1.5s)
+             1.5s          BMP item stages in pill
+             1.5  - 3.0s   hold with BMP visible (1.5s)
+             3.0s          MRI abdomen stages in pill (below BMP)
+             3.0  - 4.5s   hold with both items visible (1.5s)
+             4.5  - 5.3s   BMP ghost flies (0.8s)
+             5.3s          ghost arrives -> search reads "BMP";
+                           BMP item leaves pill
+             5.3  - 5.9s   hold (0.6s)
+             5.9s          modal opens (Date field empty)
+             5.9  - 6.7s   hold on empty modal (0.8s)
+             6.7s          Date pastes "05/01/2027"
+             6.7  - 7.7s   hold with date visible (1.0s)
+             7.7s          modal closes; BMP row appears in EMR list;
+                           search returns to placeholder
+             7.7  - 8.7s   hold (BMP confirmed in EMR) (1.0s)
+             8.7  - 9.5s   MRI ghost flies (0.8s)
+             9.5s          ghost arrives -> search reads "MRI abdomen";
+                           MRI item leaves pill
+             9.5  - 10.1s  hold (0.6s)
+             10.1s         modal opens
+             10.1 - 10.8s  hold on empty modal (0.7s)
+             10.8s         Date pastes
+             10.8 - 11.5s  hold (0.7s)
+             11.5s         Indication pastes
+                           "Surveillance of renal cell carcinoma"
+             11.5 - 12.5s  hold with indication visible (1.0s)
+             12.5s         modal closes; MRI row appears in EMR list
+             12.5 - 15.0s  final hold (2.5s)
+           ============================================================ */
+        .scene-3 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-3 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-3 .pill.active { top: 4%; right: 3%; opacity: 1; }
+        .scene-3 .stage.p .pill.active { top: 3%; right: 4%; }
+
+        /* The "Orders" view layout: search input near vertical middle,
+           staged-orders list below it */
+        .s3-orders-view {
+            position: absolute;
+            inset: 0;
+            padding: 14px 14px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        /* Title + search input grouped together as one unit, vertically
+           centered on both desktop and phone (so the title is right above
+           the search box - not separated). */
+        .s3-spacer { flex: 1; }
+        .s3-search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s3-orders-view h4 {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--emr-ink);
+            margin: 0;
+        }
+        .s3-search {
+            border: 1px solid var(--emr-line);
+            background: #fff;
+            border-radius: 4px;
+            padding: 9px 11px;
+            font-size: 10px;
+            color: var(--emr-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+            min-height: 32px;
+        }
+        .s3-search::before {
+            content: "";
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: no-repeat center / contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236a7388' stroke-width='1.6'><circle cx='7' cy='7' r='5'/><path d='M11 11l3.5 3.5'/></svg>");
+            flex: 0 0 auto;
+        }
+        /* Two text-spans inside the search box: placeholder vs typed value.
+           Toggle via opacity on a per-order basis. */
+        .s3-search .placeholder { font-style: italic; }
+        .s3-search .typed { color: var(--emr-ink); font-weight: 500; font-style: normal; display: none; }
+        .s3-search.is-bmp .placeholder { display: none; }
+        .s3-search.is-bmp .typed.t-bmp { display: inline; }
+        .s3-search.is-mri .placeholder { display: none; }
+        .s3-search.is-mri .typed.t-mri { display: inline; }
+
+        .s3-search-anim { animation: s3-search-state 15s steps(1, end) infinite; }
+        @keyframes s3-search-state {
+            /* class-toggle approximation via opacity on child labels */
+            0%, 100% {}
+        }
+        /* Use opacity for placeholder/typed instead of class-toggle */
+        .s3-search .lbl { transition: none; }
+        .s3-search .lbl.placeholder { animation: s3-lbl-placeholder 15s steps(1, end) infinite; }
+        .s3-search .lbl.t-bmp        { animation: s3-lbl-bmp        15s steps(1, end) infinite; }
+        .s3-search .lbl.t-mri        { animation: s3-lbl-mri        15s steps(1, end) infinite; }
+        /* Search-box labels (% of 15s):
+             placeholder default, "BMP" 5.3-7.7s (35.3%-51.3%),
+             placeholder 7.7-9.5s (51.3%-63.3%),
+             "MRI abdomen" 9.5-12.5s (63.3%-83.3%),
+             placeholder 12.5-15.0s. */
+        @keyframes s3-lbl-placeholder {
+            0%, 35.2%    { opacity: 1; }
+            35.3%, 51.2% { opacity: 0; }
+            51.3%, 63.2% { opacity: 1; }
+            63.3%, 83.2% { opacity: 0; }
+            83.3%, 100%  { opacity: 1; }
+        }
+        @keyframes s3-lbl-bmp {
+            0%, 35.2%    { opacity: 0; }
+            35.3%, 51.2% { opacity: 1; }
+            51.3%, 100%  { opacity: 0; }
+        }
+        @keyframes s3-lbl-mri {
+            0%, 63.2%    { opacity: 0; }
+            63.3%, 83.2% { opacity: 1; }
+            83.3%, 100%  { opacity: 0; }
+        }
+        .s3-search .lbl {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+        }
+
+        /* Staged orders list (rows that persist in the EMR) */
+        .s3-staged {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s3-staged .row {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 3px solid var(--emr-accent);
+            border-radius: 3px;
+            padding: 7px 10px;
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            opacity: 0;
+        }
+        .s3-staged .row .name { font-weight: 600; }
+        .s3-staged .row .meta { color: var(--emr-muted); font-size: 9px; }
+        .s3-staged .row .tag {
+            font-size: 8.5px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            background: var(--emr-tint); color: var(--emr-accent);
+            padding: 1px 7px; border-radius: 3px;
+            white-space: nowrap;
+        }
+        /* EMR rows: BMP appears at 7.7s (51.3%), MRI at 12.5s (83.3%) */
+        .s3-staged .row.r-bmp { animation: s3-row-bmp 15s steps(1, end) infinite; }
+        .s3-staged .row.r-mri { animation: s3-row-mri 15s steps(1, end) infinite; }
+        @keyframes s3-row-bmp {
+            0%, 51.2%   { opacity: 0; }
+            51.3%, 100% { opacity: 1; }
+        }
+        @keyframes s3-row-mri {
+            0%, 83.2%   { opacity: 0; }
+            83.3%, 100% { opacity: 1; }
+        }
+
+        /* Phone: search group still centered (same behavior as desktop).
+           The pill is anchored at top-right and the orders view is
+           centered with two spacers above and below. */
+
+        /* Pill items - stage in (grow) and leave (shrink/collapse).
+           % of 15s loop:
+             1.5s = 10%      BMP appears
+             3.0s = 20%      MRI appears
+             5.3s = 35.3%    BMP leaves (ghost has arrived at search)
+             9.5s = 63.3%    MRI leaves
+        */
+        .scene-3 .pill .item.it-bmp { animation: s3-it-bmp 15s steps(1, end) infinite both; }
+        .scene-3 .pill .item.it-mri { animation: s3-it-mri 15s steps(1, end) infinite both; }
+        @keyframes s3-it-bmp {
+            0%, 9.9%    { opacity: 0; height: 0; padding: 0 10px; }
+            10%, 35.2%  { opacity: 1; height: auto; padding: 5px 10px; }
+            35.3%, 100% { opacity: 0; height: 0; padding: 0 10px; }
+        }
+        @keyframes s3-it-mri {
+            0%, 19.9%   { opacity: 0; height: 0; padding: 0 10px; }
+            20%, 63.2%  { opacity: 1; height: auto; padding: 5px 10px; }
+            63.3%, 100% { opacity: 0; height: 0; padding: 0 10px; }
+        }
+
+        /* GHOST: a chip that flies from assistant item -> search input.
+           --pill-x/y measured already; we add --search-x/y for the
+           search box center. */
+        .scene-3 .stage {
+            --search-x: 50%; --search-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+        }
+        .s3-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(28, 30, 34, 0.74);
+            border: 1.5px solid var(--c-order);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            pointer-events: none;
+            opacity: 0;
+            transform-origin: center center;
+            white-space: nowrap;
+        }
+        /* Ghost flights: each 0.8s long (was 0.5s). Trajectory is more
+           readable across the screen now.
+           BMP: 4.5s -> 5.3s = 30%    -> 35.3% (of 15s)
+           MRI: 8.7s -> 9.5s = 58%    -> 63.3% (of 15s)
+           Midway opacity stop sits at the average of the two endpoints. */
+        .s3-ghost.g-bmp { animation: s3-g-bmp 15s linear infinite; }
+        .s3-ghost.g-mri { animation: s3-g-mri 15s linear infinite; }
+        @keyframes s3-g-bmp {
+            0%, 29.9%   { opacity: 0;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            30%         { opacity: 1;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            32.7%       { opacity: 0.6; }   /* mid-flight ~4.9s */
+            35.2%       { opacity: 0.25;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+            35.3%, 100% { opacity: 0;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s3-g-mri {
+            0%, 57.9%   { opacity: 0;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            58%         { opacity: 1;
+                          left: var(--pill-x); top: var(--pill-y);
+                          transform: translate(-50%, -50%) scale(1); }
+            60.7%       { opacity: 0.6; }   /* mid-flight ~9.1s */
+            63.2%       { opacity: 0.25;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+            63.3%, 100% { opacity: 0;
+                          left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+        }
+
+        /* MODAL: shows for each order; fields paste in turn */
+        .s3-modal {
+            position: absolute;
+            z-index: 15;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 6px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.30);
+            padding: 10px 12px;
+            font-size: 10px;
+            color: var(--emr-ink);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 240px;
+        }
+        .s3-modal .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 7px;
+        }
+        .s3-modal h5 {
+            font-size: 9.5px; font-weight: 700;
+            color: var(--emr-accent);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .s3-modal .auto {
+            font-size: 8.5px; font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 2px 7px; border-radius: 999px;
+        }
+        .s3-modal .field {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--emr-line);
+            align-items: center;
+        }
+        .s3-modal .field:last-of-type { border-bottom: 0; }
+        .s3-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .s3-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 10px;
+            min-height: 13px;
+        }
+        .s3-modal .field .v.empty { color: var(--emr-muted); font-style: italic; }
+        .s3-modal .field .v.locked { color: var(--emr-muted); font-style: italic; }
+        .s3-modal .field .v.paste {
+            background: var(--emr-accent-soft);
+            padding: 2px 5px;
+            border-radius: 2px;
+            opacity: 0;
+        }
+
+        /* Modal positioning - centered horizontally over the orders view */
+        .s3-modal.m-bmp,
+        .s3-modal.m-mri {
+            top: 30%; left: 25%;
+            width: 50%;
+        }
+        .scene-3 .stage.p .s3-modal.m-bmp,
+        .scene-3 .stage.p .s3-modal.m-mri {
+            top: 26%; left: 6%;
+            width: 88%;
+        }
+
+        /* BMP modal:
+             5.9s open, 6.7s Date pastes, 7.7s close
+             = 39.3% open, 44.7% paste, 51.3% close (% of 15s) */
+        .s3-modal.m-bmp { animation: s3-m-bmp 15s steps(1, end) infinite; }
+        @keyframes s3-m-bmp {
+            0%, 39.2%   { opacity: 0; transform: translateY(6px); }
+            39.3%, 51.2%{ opacity: 1; transform: translateY(0); }
+            51.3%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        .s3-modal.m-bmp .v.paste-date { animation: s3-bmp-date 15s steps(1, end) infinite; }
+        @keyframes s3-bmp-date {
+            0%, 44.6%   { opacity: 0; }
+            44.7%, 51.2%{ opacity: 1; }
+            51.3%, 100% { opacity: 0; }
+        }
+
+        /* MRI modal:
+             10.1s open, 10.8s Date pastes, 11.5s Indication pastes,
+             12.5s close
+             = 67.3%, 72%, 76.7%, 83.3% (% of 15s) */
+        .s3-modal.m-mri { animation: s3-m-mri 15s steps(1, end) infinite; }
+        @keyframes s3-m-mri {
+            0%, 67.2%   { opacity: 0; transform: translateY(6px); }
+            67.3%, 83.2%{ opacity: 1; transform: translateY(0); }
+            83.3%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        .s3-modal.m-mri .v.paste-date { animation: s3-mri-date 15s steps(1, end) infinite; }
+        .s3-modal.m-mri .v.paste-ind  { animation: s3-mri-ind  15s steps(1, end) infinite; }
+        @keyframes s3-mri-date {
+            0%, 71.9%   { opacity: 0; }
+            72%, 83.2%  { opacity: 1; }
+            83.3%, 100% { opacity: 0; }
+        }
+        @keyframes s3-mri-ind {
+            0%, 76.6%   { opacity: 0; }
+            76.7%, 83.2%{ opacity: 1; }
+            83.3%, 100% { opacity: 0; }
+        }
+
+        /* ============================================================
+           SCENE 4 - SCRIPTED, COORDINATE-DRIVEN
+           ------------------------------------------------------------
+           End of encounter: diagnoses + note transfer to EHR.
+
+           Loop: 20.5 seconds. Slowed for legibility.
+
+           Pill state phases:
+             0.0 - 2.5s    green dot, "Recording"
+             2.5 - 4.5s    orange dot, "Generating note..."
+             4.5s          dx + note items appear in pill, dot turns
+                           grey, label switches to "eleanote"
+             4.5 - 6.5s    hold (user reads the 4 items)
+             6.5 - 7.3s    RCC ghost flies to Dx search box (0.8s)
+             7.3s          search reads "RCC", item gone from pill,
+                           modal opens
+             7.3 - 8.1s    modal hold (0.8s)
+             8.1s          modal closes, RCC row appears in dx list
+             8.1 - 8.6s    hold (0.5s)
+             8.6 - 9.4s    CKD ghost flies (0.8s)
+             9.4s          search reads "CKD-3", modal opens
+             9.4 - 10.2s   modal hold (0.8s)
+             10.2s         CKD row appears
+             10.2 - 10.7s  hold (0.5s)
+             10.7 - 11.5s  HTN ghost flies (0.8s)
+             11.5s         search reads "HTN", modal opens
+             11.5 - 12.3s  modal hold (0.8s)
+             12.3s         HTN row appears
+             12.3 - 13.3s  3 diagnoses settled hold (1.0s)
+             13.3s         on PHONE: tab swaps Diagnoses -> Today's note,
+                           note ghost lifts off pill
+             13.3 - 14.1s  note ghost flies (0.8s)
+             14.1s         ghost arrives, placeholder fades
+             14.1 - 14.5s  pre-typing hold (0.4s)
+             14.5 - 17.0s  note lines type, one every 0.5s (6 lines)
+             17.0 - 20.5s  final hold (3.5s)
+           ============================================================ */
+        .scene-4 .emr { top: 4%; left: 4%; width: 92%; height: 84%; }
+        .scene-4 .stage.p .emr { top: 3%; left: 3%; width: 94%; height: 86%; }
+        .scene-4 .pill.active { top: 4%; right: 3%; opacity: 1; }
+        .scene-4 .stage.p .pill.active { top: 3%; right: 4%; }
+
+        /* PILL STATE: dot + label change with the recording lifecycle */
+        .scene-4 .pill.active .head .rec-dot {
+            animation: s4-dot 20.5s steps(1, end) infinite;
+        }
+        @keyframes s4-dot {
+            /* 0-2.5s green (Recording), 2.5-4.5s orange (Generating note),
+               4.5s onward grey (eleanote - generation is done; the
+               diagnoses + note are now in the pill ready to transfer).
+               % of 20.5s: 12.2%, 22.0% */
+            0%, 12.1%   { background: var(--c-record); box-shadow: 0 0 0 2px rgba(56, 210, 122, 0.18); }
+            12.2%, 21.9%{ background: var(--c-note);   box-shadow: 0 0 0 2px rgba(240, 164, 74, 0.20); }
+            22.0%, 100% { background: var(--pill-mute); box-shadow: none; }
+        }
+        /* Pill text uses 3 stacked words toggled by opacity */
+        .scene-4 .pill .s4-w-recording { animation: s4-w-rec 20.5s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-generating { animation: s4-w-gen 20.5s steps(1, end) infinite; }
+        .scene-4 .pill .s4-w-eleanote { animation: s4-w-ele 20.5s steps(1, end) infinite; }
+        @keyframes s4-w-rec {
+            0%, 12.1%   { opacity: 1; }
+            12.2%, 100% { opacity: 0; }
+        }
+        @keyframes s4-w-gen {
+            /* 'Generating note' shown only while the AI is generating
+               (2.5-4.5s). Switches to 'eleanote' at 4.5s the instant
+               the dx + note items appear in the pill. */
+            0%, 12.1%   { opacity: 0; }
+            12.2%, 21.9%{ opacity: 1; }
+            22.0%, 100% { opacity: 0; }
+        }
+        @keyframes s4-w-ele {
+            0%, 21.9%   { opacity: 0; }
+            22.0%, 100% { opacity: 1; }
+        }
+
+        /* The pill items: dx + note appear at 4.5s = 22.0%, leave one
+           by one as they transfer (item collapses as its ghost lifts).
+           Item leave times (ghost lift-off):
+             RCC at 6.5s  = 31.7%
+             CKD at 8.6s  = 42.0%
+             HTN at 10.7s = 52.2%
+             Note at 13.3s = 64.9% */
+        .scene-4 .pill .item.it-rcc  { animation: s4-it-rcc  20.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-ckd  { animation: s4-it-ckd  20.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-htn  { animation: s4-it-htn  20.5s steps(1, end) infinite both; }
+        .scene-4 .pill .item.it-note { animation: s4-it-note 20.5s steps(1, end) infinite both; }
+        @keyframes s4-it-rcc {
+            0%, 21.9%  { opacity: 0; height: 0; padding: 0 10px; }
+            22.0%, 31.6% { opacity: 1; height: auto; padding: 5px 10px; }
+            31.7%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+        }
+        @keyframes s4-it-ckd {
+            0%, 21.9%  { opacity: 0; height: 0; padding: 0 10px; }
+            22.0%, 41.9% { opacity: 1; height: auto; padding: 5px 10px; }
+            42.0%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+        }
+        @keyframes s4-it-htn {
+            0%, 21.9%  { opacity: 0; height: 0; padding: 0 10px; }
+            22.0%, 52.1% { opacity: 1; height: auto; padding: 5px 10px; }
+            52.2%, 100%{ opacity: 0; height: 0; padding: 0 10px; }
+        }
+        @keyframes s4-it-note {
+            0%, 21.9%  { opacity: 0; height: 0; padding: 0 10px; }
+            22.0%, 64.8% { opacity: 1; height: auto; padding: 5px 10px; }
+            64.9%, 100%  { opacity: 0; height: 0; padding: 0 10px; }
+        }
+
+        /* DIAGNOSES VIEW.
+           Search group is anchored near the TOP of the view (not centered)
+           so the dx ghosts travel a short upward distance from the pill
+           (top-right) into the search box (upper-center). */
+        .s4-dx-view {
+            position: absolute;
+            inset: 0;
+            padding: 14px 14px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s4-spacer { flex: 1; }
+        .s4-search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s4-dx-view h4 {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--emr-ink);
+            margin: 0;
+        }
+        .s4-search {
+            border: 1px solid var(--emr-line);
+            background: #fff;
+            border-radius: 4px;
+            padding: 9px 11px;
+            font-size: 10px;
+            color: var(--emr-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            position: relative;
+            min-height: 32px;
+        }
+        .s4-search::before {
+            content: "";
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: no-repeat center / contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236a7388' stroke-width='1.6'><circle cx='7' cy='7' r='5'/><path d='M11 11l3.5 3.5'/></svg>");
+            flex: 0 0 auto;
+        }
+        .s4-search .lbl {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+        }
+        .s4-search .lbl.placeholder { font-style: italic; }
+        .s4-search .lbl.t-rcc, .s4-search .lbl.t-ckd, .s4-search .lbl.t-htn {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-style: normal;
+            opacity: 0;
+        }
+        .s4-search .lbl.placeholder { animation: s4-lbl-ph  20.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-rcc       { animation: s4-lbl-rcc 20.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-ckd       { animation: s4-lbl-ckd 20.5s steps(1, end) infinite; }
+        .s4-search .lbl.t-htn       { animation: s4-lbl-htn 20.5s steps(1, end) infinite; }
+        @keyframes s4-lbl-ph {
+            /* visible everywhere except while a dx label is showing:
+               RCC 7.3-8.1s = 35.6-39.5%
+               CKD 9.4-10.2s = 45.9-49.8%
+               HTN 11.5-12.3s = 56.1-60.0% */
+            0%, 35.5%   { opacity: 1; }
+            35.6%, 39.4%{ opacity: 0; }
+            39.5%, 45.8%{ opacity: 1; }
+            45.9%, 49.7%{ opacity: 0; }
+            49.8%, 56.0%{ opacity: 1; }
+            56.1%, 59.9%{ opacity: 0; }
+            60.0%, 100% { opacity: 1; }
+        }
+        @keyframes s4-lbl-rcc {
+            0%, 35.5%   { opacity: 0; }
+            35.6%, 39.4%{ opacity: 1; }
+            39.5%, 100% { opacity: 0; }
+        }
+        @keyframes s4-lbl-ckd {
+            0%, 45.8%   { opacity: 0; }
+            45.9%, 49.7%{ opacity: 1; }
+            49.8%, 100% { opacity: 0; }
+        }
+        @keyframes s4-lbl-htn {
+            0%, 56.0%   { opacity: 0; }
+            56.1%, 59.9%{ opacity: 1; }
+            60.0%, 100% { opacity: 0; }
+        }
+
+        /* Staged dx list (rows that persist) */
+        .s4-staged {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .s4-staged .row {
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-left: 3px solid #5fc787;
+            border-radius: 3px;
+            padding: 7px 10px;
+            font-size: 9.5px;
+            color: var(--emr-ink);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            opacity: 0;
+        }
+        .s4-staged .row .name { font-weight: 600; }
+        .s4-staged .row .code {
+            font-size: 8.5px;
+            color: var(--emr-muted);
+            font-family: "SFMono-Regular", Consolas, monospace;
+            white-space: nowrap;
+        }
+        .s4-staged .row.r-rcc { animation: s4-row-rcc 20.5s steps(1, end) infinite; }
+        .s4-staged .row.r-ckd { animation: s4-row-ckd 20.5s steps(1, end) infinite; }
+        .s4-staged .row.r-htn { animation: s4-row-htn 20.5s steps(1, end) infinite; }
+        /* RCC row appears at 8.1s (modal closes) = 39.5%
+           CKD at 10.2s = 49.8%
+           HTN at 12.3s = 60.0% */
+        @keyframes s4-row-rcc { 0%, 39.4% { opacity: 0; } 39.5%, 100% { opacity: 1; } }
+        @keyframes s4-row-ckd { 0%, 49.7% { opacity: 0; } 49.8%, 100% { opacity: 1; } }
+        @keyframes s4-row-htn { 0%, 59.9% { opacity: 0; } 60.0%, 100% { opacity: 1; } }
+
+        /* Coordinate variables for ghost flights */
+        .scene-4 .stage {
+            --search-x: 50%; --search-y: 50%;
+            --pill-x: 92%;   --pill-y: 6%;
+            --notearea-x: 84%; --notearea-y: 50%;
+        }
+
+        /* Ghost: chip flies from pill -> search box (or note area) */
+        .s4-ghost {
+            position: absolute;
+            z-index: 14;
+            background: rgba(28, 30, 34, 0.74);
+            border: 1.5px solid var(--c-dx);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            pointer-events: none;
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .s4-ghost.g-note { border-color: var(--c-note); }
+
+        /* Ghost flights (each 0.8s):
+             RCC: 6.5s  -> 7.3s  = 31.7% -> 35.6%
+             CKD: 8.6s  -> 9.4s  = 42.0% -> 45.9%
+             HTN: 10.7s -> 11.5s = 52.2% -> 56.1%
+             Note: 13.3s -> 14.1s = 64.9% -> 68.8% */
+        .s4-ghost.g-rcc  { animation: s4-g-rcc  20.5s linear infinite; }
+        .s4-ghost.g-ckd  { animation: s4-g-ckd  20.5s linear infinite; }
+        .s4-ghost.g-htn  { animation: s4-g-htn  20.5s linear infinite; }
+        .s4-ghost.g-note { animation: s4-g-note 20.5s linear infinite; }
+        @keyframes s4-g-rcc {
+            0%, 31.6%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            31.7%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            33.7%      { opacity: 0.6; }
+            35.5%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            35.6%, 100% { opacity: 0; left: var(--search-x); top: var(--search-y);
+                          transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-ckd {
+            0%, 41.9%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            42.0%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            43.9%      { opacity: 0.6; }
+            45.8%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            45.9%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-htn {
+            0%, 52.1%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            52.2%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            54.1%      { opacity: 0.6; }
+            56.0%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            56.1%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+        @keyframes s4-g-note {
+            0%, 64.8%  { opacity: 0; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            64.9%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
+                         transform: translate(-50%, -50%) scale(1); }
+            66.8%      { opacity: 0.6; }
+            68.7%      { opacity: 0.25; left: var(--notearea-x); top: var(--notearea-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+            68.8%, 100%{ opacity: 0; left: var(--notearea-x); top: var(--notearea-y);
+                         transform: translate(-50%, -50%) scale(0.5); }
+        }
+
+        /* Modal: opens for each dx, closes after 0.5s, paste happens at open */
+        .s4-modal {
+            position: absolute;
+            z-index: 15;
+            background: #fff;
+            border: 1px solid var(--emr-line);
+            border-radius: 6px;
+            box-shadow: 0 18px 32px rgba(0,0,0,0.30);
+            padding: 10px 12px;
+            font-size: 10px;
+            color: var(--emr-ink);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 240px;
+            top: 30%; left: 25%; width: 50%;
+        }
+        .scene-4 .stage.p .s4-modal { top: 26%; left: 6%; width: 88%; }
+        .s4-modal .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--emr-line);
+            margin-bottom: 7px;
+        }
+        .s4-modal h5 {
+            font-size: 9.5px; font-weight: 700;
+            color: var(--emr-accent);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .s4-modal .auto {
+            font-size: 8.5px; font-weight: 600;
+            color: var(--emr-muted);
+            background: var(--emr-tint);
+            padding: 2px 7px; border-radius: 999px;
+        }
+        .s4-modal .field {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            gap: 8px;
+            padding: 4px 0;
+            align-items: center;
+        }
+        .s4-modal .field .k {
+            color: var(--emr-muted);
+            font-size: 8.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .s4-modal .field .v {
+            color: var(--emr-ink);
+            font-weight: 500;
+            font-size: 10px;
+        }
+        .s4-modal .field .v.paste {
+            background: var(--emr-accent-soft);
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+
+        /* RCC modal: open 7.3-8.1s = 35.6%-39.5% */
+        .s4-modal.m-rcc { animation: s4-m-rcc 20.5s steps(1, end) infinite; }
+        @keyframes s4-m-rcc {
+            0%, 35.5%   { opacity: 0; transform: translateY(6px); }
+            35.6%, 39.4%{ opacity: 1; transform: translateY(0); }
+            39.5%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        /* CKD: 9.4-10.2s = 45.9-49.8% */
+        .s4-modal.m-ckd { animation: s4-m-ckd 20.5s steps(1, end) infinite; }
+        @keyframes s4-m-ckd {
+            0%, 45.8%   { opacity: 0; transform: translateY(6px); }
+            45.9%, 49.7%{ opacity: 1; transform: translateY(0); }
+            49.8%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+        /* HTN: 11.5-12.3s = 56.1-60.0% */
+        .s4-modal.m-htn { animation: s4-m-htn 20.5s steps(1, end) infinite; }
+        @keyframes s4-m-htn {
+            0%, 56.0%   { opacity: 0; transform: translateY(6px); }
+            56.1%, 59.9%{ opacity: 1; transform: translateY(0); }
+            60.0%, 100% { opacity: 0; transform: translateY(-4px); }
+        }
+
+        /* PHONE: tab swap from Diagnoses to Today's note at 13.3s = 64.9%.
+           Implementation: two stacked center-pane views, opacity-toggled. */
+        .scene-4 .stage.p .s4-dx-view  { animation: s4-view-dx   20.5s steps(1, end) infinite; }
+        .scene-4 .stage.p .s4-note-view{ animation: s4-view-note 20.5s steps(1, end) infinite; }
+        @keyframes s4-view-dx {
+            0%, 64.8% { opacity: 1; }
+            64.9%, 100% { opacity: 0; }
+        }
+        @keyframes s4-view-note {
+            0%, 64.8% { opacity: 0; }
+            64.9%, 100% { opacity: 1; }
+        }
+
+        /* Note typing into the note entry box */
+        .s4-note-typed {
+            display: block;
+            white-space: pre-line;
+            font-style: normal;
+            color: var(--emr-ink);
+            line-height: 1.5;
+            font-size: 9.5px;
+        }
+        .s4-note-typed .l { display: block; opacity: 0; }
+        /* Note ghost arrives at 14.1s = 68.8%. After a 0.4s pre-typing
+           hold, 6 lines type one every 0.5s starting at 14.5s:
+           14.5, 15.0, 15.5, 16.0, 16.5, 17.0s
+           % of 20.5s: 70.7, 73.2, 75.6, 78.0, 80.5, 82.9 */
+        .s4-note-typed .l-1 { animation: s4-l1 20.5s steps(1, end) infinite; }
+        .s4-note-typed .l-2 { animation: s4-l2 20.5s steps(1, end) infinite; }
+        .s4-note-typed .l-3 { animation: s4-l3 20.5s steps(1, end) infinite; }
+        .s4-note-typed .l-4 { animation: s4-l4 20.5s steps(1, end) infinite; }
+        .s4-note-typed .l-5 { animation: s4-l5 20.5s steps(1, end) infinite; }
+        .s4-note-typed .l-6 { animation: s4-l6 20.5s steps(1, end) infinite; }
+        @keyframes s4-l1 { 0%, 70.6% { opacity: 0; } 70.7%, 100% { opacity: 1; } }
+        @keyframes s4-l2 { 0%, 73.1% { opacity: 0; } 73.2%, 100% { opacity: 1; } }
+        @keyframes s4-l3 { 0%, 75.5% { opacity: 0; } 75.6%, 100% { opacity: 1; } }
+        @keyframes s4-l4 { 0%, 77.9% { opacity: 0; } 78.0%, 100% { opacity: 1; } }
+        @keyframes s4-l5 { 0%, 80.4% { opacity: 0; } 80.5%, 100% { opacity: 1; } }
+        @keyframes s4-l6 { 0%, 82.8% { opacity: 0; } 82.9%, 100% { opacity: 1; } }
+
+        /* Hide the note entry box's placeholder once note arrives at 14.1s = 68.8% */
+        .scene-4 .entry-placeholder.s4-ph { animation: s4-ph 20.5s steps(1, end) infinite; }
+        @keyframes s4-ph {
+            0%, 68.7% { opacity: 1; }
+            68.8%, 100% { opacity: 0; }
+        }
+
+
+        /* ============== HOMEPAGE INTEGRATION OVERRIDES ============== */
+        /* ============================================================
+           SCENES SECTION: horizontal carousel at all viewport sizes.
+             - One viewport-tall section. 4 scenes laid out in a flex row
+               at 400% width; transform: translateX shows one at a time.
+             - Desktop: big arrow buttons float on the left/right edges.
+             - Mobile: smaller arrows in a row at the bottom + horizontal
+               touch swipe. Vertical page scroll is never hijacked --
+               users can swipe sideways for the carousel or up/down to
+               scroll the page like any normal section.
+           ============================================================ */
+        .scenes-wrap {
+            padding: 0 !important;
+            max-width: none !important;
+            background: var(--paper);
+        }
+
+        /* ---- CAROUSEL LAYOUT (shared at all viewport sizes) ----
+           Mobile and desktop both use the same horizontal carousel:
+             - .scenes-wrap is one viewport-tall stage (minus header).
+             - .scenes-track is a flex row at 400% width with 4 scenes.
+             - --active (0..3) on .scenes-wrap drives translateX.
+             - JS swaps --active via arrow buttons, keyboard, or (mobile)
+               horizontal touch swipe.
+           This replaces the earlier mobile vertical scroll-snap model.
+           iOS Safari ignores scroll-snap-stop: always during momentum
+           scrolls (a known WebKit limitation), so hard flicks could skip
+           past scenes. A horizontal carousel never conflicts with the
+           native vertical page scroll, so the user can swipe sideways
+           to change scene and scroll vertically to leave the section. */
+        .scenes-wrap {
+            position: relative;
+            /* min-height (not height) so the wrap can GROW past one
+               viewport when the user zooms in. Browser zoom shrinks the
+               CSS viewport, which would otherwise force the stage into
+               a wide-but-short box -- the aspect-ratio'd stage gets
+               clipped by a fixed-height wrap and looks squished.
+               With min-height, the wrap fills the viewport at normal
+               zoom AND grows with the stage at high zoom (page just
+               scrolls -- expected behaviour for any zoomed-in user). */
+            min-height: calc(100vh - var(--header-h));        /* fallback */
+            min-height: calc(100dvh - var(--header-h));       /* preferred */
+            overflow: hidden;
+            --active: 0;
+            /* Flex column centering: at normal zoom the wrap is taller
+               than its content so this vertically centers the
+               (track + dots) group, preserving the previous
+               viewport-tall section feel. At zoom the content fills
+               the wrap and the centering becomes a no-op. */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Let vertical pan happen natively (so the user can scroll
+               past the section), and keep horizontal swipes for our JS
+               handler -- it advances the carousel. */
+            touch-action: pan-y;
+        }
+        .scenes-track {
+            display: flex;
+            width: 400%;
+            /* height: auto -- track is sized by its tallest scene. With
+               wrap as a flex column, height:100% can't resolve cleanly
+               (parent's height is min-height, not height), so we let
+               the content size it. */
+            transform: translateX(calc(var(--active) * -25%));
+            /* Snappier ease-out -- feels like an Apple-style flick rather
+               than a slow Material slide. ~350ms hits the sweet spot of
+               quick-but-not-jarring. */
+            transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .scenes-wrap .scene {
+            flex: 0 0 25%;
+            width: 25%;
+            /* height: auto -- scene is sized by its content
+               (title + stage). At zoom the stage grows via its
+               aspect-ratio and the scene grows with it. */
+            margin: 0 !important;
+            /* Tighter vertical padding on small viewports so the title
+               isn't pushed off-screen on short phones; desktop bumps
+               this back up via the (min-width: 769px) override below. */
+            padding: clamp(20px, 4vh, 60px) clamp(16px, 4vw, 48px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(12px, 2vh, 28px);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Arrow buttons -- shared styling. Positioning differs per
+           viewport (mobile: a row at the bottom; desktop: floating
+           big circles on the left/right edges). */
+        .scenes-arrow {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid var(--teal-deep);
+            background: var(--teal-deep);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            transition: background 160ms ease, transform 160ms ease,
+                        box-shadow 160ms ease;
+            font-family: inherit;
+        }
+        .scenes-arrow:hover:not([disabled]) {
+            background: var(--teal);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(14, 61, 70, 0.30);
+        }
+        .scenes-arrow:active:not([disabled]) {
+            transform: translateY(0);
+        }
+        /* Hide the unusable button at the start/end so it doesn't
+           sit there inert -- the other button stays pinned to its
+           side because of flex space-between. */
+        .scenes-arrow[disabled] {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .scenes-arrow svg { display: block; width: 20px; height: 20px; }
+        .scenes-arrow .arrow-label { display: none; }
+        /* Gentle attention-getter on the Next button while on scene 1
+           (prev is disabled there). Stops automatically once the user
+           advances (prev becomes enabled, this selector stops matching). */
+        .scenes-prev[disabled] ~ .scenes-next {
+            animation: scenesNudge 3s ease-in-out 0.6s infinite;
+        }
+        @keyframes scenesNudge {
+            0%, 55%, 100% {
+                transform: translateX(0);
+                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            }
+            65% {
+                transform: translateX(6px);
+                box-shadow: 0 10px 28px rgba(14, 61, 70, 0.40);
+            }
+            75% {
+                transform: translateX(0);
+                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .scenes-prev[disabled] ~ .scenes-next { animation: none; }
+        }
+
+        /* ---- DESKTOP arrow positioning ----
+           Big floating circles on the left/right edges of the stage,
+           vertically centered. Constrained to 1280px so they sit close
+           to the stage on very wide monitors rather than floating off
+           at the very edges of the screen. */
+        @media (min-width: 769px) {
+            .scenes-wrap .scene {
+                padding: clamp(40px, 6vh, 80px) clamp(24px, 4vw, 64px);
+            }
+            .scenes-arrows {
+                position: absolute;
+                top: 0; bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                max-width: 1280px;
+                pointer-events: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 clamp(12px, 2vw, 32px);
+                z-index: 5;
+            }
+        }
+
+        /* ---- MOBILE: peek-stage carousel + dots + swipe ----
+           No card chrome -- the stage itself is the visual unit, with
+           the next stage peeking on the right as the swipe affordance.
+           Title sits below the stage in a smaller caption-style font.
+
+           The whole .scenes-wrap is now content-sized (height: auto)
+           instead of locked to 100dvh. That makes the carousel embed
+           inline with the rest of the page -- when the user scrolls
+           the page, the carousel scrolls with everything else in
+           unison rather than feeling like its own viewport-tall
+           "screen" that shifts as the iOS address bar moves.
+
+           Geometry:
+             Stage width: 82vw
+             Track inline-padding: 9vw  (centers scene 0 in the viewport)
+             Gap between scenes: 16px
+             Peek of next scene ≈ 4.6vw  (~17px on 360px phone)
+             Step per scene: 82vw + 16px  (matches JS drag math) */
+        @media (max-width: 768px) {
+            /* Hero / CTA size to content; no more forced viewport-tall
+               sections so the page scrolls naturally between them. */
+            .hero, .waitlist-cta {
+                min-height: 0;
+            }
+            /* Tight gap between the last hero element ("Join early
+               tester list" button) and the carousel below. */
+            .hero { padding-bottom: 18px; }
+            .waitlist-cta {
+                display: block;
+                padding-top: 32px;
+                padding-bottom: 32px;
+            }
+            .scenes-arrows { display: none; }
+
+            /* Carousel embeds in the page flow. Height grows with
+               content; the dot pill sits directly under the title.
+               !important on padding overrides the base rule earlier
+               in the cascade that uses padding: 0 !important. */
+            .scenes-wrap {
+                height: auto;
+                min-height: 0;
+                padding: 16px 0 18px !important;
+            }
+
+            /* Track: auto height (content-sized), inline padding centers
+               scene 0, per-scene step = 82vw + 16px gap. */
+            .scenes-track {
+                width: auto;
+                height: auto;
+                gap: 16px;
+                padding: 0 9vw;
+                transform: translateX(calc(var(--active) * -1 * (82vw + 16px)));
+            }
+
+            /* Scene: auto height. With all titles fitting within
+               min-height (see below), every scene ends up the same
+               height, so flex-row stretching keeps all stages at the
+               same y. */
+            .scenes-wrap .scene {
+                flex: 0 0 82vw;
+                width: 82vw;
+                height: auto;
+                padding: 0;
+                gap: 10px;
+                justify-content: flex-start;
+            }
+            /* Title below stage. PLAIN BLOCK layout -- earlier version
+               used display:flex which made the H2 a flex container and
+               turned its text nodes + <span class=accent> into separate
+               flex items rendered side-by-side, which is what made the
+               captions render in weird vertical columns. Smaller font
+               so all four titles (the longest is scene 1) wrap to two
+               lines on a typical phone, and a min-height that matches
+               two wrapped lines so every scene has the same total
+               height -> stages stay level when swiping. */
+            .scenes-wrap .scene-title {
+                order: 2;
+                font-size: 0.85rem;
+                font-weight: 600;
+                line-height: 1.4;
+                margin: 0 !important;
+                text-align: center;
+                max-width: 100%;
+                min-height: 2.8em;
+            }
+            .scenes-wrap .stage {
+                order: 1;
+            }
+            /* Phone stage sized purely by aspect-ratio + 82vw width.
+               No dvh-based max-height -- on iOS the dvh value changes
+               as the address bar shows/hides, which would reflow the
+               carousel under the user's finger and feel "shifty". With
+               wrap now height:auto the stage doesn't need a cap. */
+            .scenes-wrap .stage.p {
+                max-height: none;
+            }
+
+            /* (Mobile .scene-progress overrides live LATER in the file
+               so they cascade after the base 'position: absolute' rule.
+               See the dedicated mobile media block right after
+               .scene-progress definitions.) */
+        }
+        /* Title: centered above the stage */
+        .scenes-wrap .scene-title {
+            max-width: 38rem;
+            text-align: center;
+            margin: 0 auto !important;
+            color: var(--teal-deep);
+        }
+        /* Stage: bounded by BOTH width and viewport height so it always
+           looks like a laptop screen on screen, not an ultrawide TV.
+           - max-width 940px caps the absolute width on big monitors
+           - aspect-ratio 16/10 gives the modern laptop look
+           - max-height ties it to the available vertical space so a short
+             viewport shrinks the stage proportionally instead of overflowing
+           !important is needed because the per-scene rules below (defined
+           later in the cascade) sometimes set their own width values. */
+        .scenes-wrap .stage {
+            max-width: 940px !important;
+            width: 100%;
+            margin: 0 auto;
+        }
+        /* Desktop stage: aspect-ratio (16:10) is the ONLY height
+           constraint -- no max-height cap. Browser zoom shrinks the
+           CSS viewport, the stage's width-driven height needs to grow
+           in lockstep, otherwise zoom-in produces a squashed wide-but-
+           short box. With min-height on the wrap (above) the page just
+           gets taller when the user zooms; the stage stays a proper
+           laptop-shape rectangle. */
+        .scenes-wrap .stage.d {
+            /* max-height removed -- see comment above */
+        }
+        /* Phone stage gets the same shrink-to-fit treatment: cap its
+           height to whatever's left after we reserve room for the title
+           above, the dot pill below, and the scene's vertical padding.
+           Without this, the 9:13 aspect-ratio of the phone stage can
+           push the title off the top of the screen on shorter phones
+           (URL bar visible, smaller dvh). */
+        .scenes-wrap .stage.p {
+            max-height: calc(100vh - var(--header-h) - 200px);   /* fallback */
+            max-height: calc(100dvh - var(--header-h) - 200px);  /* preferred */
+        }
+        /* Progress indicator -- absolutely positioned at the bottom of
+           .scenes-wrap so it scrolls WITH the carousel section rather
+           than floating over the rest of the page. .scenes-wrap is
+           position: relative, so 'absolute' here anchors to the wrap. */
+        .scene-progress {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            color: var(--ink);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(13, 43, 48, 0.08);
+            border-radius: 999px;
+            padding: 8px 16px;
+            box-shadow: 0 4px 12px rgba(13, 43, 48, 0.10);
+            z-index: 5;
+        }
+        .scene-progress .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(13, 43, 48, 0.18);
+            transition: transform 200ms ease, background 200ms ease;
+        }
+        .scene-progress .dot.active {
+            background: var(--teal);
+            transform: scale(1.4);
+        }
+        /* "N of 4" label hidden -- the dots alone tell the story. */
+        .scene-progress .label { display: none; }
+        /* Mobile: dot pill flows INLINE below the carousel track so it
+           reads as part of the section and scrolls in unison with the
+           page (instead of floating absolute over the wrap, which made
+           it sit on top of the caption and shift around as the iOS
+           address bar moved). Display: flex + width: fit-content +
+           margin auto centers the pill horizontally without the base
+           rule's left:50% / translateX:-50% trick. */
+        @media (max-width: 768px) {
+            .scene-progress {
+                /* !important is defensive -- the base rule sets these
+                   properties for desktop and the cascade has burned us
+                   here before. Lock the mobile values down. */
+                position: static !important;
+                transform: none !important;
+                bottom: auto !important;
+                left: auto !important;
+                display: flex !important;
+                width: fit-content;
+                margin: 6px auto 0;
+                padding: 9px 18px;
+                gap: 12px;
+                background: #ffffff;
+                box-shadow: 0 6px 16px rgba(13, 43, 48, 0.14);
+            }
+            .scene-progress .dot {
+                width: 8px; height: 8px;
+            }
+            .scene-progress .dot.active {
+                transform: scale(1.5);
+            }
+        }
+
+        /* WAITLIST CTA - styled to match the rest of the homepage */
+        .waitlist-cta {
+            background: var(--teal-deep);
+            color: #fff;
+            text-align: center;
+            padding: clamp(64px, 12vh, 120px) 1.4rem;
+        }
+        .waitlist-cta h2 { color: #fff; margin-top: 0.4rem; }
+        .waitlist-cta p {
+            color: rgba(255, 255, 255, 0.78);
+            max-width: 38rem;
+            margin: 1rem auto 2rem;
+            font-size: 1.05rem;
+        }
+        .waitlist-cta .eyebrow {
+            color: rgba(255, 255, 255, 0.55);
+        }
+        .waitlist-cta .cta-btn {
+            background: #fff;
+            color: var(--teal-deep);
+            border-color: #fff;
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        .waitlist-cta .cta-btn:hover {
+            background: rgba(255,255,255,0.92);
+            color: var(--teal-deep);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        }
+
+        /* (Auth controls live in the dropdown menu, not the top-right bar.) */
+    
+</style>
+<style>
+
+/* ===== video-shell overrides (win by coming after site CSS) ===== */
+html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!important;background:#081f24!important;cursor:none}
+/* 9:16 frame centered in the window; page bg matches so window shape is forgiving */
+.vframe{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  height:min(100vh, calc(100vw * 16 / 9));aspect-ratio:9/16;
+  background:linear-gradient(180deg,#0E3D46,#0b2f36);display:flex;flex-direction:column;overflow:hidden;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
+/* caption bar */
+.vcap{flex:0 0 auto;min-height:17%;display:flex;flex-direction:column;justify-content:center;gap:6px;
+  padding:3.5% 5% 2% 5%;text-align:center}
+.vcap .vbrand{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(14px,2.2vh,22px);
+  letter-spacing:.02em;opacity:.85}
+.vcap .scene-title{margin:0!important;font-size:clamp(13px,2.35vh,24px)!important;line-height:1.35!important;
+  color:#fff!important;text-align:center!important;max-width:none!important}
+.vcap .vtitle{opacity:0}
+.vcap .vtitle.show{animation:vt-in .6s ease forwards}
+@keyframes vt-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+/* stage area */
+.vstage{flex:1 1 auto;position:relative;min-height:0}
+/* neutralize the homepage scroll-carousel layout */
+.vframe .scenes-wrap{display:block!important;position:absolute!important;inset:0!important;width:100%!important;
+  height:100%!important;max-width:none!important;padding:0!important;margin:0!important;transform:none!important;background:transparent!important}
+.vframe .scenes-wrap .scene{display:none!important;position:absolute!important;inset:0!important;width:100%!important;
+  height:100%!important;padding:0!important;margin:0!important;transform:none!important;opacity:1!important}
+.vframe .scenes-wrap .scene.on{display:flex!important;align-items:center!important;justify-content:center!important}
+.vframe .scene .scene-title{display:none!important}
+.vframe .scene-progress{display:none!important}
+/* force the PHONE build of each scene */
+.vframe .stage.d{display:none!important}
+.vframe .scene.on .stage.p{display:block!important;position:relative!important;height:96%!important;width:auto!important;
+  aspect-ratio:9/13!important;margin:0!important;max-width:none!important}
+/* intro / outro cards */
+.vcard{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:0 8%;gap:2.2vh}
+.vcard.on{display:flex}
+.vcard .big{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(34px,7.5vh,84px);letter-spacing:.01em}
+.vcard .line{font-size:clamp(15px,2.6vh,26px);line-height:1.45;color:#dbe9ec;opacity:0}
+.vcard .accentbar{width:56px;height:4px;border-radius:4px;background:#7fd4c1;opacity:0}
+.vcard.on .a1{animation:vc-in .7s ease .15s forwards}
+.vcard.on .a2{animation:vc-in .7s ease .75s forwards}
+.vcard.on .a3{animation:vc-in .7s ease 1.35s forwards}
+.vcard.on .a4{animation:vc-in .7s ease 1.95s forwards}
+@keyframes vc-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.vcard .site{font-size:clamp(18px,3.4vh,34px);font-weight:700;color:#7fd4c1;opacity:0}
+/* start hint (visible only before play; never in the recording once started) */
+.vhint{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-size:clamp(12px,1.8vh,16px);
+  color:#9fc3c9;opacity:.9;z-index:5}
+.vhint.gone{display:none}
+
+</style>
+</head>
+<body>
+<div class="vframe">
+  <div class="vcap">
+    <div class="vbrand">eleanote</div>
+    <h2 class="scene-title vtitle" id="vtitle"></h2>
+  </div>
+  <div class="vstage">
+    <div class="scenes-wrap wrap" id="scenes">
+
+            <!-- Arrow buttons. On desktop they float left/right of the
+                 stage; on mobile they sit in a row at the bottom of the
+                 wrap, below the stage. -->
+            <div class="scenes-arrows">
+                <button class="scenes-arrow scenes-prev" type="button" aria-label="Previous scene" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span class="arrow-label">Back</span>
+                </button>
+                <button class="scenes-arrow scenes-next" type="button" aria-label="Next scene">
+                    <span class="arrow-label">Next</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+
+            <div class="scenes-track">
+        <!-- ============================================================
+             SCENE 1
+             ============================================================ -->
+        <section class="scene scene-1" data-scene-index="0">
+            <h2 class="scene-title">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <!-- Eleanote window: visible from t=0, minimizes into the eleanote tab -->
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text">eleanote</span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">Refresh <em>F10</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                        <span class="ele-ctl">Dictation <em>F8</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR or type · F4 to capture</div>
+                    </div>
+                </div>
+
+                <!-- EMR (3 columns: nav | content | today's note) -->
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · MRN 10428501 · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Diagnoses</div>
+                    </div>
+                    <!-- Scene 1: center pane intentionally blank
+                         (matches scene 2 starting state - the cursor must
+                         click 'Notes' to populate the list, which only
+                         happens in scene 2). -->
+                    <div class="emr-center"></div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill idle">eleanote</div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text">eleanote</span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR · F4 to capture</div>
+                    </div>
+                </div>
+
+                <!-- EMR phone: 2 cols (nav | center).
+                     Today's note is reachable by clicking 'Today' in the nav -
+                     for the static frame the prior-notes list is shown. -->
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Dx</div>
+                        <div class="navrow today">Today's note</div>
+                    </div>
+                    <!-- Scene 1 phone: blank center pane (matches scene 2). -->
+                    <div class="emr-center"></div>
+                </div>
+
+                <div class="pill idle">eleanote</div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SCENE 2  (scripted, coordinate-driven, step 1 only so far)
+             ============================================================ -->
+        <section class="scene scene-2" data-scene-index="1">
+            <h2 class="scene-title">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow"><span data-target="notes">Notes</span></div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Diagnoses</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s2-view s2-view-blank"></div>
+                        <div class="s2-view s2-view-notes">
+                            <h4>Notes · prior encounters</h4>
+                            <div class="clinical-row"><span class="d">11/14/2025</span><span class="t">Annual wellness — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">06/12/2025</span><span class="t"><span data-target="office">Office</span> visit — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">03/04/2025</span><span class="t">Office visit — Dr. Carter</span></div>
+                            <div class="clinical-row"><span class="d">04/02/2024</span><span class="t">Urology f/u — partial nephrectomy</span></div>
+                            <div class="clinical-row"><span class="d">11/18/2023</span><span class="t">Op note — partial nephrectomy</span></div>
+                        </div>
+                        <div class="s2-view s2-view-visit">
+                            <h4>Office visit · 06/12/2025</h4>
+                            <div class="s2-noteblock" data-target="hlblock">
+                                <div class="s2-line"><span data-target="line-start"><b>6</b></span>4yo M, follow-up. RCC s/p partial nephrectomy 2023.</div>
+                                <div class="s2-line">CKD stage 3 stable, baseline Cr 1.5, GFR 48.</div>
+                                <div class="s2-line">HTN well-controlled on lisinopril 20 mg daily.</div>
+                                <div class="s2-line">No new symptoms today, exam unremarkable.</div>
+                                <div class="s2-line">Plan: continue current regimen and lisinopril.</div>
+                                <div class="s2-line">Surveillance MRI abdomen and BMP as scheduled<span data-target="line-end">.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill idle" data-target="pill">
+                    <span class="s2-pill-word w-eleanote">eleanote</span>
+                    <span class="s2-pill-word w-precharted"><span class="full">Text precharted</span><span class="short">Precharted</span></span>
+                </div>
+
+                <div class="cursor c1">
+                    <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
+                        fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="click-flash cf-notes"></div>
+                <div class="click-flash cf-office"></div>
+                <div class="click-flash cf-line-start"></div>
+                <div class="click-flash cf-line-end"></div>
+                <div class="s2-ghost"></div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running active">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow"><span data-target="notes">Notes</span></div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Dx</div>
+                        <div class="navrow">Today's note</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s2-view s2-view-blank"></div>
+                        <div class="s2-view s2-view-notes">
+                            <h4 style="padding: 8px 8px 4px;">Notes · prior</h4>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">11/14/25</span><span class="t">Annual wellness</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">06/12/25</span><span class="t"><span data-target="office">Office</span> visit</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">03/04/25</span><span class="t">Office visit</span></div>
+                            <div class="clinical-row" style="margin: 0 8px;"><span class="d">04/02/24</span><span class="t">Urology f/u</span></div>
+                        </div>
+                        <div class="s2-view s2-view-visit">
+                            <h4 style="padding: 8px 8px 4px;">Office visit · 06/12/25</h4>
+                            <div class="s2-noteblock" data-target="hlblock" style="padding: 0 8px;">
+                                <div class="s2-line"><span data-target="line-start"><b>6</b></span>4M, f/u. RCC s/p partial nephrectomy.</div>
+                                <div class="s2-line">CKD-3 stable, Cr 1.5, GFR 48.</div>
+                                <div class="s2-line">HTN on lisinopril 20 mg daily.</div>
+                                <div class="s2-line">No new symptoms, exam unremarkable.</div>
+                                <div class="s2-line">Plan: continue current regimen.</div>
+                                <div class="s2-line">MRI abd and BMP as scheduled<span data-target="line-end">.</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill idle" data-target="pill">
+                    <span class="s2-pill-word w-eleanote">eleanote</span>
+                    <span class="s2-pill-word w-precharted"><span class="full">Text precharted</span><span class="short">Precharted</span></span>
+                </div>
+
+                <div class="cursor c1">
+                    <svg viewBox="0 0 18 24"><path d="M2 1 L2 17 L6 14 L9 21 L12 20 L9 12.5 L14 12.5 Z"
+                        fill="#ffffff" stroke="#2a2a2a" stroke-width="1" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="click-flash cf-notes"></div>
+                <div class="click-flash cf-office"></div>
+                <div class="click-flash cf-line-start"></div>
+                <div class="click-flash cf-line-end"></div>
+                <div class="s2-ghost"></div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SCENE 3 (rebuilt: scripted, coordinate-driven)
+             ============================================================ -->
+        <section class="scene scene-3" data-scene-index="2">
+            <h2 class="scene-title">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · h/o RCC, CKD-3 · Encounter today</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow active">Orders</div>
+                        <div class="navrow">Diagnoses</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order (lab, imaging, med, referral)…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
+                                </div>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/2027</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/2027 · Surveillance of renal cell carcinoma</span>
+                                        <span class="tag">Imaging</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s3-spacer"></div>
+                        </div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">Recording</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item it-bmp focus">
+                            <span class="bullet"></span>
+                            <span class="label">BMP</span>
+                            <span class="sub">In 1 year · routine</span>
+                        </div>
+                        <div class="item it-mri">
+                            <span class="bullet"></span>
+                            <span class="label">MRI abdomen</span>
+                            <span class="sub">In 1 year · RCC surv.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
+
+                <div class="s3-modal m-bmp">
+                    <div class="head">
+                        <h5>New lab order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v locked">Routine</span></div>
+                </div>
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
+                        <h5>New imaging order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">Surveillance of renal cell carcinoma</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running active">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow active">Orders</div>
+                        <div class="navrow">Dx</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
+                                </div>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/27</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/27 · RCC surv.</span>
+                                        <span class="tag">Img</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s3-spacer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">Recording</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item it-bmp focus">
+                            <span class="bullet"></span>
+                            <span class="label">BMP</span>
+                            <span class="sub">In 1 year</span>
+                        </div>
+                        <div class="item it-mri">
+                            <span class="bullet"></span>
+                            <span class="label">MRI abdomen</span>
+                            <span class="sub">In 1 year · RCC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
+
+                <div class="s3-modal m-bmp">
+                    <div class="head">
+                        <h5>Lab order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                </div>
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
+                        <h5>Imaging order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/27</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">RCC surveillance</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SCENE 4 (rebuilt)
+             ============================================================ -->
+        <section class="scene scene-4" data-scene-index="3">
+            <h2 class="scene-title">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</h2>
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · h/o RCC, CKD-3 · End of encounter</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow active">Diagnoses</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s4-dx-view">
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis (name or ICD-10)…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">Renal cell carcinoma</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">Chronic kidney disease, stage 3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">Essential hypertension</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s4-spacer"></div>
+                        </div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box" style="position: relative;">
+                            <!-- target landing point: 20% from top, dead center horizontally -->
+                            <div data-target="notearea" style="position: absolute; left: 50%; top: 20%; width: 1px; height: 1px;"></div>
+                            <span class="entry-placeholder s4-ph">Click to begin note…</span>
+                            <span class="s4-note-typed">
+                                <span class="l l-1"><b>S:</b> 64M, end of encounter. h/o RCC s/p partial nephrectomy, CKD-3, HTN.</span>
+                                <span class="l l-2"><b>O:</b> BP 138/84, HR 76. Exam unremarkable.</span>
+                                <span class="l l-3"><b>A/P:</b></span>
+                                <span class="l l-4">1) RCC surveillance — MRI abd in 1 yr.</span>
+                                <span class="l l-5">2) CKD-3 — BMP in 1 yr.</span>
+                                <span class="l l-6">3) HTN — continue lisinopril.</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- assistant pill: state changes through Recording -> Generating -> eleanote -->
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating note</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
+                    </div>
+                </div>
+
+                <!-- ghosts -->
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <!-- modals (one per dx) -->
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Renal cell carcinoma</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Chronic kidney disease, stage 3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Essential hypertension</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running active">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">End of encounter</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow active">Dx</div>
+                        <div class="navrow">Today's note</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <!-- Diagnoses view (visible 0-7s, then swaps to note view) -->
+                        <div class="s4-dx-view">
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">RCC</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">CKD-3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">HTN</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s4-spacer"></div>
+                        </div>
+                        <!-- Today's note view (visible 7-14s) -->
+                        <div class="s4-note-view" style="position: absolute; inset: 0; padding: 14px; opacity: 0;">
+                            <h4 style="font-size: 10.5px; font-weight: 700; color: var(--emr-ink); margin-bottom: 8px;">Today's note</h4>
+                            <div class="entry-box" style="min-height: 200px; position: relative;">
+                                <div data-target="notearea" style="position: absolute; left: 50%; top: 20%; width: 1px; height: 1px;"></div>
+                                <span class="s4-note-typed">
+                                    <span class="l l-1"><b>S:</b> 64M, h/o RCC, CKD-3, HTN.</span>
+                                    <span class="l l-2"><b>O:</b> BP 138/84. Exam normal.</span>
+                                    <span class="l l-3"><b>A/P:</b></span>
+                                    <span class="l l-4">1) RCC surv. — MRI in 1 yr.</span>
+                                    <span class="l l-5">2) CKD — BMP in 1 yr.</span>
+                                    <span class="l l-6">3) HTN — lisinopril.</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating note</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
+                    </div>
+                </div>
+
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">RCC</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">CKD-3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">HTN</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+            </div><!-- /.scenes-track -->
+
+            <!-- Scene-progress indicator (pill with 4 dots + 'N of 4').
+                 Sits INSIDE the wrap so it scrolls with the carousel
+                 section instead of floating over the rest of the page.
+                 Must appear before the SCENE CONTROLLER <script> below
+                 so getElementById finds it. -->
+            <div class="scene-progress" id="sceneProgress" aria-hidden="true">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="label">1 of 4</span>
+            </div>
+        </div><!-- /.scenes-wrap -->
+    <div class="vcard" id="c-intro">
+      <div class="big a1" style="opacity:0">eleanote</div>
+      <div class="accentbar a2"></div>
+      <div class="line a3">An AI medical scribe that runs on your laptop.</div>
+      <div class="line a4">Fully customizable — it writes notes your way.</div>
+    </div>
+    <div class="vcard" id="c-outro">
+      <div class="big a1" style="opacity:0">eleanote</div>
+      <div class="accentbar a2"></div>
+      <div class="line a3">Free to try during testing.</div>
+      <div class="site a4">eleanote.ai</div>
+    </div>
+    <div class="vhint" id="vhint">click anywhere to play &middot; R to restart</div>
+  </div>
+</div>
+<script>
+
+(function(){
+  var fast = /[?&]fast/.test(location.search);
+  // Pixel-size the scenes + phone stages with inline styles. The homepage CSS
+  // has carousel/containment rules that can zero these out; explicit inline
+  // pixel values are immune to all of it.
+  function sizeAll(){
+    var stg = document.querySelector('.vstage');
+    var H = stg.clientHeight, W = stg.clientWidth;
+    var sh = Math.round(H * 0.97);
+    var sw = Math.round(sh * 9 / 13);
+    if (sw > W * 0.97){ sw = Math.round(W * 0.97); sh = Math.round(sw * 13 / 9); }
+    document.querySelectorAll('.scenes-wrap .scene').forEach(function(sc){
+      var s = sc.style;
+      s.setProperty('position','absolute','important');
+      s.setProperty('top','0','important'); s.setProperty('left','0','important');
+      s.setProperty('width', W + 'px','important');
+      s.setProperty('height', H + 'px','important');
+      s.setProperty('padding','0','important'); s.setProperty('margin','0','important');
+      s.setProperty('transform','none','important');
+      var p = sc.querySelector('.stage.p');
+      if (p){
+        var ps = p.style;
+        ps.setProperty('position','absolute','important');
+        ps.setProperty('left', Math.round((W - sw) / 2) + 'px','important');
+        ps.setProperty('top', Math.round((H - sh) / 2) + 'px','important');
+        ps.setProperty('width', sw + 'px','important');
+        ps.setProperty('height', sh + 'px','important');
+        ps.setProperty('margin','0','important');
+        ps.setProperty('aspect-ratio','auto','important');
+        ps.setProperty('max-height','none','important');
+        ps.setProperty('max-width','none','important');
+        ps.setProperty('min-height','0','important');
+      }
+    });
+  }
+  window.addEventListener('resize', sizeAll);
+  window.addEventListener('load', sizeAll);
+  sizeAll();
+  var TL = [
+    { el: '#c-intro',  dur: 4600,  title: '' },
+    { el: '.scene-1',  dur: 9000,  title: "A small <span class=\"accent\">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote." },
+    { el: '.scene-2',  dur: 8650,  title: "Precharting takes seconds — just <span class=\"accent\">highlight text</span> and transfer to eleanote." },
+    { el: '.scene-3',  dur: 15000, title: "While you record, AI <span class=\"accent\">stages orders</span> for automated transfer in real time." },
+    { el: '.scene-4',  dur: 20500, title: "At end of encounter, transfer <span class=\"accent\">diagnoses and the note</span> in one keystroke." },
+    { el: '#c-outro',  dur: 0,     title: '' }   // 0 = hold forever
+  ];
+  var timer = null, started = false;
+  var titleEl = document.getElementById('vtitle');
+  function clearAll(){
+    document.querySelectorAll('.scene.on, .vcard.on').forEach(function(n){ n.classList.remove('on'); });
+  }
+  function showStep(i){
+    clearAll();
+    var step = TL[i];
+    var node = document.querySelector(step.el);
+    // toggling display (none -> flex/block) restarts every CSS animation inside
+    if (node) node.classList.add('on');
+    if (step.title){
+      titleEl.innerHTML = step.title;
+      titleEl.classList.remove('show');
+      void titleEl.offsetWidth;             // reflow so the entrance animation re-runs
+      titleEl.classList.add('show');
+    } else {
+      titleEl.innerHTML = '';
+      titleEl.classList.remove('show');
+    }
+    var dur = fast ? 1400 : step.dur;
+    if (timer) clearTimeout(timer);
+    if (dur > 0 && i + 1 < TL.length) timer = setTimeout(function(){ showStep(i+1); }, dur);
+  }
+  function start(){
+    started = true;
+    document.getElementById('vhint').classList.add('gone');
+    showStep(0);
+  }
+  // idle state: intro card visible (static), hint showing; click / Space starts; R restarts
+  document.addEventListener('click', function(){ start(); });
+  document.addEventListener('keydown', function(e){
+    if (e.code === 'Space'){ e.preventDefault(); start(); }
+    if (e.key === 'r' || e.key === 'R'){ start(); }
+  });
+  // initial: show intro statically (no timeline) so the screen isn't blank
+  document.querySelector('#c-intro').classList.add('on');
+})();
+
+</script>
+</body>
+</html>
