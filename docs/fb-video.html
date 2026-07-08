@@ -2957,13 +2957,10 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
 .vstage{flex:1 1 auto;position:relative;min-height:0}
 /* title cards between scenes — all white on teal for readability */
 .vcard.tcard{gap:2.6vh}
-.tcard .teyebrow{font-weight:600;font-size:clamp(12px,2vh,18px);letter-spacing:.16em;text-transform:uppercase;
-  color:#fff;opacity:0}
 .tcard .tt{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(20px,4.4vh,44px);
   line-height:1.32;color:#fff;max-width:88%;opacity:0}
-.tcard .tt .accent{color:#fff!important;font-style:italic}
-.tcard.on .teyebrow{animation:vc-in .55s ease .1s forwards}
-.tcard.on .tt{animation:vc-in .6s ease .35s forwards}
+.tcard .tt .accent{color:#fff!important}
+.tcard.on .tt{animation:vc-in .6s ease .15s forwards}
 /* neutralize the homepage scroll-carousel layout */
 .vframe .scenes-wrap{display:block!important;position:absolute!important;inset:0!important;width:100%!important;
   height:100%!important;max-width:none!important;padding:0!important;margin:0!important;transform:none!important;background:transparent!important}
@@ -3759,10 +3756,10 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
                 <span class="label">1 of 4</span>
             </div>
         </div><!-- /.scenes-wrap -->
-    <div class="vcard tcard" id="t1"><div class="teyebrow">eleanote &middot; 1 of 4</div><div class="tt">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</div></div>
-    <div class="vcard tcard" id="t2"><div class="teyebrow">eleanote &middot; 2 of 4</div><div class="tt">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</div></div>
-    <div class="vcard tcard" id="t3"><div class="teyebrow">eleanote &middot; 3 of 4</div><div class="tt">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</div></div>
-    <div class="vcard tcard" id="t4"><div class="teyebrow">eleanote &middot; 4 of 4</div><div class="tt">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</div></div>
+    <div class="vcard tcard" id="t1"><div class="tt">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</div></div>
+    <div class="vcard tcard" id="t2"><div class="tt">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</div></div>
+    <div class="vcard tcard" id="t3"><div class="tt">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</div></div>
+    <div class="vcard tcard" id="t4"><div class="tt">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</div></div>
     <div class="vcard" id="c-intro">
       <div class="big a1" style="opacity:0">eleanote</div>
       <div class="accentbar a2"></div>
@@ -3846,18 +3843,20 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   window.addEventListener('resize', function(){ sizeAll(); calibrate(document.querySelector('.scene.on')); });
   window.addEventListener('load', sizeAll);
   sizeAll();
-  // intro -> [title card -> animation] x4 -> end card
+  // intro -> [title card -> animation] x4 -> end card.
+  // Scene animations play at 2x (playbackRate below), so each scene slot is
+  // HALF its native loop length. Title cards keep their full read time.
   var TL = [
-    { el: '#c-intro',  dur: 3600  },
+    { el: '#c-intro',  dur: 1800  },
     { el: '#t1',       dur: 2400  },
-    { el: '.scene-1',  dur: 9000  },
+    { el: '.scene-1',  dur: 4500  },   // 9.0s loop at 2x
     { el: '#t2',       dur: 2400  },
-    { el: '.scene-2',  dur: 8650  },
+    { el: '.scene-2',  dur: 4325  },   // 8.65s loop at 2x
     { el: '#t3',       dur: 2400  },
-    { el: '.scene-3',  dur: 15000 },
+    { el: '.scene-3',  dur: 7500  },   // 15s loop at 2x
     { el: '#t4',       dur: 2400  },
-    { el: '.scene-4',  dur: 20500 },
-    { el: '#c-outro',  dur: 0     }   // 0 = hold forever
+    { el: '.scene-4',  dur: 10250 },   // 20.5s loop at 2x
+    { el: '#c-outro',  dur: 0     }    // hold forever
   ];
   var timer = null, started = false;
   function clearAll(){
@@ -3869,10 +3868,13 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
     var node = document.querySelector(step.el);
     // toggling display (none -> flex/block) restarts every CSS animation inside
     if (node) node.classList.add('on');
-    // measure-and-aim the click/flight targets once the scene has layout.
-    // setTimeout (not rAF): it still fires in hidden/backgrounded windows, and
-    // the first cursor move starts seconds into each scene anyway.
-    if (node) setTimeout(function(){ calibrate(node); }, 60);
+    // measure-and-aim the click/flight targets once the scene has layout, and
+    // run every animation (scenes AND card fades) at 2x. setTimeout (not rAF):
+    // it still fires in hidden/backgrounded windows.
+    if (node) setTimeout(function(){
+      calibrate(node);
+      if (node.getAnimations) node.getAnimations({ subtree: true }).forEach(function(a){ a.playbackRate = 2; });
+    }, 60);
     var dur = fast ? 1200 : step.dur;
     if (timer) clearTimeout(timer);
     if (dur > 0 && i + 1 < TL.length) timer = setTimeout(function(){ showStep(i+1); }, dur);
