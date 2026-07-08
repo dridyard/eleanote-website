@@ -24,7 +24,7 @@ if (mOpen < 0 || mClose < 0) throw new Error('scenes markup not found');
 const scenesHtml = html.slice(mOpen, mClose + endMarker.length);
 
 // --- scene titles (exact site copy, accents preserved) ---
-const T1 = 'A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.';
+const T1 = 'A <span class="accent">floating assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.';
 const T2 = 'Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.';
 const T3 = 'While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.';
 const T4 = 'At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.';
@@ -149,9 +149,10 @@ const controllerJs = `
   // Scene animations play at 2x (playbackRate below), so each scene slot is
   // HALF its native loop length. Title cards keep their full read time.
   var TL = [
-    { el: '#c-intro',  dur: 1800  },
-    { el: '#t1',       dur: 2400  },
-    { el: '.scene-1',  dur: 4500  },   // 9.0s loop at 2x
+    { el: '#c-intro',  dur: 5400  },   // held 3x longer — let the pitch land
+    { el: '#t1',       dur: 3900  },   // first title gets +1.5s
+    { el: '.scene-1',  dur: 3000  },   // motion ends 43% into the 9s loop; cut
+                                       // the static hold in half (at 2x)
     { el: '#t2',       dur: 2400  },
     { el: '.scene-2',  dur: 4325  },   // 8.65s loop at 2x
     { el: '#t3',       dur: 2400  },
@@ -231,10 +232,8 @@ ${overrideCss}
       <div class="line a4">Fully customizable — it writes notes your way.</div>
     </div>
     <div class="vcard" id="c-outro">
-      <div class="big a1" style="opacity:0">eleanote</div>
-      <div class="accentbar a2"></div>
-      <div class="line a3">Free to try during testing.</div>
-      <div class="site a4">eleanote.ai</div>
+      <div class="big a1" style="opacity:0;font-size:clamp(24px,5.2vh,54px)">Become an early tester</div>
+      <div class="site a2">eleanote.ai</div>
     </div>
     <div class="vhint" id="vhint">click anywhere to play &middot; R to restart</div>
   </div>

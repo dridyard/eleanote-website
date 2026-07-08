@@ -3756,7 +3756,7 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
                 <span class="label">1 of 4</span>
             </div>
         </div><!-- /.scenes-wrap -->
-    <div class="vcard tcard" id="t1"><div class="tt">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</div></div>
+    <div class="vcard tcard" id="t1"><div class="tt">A <span class="accent">floating assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</div></div>
     <div class="vcard tcard" id="t2"><div class="tt">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</div></div>
     <div class="vcard tcard" id="t3"><div class="tt">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</div></div>
     <div class="vcard tcard" id="t4"><div class="tt">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</div></div>
@@ -3767,10 +3767,8 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
       <div class="line a4">Fully customizable — it writes notes your way.</div>
     </div>
     <div class="vcard" id="c-outro">
-      <div class="big a1" style="opacity:0">eleanote</div>
-      <div class="accentbar a2"></div>
-      <div class="line a3">Free to try during testing.</div>
-      <div class="site a4">eleanote.ai</div>
+      <div class="big a1" style="opacity:0;font-size:clamp(24px,5.2vh,54px)">Become an early tester</div>
+      <div class="site a2">eleanote.ai</div>
     </div>
     <div class="vhint" id="vhint">click anywhere to play &middot; R to restart</div>
   </div>
@@ -3847,9 +3845,10 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   // Scene animations play at 2x (playbackRate below), so each scene slot is
   // HALF its native loop length. Title cards keep their full read time.
   var TL = [
-    { el: '#c-intro',  dur: 1800  },
-    { el: '#t1',       dur: 2400  },
-    { el: '.scene-1',  dur: 4500  },   // 9.0s loop at 2x
+    { el: '#c-intro',  dur: 5400  },   // held 3x longer — let the pitch land
+    { el: '#t1',       dur: 3900  },   // first title gets +1.5s
+    { el: '.scene-1',  dur: 3000  },   // motion ends 43% into the 9s loop; cut
+                                       // the static hold in half (at 2x)
     { el: '#t2',       dur: 2400  },
     { el: '.scene-2',  dur: 4325  },   // 8.65s loop at 2x
     { el: '#t3',       dur: 2400  },
