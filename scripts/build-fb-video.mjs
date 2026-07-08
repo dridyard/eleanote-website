@@ -32,9 +32,9 @@ const T4 = 'At end of encounter, transfer <span class="accent">diagnoses and the
 const overrideCss = `
 /* ===== video-shell overrides (win by coming after site CSS) ===== */
 html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!important;background:#081f24!important;cursor:none}
-/* SQUARE (1:1) frame centered in the window — Facebook feed format */
+/* 4:5 portrait frame (1080x1350) centered in the window — Facebook feed format */
 .vframe{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-  height:min(100vh, 100vw);aspect-ratio:1/1;
+  height:min(100vh, calc(100vw * 5 / 4));aspect-ratio:4/5;
   background:linear-gradient(180deg,#0E3D46,#0b2f36);display:flex;flex-direction:column;overflow:hidden;
   font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
 /* stage area = the WHOLE square (titles are their own cards now) */
@@ -84,16 +84,17 @@ const controllerJs = `
   // Pixel-size the scenes + phone stages with inline styles. The homepage CSS
   // has carousel/containment rules that can zero these out; explicit inline
   // pixel values are immune to all of it.
-  // The stage fills the ENTIRE square. It renders at a fixed 400x400 "design
-  // canvas" (the phone layout's native scale, so px font sizes stay chunky and
-  // legible) and is transform-scaled up to the frame — everything, including
-  // the animations' px details, magnifies uniformly.
-  var DESIGN = 400;
+  // The stage fills the ENTIRE 4:5 frame. It renders at a fixed 400x500 "design
+  // canvas" (phone-layout scale, so px font sizes stay chunky and legible) and
+  // is transform-scaled up to the frame — everything, including the animations'
+  // px details, magnifies uniformly. Click/flight coordinates are unaffected by
+  // the canvas shape: calibrate() measures the real element positions per scene.
+  var DESIGN_W = 400, DESIGN_H = 500;
   function sizeAll(){
     var stg = document.querySelector('.vstage');
     var H = stg.clientHeight, W = stg.clientWidth;
     if (W < 10 || H < 10) return;   // hidden window; resize/visibility will re-run
-    var k = Math.min(W, H) / DESIGN;
+    var k = Math.min(W / DESIGN_W, H / DESIGN_H);
     document.querySelectorAll('.scenes-wrap .scene').forEach(function(sc){
       var s = sc.style;
       s.setProperty('position','absolute','important');
@@ -108,8 +109,8 @@ const controllerJs = `
         ps.setProperty('position','absolute','important');
         ps.setProperty('left','0','important');
         ps.setProperty('top','0','important');
-        ps.setProperty('width', DESIGN + 'px','important');
-        ps.setProperty('height', DESIGN + 'px','important');
+        ps.setProperty('width', DESIGN_W + 'px','important');
+        ps.setProperty('height', DESIGN_H + 'px','important');
         ps.setProperty('transform','scale(' + k + ')','important');
         ps.setProperty('transform-origin','0 0','important');
         ps.setProperty('margin','0','important');
