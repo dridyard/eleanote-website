@@ -32,9 +32,9 @@ const T4 = 'At end of encounter, transfer <span class="accent">diagnoses and the
 const overrideCss = `
 /* ===== video-shell overrides (win by coming after site CSS) ===== */
 html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!important;background:#081f24!important;cursor:none}
-/* 9:16 frame centered in the window; page bg matches so window shape is forgiving */
+/* SQUARE (1:1) frame centered in the window — Facebook feed format */
 .vframe{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-  height:min(100vh, calc(100vw * 16 / 9));aspect-ratio:9/16;
+  height:min(100vh, 100vw);aspect-ratio:1/1;
   background:linear-gradient(180deg,#0E3D46,#0b2f36);display:flex;flex-direction:column;overflow:hidden;
   font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
 /* caption bar */
@@ -44,6 +44,8 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   letter-spacing:.02em;opacity:.85}
 .vcap .scene-title{margin:0!important;font-size:clamp(13px,2.35vh,24px)!important;line-height:1.35!important;
   color:#fff!important;text-align:center!important;max-width:none!important}
+/* titles ALL white — the site's green accent color is unreadable on this bg */
+.vcap .scene-title .accent{color:#fff!important}
 .vcap .vtitle{opacity:0}
 .vcap .vtitle.show{animation:vt-in .6s ease forwards}
 @keyframes vt-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
@@ -57,6 +59,8 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
 .vframe .scenes-wrap .scene.on{display:flex!important;align-items:center!important;justify-content:center!important}
 .vframe .scene .scene-title{display:none!important}
 .vframe .scene-progress{display:none!important}
+/* the homepage carousel's Back/Next arrows have no business in a video */
+.vframe .scenes-arrows{display:none!important}
 /* force the PHONE build of each scene */
 .vframe .stage.d{display:none!important}
 .vframe .scene.on .stage.p{display:block!important;position:relative!important;height:96%!important;width:auto!important;
@@ -116,7 +120,40 @@ const controllerJs = `
       }
     });
   }
-  window.addEventListener('resize', sizeAll);
+  // Re-point each scene's ghost-flight CSS variables (--pill-x, --search-x,
+  // --notearea-x ...) at the MEASURED centers of the actual boxes. The site
+  // declares them as fixed percentages calibrated for the desktop stage; on the
+  // phone stage those land beside the target. Runs when a scene is shown, so
+  // every "chip flies to a box" actually arrives at the box.
+  function centerPct(stage, el){
+    if(!el) return null;
+    var r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
+    if(r.width < 2 && r.height < 2) return null;    // display:none / collapsed
+    return { x: (r.left + r.width/2 - s.left) / s.width * 100,
+             y: (r.top + r.height/2 - s.top) / s.height * 100 };
+  }
+  function setVar(stage, name, c){
+    if(!c) return;
+    stage.style.setProperty(name + '-x', c.x.toFixed(2) + '%');
+    stage.style.setProperty(name + '-y', c.y.toFixed(2) + '%');
+  }
+  function calibrate(scene){
+    if(!scene || !scene.classList || !scene.classList.contains('scene')) return;
+    var stage = scene.querySelector('.stage.p');
+    if(!stage) return;
+    setVar(stage, '--pill', centerPct(stage, stage.querySelector('.pill')));
+    if(scene.classList.contains('scene-3')){
+      setVar(stage, '--search', centerPct(stage, stage.querySelector('.s3-search')));
+    }
+    if(scene.classList.contains('scene-4')){
+      var entry = centerPct(stage, stage.querySelector('.entry-box'));
+      var modal = centerPct(stage, stage.querySelector('.s4-modal'));
+      setVar(stage, '--search', entry || modal);
+      var note = centerPct(stage, stage.querySelector('.s4-note-view'));
+      setVar(stage, '--notearea', note || entry || modal);
+    }
+  }
+  window.addEventListener('resize', function(){ sizeAll(); calibrate(document.querySelector('.scene.on')); });
   window.addEventListener('load', sizeAll);
   sizeAll();
   var TL = [
@@ -138,6 +175,10 @@ const controllerJs = `
     var node = document.querySelector(step.el);
     // toggling display (none -> flex/block) restarts every CSS animation inside
     if (node) node.classList.add('on');
+    // measure-and-aim the ghost flight targets once the scene has layout.
+    // setTimeout (not rAF): it still fires in hidden/backgrounded windows, and
+    // the first ghost flight starts seconds into each scene anyway.
+    if (node) setTimeout(function(){ calibrate(node); }, 60);
     if (step.title){
       titleEl.innerHTML = step.title;
       titleEl.classList.remove('show');
@@ -153,9 +194,11 @@ const controllerJs = `
   }
   function start(){
     started = true;
+    sizeAll();   // in case the page loaded in a hidden/zero-size window
     document.getElementById('vhint').classList.add('gone');
     showStep(0);
   }
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ sizeAll(); calibrate(document.querySelector('.scene.on')); } });
   // idle state: intro card visible (static), hint showing; click / Space starts; R restarts
   document.addEventListener('click', function(){ start(); });
   document.addEventListener('keydown', function(e){
