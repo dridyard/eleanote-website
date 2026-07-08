@@ -149,6 +149,7 @@
     <input id="password" type="password" autocomplete="current-password">
     <div class="alert" id="alert"></div>
     <button class="primary" id="btn-login">Sign in</button>
+    <button class="ghost" id="btn-pk" style="margin-top:10px" hidden>Sign in with fingerprint</button>
   </section>
 
   <!-- First sign-in: set a new password -->
@@ -249,6 +250,7 @@
       <p class="ts" id="ts"></p>
       <button class="ghost" id="btn-refresh">Refresh</button>
     </div>
+    <p class="ts" style="text-align:center"><button class="link" id="btn-passkey" hidden>Enable fingerprint sign-in on this device</button></p>
     <p class="foot">Read-only &middot; no patient data &middot; AI spend is an estimate, not billed actuals</p>
   </section>
 </main>
@@ -259,7 +261,8 @@ var REGION = 'us-east-1';
 var CLIENT_ID = 'afn9sbgth9paclcjmrsi3mot';                                   // admin pool app client
 var COGNITO = 'https://cognito-idp.' + REGION + '.amazonaws.com/';
 var API = 'https://hwwf5rf210.execute-api.us-east-1.amazonaws.com/prod';       // eleanote-admin API
-var SS = { ID:'eleanote.admin.idToken', RT:'eleanote.admin.rt', EXP:'eleanote.admin.exp', EMAIL:'eleanote.admin.email' };
+var SS = { ID:'eleanote.admin.idToken', AT:'eleanote.admin.at', RT:'eleanote.admin.rt', EXP:'eleanote.admin.exp', EMAIL:'eleanote.admin.email' };
+var PK_FLAG = 'eleanote.admin.pkEmail';   // localStorage: email that enrolled a passkey on THIS device
 
 var session = null, challengeUser = null, typedEmail = null;
 
@@ -293,6 +296,7 @@ function friendly(e){
 function saveAuth(r){
   var a = r.AuthenticationResult;
   sessionStorage.setItem(SS.ID, a.IdToken);
+  if(a.AccessToken) sessionStorage.setItem(SS.AT, a.AccessToken);  // needed to enroll a passkey
   if(a.RefreshToken) sessionStorage.setItem(SS.RT, a.RefreshToken);
   sessionStorage.setItem(SS.EXP, String(Date.now() + (a.ExpiresIn ? a.ExpiresIn*1000 : 25*60*1000)));
   if(typedEmail) sessionStorage.setItem(SS.EMAIL, typedEmail);
@@ -389,6 +393,77 @@ $('btn-mfa').onclick = async function(){
   finally{ busy(this, false); }
 };
 
+// ---- Passkey (WebAuthn): fingerprint / Face-ID sign-in ----
+// base64url <-> ArrayBuffer (fallbacks for browsers without the JSON helpers)
+function b64uToBuf(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length % 4) s += '='; var bin = atob(s); var u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
+function bufToB64u(buf){ var u = new Uint8Array(buf), bin = ''; for(var i=0;i<u.length;i++) bin += String.fromCharCode(u[i]); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function parseCreateOpts(j){
+  if(window.PublicKeyCredential && PublicKeyCredential.parseCreationOptionsFromJSON) return PublicKeyCredential.parseCreationOptionsFromJSON(j);
+  j.challenge = b64uToBuf(j.challenge); j.user.id = b64uToBuf(j.user.id);
+  (j.excludeCredentials||[]).forEach(function(c){ c.id = b64uToBuf(c.id); });
+  return j;
+}
+function parseGetOpts(j){
+  if(window.PublicKeyCredential && PublicKeyCredential.parseRequestOptionsFromJSON) return PublicKeyCredential.parseRequestOptionsFromJSON(j);
+  j.challenge = b64uToBuf(j.challenge);
+  (j.allowCredentials||[]).forEach(function(c){ c.id = b64uToBuf(c.id); });
+  return j;
+}
+function credToJSON(cred){
+  if(cred.toJSON) return cred.toJSON();
+  var r = cred.response, out = { id: cred.id, rawId: bufToB64u(cred.rawId), type: cred.type, clientExtensionResults: {} };
+  if(r.attestationObject){ out.response = { clientDataJSON: bufToB64u(r.clientDataJSON), attestationObject: bufToB64u(r.attestationObject) }; if(r.getTransports) out.response.transports = r.getTransports(); }
+  else { out.response = { clientDataJSON: bufToB64u(r.clientDataJSON), authenticatorData: bufToB64u(r.authenticatorData), signature: bufToB64u(r.signature) }; if(r.userHandle) out.response.userHandle = bufToB64u(r.userHandle); }
+  if(cred.authenticatorAttachment) out.authenticatorAttachment = cred.authenticatorAttachment;
+  return out;
+}
+function pkFriendly(e){
+  if(e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return 'Cancelled — no changes made.';
+  if(e && e.name === 'InvalidStateError') return 'A passkey for this account already exists on this device. Try "Sign in with fingerprint".';
+  return friendly(e);
+}
+// One-time enrollment (from the dashboard, while signed in)
+async function enrollPasskey(btn){
+  var at = sessionStorage.getItem(SS.AT);
+  if(!at){ $('ts').textContent = 'Please sign out and back in once, then try again.'; return; }
+  busy(btn, true);
+  try{
+    var r = await cog('StartWebAuthnRegistration', { AccessToken: at });
+    var opts = r.CredentialCreationOptions;
+    if(typeof opts === 'string') opts = JSON.parse(opts);
+    var cred = await navigator.credentials.create({ publicKey: parseCreateOpts(opts) });
+    await cog('CompleteWebAuthnRegistration', { AccessToken: at, Credential: credToJSON(cred) });
+    localStorage.setItem(PK_FLAG, sessionStorage.getItem(SS.EMAIL) || '');
+    btn.dataset.t = ''; btn.textContent = '✓ Fingerprint sign-in enabled on this device';
+    btn.disabled = true;
+  }catch(e){
+    busy(btn, false);
+    $('ts').textContent = 'Could not enable: ' + pkFriendly(e);
+  }
+}
+// Fingerprint sign-in (from the login screen)
+async function passkeySignIn(btn){
+  note('alert','');
+  var email = ($('email').value || '').trim().toLowerCase() || localStorage.getItem(PK_FLAG) || '';
+  if(!email){ note('alert','Type your email once, then tap the fingerprint button.'); return; }
+  typedEmail = email;
+  busy(btn, true);
+  try{
+    var r = await cog('InitiateAuth', { AuthFlow:'USER_AUTH', ClientId:CLIENT_ID, AuthParameters:{ USERNAME: email, PREFERRED_CHALLENGE:'WEB_AUTHN' } });
+    if(r.ChallengeName === 'WEB_AUTHN' && r.ChallengeParameters && r.ChallengeParameters.CREDENTIAL_REQUEST_OPTIONS){
+      var opts = JSON.parse(r.ChallengeParameters.CREDENTIAL_REQUEST_OPTIONS);
+      var assertion = await navigator.credentials.get({ publicKey: parseGetOpts(opts) });
+      challengeUser = (r.ChallengeParameters.USERNAME) || email;
+      route(await cog('RespondToAuthChallenge', {
+        ClientId: CLIENT_ID, ChallengeName: 'WEB_AUTHN', Session: r.Session,
+        ChallengeResponses: { USERNAME: challengeUser, CREDENTIAL: JSON.stringify(credToJSON(assertion)) }
+      }));
+    } else if(r.AuthenticationResult){ route(r); }
+    else { note('alert','No fingerprint is saved for this account on this device yet — sign in with your password once and tap "Enable fingerprint sign-in".'); }
+  }catch(e){ note('alert', pkFriendly(e)); }
+  finally{ busy(btn, false); }
+}
+
 // ---- Dashboard ----
 function enterDash(){
   document.querySelector('.card').classList.add('wide');
@@ -398,6 +473,12 @@ function enterDash(){
     Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.addEventListener('click', function(){ showTab(b.dataset.tab); }); });
     $('btn-back').addEventListener('click', function(){ showTab('users'); });
     enterDash.wired = true;
+  }
+  // Offer passkey enrollment on capable browsers; reflect this device's state.
+  var pkBtn = $('btn-passkey');
+  if(window.PublicKeyCredential && navigator.credentials){
+    pkBtn.hidden = false;
+    if(localStorage.getItem(PK_FLAG)){ pkBtn.textContent = '✓ Fingerprint sign-in enabled on this device'; pkBtn.disabled = true; }
   }
   showTab('overview');
 }
@@ -665,6 +746,8 @@ async function loadCosts(){
 
 $('btn-refresh').onclick = function(){ usersCache = null; costsCache = null; showTab(currentTab === 'userdetail' ? 'users' : currentTab); };
 $('btn-logout').onclick = logout;
+$('btn-passkey').onclick = function(){ enrollPasskey(this); };
+$('btn-pk').onclick = function(){ passkeySignIn(this); };
 
 // ---- Submit-on-Enter for every input ----
 [['email','btn-login'],['password','btn-login'],['newpw','btn-newpw'],['newpw2','btn-newpw'],
@@ -674,6 +757,12 @@ $('btn-logout').onclick = logout;
 
 // ---- On load: reuse a live session, or silently refresh, else show login ----
 (async function init(){
+  // show the fingerprint button on capable browsers; prefill the enrolled email
+  if(window.PublicKeyCredential && navigator.credentials){
+    $('btn-pk').hidden = false;
+    var pe = localStorage.getItem(PK_FLAG);
+    if(pe && !$('email').value) $('email').value = pe;
+  }
   var id = sessionStorage.getItem(SS.ID), exp = parseInt(sessionStorage.getItem(SS.EXP) || '0', 10);
   if(id && Date.now() < exp){ enterDash(); return; }
   var rt = sessionStorage.getItem(SS.RT);
