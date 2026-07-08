@@ -3846,7 +3846,7 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   // Scene animations play at 2x (playbackRate below), so each scene slot is
   // HALF its native loop length. Title cards keep their full read time.
   var TL = [
-    { el: '#c-intro',  dur: 5400  },   // held 3x longer — let the pitch land
+    { el: '#c-intro',  dur: 4400  },   // long enough to read, not linger
     { el: '#t1',       dur: 3900  },   // first title gets +1.5s
     { el: '.scene-1',  dur: 3000  },   // motion ends 43% into the 9s loop; cut
                                        // the static hold in half (at 2x)
@@ -3886,6 +3886,33 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
     showStep(0);
   }
   document.addEventListener('visibilitychange', function(){ if(!document.hidden){ sizeAll(); calibrate(document.querySelector('.scene.on')); } });
+  // ---- RENDER MODE (?render): deterministic frame-by-frame seeking for the
+  // headless MP4 renderer. window.__seek(t) shows the right step for time t and
+  // pauses every animation at its exact local time — so each captured frame is
+  // pixel-perfect regardless of how long the screenshot takes.
+  if (/[?&]render/.test(location.search)) {
+    var SPEED = 2, OUTRO_HOLD = 2500;
+    var durOf = function(step){ return step.dur > 0 ? step.dur : OUTRO_HOLD; };
+    window.__total = TL.reduce(function(s, step){ return s + durOf(step); }, 0);
+    window.__seek = function(t){
+      document.getElementById('vhint').classList.add('gone');
+      var acc = 0, idx = TL.length - 1, startAt = window.__total - durOf(TL[TL.length-1]);
+      for (var i = 0; i < TL.length; i++){
+        var d = durOf(TL[i]);
+        if (t < acc + d){ idx = i; startAt = acc; break; }
+        acc += d;
+      }
+      sizeAll();
+      clearAll();
+      var node = document.querySelector(TL[idx].el);
+      node.classList.add('on');
+      calibrate(node);
+      var local = (t - startAt) * SPEED;
+      node.getAnimations({ subtree: true }).forEach(function(a){ a.pause(); a.currentTime = local; });
+      return idx;
+    };
+  }
+
   // idle state: intro card visible (static), hint showing; click / Space starts; R restarts
   document.addEventListener('click', function(){ start(); });
   document.addEventListener('keydown', function(e){
