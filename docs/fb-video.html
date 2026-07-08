@@ -2953,20 +2953,17 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   height:min(100vh, 100vw);aspect-ratio:1/1;
   background:linear-gradient(180deg,#0E3D46,#0b2f36);display:flex;flex-direction:column;overflow:hidden;
   font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
-/* caption bar */
-.vcap{flex:0 0 auto;min-height:17%;display:flex;flex-direction:column;justify-content:center;gap:6px;
-  padding:3.5% 5% 2% 5%;text-align:center}
-.vcap .vbrand{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(14px,2.2vh,22px);
-  letter-spacing:.02em;opacity:.85}
-.vcap .scene-title{margin:0!important;font-size:clamp(13px,2.35vh,24px)!important;line-height:1.35!important;
-  color:#fff!important;text-align:center!important;max-width:none!important}
-/* titles ALL white — the site's green accent color is unreadable on this bg */
-.vcap .scene-title .accent{color:#fff!important}
-.vcap .vtitle{opacity:0}
-.vcap .vtitle.show{animation:vt-in .6s ease forwards}
-@keyframes vt-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-/* stage area */
+/* stage area = the WHOLE square (titles are their own cards now) */
 .vstage{flex:1 1 auto;position:relative;min-height:0}
+/* title cards between scenes — all white on teal for readability */
+.vcard.tcard{gap:2.6vh}
+.tcard .teyebrow{font-weight:600;font-size:clamp(12px,2vh,18px);letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;opacity:0}
+.tcard .tt{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(20px,4.4vh,44px);
+  line-height:1.32;color:#fff;max-width:88%;opacity:0}
+.tcard .tt .accent{color:#fff!important;font-style:italic}
+.tcard.on .teyebrow{animation:vc-in .55s ease .1s forwards}
+.tcard.on .tt{animation:vc-in .6s ease .35s forwards}
 /* neutralize the homepage scroll-carousel layout */
 .vframe .scenes-wrap{display:block!important;position:absolute!important;inset:0!important;width:100%!important;
   height:100%!important;max-width:none!important;padding:0!important;margin:0!important;transform:none!important;background:transparent!important}
@@ -3003,10 +3000,6 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
 </head>
 <body>
 <div class="vframe">
-  <div class="vcap">
-    <div class="vbrand">eleanote</div>
-    <h2 class="scene-title vtitle" id="vtitle"></h2>
-  </div>
   <div class="vstage">
     <div class="scenes-wrap wrap" id="scenes">
 
@@ -3766,6 +3759,10 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
                 <span class="label">1 of 4</span>
             </div>
         </div><!-- /.scenes-wrap -->
+    <div class="vcard tcard" id="t1"><div class="teyebrow">eleanote &middot; 1 of 4</div><div class="tt">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</div></div>
+    <div class="vcard tcard" id="t2"><div class="teyebrow">eleanote &middot; 2 of 4</div><div class="tt">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</div></div>
+    <div class="vcard tcard" id="t3"><div class="teyebrow">eleanote &middot; 3 of 4</div><div class="tt">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</div></div>
+    <div class="vcard tcard" id="t4"><div class="teyebrow">eleanote &middot; 4 of 4</div><div class="tt">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</div></div>
     <div class="vcard" id="c-intro">
       <div class="big a1" style="opacity:0">eleanote</div>
       <div class="accentbar a2"></div>
@@ -3788,12 +3785,16 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
   // Pixel-size the scenes + phone stages with inline styles. The homepage CSS
   // has carousel/containment rules that can zero these out; explicit inline
   // pixel values are immune to all of it.
+  // The stage fills the ENTIRE square. It renders at a fixed 400x400 "design
+  // canvas" (the phone layout's native scale, so px font sizes stay chunky and
+  // legible) and is transform-scaled up to the frame — everything, including
+  // the animations' px details, magnifies uniformly.
+  var DESIGN = 400;
   function sizeAll(){
     var stg = document.querySelector('.vstage');
     var H = stg.clientHeight, W = stg.clientWidth;
-    var sh = Math.round(H * 0.97);
-    var sw = Math.round(sh * 9 / 13);
-    if (sw > W * 0.97){ sw = Math.round(W * 0.97); sh = Math.round(sw * 13 / 9); }
+    if (W < 10 || H < 10) return;   // hidden window; resize/visibility will re-run
+    var k = Math.min(W, H) / DESIGN;
     document.querySelectorAll('.scenes-wrap .scene').forEach(function(sc){
       var s = sc.style;
       s.setProperty('position','absolute','important');
@@ -3806,10 +3807,12 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
       if (p){
         var ps = p.style;
         ps.setProperty('position','absolute','important');
-        ps.setProperty('left', Math.round((W - sw) / 2) + 'px','important');
-        ps.setProperty('top', Math.round((H - sh) / 2) + 'px','important');
-        ps.setProperty('width', sw + 'px','important');
-        ps.setProperty('height', sh + 'px','important');
+        ps.setProperty('left','0','important');
+        ps.setProperty('top','0','important');
+        ps.setProperty('width', DESIGN + 'px','important');
+        ps.setProperty('height', DESIGN + 'px','important');
+        ps.setProperty('transform','scale(' + k + ')','important');
+        ps.setProperty('transform-origin','0 0','important');
         ps.setProperty('margin','0','important');
         ps.setProperty('aspect-ratio','auto','important');
         ps.setProperty('max-height','none','important');
@@ -3818,52 +3821,45 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
       }
     });
   }
-  // Re-point each scene's ghost-flight CSS variables (--pill-x, --search-x,
-  // --notearea-x ...) at the MEASURED centers of the actual boxes. The site
-  // declares them as fixed percentages calibrated for the desktop stage; on the
-  // phone stage those land beside the target. Runs when a scene is shown, so
-  // every "chip flies to a box" actually arrives at the box.
-  function centerPct(stage, el){
-    if(!el) return null;
-    var r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
-    if(r.width < 2 && r.height < 2) return null;    // display:none / collapsed
-    return { x: (r.left + r.width/2 - s.left) / s.width * 100,
-             y: (r.top + r.height/2 - s.top) / s.height * 100 };
-  }
-  function setVar(stage, name, c){
-    if(!c) return;
-    stage.style.setProperty(name + '-x', c.x.toFixed(2) + '%');
-    stage.style.setProperty(name + '-y', c.y.toFixed(2) + '%');
-  }
+  // Ported from the homepage's measureTargets(): every click/flight anchor in
+  // the markup carries data-target="<name>"; measure each one's center within
+  // the stage and write --<name>-x/y CSS vars. This aims the cursor waypoints
+  // (notes, office, line-start, line-end), the click flashes, and every ghost
+  // flight (hlblock, pill, search, notearea) at where the boxes REALLY are —
+  // the stylesheet percentages are only fallbacks. Runs per scene when shown
+  // (hidden scenes have no geometry).
   function calibrate(scene){
     if(!scene || !scene.classList || !scene.classList.contains('scene')) return;
     var stage = scene.querySelector('.stage.p');
     if(!stage) return;
-    setVar(stage, '--pill', centerPct(stage, stage.querySelector('.pill')));
-    if(scene.classList.contains('scene-3')){
-      setVar(stage, '--search', centerPct(stage, stage.querySelector('.s3-search')));
-    }
-    if(scene.classList.contains('scene-4')){
-      var entry = centerPct(stage, stage.querySelector('.entry-box'));
-      var modal = centerPct(stage, stage.querySelector('.s4-modal'));
-      setVar(stage, '--search', entry || modal);
-      var note = centerPct(stage, stage.querySelector('.s4-note-view'));
-      setVar(stage, '--notearea', note || entry || modal);
-    }
+    var sr = stage.getBoundingClientRect();
+    if(sr.width < 10) return;
+    stage.querySelectorAll('[data-target]').forEach(function(el){
+      var r = el.getBoundingClientRect();
+      if(r.width < 1 && r.height < 1) return;   // hidden -> keep fallback value
+      var px = (r.left + r.width  / 2 - sr.left) / sr.width  * 100;
+      var py = (r.top  + r.height / 2 - sr.top)  / sr.height * 100;
+      stage.style.setProperty('--' + el.dataset.target + '-x', px.toFixed(3) + '%');
+      stage.style.setProperty('--' + el.dataset.target + '-y', py.toFixed(3) + '%');
+    });
   }
   window.addEventListener('resize', function(){ sizeAll(); calibrate(document.querySelector('.scene.on')); });
   window.addEventListener('load', sizeAll);
   sizeAll();
+  // intro -> [title card -> animation] x4 -> end card
   var TL = [
-    { el: '#c-intro',  dur: 4600,  title: '' },
-    { el: '.scene-1',  dur: 9000,  title: "A small <span class=\"accent\">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote." },
-    { el: '.scene-2',  dur: 8650,  title: "Precharting takes seconds — just <span class=\"accent\">highlight text</span> and transfer to eleanote." },
-    { el: '.scene-3',  dur: 15000, title: "While you record, AI <span class=\"accent\">stages orders</span> for automated transfer in real time." },
-    { el: '.scene-4',  dur: 20500, title: "At end of encounter, transfer <span class=\"accent\">diagnoses and the note</span> in one keystroke." },
-    { el: '#c-outro',  dur: 0,     title: '' }   // 0 = hold forever
+    { el: '#c-intro',  dur: 3600  },
+    { el: '#t1',       dur: 2400  },
+    { el: '.scene-1',  dur: 9000  },
+    { el: '#t2',       dur: 2400  },
+    { el: '.scene-2',  dur: 8650  },
+    { el: '#t3',       dur: 2400  },
+    { el: '.scene-3',  dur: 15000 },
+    { el: '#t4',       dur: 2400  },
+    { el: '.scene-4',  dur: 20500 },
+    { el: '#c-outro',  dur: 0     }   // 0 = hold forever
   ];
   var timer = null, started = false;
-  var titleEl = document.getElementById('vtitle');
   function clearAll(){
     document.querySelectorAll('.scene.on, .vcard.on').forEach(function(n){ n.classList.remove('on'); });
   }
@@ -3873,20 +3869,11 @@ html,body{margin:0!important;padding:0!important;height:100%;overflow:hidden!imp
     var node = document.querySelector(step.el);
     // toggling display (none -> flex/block) restarts every CSS animation inside
     if (node) node.classList.add('on');
-    // measure-and-aim the ghost flight targets once the scene has layout.
+    // measure-and-aim the click/flight targets once the scene has layout.
     // setTimeout (not rAF): it still fires in hidden/backgrounded windows, and
-    // the first ghost flight starts seconds into each scene anyway.
+    // the first cursor move starts seconds into each scene anyway.
     if (node) setTimeout(function(){ calibrate(node); }, 60);
-    if (step.title){
-      titleEl.innerHTML = step.title;
-      titleEl.classList.remove('show');
-      void titleEl.offsetWidth;             // reflow so the entrance animation re-runs
-      titleEl.classList.add('show');
-    } else {
-      titleEl.innerHTML = '';
-      titleEl.classList.remove('show');
-    }
-    var dur = fast ? 1400 : step.dur;
+    var dur = fast ? 1200 : step.dur;
     if (timer) clearTimeout(timer);
     if (dur > 0 && i + 1 < TL.length) timer = setTimeout(function(){ showStep(i+1); }, dur);
   }
