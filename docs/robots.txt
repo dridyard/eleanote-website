@@ -1,0 +1,11 @@
+# eleanote.ai — crawler instructions
+# Public marketing + documentation pages are open to all search engines.
+# Private areas (admin console, sandboxes, sign-in utility pages) are kept out
+# of search results with per-page <meta name="robots" content="noindex">,
+# NOT by listing them here — a Disallow line would advertise those URLs to
+# anyone who reads this file.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://eleanote.ai/sitemap.xml
