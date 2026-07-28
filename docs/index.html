@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eleanote — An ambient AI scribe built by a doctor.</title>
-    <meta name="description" content="Eleanote is an ambient AI scribe built by a practicing physician. It writes notes the way you want, learns from your feedback, and moves work into your EHR with customizable hotkeys.">
+    <title>Eleanote — Ambient AI Medical Scribe for Any EHR</title>
+    <meta name="description" content="An ambient AI medical scribe that learns from your feedback and writes notes and orders directly into any EHR.">
     <meta name="theme-color" content="#14515c">
-    <meta property="og:title" content="Eleanote — An ambient AI scribe built by a doctor.">
-    <meta property="og:description" content="An ambient AI scribe built by a practicing physician. Writes notes the way you want, learns from your feedback, and moves work into your EHR with customizable hotkeys.">
+    <meta property="og:title" content="Eleanote — Ambient AI Medical Scribe for Any EHR">
+    <meta property="og:description" content="An ambient AI medical scribe that learns from your feedback and writes notes and orders directly into any EHR.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://eleanote.ai/">
     <link rel="canonical" href="https://eleanote.ai/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Eleanote — An ambient AI scribe built by a doctor.">
-    <meta name="twitter:description" content="An ambient AI scribe built by a practicing physician. Writes notes the way you want, learns from your feedback, and moves work into your EHR with customizable hotkeys.">
+    <meta name="twitter:title" content="Eleanote — Ambient AI Medical Scribe for Any EHR">
+    <meta name="twitter:description" content="An ambient AI medical scribe that learns from your feedback and writes notes and orders directly into any EHR.">
     <!-- Structured data: tells Google and AI assistants what Eleanote is, who
          makes it, and where to get it. Deliberately contains no ratings or
          review counts — those must be real before they can be published. -->
@@ -31,7 +31,7 @@
           "url": "https://eleanote.ai/",
           "downloadUrl": "https://apps.microsoft.com/detail/xpdcs2gxgxbssf",
           "installUrl": "https://apps.microsoft.com/detail/xpdcs2gxgxbssf",
-          "description": "Eleanote is an ambient AI medical scribe for clinicians. It listens during a patient encounter, drafts the clinical note the way you want it written, learns from your feedback, and transfers diagnoses, orders, and the note into your EMR using customizable hotkeys.",
+          "description": "An ambient AI medical scribe that learns from your feedback and writes notes and orders directly into any EHR. Eleanote listens during the patient encounter, drafts the clinical note the way you want it written, and transfers diagnoses, orders, and the note into your EHR with a keystroke.",
           "featureList": [
             "Ambient transcription of patient encounters",
             "AI-drafted clinical notes that follow your own preferences",
@@ -49,7 +49,7 @@
           "alternateName": "Eleanote",
           "url": "https://eleanote.ai/",
           "email": "support@eleanote.ai",
-          "description": "Eleanote LLC builds Eleanote, an ambient AI medical scribe created by a practicing physician.",
+          "description": "Eleanote LLC builds Eleanote, an ambient AI medical scribe for clinicians.",
           "founder": {
             "@type": "Person",
             "name": "Doug Ridyard",
@@ -337,6 +337,15 @@
             max-width: 880px;
             margin: 0 auto;
             text-align: left;
+        }
+
+        /* The hero headline is a full sentence, so it needs a smaller floor
+           than the global h1 clamp (which bottoms out at 2.4rem and would run
+           to ~7 lines on a phone, pushing the bullets off screen). Desktop
+           sizing is unchanged — only the narrow end scales down. */
+        .hero h1 {
+            font-size: clamp(1.85rem, 5.4vw, 4.2rem);
+            line-height: 1.12;
         }
 
         .hero-label {
@@ -3045,7 +3054,7 @@
         <!-- ============== HERO ============== -->
         <section class="hero">
             <div class="container hero-inner">
-                <h1>An ambient AI scribe<br>built by a doctor, <span class="accent">for doctors.</span></h1>
+                <h1>An ambient AI medical scribe that learns from your feedback and writes notes and orders <span class="accent">directly into any EHR.</span></h1>
                 <p class="hero-lede">
                     eleanote is a program installed on your clinic laptop. What it does:
                 </p>
