@@ -40,21 +40,6 @@
     box-shadow: 0 10px 28px rgba(13, 43, 48, 0.1);
   }
 
-  .dl-badge {
-    align-self: flex-start;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--teal);
-    background: rgba(20, 81, 92, 0.09);
-    border-radius: 999px;
-    padding: 0.25rem 0.6rem;
-    margin-bottom: 0.9rem;
-    /* Shown only when the visitor is on this platform (set by the script below). */
-    display: none;
-  }
-
   .dl-icon { display: block; margin-bottom: 0.85rem; color: var(--teal-deep); }
 
   .dl-card h2 {
@@ -99,27 +84,16 @@
     text-align: center;
   }
 
-  .dl-trust {
-    background: rgba(20, 81, 92, 0.05);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 1.2rem 1.35rem;
+  .legal-doc p.dl-help {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.98rem;
+    margin-bottom: 0;
   }
-  .dl-trust h2 {
-    font-size: 1.05rem;
-    margin: 0 0 0.5rem;
-    padding: 0;
-    border: 0;
-    color: var(--teal-deep);
-  }
-  .dl-trust p { font-size: 0.96rem; margin-bottom: 0.7rem; }
-  .dl-trust p:last-child { margin-bottom: 0; }
 
-  /* When the visitor's platform is known, that card leads and shows its badge. */
+  /* Lead with the visitor's own platform. Silent — no badge, nothing announced. */
   body[data-os="mac"] #card-mac,
   body[data-os="windows"] #card-windows { order: -1; }
-  body[data-os="mac"] #card-mac .dl-badge,
-  body[data-os="windows"] #card-windows .dl-badge { display: block; }
 
   @media (max-width: 600px) {
     .dl-card { padding: 1.35rem 1.2rem 1.25rem; }
@@ -139,7 +113,6 @@
   <div class="dl-grid">
 
     <div class="dl-card" id="card-windows">
-      <span class="dl-badge">You&rsquo;re on Windows</span>
       <svg class="dl-icon" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M3 5.6l7.4-1.02v7.15H3V5.6zm0 12.8l7.4 1.02v-7.06H3v6.04zm8.22 1.13L21 20.9v-8.58h-9.78v7.21zM11.22 3.1v7.33H21V1.76L11.22 3.1z"/>
       </svg>
@@ -152,12 +125,11 @@
     </div>
 
     <div class="dl-card" id="card-mac">
-      <span class="dl-badge">You&rsquo;re on a Mac</span>
       <svg class="dl-icon" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M16.36 12.72c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.68 2.36 2.88 2.31 1.16-.05 1.6-.75 3-.75s1.79.75 3.01.72c1.24-.02 2.03-1.13 2.79-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.44-3.69M14.1 5.98c.64-.77 1.07-1.85.95-2.92-.92.04-2.03.61-2.69 1.38-.59.68-1.11 1.78-.97 2.83 1.03.08 2.07-.52 2.71-1.29"/>
       </svg>
       <h2>Mac</h2>
-      <p class="dl-req">macOS 12 (Monterey) or later.<br><strong>Apple silicon only</strong> &mdash; M1 chip or newer.</p>
+      <p class="dl-req">macOS 12 or later.<br>Macs with an <strong>M1 chip or newer</strong>.</p>
       <div class="dl-action">
         <a class="dl-btn" href="https://github.com/dridyard/eleanote-releases/releases/download/macos-0.6.0/Eleanote-0.6.0.dmg">Download for Mac</a>
         <p class="dl-note">Version 0.6.0 &middot; 47 MB</p>
@@ -166,13 +138,7 @@
 
   </div>
 
-  <div class="dl-trust">
-    <h2>Installing on a Mac</h2>
-    <p>Open the downloaded <strong>Eleanote-0.6.0.dmg</strong> file, then drag the Eleanote icon onto the Applications folder shown beside it. Open Eleanote from your Applications folder, and it will walk you through the two permissions macOS requires &mdash; microphone access so it can hear the visit, and accessibility access so it can type your note into your EMR.</p>
-    <p>Eleanote is code-signed and <strong>notarized by Apple</strong> under Eleanote LLC, so it opens with no security warning. If your Mac ever says the app is from an unidentified developer or is damaged, the file didn&rsquo;t come from us &mdash; delete it and download again from this page.</p>
-    <p>Not sure which Mac you have? Click the Apple menu in the top-left corner and choose <strong>About This Mac</strong>. The Chip line should say Apple M1 or later.</p>
-    <p>Trouble installing on either platform? Email <a href="mailto:support@eleanote.ai">support@eleanote.ai</a> and we&rsquo;ll help you get set up.</p>
-  </div>
+  <p class="dl-help">Any trouble installing? Email <a href="mailto:support@eleanote.ai">support@eleanote.ai</a> and we&rsquo;ll help you get set up.</p>
 </main>
 
 <footer class="legal-footer">
