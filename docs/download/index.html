@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download Eleanote — Windows and Mac</title>
+<meta name="description" content="Download Eleanote, the ambient AI medical scribe. Get the Windows version from the Microsoft Store, or download the Mac version directly. Both are code-signed by Eleanote LLC.">
+<link rel="canonical" href="https://eleanote.ai/download">
+<meta property="og:title" content="Download Eleanote — Windows and Mac">
+<meta property="og:description" content="Get Eleanote for Windows from the Microsoft Store, or download the Mac version directly.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://eleanote.ai/download">
+<link rel="stylesheet" href="/legal/legal.css">
+<style>
+  /* Every rule below is scoped under .legal-doc on purpose: legal.css styles
+     `.legal-doc p` and `.legal-doc a` directly, which outranks a bare class. */
+  .legal-doc p { font-size: 1.05rem; }
+
+  .legal-doc p.dl-lede { margin-bottom: 2.2rem; }
+
+  .dl-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 2.4rem;
+  }
+  .dl-card {
+    flex: 1 1 300px;
+    display: flex;
+    flex-direction: column;
+    background: #fffdf7;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem 1.5rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(13, 43, 48, 0.05);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .dl-card:hover {
+    border-color: rgba(13, 43, 48, 0.2);
+    box-shadow: 0 10px 28px rgba(13, 43, 48, 0.1);
+  }
+
+  .dl-badge {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--teal);
+    background: rgba(20, 81, 92, 0.09);
+    border-radius: 999px;
+    padding: 0.25rem 0.6rem;
+    margin-bottom: 0.9rem;
+    /* Shown only when the visitor is on this platform (set by the script below). */
+    display: none;
+  }
+
+  .dl-icon { display: block; margin-bottom: 0.85rem; color: var(--teal-deep); }
+
+  .dl-card h2 {
+    font-size: 1.25rem;
+    color: var(--teal-deep);
+    letter-spacing: -0.01em;
+    margin: 0 0 0.35rem;
+    padding: 0;
+    border: 0;
+  }
+  .legal-doc p.dl-req {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Push every button to the same baseline regardless of text length above. */
+  .dl-action { margin-top: auto; }
+
+  .legal-doc a.dl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    background: var(--teal);
+    color: #fffdf7;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .legal-doc a.dl-btn:hover { background: var(--teal-deep); }
+  .legal-doc a.dl-btn:active { transform: translateY(1px); }
+  .legal-doc p.dl-note {
+    margin: 0.7rem 0 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .dl-trust {
+    background: rgba(20, 81, 92, 0.05);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.35rem;
+  }
+  .dl-trust h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    border: 0;
+    color: var(--teal-deep);
+  }
+  .dl-trust p { font-size: 0.96rem; margin-bottom: 0.7rem; }
+  .dl-trust p:last-child { margin-bottom: 0; }
+
+  /* When the visitor's platform is known, that card leads and shows its badge. */
+  body[data-os="mac"] #card-mac,
+  body[data-os="windows"] #card-windows { order: -1; }
+  body[data-os="mac"] #card-mac .dl-badge,
+  body[data-os="windows"] #card-windows .dl-badge { display: block; }
+
+  @media (max-width: 600px) {
+    .dl-card { padding: 1.35rem 1.2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<header class="legal-header">
+  <a class="brand" href="/"><span class="brand-word">eleanote</span></a>
+  <a class="back" href="/">&larr; Back to site</a>
+</header>
+
+<main class="legal-doc">
+  <h1>Download Eleanote</h1>
+  <p class="dl-lede">Eleanote runs on your own clinic laptop. Install it, open it, and sign in with the same email and password as your Eleanote account. Don&rsquo;t have one yet? <a href="/auth/signup.html">Create an account</a> first.</p>
+
+  <div class="dl-grid">
+
+    <div class="dl-card" id="card-windows">
+      <span class="dl-badge">You&rsquo;re on Windows</span>
+      <svg class="dl-icon" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 5.6l7.4-1.02v7.15H3V5.6zm0 12.8l7.4 1.02v-7.06H3v6.04zm8.22 1.13L21 20.9v-8.58h-9.78v7.21zM11.22 3.1v7.33H21V1.76L11.22 3.1z"/>
+      </svg>
+      <h2>Windows</h2>
+      <p class="dl-req">Windows 10 or 11.<br>Installs from the Microsoft Store.</p>
+      <div class="dl-action">
+        <a class="dl-btn" href="https://apps.microsoft.com/detail/xpdcs2gxgxbssf" target="_blank" rel="noopener">Get it from the Microsoft Store</a>
+        <p class="dl-note">Opens the Microsoft Store</p>
+      </div>
+    </div>
+
+    <div class="dl-card" id="card-mac">
+      <span class="dl-badge">You&rsquo;re on a Mac</span>
+      <svg class="dl-icon" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M16.36 12.72c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.68 2.36 2.88 2.31 1.16-.05 1.6-.75 3-.75s1.79.75 3.01.72c1.24-.02 2.03-1.13 2.79-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.44-3.69M14.1 5.98c.64-.77 1.07-1.85.95-2.92-.92.04-2.03.61-2.69 1.38-.59.68-1.11 1.78-.97 2.83 1.03.08 2.07-.52 2.71-1.29"/>
+      </svg>
+      <h2>Mac</h2>
+      <p class="dl-req">macOS 12 (Monterey) or later.<br><strong>Apple silicon only</strong> &mdash; M1 chip or newer.</p>
+      <div class="dl-action">
+        <a class="dl-btn" href="https://github.com/dridyard/eleanote-releases/releases/download/macos-0.6.0/Eleanote-0.6.0.dmg">Download for Mac</a>
+        <p class="dl-note">Version 0.6.0 &middot; 47 MB</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dl-trust">
+    <h2>Installing on a Mac</h2>
+    <p>Open the downloaded <strong>Eleanote-0.6.0.dmg</strong> file, then drag the Eleanote icon onto the Applications folder shown beside it. Open Eleanote from your Applications folder, and it will walk you through the two permissions macOS requires &mdash; microphone access so it can hear the visit, and accessibility access so it can type your note into your EMR.</p>
+    <p>Eleanote is code-signed and <strong>notarized by Apple</strong> under Eleanote LLC, so it opens with no security warning. If your Mac ever says the app is from an unidentified developer or is damaged, the file didn&rsquo;t come from us &mdash; delete it and download again from this page.</p>
+    <p>Not sure which Mac you have? Click the Apple menu in the top-left corner and choose <strong>About This Mac</strong>. The Chip line should say Apple M1 or later.</p>
+    <p>Trouble installing on either platform? Email <a href="mailto:support@eleanote.ai">support@eleanote.ai</a> and we&rsquo;ll help you get set up.</p>
+  </div>
+</main>
+
+<footer class="legal-footer">
+  <p>&copy; Eleanote LLC &middot; <a href="/legal/terms.html">Terms of Service</a> &middot; <a href="/legal/privacy.html">Privacy Policy</a> &middot; <a href="mailto:support@eleanote.ai">support@eleanote.ai</a></p>
+</footer>
+
+<script src="/menu.js" defer></script>
+<script>
+  // Lead with the visitor's own platform. Both cards always render, so this is
+  // purely an ordering hint — with JS off the page is still complete.
+  (function () {
+    var ua = navigator.userAgent || '';
+    var os = '';
+    if (/Macintosh|Mac OS X/.test(ua) && !/iPhone|iPad|iPod/.test(ua)) os = 'mac';
+    else if (/Windows NT/.test(ua)) os = 'windows';
+    if (os) document.body.setAttribute('data-os', os);
+  })();
+</script>
+</body>
+</html>
