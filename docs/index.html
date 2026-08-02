@@ -73,30 +73,40 @@
       ]
     }
     </script>
+    <link rel="icon" href="/favicon.ico">
+    <script>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
     <style>
+        /* ================================================================
+           ELEANOTE HOMEPAGE — scroll-heavy layout (Aug 2026 redesign).
+           The scene animation system lives in the second style block;
+           see the note there before editing it.
+           ================================================================ */
         :root {
             --ink: #0d2b30;
             --teal: #14515c;
             --teal-deep: #0e3d46;
+            --teal-bright: #1d6b78;
+            --teal-ink: #0a2025;
             --teal-soft: #e8efe8;
             --teal-faint: #eef3ed;
-            /* Warm cream/tan palette - matches the program UI */
-            --paper: #fbf7ec;        /* main body cream (= program --workspace) */
-            --paper-2: #f4eedd;      /* deeper cream band (= program --chrome) */
-            --surface: #ffffff;       /* elevated white cards */
-            --line: #e5dcc1;          /* warm hairline (= program --chrome-edge) */
-            --muted: #6a6e6a;
+            --paper: #fbf7ec;
+            --paper-2: #f4eedd;
+            --warm-white: #fffdf7;
+            --surface: #ffffff;
+            --line: #e5dcc1;
+            --line-soft: rgba(13, 43, 48, 0.08);
+            --muted: #5d6a66;
             --gold: #a78449;
             --shadow-sm: 0 2px 8px rgba(13, 43, 48, 0.05);
             --shadow-md: 0 12px 32px rgba(13, 43, 48, 0.08);
-            --shadow-lg: 0 28px 64px rgba(13, 43, 48, 0.10);
+            --shadow-lg: 0 28px 64px rgba(13, 43, 48, 0.12);
             --radius: 1.1rem;
             --radius-lg: 1.6rem;
-            --max: 1120px;
-            --header-h: 64px;
+            --max: 1140px;
+            --header-h: 68px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -114,113 +124,217 @@
         }
 
         a { color: inherit; }
-
         ::selection { background: var(--teal); color: #fff; }
 
+        h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.02em; }
+
+        h1 {
+            font-size: clamp(2.35rem, 5.6vw, 4.35rem);
+            line-height: 1.04;
+            letter-spacing: -0.038em;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: clamp(1.9rem, 3.8vw, 2.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.028em;
+            font-weight: 700;
+        }
+
+        h3 { font-size: 1.12rem; font-weight: 600; line-height: 1.35; }
+
+        p { color: var(--muted); }
+
+        .accent {
+            color: var(--teal-deep);
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .container { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
+        .container-narrow { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--gold);
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+        .eyebrow::before {
+            content: "";
+            width: 22px;
+            height: 1.5px;
+            background: var(--gold);
+            opacity: 0.7;
+        }
+        .eyebrow.centered::after {
+            content: "";
+            width: 22px;
+            height: 1.5px;
+            background: var(--gold);
+            opacity: 0.7;
+        }
+
+        .section-head { max-width: 800px; }
+        .section-head.centered { margin: 0 auto; text-align: center; }
+        .section-head.centered .eyebrow { justify-content: center; }
+        .section-head .lede {
+            margin-top: 1.1rem;
+            font-size: clamp(1.05rem, 1.55vw, 1.2rem);
+            line-height: 1.6;
+            color: #3c5257;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--teal-deep);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.95rem 1.55rem;
+            border-radius: 999px;
+            border: 1px solid var(--teal-deep);
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+        }
+        .btn:hover {
+            background: var(--teal);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(14, 61, 70, 0.22);
+        }
+        .btn .arr { transition: transform 180ms ease; display: inline-block; }
+        .btn:hover .arr { transform: translateX(3px); }
+
+        .btn-ghost {
+            background: var(--surface);
+            color: var(--teal-deep);
+            border-color: rgba(14, 61, 70, 0.16);
+        }
+        .btn-ghost:hover {
+            background: var(--teal-faint);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .btn-sm { padding: 0.6rem 1.15rem; font-size: 0.92rem; }
+
+        .btn-play .play-ico {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: var(--teal-deep);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+        .btn-play .play-ico svg { width: 9px; height: 9px; margin-left: 1.5px; }
+
         /* ---------- HEADER ---------- */
+        /* ALWAYS fully opaque — no JS, no scroll state, no translucency.
+           Page text must never show through behind the wordmark. */
         .site-header {
             position: fixed;
             top: 0; left: 0; right: 0;
             height: var(--header-h);
-            background: rgba(250, 250, 247, 0.86);
-            backdrop-filter: saturate(160%) blur(14px);
-            -webkit-backdrop-filter: saturate(160%) blur(14px);
-            border-bottom: 1px solid rgba(13, 43, 48, 0.06);
-            z-index: 50;
+            z-index: 60;
+            background: var(--paper);
+            border-bottom: 1px solid rgba(13, 43, 48, 0.08);
+            box-shadow: 0 1px 12px rgba(13, 43, 48, 0.05);
         }
 
         .nav {
-            max-width: var(--max);
+            max-width: 1220px;
             margin: 0 auto;
             height: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 1.4rem;
+            gap: 1.6rem;
+            padding: 0 1.5rem;
         }
 
-        .brand {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--teal-deep);
-        }
-
-        /* .brand-mark removed -- the wordmark alone is the brand now */
-
+        .brand { display: inline-flex; align-items: center; text-decoration: none; }
         .brand-word {
-            /* Halfway between the old header size (1.35rem) and the hero
-               h1 (clamp 2.4-4.2rem). Clamp scales gracefully across
-               viewports so the header still fits at narrow widths. */
-            font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+            font-size: 1.75rem;
             font-weight: 600;
             letter-spacing: -0.045em;
             color: #173D47;
         }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin: 0 auto;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #2d4448;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            transition: background 160ms ease, color 160ms ease;
+        }
+        .nav-links a:hover { background: rgba(20, 81, 92, 0.07); color: var(--teal-deep); }
+
+        .nav-cta { display: flex; align-items: center; gap: 0.55rem; }
+        .nav-signin {
+            text-decoration: none;
+            color: #2d4448;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+        }
+        .nav-signin:hover { color: var(--teal-deep); }
+
+        /* mobile menu */
         .menu-btn {
             -webkit-appearance: none;
             appearance: none;
+            display: none;
             border: 1px solid rgba(13, 43, 48, 0.12);
             background: var(--surface);
             border-radius: 999px;
-            height: 40px;
-            padding: 0 0.95rem 0 0.85rem;
-            display: inline-flex;
+            height: 42px;
+            width: 46px;
             align-items: center;
-            gap: 0.55rem;
+            justify-content: center;
             cursor: pointer;
             color: var(--ink);
-            font-family: inherit;
-            font-size: 0.92rem;
-            font-weight: 500;
-            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
         }
-
-        .menu-btn:hover {
-            border-color: rgba(13, 43, 48, 0.22);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .menu-btn:focus-visible {
-            outline: none;
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
-        }
-
-        .menu-icon {
-            position: relative;
-            width: 16px;
-            height: 12px;
-        }
-
+        .menu-icon { position: relative; width: 16px; height: 12px; display: block; }
         .menu-icon span {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1.6px;
-            background: var(--ink);
-            border-radius: 999px;
+            position: absolute; left: 0; right: 0; height: 1.6px;
+            background: var(--ink); border-radius: 999px;
             transition: transform 220ms ease, opacity 160ms ease, top 220ms ease;
         }
         .menu-icon span:nth-child(1) { top: 0; }
         .menu-icon span:nth-child(2) { top: 5px; }
         .menu-icon span:nth-child(3) { top: 10px; }
-
         body.menu-open .menu-icon span:nth-child(1) { top: 5px; transform: rotate(45deg); }
         body.menu-open .menu-icon span:nth-child(2) { opacity: 0; }
         body.menu-open .menu-icon span:nth-child(3) { top: 5px; transform: rotate(-45deg); }
 
-        /* dropdown */
-        .menu-wrap {
-            position: relative;
-            display: inline-flex;
-        }
         .menu-panel {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: min(320px, calc(100vw - 2rem));
+            position: fixed;
+            top: calc(var(--header-h) + 8px);
+            right: 1rem;
+            width: min(330px, calc(100vw - 2rem));
             background: var(--surface);
             border: 1px solid rgba(13, 43, 48, 0.08);
             border-radius: var(--radius);
@@ -231,261 +345,496 @@
             transform-origin: top right;
             pointer-events: none;
             transition: opacity 180ms ease, transform 180ms ease;
-            z-index: 49;
+            z-index: 59;
         }
-
-        body.menu-open .menu-panel {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
+        body.menu-open .menu-panel { opacity: 1; transform: none; pointer-events: auto; }
         .menu-panel a {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.85rem 0.95rem;
-            border-radius: 0.8rem;
-            text-decoration: none;
-            color: var(--ink);
-            font-weight: 500;
-            font-size: 0.98rem;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.8rem 0.95rem; border-radius: 0.8rem;
+            text-decoration: none; color: var(--ink);
+            font-weight: 500; font-size: 0.97rem;
         }
-
         .menu-panel a:hover { background: var(--teal-faint); color: var(--teal-deep); }
+        .menu-panel a .arrow { color: var(--muted); font-weight: 400; }
+        .menu-panel hr { border: 0; height: 1px; background: rgba(13, 43, 48, 0.06); margin: 0.35rem 0.4rem; }
+        /* Auth-state toggling sets [hidden]; our display rules must not
+           override the UA's hidden handling. */
+        .menu-panel a[hidden], .nav-signin[hidden] { display: none; }
 
-        .menu-panel a span.arrow { color: var(--muted); font-weight: 400; }
-
-        .menu-panel hr {
-            border: 0;
-            height: 1px;
-            background: rgba(13, 43, 48, 0.06);
-            margin: 0.35rem 0.4rem;
-        }
-
-        /* ---------- LAYOUT ---------- */
-        main { padding-top: var(--header-h); }
-
-        section {
-            padding: 5rem 1.4rem;
-            position: relative;
-        }
-
-        .container {
-            max-width: var(--max);
-            margin: 0 auto;
-        }
-
-        .container-narrow {
-            max-width: 760px;
-            margin: 0 auto;
-        }
-
-        .eyebrow {
-            color: var(--teal);
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            margin-bottom: 1.1rem;
-        }
-
-        h1, h2, h3, h4 {
-            color: var(--ink);
-            letter-spacing: -0.02em;
-        }
-
-        h1 {
-            font-size: clamp(2.4rem, 5.4vw, 4.2rem);
-            line-height: 1.02;
-            letter-spacing: -0.035em;
-            font-weight: 600;
-        }
-
-        h2 {
-            font-size: clamp(1.85rem, 3.4vw, 2.6rem);
-            line-height: 1.1;
-            letter-spacing: -0.025em;
-            font-weight: 600;
-        }
-
-        h3 {
-            font-size: 1.15rem;
-            font-weight: 600;
-            line-height: 1.35;
-        }
-
-        p { color: var(--muted); }
-
-        .lead {
-            font-size: clamp(1.08rem, 1.6vw, 1.22rem);
-            line-height: 1.55;
-            color: #2d4448;
-            max-width: 38rem;
+        @media (max-width: 940px) {
+            .nav-links, .nav-cta .nav-signin, .nav-cta .btn-ghost { display: none; }
+            .menu-btn { display: inline-flex; }
+            .nav { gap: 0.8rem; }
+            .nav-cta { margin-left: auto; }
         }
 
         /* ---------- HERO ---------- */
         .hero {
-            padding: clamp(4rem, 9vw, 7rem) 1.4rem 4rem;
-            background:
-                radial-gradient(60% 40% at 12% 0%, rgba(20, 81, 92, 0.10), transparent 70%),
-                radial-gradient(60% 50% at 100% 30%, rgba(20, 81, 92, 0.05), transparent 70%),
-                linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+            position: relative;
+            padding: calc(var(--header-h) + clamp(3.2rem, 8vw, 6rem)) 1.5rem clamp(3rem, 6vw, 5rem);
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--paper) 88%);
         }
+        /* faint dot grid + drifting color washes */
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(13, 43, 48, 0.055) 1px, transparent 1px);
+            background-size: 24px 24px;
+            mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 72%);
+            -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 72%);
+            pointer-events: none;
+        }
+        .hero-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .hero-glow.g1 {
+            width: 640px; height: 640px;
+            left: -160px; top: -220px;
+            background: radial-gradient(circle, rgba(20, 81, 92, 0.16), transparent 65%);
+            animation: glowDrift1 16s ease-in-out infinite alternate;
+        }
+        .hero-glow.g2 {
+            width: 520px; height: 520px;
+            right: -140px; top: 60px;
+            background: radial-gradient(circle, rgba(167, 132, 73, 0.13), transparent 65%);
+            animation: glowDrift2 19s ease-in-out infinite alternate;
+        }
+        @keyframes glowDrift1 { from { transform: translate(0, 0); } to { transform: translate(70px, 40px); } }
+        @keyframes glowDrift2 { from { transform: translate(0, 0); } to { transform: translate(-60px, 50px); } }
 
         .hero-inner {
-            max-width: 880px;
+            position: relative;
+            max-width: 900px;
             margin: 0 auto;
-            text-align: left;
+            text-align: center;
         }
 
-        /* The hero headline is a full sentence, so it needs a smaller floor
-           than the global h1 clamp (which bottoms out at 2.4rem and would run
-           to ~7 lines on a phone, pushing the bullets off screen). Desktop
-           sizing is unchanged — only the narrow end scales down. */
-        .hero h1 {
-            font-size: clamp(1.85rem, 5.4vw, 4.2rem);
-            line-height: 1.12;
-        }
-
-        .hero-label {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.55rem;
             background: var(--surface);
-            border: 1px solid rgba(13, 43, 48, 0.08);
+            border: 1px solid rgba(13, 43, 48, 0.09);
             border-radius: 999px;
-            padding: 0.4rem 0.85rem 0.4rem 0.55rem;
+            padding: 0.45rem 1rem 0.45rem 0.7rem;
             color: var(--teal-deep);
-            font-size: 0.82rem;
-            font-weight: 500;
-            margin-bottom: 1.6rem;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 1.7rem;
             box-shadow: var(--shadow-sm);
         }
-
-        .hero-label .dot {
-            width: 6px; height: 6px;
+        .hero-badge .dot {
+            width: 7px; height: 7px;
             border-radius: 50%;
-            background: var(--teal);
-            box-shadow: 0 0 0 3px rgba(20, 81, 92, 0.18);
-        }
-
-        .hero h1 .accent {
-            color: var(--teal-deep);
-            font-family: "Source Serif 4", Georgia, serif;
-            font-style: italic;
-            font-weight: 500;
+            background: #2fa46b;
+            box-shadow: 0 0 0 3px rgba(47, 164, 107, 0.18);
         }
 
         .hero-sub {
-            margin-top: 1.4rem;
-            font-size: clamp(1.05rem, 1.55vw, 1.18rem);
-            line-height: 1.55;
-            color: #2d4448;
-            max-width: 36rem;
-        }
-
-        /* hero bullet list - 'just the facts' */
-        .hero-lede {
-            margin-top: 1.6rem;
-            font-size: clamp(1.02rem, 1.45vw, 1.12rem);
-            line-height: 1.5;
-            color: var(--ink);
-            max-width: 38rem;
-            font-weight: 500;
-        }
-        .hero-bullets {
-            list-style: none;
-            margin: 1.1rem 0 0;
-            padding: 0;
-            max-width: 40rem;
-        }
-        .hero-bullets li {
-            position: relative;
-            padding: 0.5rem 0 0.5rem 1.6rem;
-            font-size: clamp(0.98rem, 1.4vw, 1.06rem);
-            line-height: 1.5;
-            color: #2d4448;
-            border-bottom: 1px solid var(--line);
-        }
-        .hero-bullets li:last-child { border-bottom: 0; }
-        .hero-bullets li::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0.95rem;
-            width: 0.5rem;
-            height: 0.5rem;
-            border-radius: 50%;
-            background: var(--teal);
-        }
-        .hero-bullets b {
-            color: var(--ink);
-            font-weight: 600;
+            margin: 1.5rem auto 0;
+            font-size: clamp(1.06rem, 1.6vw, 1.24rem);
+            line-height: 1.62;
+            color: #3c5257;
+            max-width: 44rem;
         }
 
         .hero-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.7rem;
-            margin-top: 2rem;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 2.1rem;
         }
 
-        .btn {
+        /* Trust boxes — sit directly under the hero CTAs */
+        .hero-boxes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            max-width: 1080px;
+            margin: clamp(2.4rem, 4.5vw, 3.2rem) auto 0;
+            text-align: left;
+        }
+        .hero-box {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.15rem 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+        }
+        .hero-box:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(20, 81, 92, 0.22);
+        }
+        .hero-box svg { width: 21px; height: 21px; color: var(--teal); flex: 0 0 auto; margin-top: 2px; }
+        .hero-box .t { font-size: 0.95rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+        .hero-box .s { font-size: 0.84rem; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+        @media (max-width: 940px) {
+            .hero-boxes { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .hero-boxes { grid-template-columns: 1fr; gap: 0.65rem; }
+            .hero-box { padding: 1rem 1.1rem; }
+        }
+
+        /* ---------- SECTIONS ---------- */
+        section.block { padding: clamp(84px, 11vw, 132px) 1.5rem; position: relative; }
+        section.block.tight { padding-top: clamp(64px, 8vw, 96px); }
+        .band-white { background: var(--warm-white); }
+        .band-paper { background: var(--paper); }
+        .band-edge { border-top: 1px solid var(--line); }
+
+        /* ---------- HOW IT WORKS ---------- */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.1rem;
+            margin-top: clamp(2.4rem, 5vw, 3.6rem);
+            counter-reset: step;
+        }
+        .step-card {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem 1.6rem 1.7rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 220ms ease, box-shadow 220ms ease;
+        }
+        .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .step-num {
+            font-family: "Source Serif 4", Georgia, serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 2.6rem;
+            line-height: 1;
+            color: var(--gold);
+            margin-bottom: 0.9rem;
+        }
+        .step-card h3 { margin-bottom: 0.5rem; font-size: 1.18rem; }
+        .step-card p { font-size: 0.97rem; line-height: 1.6; }
+        .step-card .step-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.9rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--teal);
+            text-decoration: none;
+        }
+        .step-card .step-link:hover { color: var(--teal-deep); text-decoration: underline; }
+        @media (max-width: 1000px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+
+        /* ---------- CHAPTERS (scene sections) ---------- */
+        .chapter-head {
+            max-width: 780px;
+            margin: 0 auto clamp(2.2rem, 4.5vw, 3.4rem);
+            text-align: center;
+        }
+        .chapter-head .eyebrow { justify-content: center; }
+        .chapter-head .lede {
+            margin: 1.1rem auto 0;
+            font-size: clamp(1.02rem, 1.5vw, 1.16rem);
+            line-height: 1.62;
+            color: #3c5257;
+            max-width: 40rem;
+        }
+
+        /* ---------- FEATURE GRID ---------- */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: clamp(2.4rem, 5vw, 3.6rem);
+        }
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 1.7rem 1.55rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(20, 81, 92, 0.22);
+        }
+        .feature-ico {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            background: var(--teal-faint);
+            color: var(--teal-deep);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.45rem;
-            background: var(--teal-deep);
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.97rem;
-            padding: 0.85rem 1.3rem;
-            border-radius: 999px;
-            border: 1px solid var(--teal-deep);
-            transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+            margin-bottom: 1rem;
         }
+        .feature-ico svg { width: 21px; height: 21px; }
+        .feature-card h3 { margin-bottom: 0.45rem; font-size: 1.1rem; }
+        .feature-card p { font-size: 0.95rem; line-height: 1.6; }
+        @media (max-width: 940px) { .features { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 620px) { .features { grid-template-columns: 1fr; } }
 
-        .btn:hover {
-            background: var(--teal);
-            transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(14, 61, 70, 0.20);
+        /* ---------- DEMO VIDEO ---------- */
+        .demo-frame {
+            position: relative;
+            max-width: 940px;
+            margin: clamp(2.4rem, 5vw, 3.4rem) auto 0;
+            aspect-ratio: 16 / 9;
+            border-radius: 14px;
+            overflow: hidden;
+            background:
+                radial-gradient(80% 100% at 70% 0%, rgba(29, 107, 120, 0.55), transparent 60%),
+                linear-gradient(160deg, #1c4f58 0%, #0e3d46 55%, #0a2c33 100%);
+            box-shadow: 0 24px 64px rgba(13, 43, 48, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .btn-ghost {
+        .demo-frame video { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; }
+        .demo-cover {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.1rem;
+            width: 100%;
+            border: 0;
             background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .demo-cover .cover-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(28, 30, 34, 0.55);
+            border: 1px solid rgba(255,255,255,0.16);
+            backdrop-filter: blur(8px);
+            border-radius: 999px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.55rem 1.15rem;
+        }
+        .demo-cover .cover-pill .rec { width: 8px; height: 8px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 3px rgba(56, 210, 122, 0.22); }
+        .demo-cover .big-play {
+            width: 86px; height: 86px;
+            border-radius: 50%;
+            background: rgba(255, 253, 247, 0.96);
             color: var(--teal-deep);
-            border-color: rgba(14, 61, 70, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+            transition: transform 200ms ease;
         }
+        .demo-cover:hover .big-play { transform: scale(1.07); }
+        .demo-cover .big-play svg { width: 28px; height: 28px; margin-left: 4px; }
+        .demo-cover .cover-note { color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; font-weight: 500; }
+        .demo-alt { text-align: center; margin-top: 1.2rem; font-size: 0.95rem; }
+        .demo-alt a { color: var(--teal); font-weight: 600; }
 
-        .btn-ghost:hover {
-            background: var(--teal-faint);
-            box-shadow: none;
-            transform: none;
+        /* ---------- SECURITY BAND ---------- */
+        .security-band {
+            background:
+                radial-gradient(60% 80% at 85% 10%, rgba(29, 107, 120, 0.35), transparent 60%),
+                radial-gradient(40% 60% at 5% 90%, rgba(167, 132, 73, 0.12), transparent 60%),
+                var(--teal-ink);
+            color: #fff;
         }
+        .security-band .eyebrow { color: #cbb27e; }
+        .security-band .eyebrow::before, .security-band .eyebrow.centered::after { background: #cbb27e; }
+        .security-band h2 { color: #fff; }
+        .security-band .section-head .lede { color: rgba(255, 255, 255, 0.72); }
+        .sec-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.1rem;
+            margin-top: clamp(2.4rem, 5vw, 3.4rem);
+        }
+        .sec-card {
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: var(--radius);
+            padding: 1.5rem 1.35rem;
+            transition: background 220ms ease, border-color 220ms ease, transform 220ms ease;
+        }
+        .sec-card:hover { background: rgba(255, 255, 255, 0.075); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+        .sec-card svg { width: 22px; height: 22px; color: #7fc4cf; margin-bottom: 0.85rem; }
+        .sec-card h3 { color: #fff; font-size: 1.02rem; margin-bottom: 0.4rem; }
+        .sec-card p { color: rgba(255, 255, 255, 0.66); font-size: 0.9rem; line-height: 1.55; }
+        .sec-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: center; margin-top: 2.2rem; }
+        .sec-actions .btn { background: #fff; color: var(--teal-deep); border-color: #fff; }
+        .sec-actions .btn:hover { background: rgba(255, 255, 255, 0.92); box-shadow: 0 14px 30px rgba(0,0,0,0.3); }
+        .sec-actions .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.32); }
+        .sec-actions .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); }
+        @media (max-width: 940px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .sec-grid { grid-template-columns: 1fr; } }
 
-        /* ---------- FOOTER ---------- */
-        footer {
-            background: #0a2025;
-            color: rgba(255,255,255,0.55);
-            padding: 1.8rem 1.4rem;
-            font-size: 0.85rem;
+        /* ---------- FAQ ---------- */
+        .faq-list { max-width: 800px; margin: clamp(2.2rem, 4.5vw, 3.2rem) auto 0; display: grid; gap: 0.8rem; }
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: border-color 200ms ease, box-shadow 200ms ease;
         }
-        .footer-inner {
-            max-width: var(--max);
-            margin: 0 auto;
+        .faq-item[open] { border-color: rgba(20, 81, 92, 0.28); box-shadow: var(--shadow-sm); }
+        .faq-item summary {
+            list-style: none;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
+            padding: 1.15rem 1.35rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.02rem;
+            color: var(--ink);
         }
-        .footer-inner a { color: rgba(255,255,255,0.78); text-decoration: none; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary .plus {
+            flex: 0 0 auto;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 1px solid rgba(13, 43, 48, 0.16);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--teal-deep);
+            transition: transform 220ms ease, background 220ms ease, color 220ms ease;
+        }
+        .faq-item summary .plus svg { width: 12px; height: 12px; }
+        .faq-item[open] summary .plus { transform: rotate(45deg); background: var(--teal-deep); color: #fff; border-color: var(--teal-deep); }
+        .faq-item .faq-body { padding: 0 1.35rem 1.25rem; font-size: 0.98rem; line-height: 1.65; }
+        .faq-item .faq-body a { color: var(--teal); font-weight: 600; }
 
-        /* ---------- RESPONSIVE ---------- */
+        /* ---------- FINAL CTA ---------- */
+        .final-cta {
+            background:
+                radial-gradient(70% 90% at 50% 0%, rgba(29, 107, 120, 0.45), transparent 65%),
+                var(--teal-deep);
+            color: #fff;
+            text-align: center;
+        }
+        .final-cta h2 { color: #fff; margin-top: 0.4rem; }
+        .final-cta .lede {
+            color: rgba(255, 255, 255, 0.78);
+            max-width: 38rem;
+            margin: 1.1rem auto 2.1rem;
+            font-size: 1.06rem;
+            line-height: 1.65;
+        }
+        .final-cta .eyebrow { color: #cbb27e; }
+        .final-cta .eyebrow::before, .final-cta .eyebrow.centered::after { background: #cbb27e; }
+        .cta-row { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+        .final-cta .btn { background: #fff; color: var(--teal-deep); border-color: #fff; font-weight: 600; }
+        .final-cta .btn:hover { background: rgba(255,255,255,0.92); box-shadow: 0 12px 24px rgba(0,0,0,0.18); }
+        .email-copy {
+            display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+            font: inherit; font-size: 1rem;
+            border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.06);
+            color: #fff; border-radius: 999px; padding: 13px 22px; line-height: 1.5;
+            white-space: nowrap; transition: background .15s, border-color .15s;
+        }
+        .email-copy:hover { background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.55); }
+        .email-copy__addr { font-weight: 600; }
+        .email-copy__label { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; opacity: .65; }
+        .email-copy.copied { border-color: #8fe3b0; background: rgba(143,227,176,.16); }
+        .email-copy.copied .email-copy__label { color: #8fe3b0; opacity: 1; }
+        .cta-platforms { margin-top: 1.6rem; font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+        .cta-platforms a { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: var(--teal-ink);
+            color: rgba(255,255,255,0.6);
+            padding: clamp(56px, 8vw, 84px) 1.5rem 2rem;
+            font-size: 0.92rem;
+        }
+        .footer-grid {
+            max-width: var(--max);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 2.4rem;
+            padding-bottom: 2.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-brand .brand-word { color: #e8f0ee; font-size: 1.6rem; }
+        .footer-brand p { color: rgba(255,255,255,0.55); font-size: 0.92rem; margin-top: 0.7rem; max-width: 24rem; line-height: 1.6; }
+        .footer-col h4 {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.9rem;
+        }
+        .footer-col a {
+            display: block;
+            color: rgba(255,255,255,0.62);
+            text-decoration: none;
+            padding: 0.28rem 0;
+            transition: color 150ms ease;
+        }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom {
+            max-width: var(--max);
+            margin: 1.6rem auto 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+        }
+        @media (max-width: 860px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-brand { grid-column: 1 / -1; }
+        }
+
+        /* ---------- SCROLL REVEAL ---------- */
+        html.js .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+        }
+        html.js .reveal.in {
+            opacity: 1;
+            transform: none;
+            transition: opacity 700ms ease, transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        html.js .reveal.d1.in { transition-delay: 90ms; }
+        html.js .reveal.d2.in { transition-delay: 180ms; }
+        html.js .reveal.d3.in { transition-delay: 270ms; }
+
         @media (max-width: 520px) {
             body { font-size: 16px; }
-            .hero { padding-top: 3rem; padding-bottom: 3rem; }
+        }
+        /* Very narrow phones: keep brand + CTA + hamburger on one row */
+        @media (max-width: 420px) {
+            .brand-word { font-size: 1.45rem; }
+            .nav-cta .btn-sm { padding: 0.5rem 0.85rem; font-size: 0.86rem; }
+            .nav { padding: 0 1rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -495,7 +844,21 @@
                 transition-duration: 0.01ms !important;
             }
             html { scroll-behavior: auto; }
+            html.js .reveal { opacity: 1; transform: none; }
         }
+    </style>
+    <!-- ============================================================
+         SCENE ANIMATION SYSTEM — copied from the live docs/index.html
+         (lines 499-2600) with two documented surgical changes:
+         1. Ghost-flight opacity stops raised (0.6/0.25 -> 0.95/0.9) so
+            the flying chips stay visible until they land on the input
+            boxes instead of dissolving mid-flight.
+         2. Scene 3/4 fallback coordinate vars aimed at the real input
+            box positions (were 50%/50% = center-screen) so unmeasured
+            renders still land correctly.
+         Timings, positions, and structure are otherwise identical.
+         ============================================================ -->
+    <style>
         .scenes-wrap {
             /* Brand */
             --teal: #14515c;
@@ -1716,11 +2079,11 @@
                 transform: translate(-50%, -50%) scale(1);
             }
             63.6% {
-                opacity: 0.75;
+                opacity: 0.9;
                 /* halfway: position auto-interpolates between hlblock and pill */
             }
             68.7% {
-                opacity: 0.5;
+                opacity: 0.85;
                 left: var(--pill-x); top: var(--pill-y);
                 transform: translate(-50%, -50%) scale(0.2);
             }
@@ -1980,8 +2343,12 @@
         /* GHOST: a chip that flies from assistant item -> search input.
            --pill-x/y measured already; we add --search-x/y for the
            search box center. */
+        /* Fallbacks approximate the search box's real position (center
+           pane, vertically-centered group) so even an unmeasured render
+           flies to the input box, not the middle of the screen. JS
+           measurement then replaces these with exact coordinates. */
         .scene-3 .stage {
-            --search-x: 50%; --search-y: 50%;
+            --search-x: 45%; --search-y: 47%;
             --pill-x: 92%;   --pill-y: 6%;
         }
         .s3-ghost {
@@ -2014,8 +2381,8 @@
             30%         { opacity: 1;
                           left: var(--pill-x); top: var(--pill-y);
                           transform: translate(-50%, -50%) scale(1); }
-            32.7%       { opacity: 0.6; }   /* mid-flight ~4.9s */
-            35.2%       { opacity: 0.25;
+            32.7%       { opacity: 0.95; }   /* mid-flight ~4.9s */
+            35.2%       { opacity: 0.9;
                           left: var(--search-x); top: var(--search-y);
                           transform: translate(-50%, -50%) scale(0.5); }
             35.3%, 100% { opacity: 0;
@@ -2029,8 +2396,8 @@
             58%         { opacity: 1;
                           left: var(--pill-x); top: var(--pill-y);
                           transform: translate(-50%, -50%) scale(1); }
-            60.7%       { opacity: 0.6; }   /* mid-flight ~9.1s */
-            63.2%       { opacity: 0.25;
+            60.7%       { opacity: 0.95; }   /* mid-flight ~9.1s */
+            63.2%       { opacity: 0.9;
                           left: var(--search-x); top: var(--search-y);
                           transform: translate(-50%, -50%) scale(0.5); }
             63.3%, 100% { opacity: 0;
@@ -2389,11 +2756,14 @@
         @keyframes s4-row-ckd { 0%, 49.7% { opacity: 0; } 49.8%, 100% { opacity: 1; } }
         @keyframes s4-row-htn { 0%, 59.9% { opacity: 0; } 60.0%, 100% { opacity: 1; } }
 
-        /* Coordinate variables for ghost flights */
+        /* Coordinate variables for ghost flights. Fallbacks approximate
+           the dx search box (top of center pane) and the note entry area
+           (right column) so unmeasured renders still land on the inputs;
+           JS measurement replaces them with exact coordinates. */
         .scene-4 .stage {
-            --search-x: 50%; --search-y: 50%;
+            --search-x: 45%; --search-y: 16%;
             --pill-x: 92%;   --pill-y: 6%;
-            --notearea-x: 84%; --notearea-y: 50%;
+            --notearea-x: 84%; --notearea-y: 30%;
         }
 
         /* Ghost: chip flies from pill -> search box (or note area) */
@@ -2428,8 +2798,8 @@
                          transform: translate(-50%, -50%) scale(1); }
             31.7%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            33.7%      { opacity: 0.6; }
-            35.5%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            33.7%      { opacity: 0.95; }
+            35.5%      { opacity: 0.9; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
             35.6%, 100% { opacity: 0; left: var(--search-x); top: var(--search-y);
                           transform: translate(-50%, -50%) scale(0.5); }
@@ -2439,8 +2809,8 @@
                          transform: translate(-50%, -50%) scale(1); }
             42.0%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            43.9%      { opacity: 0.6; }
-            45.8%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            43.9%      { opacity: 0.95; }
+            45.8%      { opacity: 0.9; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
             45.9%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
@@ -2450,8 +2820,8 @@
                          transform: translate(-50%, -50%) scale(1); }
             52.2%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            54.1%      { opacity: 0.6; }
-            56.0%      { opacity: 0.25; left: var(--search-x); top: var(--search-y);
+            54.1%      { opacity: 0.95; }
+            56.0%      { opacity: 0.9; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
             56.1%, 100%{ opacity: 0; left: var(--search-x); top: var(--search-y);
                          transform: translate(-50%, -50%) scale(0.5); }
@@ -2461,8 +2831,8 @@
                          transform: translate(-50%, -50%) scale(1); }
             64.9%      { opacity: 1; left: var(--pill-x); top: var(--pill-y);
                          transform: translate(-50%, -50%) scale(1); }
-            66.8%      { opacity: 0.6; }
-            68.7%      { opacity: 0.25; left: var(--notearea-x); top: var(--notearea-y);
+            66.8%      { opacity: 0.95; }
+            68.7%      { opacity: 0.9; left: var(--notearea-x); top: var(--notearea-y);
                          transform: translate(-50%, -50%) scale(0.5); }
             68.8%, 100%{ opacity: 0; left: var(--notearea-x); top: var(--notearea-y);
                          transform: translate(-50%, -50%) scale(0.5); }
@@ -2598,505 +2968,207 @@
             68.8%, 100% { opacity: 0; }
         }
 
+.stage.d::before { background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDEwMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjI1ODYyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzE0M2E0MiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvdyIgY3g9IjE0NTAiIGN5PSI5MTAiIHI9IjExNTIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSJyZ2JhKDE0MCwgMjAwLCAyMTAsIDAuMjApIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0icmdiYSgxNDAsIDIwMCwgMjEwLCAwKSIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iMTAwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cmVjdCB3aWR0aD0iMTYwMCIgaGVpZ2h0PSIxMDAwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPGcgc3Ryb2tlPSIjZGZmMGYzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEzNzggMjY4LCAxMjAzIC02NjUsIDgxMyAtMTU3MCIgb3BhY2l0eT0iMC4wNzAiIHN0cm9rZS13aWR0aD0iMS4wNSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEzNjkgMjY2LCAxMTY3IC02NjMsIDcwOCAtMTU0MCIgb3BhY2l0eT0iMC4wODIiIHN0cm9rZS13aWR0aD0iMS4wMSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEzNTcgMjY1LCAxMTI3IC02NTgsIDYwNCAtMTUwNiIgb3BhY2l0eT0iMC4wOTQiIHN0cm9rZS13aWR0aD0iMC44OSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEzNDEgMjY1LCAxMDc5IC02NTEsIDUwMSAtMTQ2OCIgb3BhY2l0eT0iMC4xMDYiIHN0cm9rZS13aWR0aD0iMC43MiIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEzMTkgMjY3LCAxMDIzIC02MzgsIDQwMCAtMTQyNSIgb3BhY2l0eT0iMC4xMTgiIHN0cm9rZS13aWR0aD0iMC41NSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEyOTIgMjczLCA5NTcgLTYxOCwgMzAyIC0xMzc4IiBvcGFjaXR5PSIwLjEyOSIgc3Ryb2tlLXdpZHRoPSIwLjQyIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgMTI1OSAyODQsIDg4MiAtNTkwLCAyMDUgLTEzMjciIG9wYWNpdHk9IjAuMTQwIiBzdHJva2Utd2lkdGg9IjAuMzUiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyAxMjIyIDI5OSwgODAxIC01NTQsIDExMCAtMTI3MSIgb3BhY2l0eT0iMC4xNTEiIHN0cm9rZS13aWR0aD0iMC4zNyIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDExODIgMzE5LCA3MTUgLTUwOSwgMTggLTEyMTIiIG9wYWNpdHk9IjAuMTYyIiBzdHJva2Utd2lkdGg9IjAuNDciLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyAxMTQyIDM0MiwgNjI5IC00NTcsIC03MSAtMTE0OSIgb3BhY2l0eT0iMC4xNzIiIHN0cm9rZS13aWR0aD0iMC42MyIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDExMDMgMzY4LCA1NDcgLTQwMSwgLTE1OCAtMTA4MiIgb3BhY2l0eT0iMC4xODIiIHN0cm9rZS13aWR0aD0iMC44MCIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEwNjggMzk0LCA0NzAgLTM0MiwgLTI0MiAtMTAxMSIgb3BhY2l0eT0iMC4xOTEiIHN0cm9rZS13aWR0aD0iMC45NSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDEwMzcgNDE5LCA0MDMgLTI4NSwgLTMyMiAtOTM3IiBvcGFjaXR5PSIwLjE5OSIgc3Ryb2tlLXdpZHRoPSIxLjA0Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgMTAxMiA0NDIsIDM0NSAtMjMxLCAtNDAwIC04NjAiIG9wYWNpdHk9IjAuMjA3IiBzdHJva2Utd2lkdGg9IjEuMDQiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA5OTMgNDYxLCAyOTggLTE4MywgLTQ3NCAtNzc5IiBvcGFjaXR5PSIwLjIxNSIgc3Ryb2tlLXdpZHRoPSIwLjk2Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgOTc4IDQ3NSwgMjU5IC0xNDIsIC01NDQgLTY5NSIgb3BhY2l0eT0iMC4yMjIiIHN0cm9rZS13aWR0aD0iMC44MiIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDk2OCA0ODYsIDIyOCAtMTA3LCAtNjExIC02MDkiIG9wYWNpdHk9IjAuMjI4IiBzdHJva2Utd2lkdGg9IjAuNjUiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA5NTkgNDkzLCAyMDEgLTc4LCAtNjc0IC01MTkiIG9wYWNpdHk9IjAuMjMzIiBzdHJva2Utd2lkdGg9IjAuNDkiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA5NTIgNDk4LCAxNzcgLTUxLCAtNzMzIC00MjciIG9wYWNpdHk9IjAuMjM4IiBzdHJva2Utd2lkdGg9IjAuMzgiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA5NDQgNTAzLCAxNTMgLTIzLCAtNzg4IC0zMzIiIG9wYWNpdHk9IjAuMjQyIiBzdHJva2Utd2lkdGg9IjAuMzUiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA5MzQgNTExLCAxMjYgOCwgLTgzOSAtMjM1IiBvcGFjaXR5PSIwLjI0NSIgc3Ryb2tlLXdpZHRoPSIwLjQxIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgOTIyIDUyMiwgOTcgNDcsIC04ODYgLTEzNiIgb3BhY2l0eT0iMC4yNDciIHN0cm9rZS13aWR0aD0iMC41MyIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDkwOSA1MzksIDY2IDk2LCAtOTI5IC0zNiIgb3BhY2l0eT0iMC4yNDkiIHN0cm9rZS13aWR0aD0iMC43MCIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDg5MyA1NjMsIDMyIDE1NiwgLTk2NyA2NyIgb3BhY2l0eT0iMC4yNTAiIHN0cm9rZS13aWR0aD0iMC44NyIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDg3NyA1OTQsIC0yIDIyOSwgLTEwMDEgMTcxIiBvcGFjaXR5PSIwLjI1MCIgc3Ryb2tlLXdpZHRoPSIxLjAwIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODYxIDYzMSwgLTM2IDMxMiwgLTEwMzAgMjc3IiBvcGFjaXR5PSIwLjI0OSIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODQ2IDY3MywgLTY2IDQwNSwgLTEwNTUgMzgzIiBvcGFjaXR5PSIwLjI0NyIgc3Ryb2tlLXdpZHRoPSIxLjAyIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODMzIDcxOCwgLTkxIDUwMiwgLTEwNzUgNDkxIiBvcGFjaXR5PSIwLjI0NSIgc3Ryb2tlLXdpZHRoPSIwLjkxIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODIzIDc2MywgLTExMSA2MDAsIC0xMDkxIDU5OSIgb3BhY2l0eT0iMC4yNDIiIHN0cm9rZS13aWR0aD0iMC43NSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDgxNiA4MDYsIC0xMjUgNjk0LCAtMTEwMiA3MDgiIG9wYWNpdHk9IjAuMjM4IiBzdHJva2Utd2lkdGg9IjAuNTgiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MTIgODQ1LCAtMTM0IDc4MiwgLTExMDggODE4IiBvcGFjaXR5PSIwLjIzMyIgc3Ryb2tlLXdpZHRoPSIwLjQzIi8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODEwIDg3OSwgLTEzOCA4NjAsIC0xMTEwIDkyNyIgb3BhY2l0eT0iMC4yMjgiIHN0cm9rZS13aWR0aD0iMC4zNiIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDgwOSA5MDYsIC0xMzggOTI3LCAtMTEwNyAxMDM3IiBvcGFjaXR5PSIwLjIyMiIgc3Ryb2tlLXdpZHRoPSIwLjM2Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODA5IDkyNiwgLTEzNyA5ODMsIC0xMDk5IDExNDYiIG9wYWNpdHk9IjAuMjE1IiBzdHJva2Utd2lkdGg9IjAuNDUiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MDggOTQxLCAtMTM2IDEwMjksIC0xMDg3IDEyNTUiIG9wYWNpdHk9IjAuMjA3IiBzdHJva2Utd2lkdGg9IjAuNjAiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MDcgOTUxLCAtMTM0IDEwNjksIC0xMDcwIDEzNjMiIG9wYWNpdHk9IjAuMTk5IiBzdHJva2Utd2lkdGg9IjAuNzgiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MDUgOTYwLCAtMTMzIDExMDUsIC0xMDQ4IDE0NzAiIG9wYWNpdHk9IjAuMTkxIiBzdHJva2Utd2lkdGg9IjAuOTMiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MDMgOTcwLCAtMTMxIDExNDIsIC0xMDIyIDE1NzYiIG9wYWNpdHk9IjAuMTgyIiBzdHJva2Utd2lkdGg9IjEuMDMiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MDIgOTgyLCAtMTI4IDExODMsIC05OTEgMTY4MiIgb3BhY2l0eT0iMC4xNzIiIHN0cm9rZS13aWR0aD0iMS4wNSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDgwMSA5OTksIC0xMjIgMTIzMSwgLTk1NiAxNzg1IiBvcGFjaXR5PSIwLjE2MiIgc3Ryb2tlLXdpZHRoPSIwLjk4Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODAzIDEwMjEsIC0xMTEgMTI4OSwgLTkxNiAxODg3IiBvcGFjaXR5PSIwLjE1MSIgc3Ryb2tlLXdpZHRoPSIwLjg0Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODA5IDEwNDksIC05MyAxMzU2LCAtODcyIDE5ODgiIG9wYWNpdHk9IjAuMTQwIiBzdHJva2Utd2lkdGg9IjAuNjciLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4MTkgMTA4MywgLTY2IDE0MzMsIC04MjQgMjA4NiIgb3BhY2l0eT0iMC4xMjkiIHN0cm9rZS13aWR0aD0iMC41MSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDgzMyAxMTIxLCAtMzIgMTUxNiwgLTc3MiAyMTgyIiBvcGFjaXR5PSIwLjExOCIgc3Ryb2tlLXdpZHRoPSIwLjM5Ii8+CiAgICA8cGF0aCBkPSJNIDE0NTAgOTEwIEMgODUyIDExNjEsIDExIDE2MDQsIC03MTUgMjI3NiIgb3BhY2l0eT0iMC4xMDYiIHN0cm9rZS13aWR0aD0iMC4zNSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDg3NCAxMjAyLCA2MCAxNjkxLCAtNjU1IDIzNjciIG9wYWNpdHk9IjAuMDk0IiBzdHJva2Utd2lkdGg9IjAuMzkiLz4KICAgIDxwYXRoIGQ9Ik0gMTQ1MCA5MTAgQyA4OTggMTI0MiwgMTE0IDE3NzUsIC01OTAgMjQ1NiIgb3BhY2l0eT0iMC4wODIiIHN0cm9rZS13aWR0aD0iMC41MSIvPgogICAgPHBhdGggZD0iTSAxNDUwIDkxMCBDIDkyMyAxMjc3LCAxNzAgMTg1MywgLTUyMyAyNTQyIiBvcGFjaXR5PSIwLjA3MCIgc3Ryb2tlLXdpZHRoPSIwLjY4Ii8+CiAgPC9nPgo8L3N2Zz4K"); }
+.stage.p::before { background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgMTMwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMyMjU4NjIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTQzYTQyIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJnbG93IiBjeD0iNzkwIiBjeT0iMTE3MCIgcj0iOTM2IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0icmdiYSgxNDAsIDIwMCwgMjEwLCAwLjIwKSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9InJnYmEoMTQwLCAyMDAsIDIxMCwgMCkiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iMTMwMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjEzMDAiIGZpbGw9InVybCgjZ2xvdykiLz4KICA8ZyBzdHJva2U9IiNkZmYwZjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgODE0IDY0MywgNzgwIC0xMjksIDUyOSAtODk0IiBvcGFjaXR5PSIwLjA3MCIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgODA5IDYzOSwgNzU0IC0xMzIsIDQzOCAtODgwIiBvcGFjaXR5PSIwLjA4NCIgc3Ryb2tlLXdpZHRoPSIxLjAxIi8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgODAyIDYzNSwgNzI0IC0xMzUsIDM0NyAtODYyIiBvcGFjaXR5PSIwLjA5NyIgc3Ryb2tlLXdpZHRoPSIwLjg5Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNzkwIDYzMiwgNjg2IC0xMzcsIDI1NyAtODQxIiBvcGFjaXR5PSIwLjExMSIgc3Ryb2tlLXdpZHRoPSIwLjcyIi8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNzcyIDYzMSwgNjM5IC0xMzQsIDE2OSAtODE1IiBvcGFjaXR5PSIwLjEyNCIgc3Ryb2tlLXdpZHRoPSIwLjU1Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNzQ4IDYzMiwgNTgxIC0xMjYsIDgxIC03ODUiIG9wYWNpdHk9IjAuMTM3IiBzdHJva2Utd2lkdGg9IjAuNDIiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyA3MTggNjM3LCA1MTMgLTExMSwgLTUgLTc1MiIgb3BhY2l0eT0iMC4xNTAiIHN0cm9rZS13aWR0aD0iMC4zNSIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDY4MyA2NDYsIDQzNyAtODgsIC05MCAtNzE1IiBvcGFjaXR5PSIwLjE2MiIgc3Ryb2tlLXdpZHRoPSIwLjM3Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNjQ1IDY1OSwgMzU3IC01OCwgLTE3MyAtNjc0IiBvcGFjaXR5PSIwLjE3NCIgc3Ryb2tlLXdpZHRoPSIwLjQ3Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNjA3IDY3NSwgMjc1IC0yMiwgLTI1NCAtNjI5IiBvcGFjaXR5PSIwLjE4NSIgc3Ryb2tlLXdpZHRoPSIwLjYzIi8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNTY5IDY5NCwgMTk1IDE5LCAtMzMzIC01ODEiIG9wYWNpdHk9IjAuMTk1IiBzdHJva2Utd2lkdGg9IjAuODAiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyA1MzQgNzE0LCAxMjIgNjMsIC00MDkgLTUyOSIgb3BhY2l0eT0iMC4yMDQiIHN0cm9rZS13aWR0aD0iMC45NSIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDUwNSA3MzMsIDU3IDEwNywgLTQ4NCAtNDc0IiBvcGFjaXR5PSIwLjIxMyIgc3Ryb2tlLXdpZHRoPSIxLjA0Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNDgxIDc1MCwgMiAxNDcsIC01NTUgLTQxNiIgb3BhY2l0eT0iMC4yMjEiIHN0cm9rZS13aWR0aD0iMS4wNCIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDQ2MyA3NjQsIC00MiAxODMsIC02MjUgLTM1NSIgb3BhY2l0eT0iMC4yMjgiIHN0cm9rZS13aWR0aD0iMC45NiIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDQ1MCA3NzQsIC03NyAyMTMsIC02OTEgLTI5MSIgb3BhY2l0eT0iMC4yMzQiIHN0cm9rZS13aWR0aD0iMC44MiIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDQ0MSA3ODEsIC0xMDUgMjM2LCAtNzU0IC0yMjMiIG9wYWNpdHk9IjAuMjM5IiBzdHJva2Utd2lkdGg9IjAuNjUiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyA0MzUgNzg0LCAtMTI3IDI1NSwgLTgxNSAtMTUzIiBvcGFjaXR5PSIwLjI0NCIgc3Ryb2tlLXdpZHRoPSIwLjQ5Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNDI5IDc4NSwgLTE0NyAyNzEsIC04NzIgLTgxIiBvcGFjaXR5PSIwLjI0NyIgc3Ryb2tlLXdpZHRoPSIwLjM4Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgNDIzIDc4NiwgLTE2OCAyODcsIC05MjYgLTYiIG9wYWNpdHk9IjAuMjQ5IiBzdHJva2Utd2lkdGg9IjAuMzUiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyA0MTUgNzg4LCAtMTkyIDMwNywgLTk3NiA3MiIgb3BhY2l0eT0iMC4yNTAiIHN0cm9rZS13aWR0aD0iMC40MSIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDQwNCA3OTUsIC0yMTkgMzM0LCAtMTAyMyAxNTEiIG9wYWNpdHk9IjAuMjUwIiBzdHJva2Utd2lkdGg9IjAuNTMiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAzOTEgODA3LCAtMjUxIDM3MCwgLTEwNjcgMjMzIiBvcGFjaXR5PSIwLjI0OSIgc3Ryb2tlLXdpZHRoPSIwLjcwIi8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMzc1IDgyNSwgLTI4NiA0MTgsIC0xMTA3IDMxNiIgb3BhY2l0eT0iMC4yNDciIHN0cm9rZS13aWR0aD0iMC44NyIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDM1NyA4NTEsIC0zMjIgNDc3LCAtMTE0MyA0MDEiIG9wYWNpdHk9IjAuMjQ0IiBzdHJva2Utd2lkdGg9IjEuMDAiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAzNDAgODgyLCAtMzU5IDU0NywgLTExNzUgNDg4IiBvcGFjaXR5PSIwLjIzOSIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMzIyIDkxOCwgLTM5NCA2MjYsIC0xMjAzIDU3NiIgb3BhY2l0eT0iMC4yMzQiIHN0cm9rZS13aWR0aD0iMS4wMiIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDMwNyA5NTgsIC00MjQgNzExLCAtMTIyOCA2NjUiIG9wYWNpdHk9IjAuMjI4IiBzdHJva2Utd2lkdGg9IjAuOTEiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyOTQgOTk4LCAtNDUwIDc5NiwgLTEyNDggNzU1IiBvcGFjaXR5PSIwLjIyMSIgc3Ryb2tlLXdpZHRoPSIwLjc1Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMjg1IDEwMzYsIC00NzAgODc5LCAtMTI2NSA4NDYiIG9wYWNpdHk9IjAuMjEzIiBzdHJva2Utd2lkdGg9IjAuNTgiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyNzggMTA3MSwgLTQ4NCA5NTYsIC0xMjc3IDkzOCIgb3BhY2l0eT0iMC4yMDQiIHN0cm9rZS13aWR0aD0iMC40MyIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDI3NCAxMDk5LCAtNDkzIDEwMjMsIC0xMjg1IDEwMzAiIG9wYWNpdHk9IjAuMTk1IiBzdHJva2Utd2lkdGg9IjAuMzYiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyNzEgMTEyMiwgLTQ5OCAxMDc5LCAtMTI4OSAxMTIyIiBvcGFjaXR5PSIwLjE4NSIgc3Ryb2tlLXdpZHRoPSIwLjM2Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMjY5IDExMzgsIC01MDEgMTEyNCwgLTEyOTAgMTIxNSIgb3BhY2l0eT0iMC4xNzQiIHN0cm9rZS13aWR0aD0iMC40NSIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDI2NyAxMTQ4LCAtNTAzIDExNjAsIC0xMjg1IDEzMDciIG9wYWNpdHk9IjAuMTYyIiBzdHJva2Utd2lkdGg9IjAuNjAiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyNjUgMTE1NSwgLTUwNSAxMTg5LCAtMTI3NyAxMzk5IiBvcGFjaXR5PSIwLjE1MCIgc3Ryb2tlLXdpZHRoPSIwLjc4Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMjYyIDExNTksIC01MDggMTIxNSwgLTEyNjUgMTQ5MSIgb3BhY2l0eT0iMC4xMzciIHN0cm9rZS13aWR0aD0iMC45MyIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDI1OCAxMTY1LCAtNTExIDEyNDEsIC0xMjQ5IDE1ODIiIG9wYWNpdHk9IjAuMTI0IiBzdHJva2Utd2lkdGg9IjEuMDMiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyNTUgMTE3MiwgLTUxNCAxMjcyLCAtMTIyOSAxNjcyIiBvcGFjaXR5PSIwLjExMSIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+CiAgICA8cGF0aCBkPSJNIDc5MCAxMTcwIEMgMjUyIDExODUsIC01MTMgMTMxMSwgLTEyMDQgMTc2MSIgb3BhY2l0eT0iMC4wOTciIHN0cm9rZS13aWR0aD0iMC45OCIvPgogICAgPHBhdGggZD0iTSA3OTAgMTE3MCBDIDI1MSAxMjAzLCAtNTA5IDEzNTksIC0xMTc2IDE4NDkiIG9wYWNpdHk9IjAuMDg0IiBzdHJva2Utd2lkdGg9IjAuODQiLz4KICAgIDxwYXRoIGQ9Ik0gNzkwIDExNzAgQyAyNTQgMTIyOCwgLTQ5OSAxNDE4LCAtMTE0NCAxOTM2IiBvcGFjaXR5PSIwLjA3MCIgc3Ryb2tlLXdpZHRoPSIwLjY3Ii8+CiAgPC9nPgo8L3N2Zz4K"); }
 
-        /* ============== HOMEPAGE INTEGRATION OVERRIDES ============== */
         /* ============================================================
-           SCENES SECTION: horizontal carousel at all viewport sizes.
-             - One viewport-tall section. 4 scenes laid out in a flex row
-               at 400% width; transform: translateX shows one at a time.
-             - Desktop: big arrow buttons float on the left/right edges.
-             - Mobile: smaller arrows in a row at the bottom + horizontal
-               touch swipe. Vertical page scroll is never hijacked --
-               users can swipe sideways for the carousel or up/down to
-               scroll the page like any normal section.
+           LAYOUT OVERRIDES — the scenes now live as stacked scroll
+           sections instead of a horizontal carousel. These rules come
+           after the scene system so they win the cascade.
            ============================================================ */
         .scenes-wrap {
-            padding: 0 !important;
-            max-width: none !important;
-            background: var(--paper);
+            max-width: 1020px;
+            margin: 0 auto;
+            padding: 0;
         }
-
-        /* ---- CAROUSEL LAYOUT (shared at all viewport sizes) ----
-           Mobile and desktop both use the same horizontal carousel:
-             - .scenes-wrap is one viewport-tall stage (minus header).
-             - .scenes-track is a flex row at 400% width with 4 scenes.
-             - --active (0..3) on .scenes-wrap drives translateX.
-             - JS swaps --active via arrow buttons, keyboard, or (mobile)
-               horizontal touch swipe.
-           This replaces the earlier mobile vertical scroll-snap model.
-           iOS Safari ignores scroll-snap-stop: always during momentum
-           scrolls (a known WebKit limitation), so hard flicks could skip
-           past scenes. A horizontal carousel never conflicts with the
-           native vertical page scroll, so the user can swipe sideways
-           to change scene and scroll vertically to leave the section. */
-        .scenes-wrap {
-            position: relative;
-            /* min-height (not height) so the wrap can GROW past one
-               viewport when the user zooms in. Browser zoom shrinks the
-               CSS viewport, which would otherwise force the stage into
-               a wide-but-short box -- the aspect-ratio'd stage gets
-               clipped by a fixed-height wrap and looks squished.
-               With min-height, the wrap fills the viewport at normal
-               zoom AND grows with the stage at high zoom (page just
-               scrolls -- expected behaviour for any zoomed-in user). */
-            min-height: calc(100vh - var(--header-h));        /* fallback */
-            min-height: calc(100dvh - var(--header-h));       /* preferred */
-            overflow: hidden;
-            --active: 0;
-            /* Flex column centering: at normal zoom the wrap is taller
-               than its content so this vertically centers the
-               (track + dots) group, preserving the previous
-               viewport-tall section feel. At zoom the content fills
-               the wrap and the centering becomes a no-op. */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* Let vertical pan happen natively (so the user can scroll
-               past the section), and keep horizontal swipes for our JS
-               handler -- it advances the carousel. */
-            touch-action: pan-y;
-        }
-        .scenes-track {
-            display: flex;
-            width: 400%;
-            /* height: auto -- track is sized by its tallest scene. With
-               wrap as a flex column, height:100% can't resolve cleanly
-               (parent's height is min-height, not height), so we let
-               the content size it. */
-            transform: translateX(calc(var(--active) * -25%));
-            /* Snappier ease-out -- feels like an Apple-style flick rather
-               than a slow Material slide. ~350ms hits the sweet spot of
-               quick-but-not-jarring. */
-            transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .scenes-wrap .scene {
-            flex: 0 0 25%;
-            width: 25%;
-            /* height: auto -- scene is sized by its content
-               (title + stage). At zoom the stage grows via its
-               aspect-ratio and the scene grows with it. */
-            margin: 0 !important;
-            /* Tighter vertical padding on small viewports so the title
-               isn't pushed off-screen on short phones; desktop bumps
-               this back up via the (min-width: 769px) override below. */
-            padding: clamp(20px, 4vh, 60px) clamp(16px, 4vw, 48px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(12px, 2vh, 28px);
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        /* Arrow buttons -- shared styling. Positioning differs per
-           viewport (mobile: a row at the bottom; desktop: floating
-           big circles on the left/right edges). */
-        .scenes-arrow {
-            pointer-events: auto;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 1px solid var(--teal-deep);
-            background: var(--teal-deep);
-            color: #fff;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-            transition: background 160ms ease, transform 160ms ease,
-                        box-shadow 160ms ease;
-            font-family: inherit;
-        }
-        .scenes-arrow:hover:not([disabled]) {
-            background: var(--teal);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 24px rgba(14, 61, 70, 0.30);
-        }
-        .scenes-arrow:active:not([disabled]) {
-            transform: translateY(0);
-        }
-        /* Hide the unusable button at the start/end so it doesn't
-           sit there inert -- the other button stays pinned to its
-           side because of flex space-between. */
-        .scenes-arrow[disabled] {
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .scenes-arrow svg { display: block; width: 20px; height: 20px; }
-        .scenes-arrow .arrow-label { display: none; }
-        /* Gentle attention-getter on the Next button while on scene 1
-           (prev is disabled there). Stops automatically once the user
-           advances (prev becomes enabled, this selector stops matching). */
-        .scenes-prev[disabled] ~ .scenes-next {
-            animation: scenesNudge 3s ease-in-out 0.6s infinite;
-        }
-        @keyframes scenesNudge {
-            0%, 55%, 100% {
-                transform: translateX(0);
-                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-            }
-            65% {
-                transform: translateX(6px);
-                box-shadow: 0 10px 28px rgba(14, 61, 70, 0.40);
-            }
-            75% {
-                transform: translateX(0);
-                box-shadow: 0 6px 18px rgba(14, 61, 70, 0.22);
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .scenes-prev[disabled] ~ .scenes-next { animation: none; }
-        }
-
-        /* ---- DESKTOP arrow positioning ----
-           Big floating circles on the left/right edges of the stage,
-           vertically centered. Constrained to 1280px so they sit close
-           to the stage on very wide monitors rather than floating off
-           at the very edges of the screen. */
-        @media (min-width: 769px) {
-            .scenes-wrap .scene {
-                padding: clamp(40px, 6vh, 80px) clamp(24px, 4vw, 64px);
-            }
-            .scenes-arrows {
-                position: absolute;
-                top: 0; bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 100%;
-                max-width: 1280px;
-                pointer-events: none;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 clamp(12px, 2vw, 32px);
-                z-index: 5;
-            }
-        }
-
-        /* ---- MOBILE: peek-stage carousel + dots + swipe ----
-           No card chrome -- the stage itself is the visual unit, with
-           the next stage peeking on the right as the swipe affordance.
-           Title sits below the stage in a smaller caption-style font.
-
-           The whole .scenes-wrap is now content-sized (height: auto)
-           instead of locked to 100dvh. That makes the carousel embed
-           inline with the rest of the page -- when the user scrolls
-           the page, the carousel scrolls with everything else in
-           unison rather than feeling like its own viewport-tall
-           "screen" that shifts as the iOS address bar moves.
-
-           Geometry:
-             Stage width: 82vw
-             Track inline-padding: 9vw  (centers scene 0 in the viewport)
-             Gap between scenes: 16px
-             Peek of next scene ≈ 4.6vw  (~17px on 360px phone)
-             Step per scene: 82vw + 16px  (matches JS drag math) */
-        @media (max-width: 768px) {
-            /* Hero / CTA size to content; no more forced viewport-tall
-               sections so the page scrolls naturally between them. */
-            .hero, .waitlist-cta {
-                min-height: 0;
-            }
-            /* Tight gap between the last hero element ("Join early
-               tester list" button) and the carousel below. */
-            .hero { padding-bottom: 18px; }
-            .waitlist-cta {
-                display: block;
-                padding-top: 32px;
-                padding-bottom: 32px;
-            }
-            .scenes-arrows { display: none; }
-
-            /* Carousel embeds in the page flow. Height grows with
-               content; the dot pill sits directly under the title.
-               !important on padding overrides the base rule earlier
-               in the cascade that uses padding: 0 !important. */
-            .scenes-wrap {
-                height: auto;
-                min-height: 0;
-                padding: 16px 0 18px !important;
-            }
-
-            /* Track: auto height (content-sized), inline padding centers
-               scene 0, per-scene step = 82vw + 16px gap. */
-            .scenes-track {
-                width: auto;
-                height: auto;
-                gap: 16px;
-                padding: 0 9vw;
-                transform: translateX(calc(var(--active) * -1 * (82vw + 16px)));
-            }
-
-            /* Scene: auto height. With all titles fitting within
-               min-height (see below), every scene ends up the same
-               height, so flex-row stretching keeps all stages at the
-               same y. */
-            .scenes-wrap .scene {
-                flex: 0 0 82vw;
-                width: 82vw;
-                height: auto;
-                padding: 0;
-                gap: 10px;
-                justify-content: flex-start;
-            }
-            /* Title below stage. PLAIN BLOCK layout -- earlier version
-               used display:flex which made the H2 a flex container and
-               turned its text nodes + <span class=accent> into separate
-               flex items rendered side-by-side, which is what made the
-               captions render in weird vertical columns. Smaller font
-               so all four titles (the longest is scene 1) wrap to two
-               lines on a typical phone, and a min-height that matches
-               two wrapped lines so every scene has the same total
-               height -> stages stay level when swiping. */
-            .scenes-wrap .scene-title {
-                order: 2;
-                font-size: 0.85rem;
-                font-weight: 600;
-                line-height: 1.4;
-                margin: 0 !important;
-                text-align: center;
-                max-width: 100%;
-                min-height: 2.8em;
-            }
-            .scenes-wrap .stage {
-                order: 1;
-            }
-            /* Phone stage sized purely by aspect-ratio + 82vw width.
-               No dvh-based max-height -- on iOS the dvh value changes
-               as the address bar shows/hides, which would reflow the
-               carousel under the user's finger and feel "shifty". With
-               wrap now height:auto the stage doesn't need a cap. */
-            .scenes-wrap .stage.p {
-                max-height: none;
-            }
-
-            /* (Mobile .scene-progress overrides live LATER in the file
-               so they cascade after the base 'position: absolute' rule.
-               See the dedicated mobile media block right after
-               .scene-progress definitions.) */
-        }
-        /* Title: centered above the stage */
-        .scenes-wrap .scene-title {
-            max-width: 38rem;
-            text-align: center;
-            margin: 0 auto !important;
-            color: var(--teal-deep);
-        }
-        /* Stage: bounded by BOTH width and viewport height so it always
-           looks like a laptop screen on screen, not an ultrawide TV.
-           - max-width 940px caps the absolute width on big monitors
-           - aspect-ratio 16/10 gives the modern laptop look
-           - max-height ties it to the available vertical space so a short
-             viewport shrinks the stage proportionally instead of overflowing
-           !important is needed because the per-scene rules below (defined
-           later in the cascade) sometimes set their own width values. */
+        .scenes-wrap .scene { margin: 0; }
         .scenes-wrap .stage {
-            max-width: 940px !important;
+            max-width: 940px;
             width: 100%;
             margin: 0 auto;
         }
-        /* Desktop stage: aspect-ratio (16:10) is the ONLY height
-           constraint -- no max-height cap. Browser zoom shrinks the
-           CSS viewport, the stage's width-driven height needs to grow
-           in lockstep, otherwise zoom-in produces a squashed wide-but-
-           short box. With min-height on the wrap (above) the page just
-           gets taller when the user zooms; the stage stays a proper
-           laptop-shape rectangle. */
-        .scenes-wrap .stage.d {
-            /* max-height removed -- see comment above */
+        @media (max-width: 700px) {
+            .scenes-wrap { padding: 0; }
+            .scenes-wrap .scene { margin: 0; }
         }
-        /* Phone stage gets the same shrink-to-fit treatment: cap its
-           height to whatever's left after we reserve room for the title
-           above, the dot pill below, and the scene's vertical padding.
-           Without this, the 9:13 aspect-ratio of the phone stage can
-           push the title off the top of the screen on shorter phones
-           (URL bar visible, smaller dvh). */
-        .scenes-wrap .stage.p {
-            max-height: calc(100vh - var(--header-h) - 200px);   /* fallback */
-            max-height: calc(100dvh - var(--header-h) - 200px);  /* preferred */
-        }
-        /* Progress indicator -- absolutely positioned at the bottom of
-           .scenes-wrap so it scrolls WITH the carousel section rather
-           than floating over the rest of the page. .scenes-wrap is
-           position: relative, so 'absolute' here anchors to the wrap. */
-        .scene-progress {
-            position: absolute;
-            bottom: 14px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: inline-flex;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-            font-size: 11px;
-            color: var(--ink);
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(13, 43, 48, 0.08);
-            border-radius: 999px;
-            padding: 8px 16px;
-            box-shadow: 0 4px 12px rgba(13, 43, 48, 0.10);
-            z-index: 5;
-        }
-        .scene-progress .dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: rgba(13, 43, 48, 0.18);
-            transition: transform 200ms ease, background 200ms ease;
-        }
-        .scene-progress .dot.active {
-            background: var(--teal);
-            transform: scale(1.4);
-        }
-        /* "N of 4" label hidden -- the dots alone tell the story. */
-        .scene-progress .label { display: none; }
-        /* Mobile: dot pill flows INLINE below the carousel track so it
-           reads as part of the section and scrolls in unison with the
-           page (instead of floating absolute over the wrap, which made
-           it sit on top of the caption and shift around as the iOS
-           address bar moved). Display: flex + width: fit-content +
-           margin auto centers the pill horizontally without the base
-           rule's left:50% / translateX:-50% trick. */
-        @media (max-width: 768px) {
-            .scene-progress {
-                /* !important is defensive -- the base rule sets these
-                   properties for desktop and the cascade has burned us
-                   here before. Lock the mobile values down. */
-                position: static !important;
-                transform: none !important;
-                bottom: auto !important;
-                left: auto !important;
-                display: flex !important;
-                width: fit-content;
-                margin: 6px auto 0;
-                padding: 9px 18px;
-                gap: 12px;
-                background: #ffffff;
-                box-shadow: 0 6px 16px rgba(13, 43, 48, 0.14);
-            }
-            .scene-progress .dot {
-                width: 8px; height: 8px;
-            }
-            .scene-progress .dot.active {
-                transform: scale(1.5);
-            }
-        }
-
-        /* WAITLIST CTA - styled to match the rest of the homepage */
-        .waitlist-cta {
-            background: var(--teal-deep);
-            color: #fff;
-            text-align: center;
-            padding: clamp(64px, 12vh, 120px) 1.4rem;
-        }
-        .waitlist-cta h2 { color: #fff; margin-top: 0.4rem; }
-        .waitlist-cta p {
-            color: rgba(255, 255, 255, 0.78);
-            max-width: 38rem;
-            margin: 1rem auto 2rem;
-            font-size: 1.05rem;
-        }
-        .waitlist-cta .eyebrow {
-            color: rgba(255, 255, 255, 0.55);
-        }
-        .waitlist-cta .cta-btn {
-            background: #fff;
-            color: var(--teal-deep);
-            border-color: #fff;
-            font-family: "Source Serif 4", Georgia, serif;
-            font-style: italic;
-            font-size: 1rem;
-        }
-        .waitlist-cta .cta-btn:hover {
-            background: rgba(255,255,255,0.92);
-            color: var(--teal-deep);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-        }
-
-        /* (Auth controls live in the dropdown menu, not the top-right bar.) */
+        /* The scene animations continuously move absolutely-positioned
+           elements (the pill flying to the corner, items growing).
+           Chrome's scroll anchoring can pick those as anchor nodes and
+           "compensate" by scrolling the page — which scroll-behavior:
+           smooth turns into visible drift. Exclude the animated
+           subtrees from anchoring entirely. */
+        .scenes-wrap, .scenes-wrap * { overflow-anchor: none; }
     </style>
 </head>
-<body>
-    <header class="site-header">
+<body id="top">
+
+    <header class="site-header" id="siteHeader">
         <nav class="nav" aria-label="Primary">
             <a class="brand" href="#top" aria-label="Eleanote home">
                 <span class="brand-word">eleanote</span>
             </a>
-            <div class="menu-wrap">
-                <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">
+            <div class="nav-links">
+                <a href="#why">Why eleanote</a>
+                <a href="#how">How it works</a>
+                <a href="#demo">Demo</a>
+                <a href="#security">Security</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div class="nav-cta">
+                <a class="nav-signin auth-out-only" href="/auth/login.html">Sign in</a>
+                <a class="btn btn-ghost btn-sm" href="/download">Download</a>
+                <a class="btn btn-sm" id="navPrimaryCta" href="/auth/signup.html">Get started <span class="arr">&rarr;</span></a>
+                <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menuPanel" aria-label="Menu">
                     <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-                    <span>Menu</span>
                 </button>
-                <div class="menu-panel" id="menuPanel" role="menu" aria-label="Site menu">
-                    <a href="demo-video.html" role="menuitem">Demo video <span class="arrow">→</span></a>
-                    <a href="guide.html" role="menuitem">User guide <span class="arrow">→</span></a>
-                    <a href="security.html" role="menuitem">Privacy &amp; security <span class="arrow">→</span></a>
-                    <a href="about.html" role="menuitem">About <span class="arrow">→</span></a>
-                    <a href="/download" role="menuitem">Download program <span class="arrow">→</span></a>
-                    <hr>
-                    <a href="auth/login.html" role="menuitem" class="auth-out-only">Sign in <span class="arrow">→</span></a>
-                    <a href="auth/signup.html" role="menuitem" class="auth-out-only">Create account <span class="arrow">→</span></a>
-                    <a href="auth/dashboard.html" role="menuitem" class="auth-in-only" hidden>Account <span class="arrow">→</span></a>
-                    <a href="#" role="menuitem" class="auth-in-only" id="signoutMenuLink" hidden>Sign out <span class="arrow">→</span></a>
-                    <hr>
-                    <a href="#contact" role="menuitem">Contact <span class="arrow">→</span></a>
-                </div>
             </div>
         </nav>
     </header>
+    <div class="menu-panel" id="menuPanel" role="menu" aria-label="Site menu">
+        <a href="#why" role="menuitem">Why eleanote <span class="arrow">&rarr;</span></a>
+        <a href="#how" role="menuitem">How it works <span class="arrow">&rarr;</span></a>
+        <a href="#demo" role="menuitem">Demo <span class="arrow">&rarr;</span></a>
+        <a href="#security" role="menuitem">Privacy &amp; security <span class="arrow">&rarr;</span></a>
+        <a href="#faq" role="menuitem">FAQ <span class="arrow">&rarr;</span></a>
+        <hr>
+        <a href="/guide.html" role="menuitem">User guide <span class="arrow">&rarr;</span></a>
+        <a href="/about.html" role="menuitem">About <span class="arrow">&rarr;</span></a>
+        <a href="/download" role="menuitem">Download program <span class="arrow">&rarr;</span></a>
+        <hr>
+        <a href="/auth/login.html" role="menuitem" class="auth-out-only">Sign in <span class="arrow">&rarr;</span></a>
+        <a href="/auth/signup.html" role="menuitem" class="auth-out-only">Create account <span class="arrow">&rarr;</span></a>
+        <a href="/auth/dashboard.html" role="menuitem" class="auth-in-only" hidden>Account <span class="arrow">&rarr;</span></a>
+        <a href="#" role="menuitem" class="auth-in-only" id="signoutMenuLink" hidden>Sign out <span class="arrow">&rarr;</span></a>
+    </div>
 
-    <main id="top">
+    <main>
 
         <!-- ============== HERO ============== -->
         <section class="hero">
-            <div class="container hero-inner">
-                <h1>An ambient AI medical scribe that learns from your feedback and writes notes and orders <span class="accent">directly into any EHR.</span></h1>
-                <p class="hero-lede">
-                    eleanote is a program installed on your clinic laptop. What it does:
-                </p>
-                <ul class="hero-bullets">
-                    <li><b>Precharting in seconds.</b></li>
-                    <li><b>Notes written with frontier-quality AI.</b></li>
-                    <li><b>Personalize your notes</b> exactly the way you want them.</li>
-                    <li><b>Immediate feedback</b> can be applied to any note. Eleanote learns your preferences quickly.</li>
-                    <li><b>Transfer diagnosis codes, orders, and other programmable inputs</b> into your EMR with the push of a button.</li>
-                    <li><b>Real-time order capture.</b> Eleanote can be programmed to listen during a visit and stage orders so they're entered before the visit ends.</li>
-                </ul>
+            <div class="hero-glow g1"></div>
+            <div class="hero-glow g2"></div>
+            <div class="hero-inner">
+                <div class="hero-badge reveal"><span class="dot"></span> Now on Windows &amp; Mac &mdash; free during testing</div>
+                <h1 class="reveal d1">The ambient AI scribe that writes notes and orders <span class="accent">directly into any EHR.</span></h1>
+                <p class="hero-sub reveal d2">Eleanote listens during the visit, drafts the note the way you write it, and types the note, diagnoses, and orders straight into your EHR &mdash; no copy&#8209;paste, no integration, no IT project. It runs on your own laptop, using the laptop's microphone for recording, and learns from your feedback.</p>
+                <div class="hero-actions reveal d3">
+                    <a class="btn" href="/auth/signup.html">Get started free <span class="arr">&rarr;</span></a>
+                    <a class="btn btn-ghost btn-play" href="#demo">
+                        <span class="play-ico"><svg viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg></span>
+                        Watch the demo
+                    </a>
+                </div>
+            </div>
+            <div class="hero-boxes reveal d3">
+                <div class="hero-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                    <div><div class="t">Physician-built</div><div class="s">Created by a practicing urologist to fix his own clinic days.</div></div>
+                </div>
+                <div class="hero-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <div><div class="t">HIPAA-aligned by design</div><div class="s">BAAs with every AI partner. Independently attested.</div></div>
+                </div>
+                <div class="hero-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                    <div><div class="t">Works with any EHR</div><div class="s">Keystroke transfer &mdash; no interface to build, nothing to connect.</div></div>
+                </div>
+                <div class="hero-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="4" rx="2" ry="2"/><line x1="2" x2="22" y1="20" y2="20"/></svg>
+                    <div><div class="t">Windows &amp; Mac</div><div class="s">From the Microsoft Store, or a signed Mac download.</div></div>
+                </div>
             </div>
         </section>
 
-
-        <!-- ============== SCENES SECTION ==============
-             Horizontal carousel at all viewport sizes. .scenes-track holds
-             the 4 scenes in a flex row; arrows / keyboard / mobile swipe
-             update --active on .scenes-wrap and CSS translateX-es to the
-             new scene. -->
-        <div class="scenes-wrap wrap" id="scenes">
-
-            <!-- Arrow buttons. On desktop they float left/right of the
-                 stage; on mobile they sit in a row at the bottom of the
-                 wrap, below the stage. -->
-            <div class="scenes-arrows">
-                <button class="scenes-arrow scenes-prev" type="button" aria-label="Previous scene" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-                    <span class="arrow-label">Back</span>
-                </button>
-                <button class="scenes-arrow scenes-next" type="button" aria-label="Next scene">
-                    <span class="arrow-label">Next</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
+        <!-- ============== WHY ELEANOTE ============== -->
+        <section class="block band-white band-edge" id="why">
+            <div class="container">
+                <div class="section-head centered reveal">
+                    <p class="eyebrow centered">Why eleanote</p>
+                    <h2>Built around how you <span class="accent">already practice.</span></h2>
+                    <p class="lede">Integrated AI scribes exist &mdash; behind enterprise contracts and heavy IT setup. Eleanote gives independent practices the same workflow advantages with nothing to set up but a desktop app.</p>
+                </div>
+                <div class="features">
+                    <div class="feature-card reveal">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></div>
+                        <h3>Any EHR, zero integration</h3>
+                        <p>Eleanote transfers text the way you would &mdash; through the keyboard. If you can type into your EHR, Eleanote can write into it. No integration project, no IT setup.</p>
+                    </div>
+                    <div class="feature-card reveal d1">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></div>
+                        <h3>No more copy-paste</h3>
+                        <p>Eleanote types the finished note into the EMR for you &mdash; your formatting included, bold and all &mdash; and can place each section into the EMR's separate fields at the tap of a button.</p>
+                    </div>
+                    <div class="feature-card reveal d2">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></div>
+                        <h3>Learns from your feedback</h3>
+                        <p>Give feedback on any note and Eleanote rewrites it on the spot. The AI learns from your feedback over time, so your notes keep getting better.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></div>
+                        <h3>Notes in your style</h3>
+                        <p>Templates, saved text, phrasing, format &mdash; personalize all of it. The note that lands in the chart reads like you wrote it, because it's written your way.</p>
+                    </div>
+                    <div class="feature-card reveal d1">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></div>
+                        <h3>Frontier-quality AI</h3>
+                        <p>Notes are drafted by the same class of frontier models behind today's best AI assistants &mdash; with automatic failover so a provider outage never stops your clinic.</p>
+                    </div>
+                    <div class="feature-card reveal d2">
+                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+                        <h3>Real-time order capture</h3>
+                        <p>Orders are staged during the conversation, not reconstructed after it &mdash; so they're ready to enter before the visit ends, dates and indications included.</p>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <div class="scenes-track">
-        <!-- ============================================================
-             SCENE 1
-             ============================================================ -->
+        <!-- ============== HOW IT WORKS ============== -->
+        <section class="block band-paper band-edge" id="how">
+            <div class="container">
+                <div class="section-head centered reveal">
+                    <p class="eyebrow centered">How it works</p>
+                    <h2>Your visit, start to finish.</h2>
+                    <p class="lede">Eleanote follows the shape of a real clinic day &mdash; before, during, and after the encounter. Four steps, and the chart is done. Watch each one animated below.</p>
+                </div>
+                <div class="steps">
+                    <div class="step-card reveal">
+                        <div class="step-num">01</div>
+                        <h3>Meet the assistant</h3>
+                        <p>Open Eleanote and a small, hotkey&#8209;controlled assistant floats over your EHR &mdash; no toggling between windows, ever.</p>
+                        <a class="step-link" href="#assistant">See it in action <span aria-hidden="true">&darr;</span></a>
+                    </div>
+                    <div class="step-card reveal d1">
+                        <div class="step-num">02</div>
+                        <h3>Prechart in a highlight</h3>
+                        <p>Before the visit, highlight any prior note in the EHR and press one key. Eleanote captures the context so today's draft starts out informed.</p>
+                        <a class="step-link" href="#prechart">See it in action <span aria-hidden="true">&darr;</span></a>
+                    </div>
+                    <div class="step-card reveal d2">
+                        <div class="step-num">03</div>
+                        <h3>See your patient</h3>
+                        <p>Press record and talk like you always do. Eleanote listens ambiently, drafts the note in your style, and stages orders in real time as you say them.</p>
+                        <a class="step-link" href="#orders">See it in action <span aria-hidden="true">&darr;</span></a>
+                    </div>
+                    <div class="step-card reveal d3">
+                        <div class="step-num">04</div>
+                        <h3>Transfer with a keystroke</h3>
+                        <p>Diagnoses, orders, and the finished note flow into the EHR &mdash; typed for you, field by field, ready to sign before the room turns over.</p>
+                        <a class="step-link" href="#transfer">See it in action <span aria-hidden="true">&darr;</span></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============== CHAPTER 1 · THE ASSISTANT (scene 1) ============== -->
+        <section class="block band-white band-edge" id="assistant">
+            <div class="container">
+                <div class="chapter-head reveal">
+                    <p class="eyebrow centered">01 &middot; Meet the assistant</p>
+                    <h2>A small <span class="accent">assistant</span> sits on your screen.</h2>
+                    <p class="lede">A hotkey&#8209;controlled assistant floats over your EHR &mdash; record, pause, and transfer without switching windows. Open Eleanote and it tucks itself neatly into the corner of your screen.</p>
+                </div>
+                <div class="scenes-wrap">
         <section class="scene scene-1" data-scene-index="0">
-            <h2 class="scene-title">A small <span class="accent">assistant</span> sits on your screen, controlled by hotkeys — no toggling between EMR and eleanote.</h2>
 
             <!-- DESKTOP -->
             <div class="stage d">
@@ -3224,12 +3296,20 @@
                 </div>
             </div>
         </section>
+                </div>
+            </div>
+        </section>
 
-        <!-- ============================================================
-             SCENE 2  (scripted, coordinate-driven, step 1 only so far)
-             ============================================================ -->
+        <!-- ============== CHAPTER 2 · PRECHARTING (scene 2) ============== -->
+        <section class="block band-paper band-edge" id="prechart">
+            <div class="container">
+                <div class="chapter-head reveal">
+                    <p class="eyebrow centered">02 &middot; Before the visit</p>
+                    <h2>Precharting takes <span class="accent">seconds.</span></h2>
+                    <p class="lede">Highlight last visit's note in your EHR and press one key. Eleanote captures the context &mdash; no retyping history, no re&#8209;dictating what's already in the chart.</p>
+                </div>
+                <div class="scenes-wrap">
         <section class="scene scene-2" data-scene-index="1">
-            <h2 class="scene-title">Precharting takes seconds — just <span class="accent">highlight text</span> and transfer to eleanote.</h2>
 
             <!-- DESKTOP -->
             <div class="stage d">
@@ -3371,12 +3451,20 @@
                 </div>
             </div>
         </section>
+                </div>
+            </div>
+        </section>
 
-        <!-- ============================================================
-             SCENE 3 (rebuilt: scripted, coordinate-driven)
-             ============================================================ -->
+        <!-- ============== CHAPTER 3 · LIVE ORDERS (scene 3) ============== -->
+        <section class="block band-white band-edge" id="orders">
+            <div class="container">
+                <div class="chapter-head reveal">
+                    <p class="eyebrow centered">03 &middot; During the visit</p>
+                    <h2>Orders stage themselves <span class="accent">while you talk.</span></h2>
+                    <p class="lede">Say the plan out loud &mdash; &ldquo;BMP and an MRI abdomen in a year&rdquo; &mdash; and Eleanote stages each order as you speak, then fills the EHR's order fields for you: dates, indications, all of it.</p>
+                </div>
+                <div class="scenes-wrap">
         <section class="scene scene-3" data-scene-index="2">
-            <h2 class="scene-title">While you record, AI <span class="accent">stages orders</span> for automated transfer in real time.</h2>
 
             <!-- DESKTOP -->
             <div class="stage d">
@@ -3581,12 +3669,20 @@
                 </div>
             </div>
         </section>
+                </div>
+            </div>
+        </section>
 
-        <!-- ============================================================
-             SCENE 4 (rebuilt)
-             ============================================================ -->
+        <!-- ============== CHAPTER 4 · TRANSFER (scene 4) ============== -->
+        <section class="block band-paper band-edge" id="transfer">
+            <div class="container">
+                <div class="chapter-head reveal">
+                    <p class="eyebrow centered">04 &middot; After the visit</p>
+                    <h2>End the encounter with <span class="accent">the chart done.</span></h2>
+                    <p class="lede">One keystroke transfers the diagnoses, the orders, and the completed note into the EHR &mdash; formatted your way and placed into the right fields, ready for your signature. No more copy&#8209;pasting into box after box.</p>
+                </div>
+                <div class="scenes-wrap">
         <section class="scene scene-4" data-scene-index="3">
-            <h2 class="scene-title">At end of encounter, transfer <span class="accent">diagnoses and the note</span> in one keystroke.</h2>
 
             <!-- DESKTOP -->
             <div class="stage d">
@@ -3817,114 +3913,195 @@
                 </div>
             </div>
         </section>
-
-            </div><!-- /.scenes-track -->
-
-            <!-- Scene-progress indicator (pill with 4 dots + 'N of 4').
-                 Sits INSIDE the wrap so it scrolls with the carousel
-                 section instead of floating over the rest of the page.
-                 Must appear before the SCENE CONTROLLER <script> below
-                 so getElementById finds it. -->
-            <div class="scene-progress" id="sceneProgress" aria-hidden="true">
-                <span class="dot active"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="label">1 of 4</span>
+                </div>
             </div>
-        </div><!-- /.scenes-wrap -->
+        </section>
 
-        <!-- ============== CONTACT / GET STARTED CTA ============== -->
-        <style>
-            .cta-row{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:6px}
-            .pill-cta{display:inline-flex;align-items:center;justify-content:center;font:inherit;font-size:1rem;font-weight:600;
-                border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;
-                padding:13px 22px;line-height:1.5;white-space:nowrap;text-decoration:none;transition:background .15s,border-color .15s}
-            .pill-cta:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.55)}
-            .email-copy{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font:inherit;font-size:1rem;
-                border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;
-                padding:13px 22px;line-height:1.5;white-space:nowrap;transition:background .15s,border-color .15s}
-            .email-copy:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.55)}
-            .email-copy__addr{font-weight:600}
-            .email-copy__label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.65}
-            .email-copy.copied{border-color:#8fe3b0;background:rgba(143,227,176,.16)}
-            .email-copy.copied .email-copy__label{color:#8fe3b0;opacity:1}
-        </style>
-        <section class="waitlist-cta" id="contact">
-            <div class="container container-narrow">
-                <p class="eyebrow">Get started</p>
-                <h2>Free to try during testing.</h2>
-                <p>Eleanote is in its testing phase — it's free to sign up and try the program. Set it up, train it to your style, and see if it earns a place in your workflow. Questions or feedback? Reach out anytime.</p>
-                <div class="cta-row">
-                    <a class="pill-cta" href="auth/signup.html">Create account</a>
+        <!-- ============== DEMO VIDEO ============== -->
+        <section class="block band-white band-edge" id="demo">
+            <div class="container">
+                <div class="section-head centered reveal">
+                    <p class="eyebrow centered">See it for real</p>
+                    <h2>Watch a full visit, start to finish.</h2>
+                </div>
+                <div class="demo-frame reveal d1" id="demoFrame">
+                    <button class="demo-cover" type="button" id="demoPlayBtn" aria-label="Play the Eleanote demo video">
+                        <span class="cover-pill"><span class="rec"></span> eleanote &mdash; recorded demo</span>
+                        <span class="big-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l14 9-14 9z"/></svg></span>
+                        <span class="cover-note">Click to play &middot; with sound</span>
+                    </button>
+                </div>
+                <p class="demo-alt reveal d2">Prefer it with context? <a href="/demo-video.html">Watch on the demo page &rarr;</a></p>
+            </div>
+        </section>
+
+        <!-- ============== SECURITY ============== -->
+        <section class="block security-band" id="security">
+            <div class="container">
+                <div class="section-head centered reveal">
+                    <p class="eyebrow centered">Privacy &amp; security</p>
+                    <h2>Patient privacy is the architecture.</h2>
+                    <p class="lede">How patient information is handled was the first design decision, not the last. Every safeguard below is documented and independently reviewed.</p>
+                </div>
+                <div class="sec-grid">
+                    <div class="sec-card reveal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                        <h3>BAAs with every partner</h3>
+                        <p>Every transcription and AI partner is bound by a Business Associate Agreement to handle PHI only to provide their service, protected in accordance with HIPAA.</p>
+                    </div>
+                    <div class="sec-card reveal d1">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                        <h3>Never used for AI training</h3>
+                        <p>Patient information is never used to train AI models and never used for research. Full stop &mdash; it's in every agreement.</p>
+                    </div>
+                    <div class="sec-card reveal d2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+                        <h3>No clinical content stored</h3>
+                        <p>Audio and notes pass through transiently. Eleanote's servers keep account and usage records &mdash; never patient charts.</p>
+                    </div>
+                    <div class="sec-card reveal d3">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>
+                        <h3>Independently attested</h3>
+                        <p>A third party has reviewed the safeguards protecting this information. The HIPAA security attestation is public &mdash; read it yourself.</p>
+                    </div>
+                </div>
+                <div class="sec-actions reveal">
+                    <a class="btn" href="/eleanote-hipaa-security-attestation.pdf" target="_blank" rel="noopener">View the HIPAA attestation (PDF)</a>
+                    <a class="btn btn-ghost" href="/security.html">Read the security overview <span class="arr">&rarr;</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============== FAQ ============== -->
+        <section class="block band-paper band-edge" id="faq">
+            <div class="container">
+                <div class="section-head centered reveal">
+                    <p class="eyebrow centered">Questions</p>
+                    <h2>What providers ask first.</h2>
+                </div>
+                <div class="faq-list reveal d1">
+                    <details class="faq-item" open>
+                        <summary>Will it work with my EHR?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Yes &mdash; any EHR. Eleanote runs on your laptop, not inside the EHR, and transfers text the same way you would: through the keyboard. There's no interface to build and no EHR&#8209;side integration project. If you can type into it, Eleanote can write into it.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Is patient information safe?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Every transcription and AI partner is bound by a Business Associate Agreement, PHI is never used to train AI models or for research, and Eleanote's servers store account and usage records &mdash; never clinical content. An independent third party has reviewed these safeguards; the <a href="/eleanote-hipaa-security-attestation.pdf" target="_blank" rel="noopener">HIPAA security attestation</a> is public.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>What does it cost?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Nothing right now &mdash; Eleanote is free while it's in its testing phase. When it becomes a commercial product, the plan is a simple flat monthly subscription with no per&#8209;note charges. Early testers will hear about pricing well before anything changes.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>What do I need to run it?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">A Windows laptop (Windows 10 or 11) or a Mac (macOS 12 or later on an M1 chip or newer). The Windows version installs from the <a href="https://apps.microsoft.com/detail/xpdcs2gxgxbssf" target="_blank" rel="noopener">Microsoft Store</a>; the Mac version is a signed direct download. Get either from the <a href="/download">download page</a>.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>How does it learn my style?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Give feedback on any note &mdash; in plain language, right in the moment &mdash; and Eleanote applies it going forward. Combined with your templates and saved text, notes converge on your voice quickly, usually within the first handful of visits.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Do I need permission from my IT department?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Nothing is installed on or connected to the EHR itself, so there's no integration to approve. If your organization manages your laptop, you may still need its standard approval to install desktop software &mdash; providers in independent practice typically just install and go.</div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>How is this different from other ambient scribes?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+                        <div class="faq-body">Some ambient scribes do write into the EHR &mdash; through integrations that typically mean enterprise contracts, IT departments, and months of setup. Eleanote delivers the same workflow advantages &mdash; the note, diagnoses, and orders entered directly into the EHR &mdash; with no integration at all: it runs on your laptop and types the way you would. That puts an integrated&#8209;scribe workflow within reach of independent practices from day one.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============== FINAL CTA ============== -->
+        <section class="block final-cta" id="contact">
+            <div class="container-narrow">
+                <p class="eyebrow centered reveal" style="justify-content:center;">Get started</p>
+                <h2 class="reveal d1">Free to try during testing.</h2>
+                <p class="lede reveal d2">Eleanote is in its testing phase &mdash; it's free to sign up and try the program. Set it up, train it to your style, and see if it earns a place in your workflow. Questions or feedback? Reach out anytime.</p>
+                <div class="cta-row reveal d3">
+                    <a class="btn" href="/auth/signup.html">Create account <span class="arr">&rarr;</span></a>
                     <button class="email-copy" type="button" id="copyEmailBtn" data-email="support@eleanote.ai" aria-label="Copy support@eleanote.ai to clipboard">
                         <span class="email-copy__addr">support@eleanote.ai</span>
                         <span class="email-copy__label">Copy</span>
                     </button>
                 </div>
+                <p class="cta-platforms reveal d3">Windows 10/11 &middot; macOS 12+ (Apple silicon) &middot; <a href="/download">Download page &rarr;</a></p>
             </div>
         </section>
     </main>
 
+    <!-- ============== FOOTER ============== -->
     <footer>
-        <div class="footer-inner">
-            <span>&copy; 2026 eleanote, LLC. All rights reserved.</span>
-            <a href="#contact">Contact</a>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="brand-word">eleanote</span>
+                <p>An ambient AI medical scribe that learns from your feedback and writes notes and orders directly into any EHR. Built by a practicing physician in New Hampshire.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <a href="/download">Download</a>
+                <a href="/demo-video.html">Demo video</a>
+                <a href="/guide.html">User guide</a>
+                <a href="/auth/login.html">Sign in</a>
+                <a href="/auth/signup.html">Create account</a>
+            </div>
+            <div class="footer-col">
+                <h4>Trust</h4>
+                <a href="/security.html">Privacy &amp; security</a>
+                <a href="/eleanote-hipaa-security-attestation.pdf" target="_blank" rel="noopener">HIPAA attestation (PDF)</a>
+                <a href="/legal/terms.html">Terms of service</a>
+                <a href="/legal/privacy.html">Privacy policy</a>
+                <a href="/legal/baa.html">Business Associate Agreement</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="/about.html">About</a>
+                <a href="mailto:support@eleanote.ai">support@eleanote.ai</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 Eleanote LLC. All rights reserved.</span>
+            <span>Made in New Hampshire.</span>
         </div>
     </footer>
 
     <script>
-        // Click-to-copy the contact email (no mailto — works without an email client).
-        (function(){
-            var btn = document.getElementById('copyEmailBtn');
-            if(!btn) return;
-            var label = btn.querySelector('.email-copy__label');
-            function done(){ btn.classList.add('copied'); if(label) label.textContent = 'Copied!'; setTimeout(function(){ btn.classList.remove('copied'); if(label) label.textContent = 'Copy'; }, 1800); }
-            function fallback(){ var ta = document.createElement('textarea'); ta.value = btn.getAttribute('data-email'); ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(ta); }
-            btn.addEventListener('click', function(){
-                var email = btn.getAttribute('data-email');
-                if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(email).then(done).catch(fallback); }
-                else { fallback(); }
-            });
-        })();
-    </script>
-
-    <script>
-        (function(){
-            const menuBtn = document.getElementById('menuBtn');
-            const menuPanel = document.getElementById('menuPanel');
-
-            function setMenu(open){
+        // ============================================================
+        // MOBILE MENU
+        // ============================================================
+        (function () {
+            var menuBtn = document.getElementById('menuBtn');
+            var menuPanel = document.getElementById('menuPanel');
+            function setMenu(open) {
                 document.body.classList.toggle('menu-open', open);
                 menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
             }
-
-            menuBtn.addEventListener('click', () => {
+            menuBtn.addEventListener('click', function () {
                 setMenu(!document.body.classList.contains('menu-open'));
             });
-
-            document.addEventListener('click', (e) => {
+            document.addEventListener('click', function (e) {
                 if (!document.body.classList.contains('menu-open')) return;
                 if (menuPanel.contains(e.target) || menuBtn.contains(e.target)) return;
                 setMenu(false);
             });
-
-            menuPanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') setMenu(false);
-            });
+            menuPanel.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
         })();
 
         // ============================================================
-        // ANIMATION COORDINATE MEASUREMENT
-        // For each .stage that contains [data-target] elements, measure
-        // each target's center position relative to the stage and write
+        // ANIMATION COORDINATE MEASUREMENT — unchanged from the live
+        // site. For each .stage containing [data-target] elements,
+        // measure each target's center relative to the stage and write
         // it as CSS variables on the stage.
         // ============================================================
         function measureTargets() {
             document.querySelectorAll('.stage').forEach(stage => {
                 const sr = stage.getBoundingClientRect();
+                // The hidden stage variant (desktop vs phone) has a zero-size
+                // rect — measuring it would write NaN% vars. Skip it; the CSS
+                // fallback coordinates stay in place until it becomes visible
+                // and a resize/activation re-measure fills in real values.
+                if (!sr.width || !sr.height) return;
                 stage.querySelectorAll('[data-target]').forEach(el => {
                     const r = el.getBoundingClientRect();
                     const cx = r.left + r.width  / 2 - sr.left;
@@ -3944,247 +4121,155 @@
         }
 
         // ============================================================
-        // SCENE CONTROLLER
-        // - Horizontal carousel at all viewport sizes. Arrow buttons,
-        //   keyboard arrows, and mobile touch swipes all call setActive(idx)
-        //   which updates --active on .scenes-wrap; CSS translateX-es the
-        //   track to the new scene.
-        // - Only the active scene's animations run; everything else is
-        //   paused. When the wrap scrolls off-screen, even the active
-        //   scene pauses (saves battery on mobile).
-        // - Floating progress dots stay in sync with --active.
+        // SCENE PLAY/PAUSE — each scene plays only while on screen.
+        // (Replaces the old carousel controller: scenes are stacked
+        // scroll sections now, so visibility is the only gate.)
         // ============================================================
-        (function(){
-            const wrap = document.querySelector('.scenes-wrap');
-            const sceneEls = document.querySelectorAll('.scenes-wrap .scene');
-            if (!wrap || !sceneEls.length) return;
+        (function () {
+            var mq = window.matchMedia('(max-width: 700px)');
+            var scenes = document.querySelectorAll('.scene');
+            if (!scenes.length) return;
 
-            const progressEl = document.getElementById('sceneProgress');
-            const dots = progressEl ? progressEl.querySelectorAll('.dot') : [];
-            const labelEl = progressEl ? progressEl.querySelector('.label') : null;
-            const total = sceneEls.length;
-
-            function setAllAnimationPlayState(scene, state) {
-                // Phone variant of the stage is shown on narrow screens;
-                // desktop variant on wider screens. Only touch the one
-                // that's actually rendered.
-                const stage = scene.querySelector(
-                    window.matchMedia('(max-width: 700px)').matches ? '.stage.p' : '.stage.d'
-                );
+            function setPlay(scene, run) {
+                var stage = scene.querySelector(mq.matches ? '.stage.p' : '.stage.d');
                 if (!stage) return;
+                var state = run ? 'running' : 'paused';
                 stage.style.animationPlayState = state;
-                stage.querySelectorAll('*').forEach(el => {
+                stage.querySelectorAll('*').forEach(function (el) {
                     el.style.animationPlayState = state;
                 });
             }
 
-            function updateProgress(idx) {
-                dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-                if (labelEl) labelEl.textContent = (idx + 1) + ' of ' + total;
-            }
-
-            const prevBtn = document.querySelector('.scenes-prev');
-            const nextBtn = document.querySelector('.scenes-next');
-            let activeIdx = 0;
-            // Tracked by IntersectionObserver below so we can pause even
-            // the active scene's animations when the wrap is off-screen.
-            let wrapInView = true;
-
-            function setActive(idx) {
-                activeIdx = Math.max(0, Math.min(total - 1, idx));
-                wrap.style.setProperty('--active', activeIdx);
-                if (prevBtn) prevBtn.disabled = (activeIdx === 0);
-                if (nextBtn) nextBtn.disabled = (activeIdx === total - 1);
-                updateProgress(activeIdx);
-                sceneEls.forEach((s, i) => {
-                    const shouldPlay = (i === activeIdx) && wrapInView;
-                    setAllAnimationPlayState(s, shouldPlay ? 'running' : 'paused');
+            var visible = new WeakMap();
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    visible.set(entry.target, entry.isIntersecting);
+                    // Every time a scene comes on screen, re-measure the
+                    // ghost/cursor target coordinates (cheap — a few rect
+                    // reads). Catches any layout shift since load — late
+                    // fonts, zoom, rotation, scrollbars — so flights land
+                    // exactly on the input boxes, without depending on a
+                    // resize event ever firing.
+                    if (entry.isIntersecting) measureTargets();
+                    setPlay(entry.target, entry.isIntersecting);
                 });
+            }, { threshold: 0.15 });
+
+            scenes.forEach(function (s) { setPlay(s, false); obs.observe(s); });
+
+            // Breakpoint flips which stage variant is rendered — re-apply
+            // play state to the right one and re-measure coordinates.
+            function onMqChange() {
+                scenes.forEach(function (s) { setPlay(s, !!visible.get(s)); });
+                measureTargets();
             }
+            if (mq.addEventListener) mq.addEventListener('change', onMqChange);
+            else if (mq.addListener) mq.addListener(onMqChange);
+        })();
 
-            if (prevBtn) prevBtn.addEventListener('click', () => setActive(activeIdx - 1));
-            if (nextBtn) nextBtn.addEventListener('click', () => setActive(activeIdx + 1));
-
-            // Keyboard arrow navigation when the wrap is roughly centered
-            // in the viewport. Useful on desktop and on tablets with an
-            // external keyboard.
-            document.addEventListener('keydown', (e) => {
-                const wr = wrap.getBoundingClientRect();
-                const inView = wr.top < window.innerHeight * 0.5 && wr.bottom > window.innerHeight * 0.5;
-                if (!inView) return;
-                if (e.key === 'ArrowRight') { setActive(activeIdx + 1); }
-                else if (e.key === 'ArrowLeft') { setActive(activeIdx - 1); }
-            });
-
-            // ---- Mobile/tablet: follow-finger drag + snap ----
-            // Apple/Stripe-style carousel: the track moves with the finger
-            // as you drag, then snaps to the nearest scene at release --
-            // OR advances based on velocity if you flick. Listeners are
-            // passive so vertical page scroll is never blocked; CSS
-            // touch-action: pan-y on .scenes-wrap tells the browser
-            // "vertical pans are yours, horizontal ones are mine."
-            const trackEl = wrap.querySelector('.scenes-track');
-            let tStartX = null, tStartY = null;
-            let lastMoveT = 0, lastMoveX = 0, velocity = 0;
-            let dragging = false;      // committed to a horizontal drag
-            let abandoned = false;     // gesture decided to be a vertical scroll
-
-            // Translation distance (in px) per scene step. Different on
-            // desktop (each scene fills the viewport) vs mobile (peek
-            // cards: card width + gap). Both numbers stay in sync with
-            // the CSS translateX rules so the inline drag transform
-            // hands off smoothly to the CSS-driven snap on release.
-            function getSceneStep() {
-                if (window.matchMedia('(max-width: 768px)').matches) {
-                    return 0.82 * window.innerWidth + 16;   // 82vw + 16px gap
-                }
-                return wrap.offsetWidth;                     // 100% of wrap per scene
+        // ============================================================
+        // SCROLL REVEAL
+        // ============================================================
+        (function () {
+            var els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function (el) { el.classList.add('in'); });
+                return;
             }
-
-            function applyDragTransform(dx) {
-                const step = getSceneStep();
-                // Resist at the edges so it feels like there's a "wall"
-                // beyond scene 0 and scene N-1 rather than free-running.
-                let target = (activeIdx * -step) + dx;
-                const minT = -(total - 1) * step;
-                const maxT = 0;
-                if (target > maxT) target = maxT + (target - maxT) * 0.35;
-                else if (target < minT) target = minT + (target - minT) * 0.35;
-                trackEl.style.transform = `translateX(${target}px)`;
-            }
-
-            function endDrag(committedTargetIdx) {
-                // Restore the CSS transition and let CSS take over the
-                // transform via --active. Clearing inline transform after
-                // the next frame ensures the browser sees the transition
-                // animate from the dragged position to the committed one.
-                trackEl.style.transition = '';
-                setActive(committedTargetIdx);
-                requestAnimationFrame(() => {
-                    trackEl.style.transform = '';
-                });
-                dragging = false;
-            }
-
-            wrap.addEventListener('touchstart', (e) => {
-                tStartX = e.touches[0].clientX;
-                tStartY = e.touches[0].clientY;
-                lastMoveT = performance.now();
-                lastMoveX = tStartX;
-                velocity = 0;
-                dragging = false;
-                abandoned = false;
-            }, { passive: true });
-
-            wrap.addEventListener('touchmove', (e) => {
-                if (tStartX === null || abandoned) return;
-                const x = e.touches[0].clientX;
-                const y = e.touches[0].clientY;
-                const dx = x - tStartX;
-                const dy = y - tStartY;
-
-                // First few px of motion: decide if this is a horizontal
-                // drag or a vertical scroll. Once decided, stick with it.
-                if (!dragging) {
-                    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-                    if (Math.abs(dy) > Math.abs(dx)) {
-                        // Vertical scroll wins -- abandon, let page scroll.
-                        abandoned = true;
-                        return;
+            var ro = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                        ro.unobserve(entry.target);
                     }
-                    dragging = true;
-                    trackEl.style.transition = 'none';
-                }
-
-                // Track velocity (px/ms) of the last frame -- used at
-                // release to detect quick flicks.
-                const now = performance.now();
-                const dt = now - lastMoveT;
-                if (dt > 0) {
-                    velocity = (x - lastMoveX) / dt;
-                }
-                lastMoveT = now;
-                lastMoveX = x;
-
-                applyDragTransform(dx);
-            }, { passive: true });
-
-            wrap.addEventListener('touchend', (e) => {
-                if (tStartX === null) { return; }
-                if (!dragging) {
-                    tStartX = null;
-                    return;
-                }
-                const dx = e.changedTouches[0].clientX - tStartX;
-                tStartX = null;
-
-                const wrapWidth = wrap.offsetWidth || 1;
-                // Commit if (a) the drag crossed ~15% of the wrap, OR
-                // (b) the user flicked fast (>0.4 px/ms is a casual flick).
-                // Otherwise snap back to where we started.
-                const DIST_THRESHOLD = wrapWidth * 0.15;
-                const VEL_THRESHOLD  = 0.4;
-                let targetIdx = activeIdx;
-                if (Math.abs(dx) > DIST_THRESHOLD || Math.abs(velocity) > VEL_THRESHOLD) {
-                    if (dx < 0 || velocity < -VEL_THRESHOLD) targetIdx = activeIdx + 1;
-                    else if (dx > 0 || velocity > VEL_THRESHOLD) targetIdx = activeIdx - 1;
-                }
-                endDrag(targetIdx);
-            }, { passive: true });
-
-            wrap.addEventListener('touchcancel', () => {
-                if (dragging) endDrag(activeIdx);   // snap back to where we started
-                tStartX = null;
-                abandoned = false;
-            }, { passive: true });
-
-            // Initial state: scene 0 active and playing, others paused.
-            setActive(0);
-
-            // Pause animations when the wrap scrolls off-screen, resume
-            // the active scene when it comes back. (The dots live inside
-            // the wrap now, so they scroll with it -- no separate
-            // visibility toggle needed.)
-            const wrapObs = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    wrapInView = entry.isIntersecting;
-                    setAllAnimationPlayState(
-                        sceneEls[activeIdx],
-                        wrapInView ? 'running' : 'paused'
-                    );
                 });
-            }, { threshold: 0.05 });
-            wrapObs.observe(wrap);
+            }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+            els.forEach(function (el) { ro.observe(el); });
+        })();
+
+        // ============================================================
+        // FAQ — open one at a time
+        // ============================================================
+        (function () {
+            var items = document.querySelectorAll('.faq-item');
+            items.forEach(function (item) {
+                item.addEventListener('toggle', function () {
+                    if (!item.open) return;
+                    items.forEach(function (other) { if (other !== item) other.open = false; });
+                });
+            });
+        })();
+
+        // ============================================================
+        // DEMO VIDEO — click-to-load so the 20MB file only streams on
+        // demand. Pulls from the live site, so it works from this local
+        // preview too.
+        // ============================================================
+        (function () {
+            var btn = document.getElementById('demoPlayBtn');
+            var frame = document.getElementById('demoFrame');
+            if (!btn || !frame) return;
+            btn.addEventListener('click', function () {
+                var v = document.createElement('video');
+                v.src = '/eleanote-demo.mp4';
+                v.controls = true;
+                v.autoplay = true;
+                v.playsInline = true;
+                frame.innerHTML = '';
+                frame.appendChild(v);
+            });
+        })();
+
+        // ============================================================
+        // COPY EMAIL — unchanged from the live site
+        // ============================================================
+        (function () {
+            var btn = document.getElementById('copyEmailBtn');
+            if (!btn) return;
+            var label = btn.querySelector('.email-copy__label');
+            function done() { btn.classList.add('copied'); if (label) label.textContent = 'Copied!'; setTimeout(function () { btn.classList.remove('copied'); if (label) label.textContent = 'Copy'; }, 1800); }
+            function fallback() { var ta = document.createElement('textarea'); ta.value = btn.getAttribute('data-email'); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} document.body.removeChild(ta); }
+            btn.addEventListener('click', function () {
+                var email = btn.getAttribute('data-email');
+                if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(email).then(done).catch(fallback); }
+                else { fallback(); }
+            });
         })();
     </script>
 
     <!-- ============== AUTH STATE ============== -->
     <!-- Reads tokens from localStorage to decide whether to show signed-in UI.
-         Same storage keys as docs/auth/auth.js. No network calls — just a quick
+         Same storage keys as /auth/auth.js. No network calls — just a quick
          visual swap based on whether a valid token exists. -->
     <script>
-        (function() {
+        (function () {
             var idToken = localStorage.getItem('eleanote.idToken');
             var expiresAt = parseInt(localStorage.getItem('eleanote.expiresAt') || '0', 10);
             var loggedIn = !!idToken && Date.now() < expiresAt;
 
-            // Toggle menu items based on auth state
-            document.querySelectorAll('.auth-out-only').forEach(function(el) {
+            document.querySelectorAll('.auth-out-only').forEach(function (el) {
                 el.hidden = loggedIn;
             });
-            document.querySelectorAll('.auth-in-only').forEach(function(el) {
+            document.querySelectorAll('.auth-in-only').forEach(function (el) {
                 el.hidden = !loggedIn;
             });
 
-            // Wire up sign-out from menu
+            // Signed-in visitors don't need "Get started" — point the header
+            // CTA at their account dashboard instead.
+            var cta = document.getElementById('navPrimaryCta');
+            if (cta && loggedIn) {
+                cta.href = '/auth/dashboard.html';
+                cta.innerHTML = 'Account <span class="arr">&rarr;</span>';
+            }
+
             var signoutLink = document.getElementById('signoutMenuLink');
             if (signoutLink) {
-                signoutLink.addEventListener('click', function(e) {
+                signoutLink.addEventListener('click', function (e) {
                     e.preventDefault();
                     // Clear local tokens (we don't bother calling Cognito GlobalSignOut
                     // from the marketing page — the dashboard handles full sign-out)
-                    ['eleanote.idToken','eleanote.accessToken','eleanote.refreshToken',
-                     'eleanote.email','eleanote.expiresAt'].forEach(function(k) {
+                    ['eleanote.idToken', 'eleanote.accessToken', 'eleanote.refreshToken',
+                     'eleanote.email', 'eleanote.expiresAt'].forEach(function (k) {
                         localStorage.removeItem(k);
                     });
                     window.location.reload();
