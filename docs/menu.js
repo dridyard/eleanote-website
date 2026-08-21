@@ -23,7 +23,6 @@
       '<a href="/demo-video.html" role="menuitem">Demo video <span class="arrow">→</span></a>' +
       '<a href="/guide.html" role="menuitem">User guide <span class="arrow">→</span></a>' +
       '<a href="/security.html" role="menuitem">Privacy &amp; security <span class="arrow">→</span></a>' +
-      '<a href="/about.html" role="menuitem">About <span class="arrow">→</span></a>' +
       '<a href="/download" role="menuitem">Download program <span class="arrow">→</span></a>' +
       '<hr>' +
       '<a href="/auth/login.html" role="menuitem" class="auth-out-only">Sign in <span class="arrow">→</span></a>' +
