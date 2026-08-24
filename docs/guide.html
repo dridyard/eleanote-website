@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>User Guide — How to Use Eleanote, the AI Medical Scribe</title>
-<meta name="description" content="Complete user guide for Eleanote: installing the app, recording an encounter, teaching it your note preferences, using the Floating Assistant, and automating diagnoses, orders, and note transfer into your EMR.">
+<meta name="description" content="Complete user guide for Eleanote: the built-in setup assistant, recording an encounter, teaching it your note preferences, transferring notes in sections, remote-EMR settings, and automating diagnoses, orders, and note entry into your EMR.">
 <link rel="canonical" href="https://eleanote.ai/guide.html">
 <meta property="og:title" content="User Guide — How to Use Eleanote, the AI Medical Scribe">
-<meta property="og:description" content="Setup and everyday use: recording encounters, teaching Eleanote your preferences, and automating EMR entry for notes, diagnoses, and orders.">
+<meta property="og:description" content="Setup and everyday use: the built-in setup assistant, recording encounters, teaching Eleanote your preferences, and automating EMR entry for notes, diagnoses, and orders.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://eleanote.ai/guide.html">
 <link rel="stylesheet" href="legal/legal.css">
@@ -29,6 +29,7 @@
   .guide-body p:last-child { margin-bottom: 0; }
   .guide-body ul { margin: 0.2rem 0 0.8rem 1.3rem; padding: 0; }
   .guide-body li { margin-bottom: 0.4rem; }
+  .guide-img { display: block; width: 100%; max-width: 560px; height: auto; border: 1px solid var(--line); border-radius: 8px; margin: 0.4rem 0 0.9rem; }
 </style>
 </head>
 <body>
@@ -45,14 +46,23 @@
       <a href="eleanote-userguide.mp4">Download the video</a> instead.
     </video>
   </div>
-  <p class="guide-intro">Welcome to Eleanote. This guide walks you through the app, from first-time setup to advanced features. Topics are ordered from simplest to most advanced — click any topic to expand it.</p>
+  <p class="guide-intro">Welcome to Eleanote. This guide walks you through the app, from first-time setup to advanced features. Topics are ordered from simplest to most advanced — click any topic to expand it. The fastest way through setup, though, is the assistant built into the program itself — that&rsquo;s the first topic below.</p>
       <details class="guide-item">
         <summary>Download &amp; install</summary>
         <div class="guide-body">
-          <p>Eleanote is a desktop application that runs on a provider’s personal clinic laptop, on either Windows or a Mac. Get it from the <a href="/download">download page</a> — the Windows version installs from the Microsoft Store, and the Mac version downloads directly — then open the app and sign in with the same email and password as your account. Having trouble installing? Email <a href="mailto:support@eleanote.ai">support@eleanote.ai</a> and we’ll help you get set up.</p>
+          <p>Eleanote is a desktop application that runs on a provider’s personal clinic laptop, on either Windows or a Mac. Get it from the <a href="/download">download page</a> — the Windows version installs from the Microsoft Store, and the Mac version downloads directly — then open the app and sign in with the same email and password as your account. On a Mac, open Tools → Permissions and Eleanote will walk you through granting the system permissions it needs. Having trouble installing? Email <a href="mailto:support@eleanote.ai">support@eleanote.ai</a> and we’ll help you get set up.</p>
         </div>
       </details>
       <h2 class="guide-group">Getting Started</h2>
+      <details class="guide-item" open>
+        <summary>Let the built-in assistant set you up (start here)</summary>
+        <div class="guide-body">
+          <p>You don’t have to figure Eleanote out on your own — setup help is built right into the program. Click the <strong>?</strong> button in the top-right corner and a setup assistant (a chatbot that knows Eleanote inside and out) will walk you through getting everything configured, one step at a time — and can help with any issue along the way.</p>
+          <img class="guide-img" src="/img/help-button.png" alt="The ? help button in the top-right corner of Eleanote">
+          <p>The assistant can see your current settings, so it skips steps you’ve already finished and gives answers specific to your setup. It can also troubleshoot: the more specifically you describe a problem (for example, “Transfer types a letter v instead of my note”), the better the fix it gives you. Anything in this guide, you can simply ask it instead.</p>
+          <p>One rule: the chat is for setup help only — never include patient information in it. You can reopen it anytime with the <strong>?</strong> button or Tools → Setup Help.</p>
+        </div>
+      </details>
       <details class="guide-item">
         <summary>Set up your documentation preferences (the interview)</summary>
         <div class="guide-body">
@@ -62,7 +72,7 @@
       <details class="guide-item">
         <summary>Choose your microphone / dictation device</summary>
         <div class="guide-body">
-          <p>Open Tools → Microphone to pick which microphone Eleanote listens to. Use this if you have more than one mic, or a dedicated dictation device (such as a handheld dictation microphone), so Eleanote always uses the right one.</p>
+          <p>Open Tools → Microphone to pick which microphone Eleanote listens to, and use the Test button to make sure it’s picking you up. Use this if you have more than one mic, or a dedicated dictation device (such as a handheld dictation microphone), so Eleanote always uses the right one.</p>
         </div>
       </details>
       <details class="guide-item">
@@ -70,14 +80,15 @@
         <div class="guide-body">
           <p>Hotkeys let you control Eleanote without clicking — useful when your hands are on the keyboard or you’re working inside your EMR. Open Tools → Hotkey Settings to assign keys for the main actions:</p>
           <ul>
-          <li>Pre-charting (you must hit ctrl + C to put text in the clipboard before transferring to Eleanote)</li>
           <li>Record / Stop</li>
           <li>Pause / Resume</li>
-          <li>Transfer/Skip automated entries into EMR</li>
-          <li>Dictation</li>
+          <li>Prechart Capture (default F4 — hit ctrl + C first to put the highlighted text on the clipboard)</li>
+          <li>Transfer to EMR (default F6 — sends the next output into your EMR)</li>
+          <li>Skip / Dismiss (default F3)</li>
+          <li>Dictation (default F12)</li>
           <li>End Encounter</li>
           </ul>
-          <p>Pick hotkeys that won’t clash with your EMR’s own shortcuts. Choose uncommon keys (F11, F12, insert, or key combinations such as “ctrl + x”).</p>
+          <p>Escape is always the emergency stop — it instantly halts any automated typing. Pick hotkeys that won’t clash with your EMR’s own shortcuts. Choose uncommon keys (F11, F12, insert, or key combinations such as “ctrl + x”).</p>
         </div>
       </details>
       <h2 class="guide-group">Seeing a Patient</h2>
@@ -108,7 +119,9 @@
       <details class="guide-item">
         <summary>The Floating Assistant &amp; transferring outputs into your EMR</summary>
         <div class="guide-body">
-          <p>The Floating Assistant is a small, always-on-top window that shows your generated note, diagnoses, and orders. From it, you transfer each output straight into your EMR — Eleanote types or pastes each piece into the right place using the automation you’ve set up (see “Automating EMR Entry”). You can show it anytime via Tools → Show Floating Assistant.</p>
+          <p>The Floating Assistant is a small, always-on-top window that shows your generated note, diagnoses, and orders. From it, you transfer each output straight into your EMR — Eleanote types or pastes each piece into the right place using the automation you’ve set up (see “Automating EMR Entry”).</p>
+          <p>The Transfer hotkey sends outputs in a set order — staged orders first, then diagnoses, then the clinical note, then any custom outputs. You can change that order under Tools → Hotkey Settings (Transfer Priority), and the Skip hotkey dismisses an output you don’t want to send. If a transfer ever starts doing the wrong thing, press Escape to stop it instantly.</p>
+          <p>You can show the assistant anytime via Tools → Show Floating Assistant — that also snaps it back to its home spot near the top-right of your screen, which is handy if it’s been dragged somewhere out of the way.</p>
         </div>
       </details>
       <details class="guide-item">
@@ -126,8 +139,16 @@
       <details class="guide-item">
         <summary>Quick Dictation (dictate anywhere)</summary>
         <div class="guide-body">
-          <p>Dictation mode is for quick, free-form dictation that isn’t a full patient note — a way to type by voice into any field. Press your assigned hotkey, speak, then tap the hotkey to paste the dictated text into the desired field. Eleanote cleans up the text (punctuation, medical terms, your spoken commands) and places it where your cursor is.</p>
+          <p>Dictation mode is for quick, free-form dictation that isn’t a full patient note — a way to type by voice into any field. Press your assigned hotkey (default F12), speak, then tap the hotkey again to paste the dictated text into the desired field. Eleanote cleans up the text (punctuation, medical terms, your spoken commands) and places it where your cursor is.</p>
           <p>Spoken commands like “period,” “comma,” “new line,” and “new paragraph” are honored, and it won’t add punctuation you didn’t dictate. It also tries to drop obvious background chatter that isn’t part of your dictation.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>The Dictation Bubble (collect dictation, paste it once)</summary>
+        <div class="guide-body">
+          <p>Sometimes you want to dictate in pieces — while scrolling the chart, checking labs, moving between screens — and paste it all at once. That’s what the Dictation Bubble is for. Next to the ✕ on the Floating Assistant there’s a small notepad icon: click it and a little pad opens beneath the assistant.</p>
+          <p>While the bubble is open, every finished dictation collects in the pad instead of pasting at your cursor. Dictate in as many bursts as you like and watch the text gather. When you’re ready, click where the text belongs and press the Transfer hotkey — everything in the bubble pastes at your cursor in one go, and the bubble clears itself.</p>
+          <p>The bubble has a Clear button if you want to start over, and closing it (its ✕) returns dictation to normal paste-at-your-cursor behavior.</p>
         </div>
       </details>
       <details class="guide-item">
@@ -165,19 +186,27 @@
       <details class="guide-item">
         <summary>Automated inputs — diagnoses, note formatting, and orders (Training Center)</summary>
         <div class="guide-body">
-          <p>The Training Center (Tools → Training Center) is where you teach Eleanote how to enter diagnoses, notes, and orders into your EMR for you — using keystroke sequences you set up once. It has three tabs:</p>
+          <p>The Training Center (Tools → Training Center) is where you teach Eleanote how to enter diagnoses, notes, and orders into your EMR for you — using keystroke sequences you set up once. Its main tabs:</p>
           <ul>
           <li><strong>Diagnoses</strong> — record the keystrokes for entering a diagnosis, so its description or ICD-10 code drops straight into the right field of your EMR.</li>
-          <li><strong>Formatting</strong> — shape how your note is entered. On the right side of the screen, tell the chatbot what you want — for example, make specific text <strong>bold</strong>, <em>italic</em>, or <u>underlined</u>, or add pauses so you can place different sections of the note into separate areas of your EMR. The chatbot hands you a prompt; paste it into the box on the left to apply it.</li>
+          <li><strong>Note Formatting</strong> — shape how your note is entered. On the right side of the screen, tell the formatting assistant what you want — for example, make specific text <strong>bold</strong>, <em>italic</em>, or <u>underlined</u>, or add paste breaks so different sections of the note land in separate areas of your EMR (see the next topic). The assistant hands you instructions; paste them into the box on the left and hit Save All to apply.</li>
           <li><strong>Orders</strong> — use the orders chatbot to build the keystroke sequence for placing an order (labs, imaging, or medications).</li>
+          <li><strong>Custom outputs</strong> — your custom outputs each get their own tab here too (see “Custom Outputs” below).</li>
           </ul>
           <p>Once these are set, transferring a diagnosis, note, or order from the Floating Assistant runs your sequence automatically.</p>
         </div>
       </details>
       <details class="guide-item">
+        <summary>Paste the note in sections (paste breaks)</summary>
+        <div class="guide-body">
+          <p>If your EMR wants different parts of the note in different boxes — HPI in one field, exam in another, assessment &amp; plan in a third — you don’t have to copy-paste pieces by hand. Set up <strong>paste breaks</strong> in the Training Center’s Note Formatting tab: tell the formatting assistant where to split (for example, “insert a paste break immediately before every ALL CAPS header”), paste its instructions into the left box, and Save All.</p>
+          <p>From then on, the note transfers one section at a time: press the Transfer hotkey and the first section pastes at your cursor; click into the next EMR box and press it again for the next section. The Floating Assistant shows a card for each remaining section so you always know what’s coming, and the Skip hotkey skips a section you don’t need.</p>
+        </div>
+      </details>
+      <details class="guide-item">
         <summary>Custom Outputs (“wild cards”)</summary>
         <div class="guide-body">
-          <p>Custom Outputs are extra, you-defined outputs beyond the standard note, diagnoses, and orders — your “wild cards.” You define what each one generates (with its own instructions) and how it’s placed in your EMR. Use them for anything recurring that isn’t a standard note section — patient instructions, a billing snippet, a letter, and so on.</p>
+          <p>Custom Outputs are extra, you-defined outputs beyond the standard note, diagnoses, and orders — your “wild cards.” You define what each one generates (with its own instructions) and how it’s placed in your EMR, in its own tab of the Training Center. Use them for anything recurring that isn’t a standard note section — patient instructions, a billing snippet, a letter, and so on.</p>
         </div>
       </details>
       <details class="guide-item">
@@ -185,6 +214,28 @@
         <div class="guide-body">
           <p>Eleanote can detect orders you mention during the visit in real time (labs, imaging, medications) and prepare these orders for transfer into the EMR before the visit is completed. Orders are transferred by a sequence of keystrokes that are determined by the user. Eleanote detects that a user is trying to place an order by listening for a trigger word such as “order.” The user can talk naturally with the details of the order and Eleanote stages the order for transfer into the EMR. A chatbot is built into this part of the program to help the user develop the keystroke recipe.</p>
           <p>This is the most advanced automation. Build and test one order at a time, and give your EMR enough pause time between steps.</p>
+        </div>
+      </details>
+      <h2 class="guide-group">Remote EMRs &amp; Difficult Networks</h2>
+      <details class="guide-item">
+        <summary>Remote session settings (Citrix, VMware, cloud-hosted EMRs)</summary>
+        <div class="guide-body">
+          <p>If your EMR runs inside a remote Windows desktop — Citrix, VMware, a cloud-hosted system, and the like — pasting and keystrokes can behave differently than they do in a local program. Eleanote has a set of remote-session settings for exactly this: open Tools → Hotkey Settings and find the <strong>Remote Windows session</strong> section (on the Mac app). The common fixes:</p>
+          <ul>
+          <li>Transfers type a stray letter “v” instead of your note → turn on <strong>Paste with Ctrl+V instead of Cmd+V</strong>.</li>
+          <li>The previous item pastes instead of the new one → increase <strong>Clipboard delay before pasting</strong> (try 300 ms), or turn on <strong>Click away and back before pasting</strong>.</li>
+          <li>Pasting is just unreliable → turn on <strong>Type instead of pasting</strong>. Eleanote types the text key by key — slower, but nearly bulletproof.</li>
+          <li>Bold or italics come out as a plain letter → increase <strong>Pause around formatting keys</strong>.</li>
+          <li>Prechart capture brings in older text → turn on <strong>Click away when capturing prechart text</strong>.</li>
+          </ul>
+          <p>Note that “Type instead of pasting” and “Click away and back” are alternatives — turning one on turns the other off. And if a colleague works in the same EMR system, you can hand them your working setup: see “Profiles &amp; Sharing.” The setup assistant (the ? button) can diagnose these symptoms too — just describe what you’re seeing.</p>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>Connection Test (for unreliable networks)</summary>
+        <div class="guide-body">
+          <p>If transcription seems unreliable on a particular network — hospital guest Wi-Fi, VPNs, strict firewalls — run Tools → Connection Test right where the problem happens (for example, in the exam room). It runs three checks (Eleanote server, live streaming, full-audio sending) and gives you a plain-language verdict.</p>
+          <p>If the network blocks live streaming, tick <strong>Send full audio instead of live streaming</strong>: the visit records normally and the audio is sent when you press Stop, so the note arrives a few seconds later than usual — and spoken orders stage when you stop rather than live. There’s also a <strong>Copy message for IT</strong> button that produces a ready-made request you can hand to your network administrator.</p>
         </div>
       </details>
       <h2 class="guide-group">Profiles &amp; Sharing</h2>
@@ -198,7 +249,7 @@
           <li>Rename or delete profiles.</li>
           <li>Import a profile from a file, or export one to share.</li>
           </ul>
-          <p>Sharing: export a profile to a file and send it to a colleague (or import one they send you). It’s a great way for a group to start from the same proven setup. Inspect all preference files before sharing with others. Preferences are specifically designed not to include any protected health information, but it is technically possible for the AI to make a mistake. Thus, all preference files should be inspected by the user before sharing.</p>
+          <p>Sharing: export a profile to a file and send it to a colleague (or import one they send you). It’s a great way for a group to start from the same proven setup — Export All even includes your remote-session setup (paste method and timings), which a colleague on the same EMR system can choose to take when importing. Inspect all preference files before sharing with others. Preferences are specifically designed not to include any protected health information, but it is technically possible for the AI to make a mistake. Thus, all preference files should be inspected by the user before sharing.</p>
         </div>
       </details>
       <h2 class="guide-group">Help &amp; Good to Know</h2>
@@ -206,7 +257,10 @@
         <summary>Troubleshooting</summary>
         <div class="guide-body">
           <ul>
+          <li>First stop for any problem: click the <strong>?</strong> button (top right) and describe what’s happening — the setup assistant can see your settings and will point you to the fix.</li>
           <li>No transcription / no text appears: check Tools → Microphone is set to the right device, and that you’re connected to the internet.</li>
+          <li>Transcription unreliable on a particular network: run Tools → Connection Test where it happens and follow its verdict.</li>
+          <li>Transfers misbehave inside a remote EMR (Citrix/VMware/cloud): see “Remote session settings” above.</li>
           <li>A note is missing a diagnosis or detail: click Refresh to regenerate, or add the detail through pre-charting or feedback.</li>
           <li>Outputs aren’t landing in the right EMR fields: re-check the keystroke steps and the pause timing in the Training Center — EMRs sometimes need longer pauses.</li>
           <li>“Preferences are too large” message: trim them in the Preference Database.</li>
@@ -217,13 +271,13 @@
       <details class="guide-item">
         <summary>Keeping Eleanote updated</summary>
         <div class="guide-body">
-          <p>Eleanote is updated by installing a new version when one is available (we’ll send you the download link). Your preferences, saved text, training, and profiles all carry over automatically — updating never erases your setup. Always run the latest version so you have the newest improvements and fixes.</p>
+          <p>On Windows, updates arrive automatically through the Microsoft Store. On a Mac, download the newest version from the <a href="/download">download page</a> and install it over the old one. Your preferences, saved text, training, and profiles all carry over automatically — updating never erases your setup. Always run the latest version so you have the newest improvements and fixes.</p>
         </div>
       </details>
       <details class="guide-item">
         <summary>Your data &amp; privacy (good to know)</summary>
         <div class="guide-body">
-          <p>Eleanote is built to keep patient information safe: the audio and the generated note are not kept on your computer after use, and nothing patient-identifiable is written to disk. Your own settings (preferences, saved text, training, and profiles) are stored locally so the app remembers your setup. See the Terms of Service and Business Associate Agreement for full details.</p>
+          <p>Eleanote is built to keep patient information safe: the audio and the generated note are not kept on your computer after use, and nothing patient-identifiable is written to disk. Your own settings (preferences, saved text, training, and profiles) are stored locally so the app remembers your setup. See the Terms of Service and Privacy Policy for full details.</p>
         </div>
       </details>
 </main>

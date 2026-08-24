@@ -361,7 +361,9 @@
            override the UA's hidden handling. */
         .menu-panel a[hidden], .nav-signin[hidden] { display: none; }
 
-        @media (max-width: 940px) {
+        /* Collapse to the hamburger a little earlier now that the nav
+           carries six links — prevents overflow in the 940-1040px range. */
+        @media (max-width: 1040px) {
             .nav-links, .nav-cta .nav-signin, .nav-cta .btn-ghost { display: none; }
             .menu-btn { display: inline-flex; }
             .nav { gap: 0.8rem; }
@@ -3011,6 +3013,7 @@
                 <a href="#demo">Demo</a>
                 <a href="#security">Security</a>
                 <a href="#faq">FAQ</a>
+                <a href="/guide.html">User guide</a>
             </div>
             <div class="nav-cta">
                 <a class="nav-signin auth-out-only" href="/auth/login.html">Sign in</a>
