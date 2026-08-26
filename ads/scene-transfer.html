@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>eleanote — scene: note transfer (standalone) 1080x1350</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
+<style>
+/* ================================================================
+   SCENE: THE NOTE TYPES ITSELF IN — built from scratch for the ad.
+   Design language = the feedback-app beat Doug approved: rounded
+   floating windows with soft glow on cream, big readable text, a
+   title above the window. 1080x1350 · 13s · deterministic seek(t).
+   ================================================================ */
+:root {
+  --ink: #0d2b30;
+  --teal: #14515c;
+  --teal-deep: #0e3d46;
+  --paper: #fbf7ec;
+  --paper-2: #f4eedd;
+  --warm-white: #fffdf7;
+  --line: #e5dcc1;
+  --muted: #5d6a66;
+  --gold: #a78449;
+  --emr-ink: #1f2533;
+  --emr-muted: #6a7388;
+  --emr-accent: #5b4b8a;
+  --emr-accent-soft: #ece9f3;
+  --emr-line: #e3e5ec;
+  --emr-tint: #f6f4fa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #111; }
+body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+body.render #viewport { position: static; display: block; }
+#canvas {
+  position: relative;
+  width: 1080px; height: 1350px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  flex: 0 0 auto;
+  transform-origin: center center;
+}
+body.render #canvas { transform: none !important; }
+#canvas::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(13,43,48,0.05) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+.bg-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+.bg-glow.g1 { width: 760px; height: 760px; left: -240px; top: -260px; background: radial-gradient(circle, rgba(20,81,92,0.16), transparent 65%); }
+.bg-glow.g2 { width: 640px; height: 640px; right: -200px; bottom: -160px; background: radial-gradient(circle, rgba(167,132,73,0.14), transparent 65%); }
+
+/* ---------- title above the window (the pattern Doug liked) ---------- */
+.scene-title {
+  position: absolute;
+  left: 60px; right: 60px; top: 92px;
+  text-align: center;
+  font-size: 58px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  will-change: transform, opacity;
+  z-index: 50;
+}
+.scene-title .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* ---------- the EMR window (designed for the ad) ---------- */
+.emr-win {
+  position: absolute;
+  left: 70px; top: 236px;
+  width: 940px; height: 1000px;
+  background: #ffffff;
+  border: 1px solid rgba(31, 37, 51, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 46px 120px rgba(13, 43, 48, 0.30);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.emr-titlebar {
+  height: 66px;
+  background: #f2f3f7;
+  border-bottom: 1px solid var(--emr-line);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 26px;
+}
+.emr-mark {
+  background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+  color: #fff;
+  font-size: 21px; font-weight: 800; letter-spacing: 0.04em;
+  border-radius: 8px;
+  padding: 7px 14px;
+}
+.emr-patient { font-size: 26px; font-weight: 700; color: var(--emr-ink); }
+.emr-meta { font-size: 22px; color: var(--emr-muted); font-weight: 500; }
+.emr-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.emr-winctl span { width: 15px; height: 15px; border-radius: 50%; background: rgba(31,37,51,0.16); }
+
+.emr-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 14px 26px 0;
+  background: #f8f8fb;
+  border-bottom: 1px solid var(--emr-line);
+}
+.emr-tab {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--emr-muted);
+  padding: 12px 22px 14px;
+  border-radius: 10px 10px 0 0;
+}
+.emr-tab.active {
+  background: #ffffff;
+  color: var(--emr-accent);
+  border: 1px solid var(--emr-line);
+  border-bottom: 1px solid #ffffff;
+  margin-bottom: -1px;
+  border-top: 3px solid var(--emr-accent);
+  font-weight: 700;
+}
+
+.emr-body { padding: 26px 30px; }
+.emr-enc-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.emr-enc-row h3 { font-size: 27px; font-weight: 700; color: var(--emr-ink); }
+.emr-enc-row .d { font-size: 21px; color: var(--emr-muted); font-weight: 500; }
+
+.note-field {
+  position: relative;
+  height: 700px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 26px 28px;
+  transition: none;
+}
+.note-field.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.note-ph { position: absolute; left: 28px; top: 26px; font-size: 25px; color: #a2a9ba; font-style: italic; }
+.note-typed {
+  white-space: pre-line;
+  font-size: 26px;
+  line-height: 1.62;
+  color: var(--emr-ink);
+}
+.note-typed b { font-weight: 700; }
+.note-caret {
+  display: inline-block;
+  width: 3px; height: 32px;
+  background: var(--emr-accent);
+  margin-left: 3px;
+  vertical-align: -5px;
+  opacity: 0;
+}
+
+/* ---------- the eleanote assistant (sits over the EMR corner) ---------- */
+.asst {
+  position: absolute;
+  right: 34px; top: 176px;      /* overlaps the EMR window's top-right corner */
+  width: 330px;
+  z-index: 40;
+  will-change: transform, opacity;
+}
+.asst-pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 16px 26px;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.38);
+}
+.asst-pill .dot { width: 13px; height: 13px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 5px rgba(56,210,122,0.22); flex: 0 0 auto; }
+.asst-pill .x { margin-left: auto; color: rgba(255,255,255,0.55); font-size: 26px; font-weight: 400; }
+.asst-queue {
+  margin: 10px 14px 0;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.34);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.asst-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 15px 20px;
+}
+.asst-item .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; flex: 0 0 auto; }
+.asst-item .hint { margin-left: auto; font-size: 19px; color: rgba(255,255,255,0.55); font-weight: 500; }
+
+/* the tracing light: an SVG rounded-rect path around the assistant */
+#traceSvg {
+  position: absolute;
+  right: 14px; top: 160px;
+  width: 372px; height: 166px;
+  z-index: 60;
+  pointer-events: none;
+  overflow: visible;
+}
+#tracePath {
+  fill: none;
+  stroke: #ffd66b;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px rgba(255, 214, 107, 0.85)) drop-shadow(0 0 30px rgba(255, 214, 107, 0.45));
+  opacity: 0;
+}
+#traceGlowRect {
+  fill: none;
+  stroke: rgba(255, 214, 107, 0.55);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 18px rgba(255, 214, 107, 0.6));
+  opacity: 0;
+}
+
+/* the flying "Clinical note" chip + its echo trail */
+.fly-chip {
+  position: absolute;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(28, 30, 34, 0.95);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  border-left: 5px solid #f0a44a;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 14px 22px;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.4);
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.fly-chip .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; }
+
+/* bottom caption chip */
+.phase-chip {
+  position: absolute;
+  left: 50%; bottom: 64px;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: rgba(28, 30, 34, 0.88);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 18px 40px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.phase-chip .gold { color: #ffd66b; }
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="canvas">
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+
+  <div class="scene-title" id="title">Watch the note <span class="serif">type itself in.</span></div>
+
+  <div class="emr-win" id="emrWin">
+    <div class="emr-titlebar">
+      <span class="emr-mark">EHR</span>
+      <span class="emr-patient">Doe, John</span>
+      <span class="emr-meta">64M &middot; MRN 10428501</span>
+      <span class="emr-winctl"><span></span><span></span><span></span></span>
+    </div>
+    <div class="emr-tabs">
+      <span class="emr-tab">Chart</span>
+      <span class="emr-tab">Notes</span>
+      <span class="emr-tab">Orders</span>
+      <span class="emr-tab">Diagnoses</span>
+      <span class="emr-tab active">Today's note</span>
+    </div>
+    <div class="emr-body">
+      <div class="emr-enc-row">
+        <h3>Office visit</h3>
+        <span class="d">today &middot; unsigned</span>
+      </div>
+      <div class="note-field" id="noteField">
+        <span class="note-ph" id="notePh">Click to begin note&hellip;</span>
+        <span class="note-typed" id="noteTyped"></span><span class="note-caret" id="noteCaret"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- the eleanote assistant, overlapping the EMR's top-right corner -->
+  <div class="asst" id="asst">
+    <div class="asst-pill"><span class="dot" id="asstDot"></span> eleanote <span class="x">&times;</span></div>
+    <div class="asst-queue" id="asstQueue">
+      <div class="asst-item"><span class="bullet"></span> Clinical note <span class="hint">F6</span></div>
+    </div>
+  </div>
+
+  <svg id="traceSvg" viewBox="0 0 372 166">
+    <rect id="traceGlowRect" x="7" y="7" width="358" height="152" rx="32"></rect>
+    <rect id="tracePath" x="7" y="7" width="358" height="152" rx="32"></rect>
+  </svg>
+
+  <div class="fly-chip" id="flyEcho2"><span class="bullet"></span> Clinical note</div>
+  <div class="fly-chip" id="flyEcho1"><span class="bullet"></span> Clinical note</div>
+  <div class="fly-chip" id="flyChip"><span class="bullet"></span> Clinical note</div>
+
+  <div class="phase-chip" id="chip">one keystroke &mdash; <span class="gold">typed in for you</span></div>
+
+</div><!-- /#canvas -->
+</div><!-- /#viewport -->
+
+<script>
+/* ================================================================
+   TIMELINE — 13s standalone scene
+   0.0-1.0   title + EMR window + assistant enter
+   1.2       "Clinical note" appears in the assistant queue
+   1.8-3.1   gold light TRACES the assistant's edges, glow pulse, fades
+   3.5-4.7   the chip lifts off and arcs to the note field (echo trail)
+   4.7       field highlights, placeholder gone, caret on
+   5.0-10.2  the note types itself, line by line
+   10.4      caption chip: "one keystroke — typed in for you"
+   10.4-13   hold with a gentle push-in
+   ================================================================ */
+var DUR = 13.0;
+var RENDER = /[?&]render/.test(location.search);
+var FREEZE = (function(){ var m = location.search.match(/[?&]t=([\d.]+)/); return m ? parseFloat(m[1]) : null; })();
+
+var E = {
+  linear:  function(p){ return p; },
+  outCubic:function(p){ return 1 - Math.pow(1 - p, 3); },
+  inCubic: function(p){ return p * p * p; },
+  inOut:   function(p){ return p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2; },
+  outBack: function(p){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); }
+};
+function kv(kfs, t) {
+  if (t <= kfs[0][0]) return kfs[0][1];
+  var last = kfs[kfs.length - 1];
+  if (t >= last[0]) return last[1];
+  for (var i = 1; i < kfs.length; i++) {
+    if (t <= kfs[i][0]) {
+      var a = kfs[i-1], b = kfs[i];
+      return a[1] + (b[1] - a[1]) * E[b[2] || 'inOut']((t - a[0]) / (b[0] - a[0]));
+    }
+  }
+  return last[1];
+}
+var $ = function(id){ return document.getElementById(id); };
+
+/* --- element tracks --- */
+var TRACKS = [
+  { el:'title',  o:[[0.05,0],[0.45,1,'outCubic']], y:[[0.05,36],[0.50,0,'outCubic']] },
+  { el:'emrWin', o:[[0.25,0],[0.70,1,'outCubic']], y:[[0.25,70],[0.75,0,'outCubic']],
+                 s:[[0.25,0.97],[0.75,1,'outCubic'],[10.4,1],[12.8,1.015,'linear']] },
+  { el:'asst',   o:[[0.75,0],[1.10,1,'outCubic']], y:[[0.75,-90],[1.20,0,'outBack']] },
+  { el:'asstQueue', o:[[1.20,0],[1.50,1,'outCubic']], y:[[1.20,-26],[1.55,0,'outBack']] },
+  { el:'chip',   o:[[10.40,0],[10.75,1,'outCubic']], y:[[10.40,34],[10.80,0,'outBack']] }
+];
+
+/* --- the flight: assistant queue -> note field, on an arc --- */
+/* start: center of the queue item (approx canvas coords)  */
+var FLY_START = { x: 878, y: 322 };
+/* end: first line position inside the note field */
+var FLY_END   = { x: 300, y: 585 };
+function flyTracks(dt) { /* dt = echo delay */
+  var t0 = 3.5 + dt, t1 = 4.7 + dt;
+  return {
+    x: [[t0, FLY_START.x], [t1, FLY_END.x, 'inOut']],
+    y: [[t0, FLY_START.y], [(t0 + t1) / 2, (FLY_START.y + FLY_END.y) / 2 - 175, 'outCubic'], [t1, FLY_END.y, 'inCubic']],
+    s: [[t0, 1], [t0 + 0.25, 1.08, 'outCubic'], [t1, 0.82, 'inOut']],
+    o: null, t0: t0, t1: t1
+  };
+}
+var FLIGHTS = [
+  { el: 'flyChip',  dt: 0.00, oMax: 1.0 },
+  { el: 'flyEcho1', dt: 0.08, oMax: 0.26 },
+  { el: 'flyEcho2', dt: 0.16, oMax: 0.0 }
+];
+
+/* --- the note that types itself --- */
+var NOTE_LINES = [
+  'S: 64M follow-up of RCC s/p partial nephrectomy. Feels well — no hematuria, no flank pain.',
+  'O: BP 128/78 · exam unremarkable.',
+  'A/P:',
+  '1) RCC — stable, no recurrence. MRI abdomen in 1 year.',
+  '2) CKD-3 — stable. BMP in 1 year.',
+  '3) HTN — continue lisinopril.'
+];
+var NOTE_FULL = NOTE_LINES.join('\n');
+/* per-line char-count keyframes: each line types over a window, with a
+   brief human pause at each newline */
+var TYPE_KFS = (function(){
+  var kfs = [[5.0, 0]];
+  var t = 5.0, count = 0;
+  var windows = [1.45, 0.75, 0.30, 1.05, 0.85, 0.75]; /* seconds per line */
+  for (var i = 0; i < NOTE_LINES.length; i++) {
+    count += NOTE_LINES[i].length + (i > 0 ? 1 : 0); /* +1 newline */
+    t += windows[i];
+    kfs.push([t, count, 'linear']);
+    t += 0.12; kfs.push([t, count, 'linear']); /* pause at line end */
+  }
+  return kfs;
+})();
+
+/* --- tracing light around the assistant --- */
+var traceEl, traceGlowEl, tracePerim = 0;
+
+function applySpecials(t) {
+  /* trace: one full loop 1.8 -> 3.0, comet segment ~26% of perimeter */
+  var tp = (t - 1.8) / 1.2;
+  if (tp > 0 && tp < 1.15) {
+    var seg = tracePerim * 0.26;
+    traceEl.style.opacity = kv([[1.8,0],[1.95,1,'linear'],[2.85,1],[3.1,0,'linear']], t);
+    traceEl.setAttribute('stroke-dasharray', seg + ' ' + (tracePerim - seg));
+    traceEl.setAttribute('stroke-dashoffset', String(-(Math.min(tp, 1) * (tracePerim + seg)) + seg));
+  } else {
+    traceEl.style.opacity = 0;
+  }
+  /* afterglow border pulse 2.9-3.6 */
+  traceGlowEl.style.opacity = kv([[2.85,0],[3.05,0.9,'outCubic'],[3.30,0.55,'inOut'],[3.50,0.8,'inOut'],[3.90,0,'inCubic']], t);
+
+  /* flight */
+  for (var i = 0; i < FLIGHTS.length; i++) {
+    var f = FLIGHTS[i];
+    var tr = f._tr || (f._tr = flyTracks(f.dt));
+    var el = f._el || (f._el = $(f.el));
+    var on = t >= tr.t0 && t <= tr.t1 + 0.05;
+    el.style.opacity = on ? (f.oMax * kv([[tr.t0,0],[tr.t0+0.15,1,'linear'],[tr.t1-0.08,1],[tr.t1+0.02,0,'linear']], t)) : 0;
+    if (on) {
+      var x = kv(tr.x, t), y = kv(tr.y, t), s = kv(tr.s, t);
+      el.style.transform = 'translate(' + (x - 90) + 'px,' + (y - 26) + 'px) scale(' + s + ')';
+    }
+  }
+
+  /* queue item leaves as the chip lifts off */
+  $('asstQueue').style.opacity = Math.min(kv([[1.20,0],[1.50,1,'outCubic']], t), kv([[3.45,1],[3.75,0,'inCubic']], t));
+
+  /* assistant dot: green while "working", grey after delivery */
+  $('asstDot').style.background = t < 4.7 ? '#38d27a' : '#9aa1ab';
+  $('asstDot').style.boxShadow = t < 4.7 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+
+  /* field: highlight on landing, then calm */
+  var field = $('noteField');
+  field.className = (t >= 4.55 && t < 5.6) ? 'note-field hot' : 'note-field';
+  /* placeholder handoff */
+  $('notePh').style.opacity = kv([[4.55,1],[4.75,0,'linear']], t);
+  /* typing */
+  var chars = Math.round(kv(TYPE_KFS, t));
+  var want = NOTE_FULL.slice(0, chars);
+  var typedEl = $('noteTyped');
+  if (typedEl.textContent !== want) typedEl.textContent = want;
+  /* caret: on from landing until shortly after typing completes */
+  var typingEnd = TYPE_KFS[TYPE_KFS.length - 1][0];
+  var caretOn = (t >= 4.7 && t <= typingEnd + 0.8) && (t <= 5.0 || chars < NOTE_FULL.length || Math.floor(t * 2.5) % 2 === 0);
+  $('noteCaret').style.opacity = caretOn ? 1 : 0;
+}
+
+function seek(t) {
+  t = Math.max(0, Math.min(DUR, t));
+  for (var j = 0; j < TRACKS.length; j++) {
+    var tr = TRACKS[j];
+    var el = tr._el || (tr._el = $(tr.el));
+    if (tr.o) el.style.opacity = kv(tr.o, t);
+    var parts = '';
+    if (tr.x) parts += 'translateX(' + kv(tr.x, t) + 'px) ';
+    if (tr.y) parts += 'translateY(' + kv(tr.y, t) + 'px) ';
+    if (tr.s) parts += 'scale(' + kv(tr.s, t) + ') ';
+    if (parts) {
+      if (tr.el === 'chip') parts = 'translateX(-50%) ' + parts;
+      el.style.transform = parts;
+    }
+  }
+  applySpecials(t);
+}
+
+function fitPreview() {
+  if (RENDER) return;
+  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1350) * 0.98;
+  $('canvas').style.transform = 'scale(' + sc + ')';
+}
+
+function boot() {
+  if (RENDER) document.body.classList.add('render');
+  traceEl = $('tracePath');
+  traceGlowEl = $('traceGlowRect');
+  tracePerim = traceEl.getTotalLength();
+  seek(FREEZE != null ? FREEZE : 0);
+  fitPreview();
+  window.addEventListener('resize', fitPreview);
+  window.__ready = true;
+  if (!RENDER && FREEZE == null) {
+    var start = performance.now();
+    (function loop(now){
+      seek(((now - start) / 1000) % DUR);
+      requestAnimationFrame(loop);
+    })(start);
+  }
+}
+window.__total = DUR;
+window.__seek = function(t){ seek(t); };
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(function(){ setTimeout(boot, 60); });
+} else {
+  window.addEventListener('load', function(){ setTimeout(boot, 120); });
+}
+</script>
+</body>
+</html>
