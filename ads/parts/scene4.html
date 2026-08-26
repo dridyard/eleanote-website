@@ -1,0 +1,231 @@
+<section class="scene scene-4" data-scene-index="3">
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · h/o RCC, CKD-3 · End of encounter</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow active">Diagnoses</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s4-dx-view">
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis (name or ICD-10)…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">Renal cell carcinoma</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">Chronic kidney disease, stage 3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">Essential hypertension</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s4-spacer"></div>
+                        </div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box" style="position: relative;">
+                            <!-- target landing point: 20% from top, dead center horizontally -->
+                            <div data-target="notearea" style="position: absolute; left: 50%; top: 20%; width: 1px; height: 1px;"></div>
+                            <span class="entry-placeholder s4-ph">Click to begin note…</span>
+                            <span class="s4-note-typed">
+                                <span class="l l-1"><b>S:</b> 64M, end of encounter. h/o RCC s/p partial nephrectomy, CKD-3, HTN.</span>
+                                <span class="l l-2"><b>O:</b> BP 138/84, HR 76. Exam unremarkable.</span>
+                                <span class="l l-3"><b>A/P:</b></span>
+                                <span class="l l-4">1) RCC surveillance — MRI abd in 1 yr.</span>
+                                <span class="l l-5">2) CKD-3 — BMP in 1 yr.</span>
+                                <span class="l l-6">3) HTN — continue lisinopril.</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- assistant pill: state changes through Recording -> Generating -> eleanote -->
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating note</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
+                    </div>
+                </div>
+
+                <!-- ghosts -->
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <!-- modals (one per dx) -->
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Renal cell carcinoma</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Chronic kidney disease, stage 3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New diagnosis</h5><span class="auto">Auto-fill</span></div>
+                    <div class="field"><span class="k">Diagnosis</span><span class="v">Essential hypertension</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running active">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">End of encounter</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow active">Dx</div>
+                        <div class="navrow">Today's note</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <!-- Diagnoses view (visible 0-7s, then swaps to note view) -->
+                        <div class="s4-dx-view">
+                            <div class="s4-search-group">
+                                <h4>Diagnoses</h4>
+                                <div class="s4-search" data-target="search">
+                                    <span class="lbl placeholder">Search diagnosis…</span>
+                                    <span class="lbl t-rcc">RCC</span>
+                                    <span class="lbl t-ckd">CKD-3</span>
+                                    <span class="lbl t-htn">HTN</span>
+                                </div>
+                                <div class="s4-staged">
+                                    <div class="row r-rcc">
+                                        <span class="name">RCC</span>
+                                        <span class="code">C64.9</span>
+                                    </div>
+                                    <div class="row r-ckd">
+                                        <span class="name">CKD-3</span>
+                                        <span class="code">N18.3</span>
+                                    </div>
+                                    <div class="row r-htn">
+                                        <span class="name">HTN</span>
+                                        <span class="code">I10</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s4-spacer"></div>
+                        </div>
+                        <!-- Today's note view (visible 7-14s) -->
+                        <div class="s4-note-view" style="position: absolute; inset: 0; padding: 14px; opacity: 0;">
+                            <h4 style="font-size: 10.5px; font-weight: 700; color: var(--emr-ink); margin-bottom: 8px;">Today's note</h4>
+                            <div class="entry-box" style="min-height: 200px; position: relative;">
+                                <div data-target="notearea" style="position: absolute; left: 50%; top: 20%; width: 1px; height: 1px;"></div>
+                                <span class="s4-note-typed">
+                                    <span class="l l-1"><b>S:</b> 64M, h/o RCC, CKD-3, HTN.</span>
+                                    <span class="l l-2"><b>O:</b> BP 138/84. Exam normal.</span>
+                                    <span class="l l-3"><b>A/P:</b></span>
+                                    <span class="l l-4">1) RCC surv. — MRI in 1 yr.</span>
+                                    <span class="l l-5">2) CKD — BMP in 1 yr.</span>
+                                    <span class="l l-6">3) HTN — lisinopril.</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">
+                            <span class="s4-w-recording">Recording</span>
+                            <span class="s4-w-generating" style="position: absolute;">Generating note</span>
+                            <span class="s4-w-eleanote" style="position: absolute;">eleanote</span>
+                        </span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item dx it-rcc"><span class="bullet"></span><span class="label">RCC</span></div>
+                        <div class="item dx it-ckd"><span class="bullet"></span><span class="label">CKD-3</span></div>
+                        <div class="item dx it-htn"><span class="bullet"></span><span class="label">HTN</span></div>
+                        <div class="item note it-note"><span class="bullet"></span><span class="label">Clinical note</span></div>
+                    </div>
+                </div>
+
+                <div class="s4-ghost g-rcc">RCC</div>
+                <div class="s4-ghost g-ckd">CKD-3</div>
+                <div class="s4-ghost g-htn">HTN</div>
+                <div class="s4-ghost g-note">Clinical note</div>
+
+                <div class="s4-modal m-rcc">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">RCC</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">C64.9</span></div>
+                </div>
+                <div class="s4-modal m-ckd">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">CKD-3</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">N18.3</span></div>
+                </div>
+                <div class="s4-modal m-htn">
+                    <div class="head"><h5>New dx</h5><span class="auto">Auto</span></div>
+                    <div class="field"><span class="k">Dx</span><span class="v">HTN</span></div>
+                    <div class="field"><span class="k">ICD-10</span><span class="v paste">I10</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>

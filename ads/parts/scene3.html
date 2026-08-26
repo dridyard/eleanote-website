@@ -1,0 +1,205 @@
+<section class="scene scene-3" data-scene-index="2">
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · h/o RCC, CKD-3 · Encounter today</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow active">Orders</div>
+                        <div class="navrow">Diagnoses</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order (lab, imaging, med, referral)…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
+                                </div>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/2027</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/2027 · Surveillance of renal cell carcinoma</span>
+                                        <span class="tag">Imaging</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s3-spacer"></div>
+                        </div>
+                    </div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">Recording</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item it-bmp focus">
+                            <span class="bullet"></span>
+                            <span class="label">BMP</span>
+                            <span class="sub">In 1 year · routine</span>
+                        </div>
+                        <div class="item it-mri">
+                            <span class="bullet"></span>
+                            <span class="label">MRI abdomen</span>
+                            <span class="sub">In 1 year · RCC surv.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
+
+                <div class="s3-modal m-bmp">
+                    <div class="head">
+                        <h5>New lab order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Priority</span><span class="v locked">Routine</span></div>
+                </div>
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
+                        <h5>New imaging order</h5>
+                        <span class="auto">Auto-fill</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">Surveillance of renal cell carcinoma</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running active">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow active">Orders</div>
+                        <div class="navrow">Dx</div>
+                    </div>
+                    <div class="emr-center" style="padding: 0; position: relative;">
+                        <div class="s3-orders-view">
+                            <div class="s3-spacer"></div>
+                            <div class="s3-search-group">
+                                <h4>Orders</h4>
+                                <div class="s3-search" data-target="search">
+                                    <span class="lbl placeholder">Search order…</span>
+                                    <span class="lbl t-bmp">BMP</span>
+                                    <span class="lbl t-mri">MRI abdomen</span>
+                                </div>
+                                <div class="s3-staged">
+                                    <div class="row r-bmp">
+                                        <span class="name">BMP</span>
+                                        <span class="meta">05/01/27</span>
+                                        <span class="tag">Lab</span>
+                                    </div>
+                                    <div class="row r-mri">
+                                        <span class="name">MRI abdomen</span>
+                                        <span class="meta">05/01/27 · RCC surv.</span>
+                                        <span class="tag">Img</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="s3-spacer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill active" data-target="pill">
+                    <div class="head">
+                        <span class="rec-dot"></span>
+                        <span class="hk">Recording</span>
+                        <span class="x">×</span>
+                    </div>
+                    <div class="items">
+                        <div class="item it-bmp focus">
+                            <span class="bullet"></span>
+                            <span class="label">BMP</span>
+                            <span class="sub">In 1 year</span>
+                        </div>
+                        <div class="item it-mri">
+                            <span class="bullet"></span>
+                            <span class="label">MRI abdomen</span>
+                            <span class="sub">In 1 year · RCC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="s3-ghost g-bmp">BMP</div>
+                <div class="s3-ghost g-mri">MRI abdomen</div>
+
+                <div class="s3-modal m-bmp">
+                    <div class="head">
+                        <h5>Lab order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Test</span><span class="v">BMP</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/2027</span></div>
+                </div>
+
+                <div class="s3-modal m-mri">
+                    <div class="head">
+                        <h5>Imaging order</h5>
+                        <span class="auto">Auto</span>
+                    </div>
+                    <div class="field"><span class="k">Study</span><span class="v">MRI abdomen</span></div>
+                    <div class="field"><span class="k">Date</span><span class="v paste paste-date">05/01/27</span></div>
+                    <div class="field"><span class="k">Indication</span><span class="v paste paste-ind">RCC surveillance</span></div>
+                </div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>

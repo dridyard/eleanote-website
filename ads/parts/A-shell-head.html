@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>eleanote — ad 1 (copy-paste) 1080x1350</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
+<style>
+/* ================================================================
+   ELEANOTE FACEBOOK AD #1 — "The Copy-Paste Killer" · 1080x1350 @30fps
+   Deterministic timeline: everything is a pure function of t via
+   seek(t). Preview = rAF loop calling seek. Render (?render) exposes
+   window.__seek/__total for the frame-by-frame MP4 renderer.
+   ?t=SECONDS freezes preview at that time for composition checks.
+   ================================================================ */
+:root {
+  --ink: #0d2b30;
+  --teal: #14515c;
+  --teal-deep: #0e3d46;
+  --teal-ink: #0a2025;
+  --paper: #fbf7ec;
+  --paper-2: #f4eedd;
+  --warm-white: #fffdf7;
+  --surface: #ffffff;
+  --line: #e5dcc1;
+  --muted: #5d6a66;
+  --gold: #a78449;
+  --gold-bright: #b8934f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #111; }
+body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
+
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+body.render #viewport { position: static; display: block; }
+
+#canvas {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  flex: 0 0 auto;
+  transform-origin: center center;
+}
+body.render #canvas { transform: none !important; }
+
+/* ---------- canvas backdrop: dot grid + soft brand glows ---------- */
+#canvas::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(13, 43, 48, 0.05) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+.bg-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+.bg-glow.g1 { width: 760px; height: 760px; left: -240px; top: -260px; background: radial-gradient(circle, rgba(20,81,92,0.16), transparent 65%); }
+.bg-glow.g2 { width: 640px; height: 640px; right: -200px; bottom: -160px; background: radial-gradient(circle, rgba(167,132,73,0.14), transparent 65%); }
+
+/* ---------- beats ---------- */
+.beat {
+  position: absolute; inset: 0;
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 90px;
+  text-align: center;
+}
+
+.kline { will-change: transform, opacity; }
+
+/* Beat 1 — hook */
+#b1 { padding: 60px; }
+#b1 .kline {
+  font-size: 80px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+#b1 .accent-word { color: var(--gold-bright); display: inline-block; }
+
+/* Beat 2 — turn */
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.92);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 18px 38px;
+  box-shadow: 0 24px 60px rgba(13,43,48,0.35);
+}
+.hud-pill .dot { width: 15px; height: 15px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 6px rgba(56,210,122,0.22); }
+#b2 .kline { font-size: 84px; line-height: 1.14; font-weight: 800; letter-spacing: -0.035em; margin-top: 54px; }
+#b2 .brandword { font-weight: 600; letter-spacing: -0.045em; color: #173D47; }
+#b2 .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* generic text beats (4, 6, 8c) */
+.textbeat .kline { font-size: 84px; line-height: 1.16; font-weight: 800; letter-spacing: -0.035em; }
+.textbeat .sub { font-size: 44px; font-weight: 500; color: var(--muted); margin-top: 34px; letter-spacing: -0.01em; }
+.textbeat .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* ---------- animation panels ---------- */
+.panel-beat { justify-content: flex-start; padding: 90px 60px; }
+.panel-cap {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 44px;
+  margin-top: 40px;
+}
+.panel-cap .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+.tiltwrap { perspective: 1600px; }
+.panel {
+  position: relative;
+  width: 960px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 40px 110px rgba(13, 43, 48, 0.30);
+  background: #143b43;
+  will-change: transform;
+}
+.panel .cam-clip { overflow: hidden; width: 960px; }
+#b3 .cam-clip { height: 680px; }
+.panel .cam { width: 960px; will-change: transform; }
+/* scene stages fill the panel exactly */
+.panel .scenes-wrap { width: 960px; text-align: left; }
+.panel .scenes-wrap .scene { margin: 0; padding: 0; }
+.panel .scenes-wrap .stage { max-width: none !important; width: 960px; margin: 0; border-radius: 0; }
+.panel .scenes-wrap .stage.p { display: none !important; }
+.panel .scenes-wrap .stage.d { display: block !important; }
+.corner-chip {
+  position: absolute;
+  right: 26px; bottom: 24px;
+  background: rgba(28,30,34,0.85);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  font-size: 27px;
+  font-weight: 700;
+  padding: 12px 26px;
+  z-index: 30;
+  backdrop-filter: blur(6px);
+  will-change: transform, opacity;
+}
+.under-cap {
+  margin-top: 40px;
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+}
+.under-cap b { color: var(--ink); }
+
+/* feature roll */
+.roll-cap { font-size: 62px; font-weight: 800; letter-spacing: -0.032em; line-height: 1.12; margin-bottom: 46px; margin-top: 60px; }
+.roll-cap .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+.roll-num {
+  display: inline-block;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 44px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+/* ---------- Beat 7: feedback mini-app ---------- */
+#b7 { padding: 70px 60px; justify-content: flex-start; }
+.fb-cap { font-size: 54px; font-weight: 800; letter-spacing: -0.03em; margin: 10px 0 40px; }
+.fb-cap .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+.fb-app {
+  position: relative;
+  width: 940px;
+  background: var(--paper);
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 18px;
+  box-shadow: 0 40px 110px rgba(13,43,48,0.28);
+  overflow: hidden;
+  text-align: left;
+  will-change: transform;
+}
+.fb-titlebar {
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--line);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  position: relative;
+}
+.fb-mark {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--teal); color: #fff;
+  font-size: 22px; font-weight: 800; letter-spacing: -0.06em;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.fb-titletext { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; color: var(--ink); }
+.fb-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.fb-winctl span { width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.16); }
+.fb-tabs { background: var(--paper-2); padding: 10px 24px 0; border-bottom: 1px solid var(--line); }
+.fb-tab {
+  display: inline-block;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  padding: 10px 26px 12px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: -1px;
+  border-top: 3px solid var(--teal);
+}
+.fb-note { padding: 26px 30px 20px; }
+.fb-sec { margin-bottom: 20px; }
+.fb-sec-h {
+  font-size: 20px; font-weight: 800;
+  letter-spacing: 0.11em;
+  color: var(--teal-deep);
+  margin-bottom: 6px;
+}
+.fb-sec-b { font-size: 25px; line-height: 1.5; color: #26393e; }
+.fb-assess { position: relative; }
+.fb-wordy { overflow: hidden; will-change: max-height, opacity; }
+.fb-concise { overflow: hidden; max-height: 0; opacity: 0; will-change: max-height, opacity; }
+.fb-concise .fb-sec-b { color: var(--teal-deep); font-weight: 600; }
+.fb-shimmer {
+  position: absolute;
+  inset: -6px -10px;
+  border-radius: 10px;
+  background: linear-gradient(105deg, transparent 30%, rgba(20,81,92,0.16) 50%, transparent 70%);
+  background-size: 300% 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.fb-inputrow {
+  display: flex;
+  gap: 16px;
+  padding: 20px 30px 26px;
+  border-top: 1px solid var(--line);
+  background: var(--warm-white);
+  align-items: center;
+}
+.fb-input {
+  position: relative;
+  white-space: nowrap;
+  flex: 1;
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 22px;
+  font-size: 27px;
+  color: var(--ink);
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+}
+.fb-input.focus { border-color: var(--teal); box-shadow: 0 0 0 5px rgba(20,81,92,0.12); }
+.fb-input .ph { color: #9aa5a0; position: absolute; left: 22px; top: 50%; transform: translateY(-50%); }
+.fb-caret { display: inline-block; width: 3px; height: 33px; background: var(--teal-deep); margin-left: 3px; vertical-align: -6px; opacity: 0; }
+.fb-btn {
+  flex: 0 0 auto;
+  background: var(--teal-deep);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 20px 32px;
+  will-change: transform;
+}
+.fb-under {
+  margin-top: 44px;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  text-align: center;
+}
+.fb-under .serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* ---------- Beat 9: CTA ---------- */
+#b9 { background: transparent; }
+#b9 .cta-word { font-size: 148px; font-weight: 600; letter-spacing: -0.045em; color: #173D47; line-height: 1; margin-top: 46px; }
+#b9 .cta-tag {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 52px;
+  color: var(--teal-deep);
+  margin-top: 30px;
+}
+#b9 .cta-free { font-size: 38px; font-weight: 600; color: var(--muted); margin-top: 56px; }
+#b9 .cta-url {
+  display: inline-block;
+  margin-top: 26px;
+  background: var(--teal-deep);
+  color: #fff;
+  font-size: 42px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 22px 54px;
+  box-shadow: 0 22px 60px rgba(14,61,70,0.32);
+}
+</style>
+<style>
+/* ================= SCENE ANIMATION SYSTEM (from docs/index.html) ================= */

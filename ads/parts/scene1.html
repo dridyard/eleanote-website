@@ -1,0 +1,128 @@
+<section class="scene scene-1" data-scene-index="0">
+
+            <!-- DESKTOP -->
+            <div class="stage d">
+                <!-- Eleanote window: visible from t=0, minimizes into the eleanote tab -->
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text">eleanote</span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">Refresh <em>F10</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                        <span class="ele-ctl">Dictation <em>F8</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR or type · F4 to capture</div>
+                    </div>
+                </div>
+
+                <!-- EMR (3 columns: nav | content | today's note) -->
+                <div class="emr emr-3col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64 y/o M · MRN 10428501 · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Diagnoses</div>
+                    </div>
+                    <!-- Scene 1: center pane intentionally blank
+                         (matches scene 2 starting state - the cursor must
+                         click 'Notes' to populate the list, which only
+                         happens in scene 2). -->
+                    <div class="emr-center"></div>
+                    <div class="emr-right">
+                        <h5>Today's note</h5>
+                        <div class="entry-box">
+                            <span class="entry-placeholder">Click to begin note…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill idle">eleanote</div>
+
+                <div class="dock">
+                    <span class="dock-icon"></span>
+                    <span class="dock-icon"></span>
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                    <span class="dock-icon"></span>
+                </div>
+            </div>
+
+            <!-- PHONE -->
+            <div class="stage p">
+                <div class="ele-win">
+                    <div class="ele-titlebar">
+                        <span class="ele-mark">e</span>
+                        <span class="ele-title-text">eleanote</span>
+                        <span class="ele-winctl"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="ele-toolbar">
+                        <span class="ele-ctl">Record <em>F12</em></span>
+                        <span class="ele-ctl">Pause <em>F11</em></span>
+                        <span class="ele-ctl">End <em>F9</em></span>
+                    </div>
+                    <div class="ele-tabs">
+                        <span class="ele-tab">Doe, John · 64M</span>
+                    </div>
+                    <div class="ele-body">
+                        <div class="ele-blk-title">Precharting</div>
+                        <div class="ele-input">Paste from EHR · F4 to capture</div>
+                    </div>
+                </div>
+
+                <!-- EMR phone: 2 cols (nav | center).
+                     Today's note is reachable by clicking 'Today' in the nav -
+                     for the static frame the prior-notes list is shown. -->
+                <div class="emr emr-2col">
+                    <div class="emr-banner">
+                        <span class="pmark">EHR</span>
+                        <span class="name">Doe, John</span>
+                        <span class="meta">64M · h/o RCC, CKD-3</span>
+                    </div>
+                    <div class="emr-left">
+                        <h5>Chart</h5>
+                        <div class="navrow active">Notes</div>
+                        <div class="navrow">Labs</div>
+                        <div class="navrow">Imaging</div>
+                        <div class="navrow">Orders</div>
+                        <div class="navrow">Dx</div>
+                        <div class="navrow today">Today's note</div>
+                    </div>
+                    <!-- Scene 1 phone: blank center pane (matches scene 2). -->
+                    <div class="emr-center"></div>
+                </div>
+
+                <div class="pill idle">eleanote</div>
+
+                <div class="dock">
+                    <span class="dock-tab tab-ele running">
+                        <span class="ele-logo">e</span>
+                        eleanote
+                    </span>
+                    <span class="dock-tab tab-ehr running">
+                        <span class="ehr-logo">EHR</span>
+                    </span>
+                </div>
+            </div>
+        </section>
