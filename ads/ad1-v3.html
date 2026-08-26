@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>eleanote — ad 1 v3 (all-custom scenes) 1080x1350</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
+<style>
+/* ================================================================
+   ELEANOTE AD #1 v3 — every scene custom-built in the approved
+   style: rounded floating windows with soft glow on cream, big
+   readable type, a persistent title above each scene, straight
+   chip flights, whole-note paste. 1080x1350 @30fps · 43.2s.
+   ================================================================ */
+:root {
+  --ink: #0d2b30;
+  --teal: #14515c;
+  --teal-deep: #0e3d46;
+  --paper: #fbf7ec;
+  --paper-2: #f4eedd;
+  --warm-white: #fffdf7;
+  --line: #e5dcc1;
+  --muted: #5d6a66;
+  --gold: #a78449;
+  --gold-bright: #b8934f;
+  --emr-ink: #1f2533;
+  --emr-muted: #6a7388;
+  --emr-accent: #5b4b8a;
+  --emr-accent-soft: #ece9f3;
+  --emr-line: #e3e5ec;
+  --sel: rgba(91, 75, 138, 0.28);
+  --ok: #2fa46b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #111; }
+body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+body.render #viewport { position: static; display: block; }
+#canvas {
+  position: relative;
+  width: 1080px; height: 1350px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  flex: 0 0 auto;
+  transform-origin: center center;
+}
+body.render #canvas { transform: none !important; }
+#canvas::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(13,43,48,0.05) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+.bg-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+.bg-glow.g1 { width: 760px; height: 760px; left: -240px; top: -260px; background: radial-gradient(circle, rgba(20,81,92,0.16), transparent 65%); }
+.bg-glow.g2 { width: 640px; height: 640px; right: -200px; bottom: -160px; background: radial-gradient(circle, rgba(167,132,73,0.14), transparent 65%); }
+
+.beat { position: absolute; inset: 0; visibility: hidden; }
+.beat.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 90px 60px;
+  text-align: center;
+}
+.kline { will-change: transform, opacity; }
+.serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* ---------- text beats ---------- */
+#b1 .kline { font-size: 80px; line-height: 1.12; font-weight: 800; letter-spacing: -0.035em; }
+#b1 .accent-word { color: var(--gold-bright); display: inline-block; }
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.92);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 18px 38px;
+  box-shadow: 0 24px 60px rgba(13,43,48,0.35);
+}
+.hud-pill .dot { width: 15px; height: 15px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 6px rgba(56,210,122,0.22); }
+#b2 .kline { font-size: 84px; line-height: 1.14; font-weight: 800; letter-spacing: -0.035em; margin-top: 54px; }
+#b2 .brandword { font-weight: 600; letter-spacing: -0.045em; color: #173D47; }
+.textbeat .kline { font-size: 84px; line-height: 1.16; font-weight: 800; letter-spacing: -0.035em; }
+.textbeat .sub { font-size: 44px; font-weight: 500; color: var(--muted); margin-top: 34px; letter-spacing: -0.01em; }
+
+/* ---------- shared scene chrome ---------- */
+.scene-title {
+  position: absolute;
+  left: 60px; right: 60px; top: 88px;
+  text-align: center;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  z-index: 50;
+  will-change: transform, opacity;
+}
+.emr-win {
+  position: absolute;
+  left: 70px; top: 232px;
+  width: 940px; height: 1000px;
+  background: #ffffff;
+  border: 1px solid rgba(31, 37, 51, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 46px 120px rgba(13, 43, 48, 0.30);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.emr-titlebar {
+  height: 66px;
+  background: #f2f3f7;
+  border-bottom: 1px solid var(--emr-line);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 26px;
+}
+.emr-mark {
+  background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+  color: #fff;
+  font-size: 21px; font-weight: 800; letter-spacing: 0.04em;
+  border-radius: 8px;
+  padding: 7px 14px;
+}
+.emr-patient { font-size: 26px; font-weight: 700; color: var(--emr-ink); }
+.emr-meta { font-size: 22px; color: var(--emr-muted); font-weight: 500; }
+.emr-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.emr-winctl span { width: 15px; height: 15px; border-radius: 50%; background: rgba(31,37,51,0.16); }
+.emr-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 14px 26px 0;
+  background: #f8f8fb;
+  border-bottom: 1px solid var(--emr-line);
+}
+.emr-tab {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--emr-muted);
+  padding: 12px 22px 14px;
+  border-radius: 10px 10px 0 0;
+}
+.emr-tab.active {
+  background: #ffffff;
+  color: var(--emr-accent);
+  border: 1px solid var(--emr-line);
+  border-bottom: 1px solid #ffffff;
+  margin-bottom: -1px;
+  border-top: 3px solid var(--emr-accent);
+  font-weight: 700;
+}
+.emr-body { padding: 24px 30px; }
+.emr-h-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+.emr-h-row h3 { font-size: 27px; font-weight: 700; color: var(--emr-ink); }
+.emr-h-row .d { font-size: 21px; color: var(--emr-muted); font-weight: 500; }
+
+/* the eleanote assistant — sits over the window's right edge, low
+   enough to crowd nothing */
+.asst {
+  position: absolute;
+  right: 26px; top: 248px;
+  width: 330px;
+  z-index: 40;
+  will-change: transform, opacity;
+}
+.asst-pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 16px 26px;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.38);
+}
+.asst-pill .dot { width: 13px; height: 13px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 5px rgba(56,210,122,0.22); flex: 0 0 auto; }
+.asst-pill .x { margin-left: auto; color: rgba(255,255,255,0.55); font-size: 26px; font-weight: 400; }
+.asst-queue {
+  margin: 10px 14px 0;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.34);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.asst-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 15px 20px;
+}
+.asst-item .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; flex: 0 0 auto; }
+.asst-item .bullet.blue { background: #4ea3ff; }
+.asst-item .bullet.green { background: #5fc787; }
+.asst-item .hint { margin-left: auto; font-size: 19px; color: rgba(255,255,255,0.55); font-weight: 500; }
+
+/* tracing light (scene 1 only) */
+#traceSvg {
+  position: absolute;
+  right: 6px; top: 232px;
+  width: 372px; height: 166px;
+  z-index: 60;
+  pointer-events: none;
+  overflow: visible;
+}
+#tracePath {
+  fill: none;
+  stroke: #ffd66b;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px rgba(255, 214, 107, 0.85)) drop-shadow(0 0 30px rgba(255, 214, 107, 0.45));
+  opacity: 0;
+}
+#traceGlowRect {
+  fill: none;
+  stroke: rgba(255, 214, 107, 0.55);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 18px rgba(255, 214, 107, 0.6));
+  opacity: 0;
+}
+
+/* flying chips (straight-line flights) */
+.fly-chip {
+  position: absolute;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(28, 30, 34, 0.95);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  border-left: 5px solid #f0a44a;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 14px 22px;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.4);
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.fly-chip .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; }
+.fly-chip.blue { border-left-color: #4ea3ff; }
+.fly-chip.blue .bullet { background: #4ea3ff; }
+.fly-chip.purple { border-left-color: #8f7bc4; }
+.fly-chip.purple .bullet { background: #8f7bc4; }
+
+.phase-chip {
+  position: absolute;
+  left: 50%; bottom: 60px;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: rgba(28, 30, 34, 0.88);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 18px 40px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.phase-chip .gold { color: #ffd66b; }
+
+/* ---------- scene 1: note transfer ---------- */
+.note-field {
+  position: relative;
+  height: 700px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 26px 28px;
+}
+.note-field.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.note-ph { position: absolute; left: 28px; top: 26px; font-size: 25px; color: #a2a9ba; font-style: italic; }
+.note-typed { white-space: pre-line; font-size: 26px; line-height: 1.62; color: var(--emr-ink); will-change: opacity; }
+
+/* ---------- scene: prechart ---------- */
+.prior-note { font-size: 26px; line-height: 1.75; color: var(--emr-ink); }
+.prior-note .pl { display: inline; border-radius: 4px; padding: 2px 4px; margin: 0 -4px; }
+
+/* ---------- scene: orders ---------- */
+.order-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px 24px;
+  font-size: 26px;
+  min-height: 76px;
+}
+.order-search.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.order-search .mag { flex: 0 0 auto; width: 26px; height: 26px; }
+.order-search .osph { position: absolute; left: 64px; color: #a2a9ba; font-style: italic; }
+.order-search .ostyped { color: var(--emr-ink); font-weight: 600; }
+.order-list { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+.order-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--emr-line);
+  border-left: 6px solid #4ea3ff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  font-size: 25px;
+  color: var(--emr-ink);
+  opacity: 0;
+  will-change: transform, opacity, box-shadow;
+}
+.order-row .nm { font-weight: 700; }
+.order-row .mt { color: var(--emr-muted); font-size: 22px; }
+.order-row .badge {
+  margin-left: auto;
+  background: rgba(47, 164, 107, 0.12);
+  color: var(--ok);
+  border: 1.5px solid rgba(47, 164, 107, 0.5);
+  font-size: 21px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 8px 18px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.dx-strip {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.dx-pill {
+  background: var(--emr-accent-soft);
+  color: var(--emr-accent);
+  font-size: 21px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 9px 18px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ---------- feedback scene (approved in v1/v2, kept) ---------- */
+.fb-cap {
+  position: absolute;
+  left: 60px; right: 60px; top: 88px;
+  text-align: center;
+  font-size: 54px; font-weight: 800; letter-spacing: -0.03em;
+  z-index: 50;
+  will-change: transform, opacity;
+}
+.fb-app {
+  position: absolute;
+  left: 70px; top: 210px;
+  width: 940px;
+  background: var(--paper);
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 18px;
+  box-shadow: 0 40px 110px rgba(13,43,48,0.28);
+  overflow: hidden;
+  text-align: left;
+  will-change: transform, opacity;
+}
+.fb-titlebar { background: var(--paper-2); border-bottom: 1px solid var(--line); height: 64px; display: flex; align-items: center; gap: 16px; padding: 0 24px; position: relative; }
+.fb-mark { width: 34px; height: 34px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.06em; display: inline-flex; align-items: center; justify-content: center; }
+.fb-titletext { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; color: var(--ink); }
+.fb-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.fb-winctl span { width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.16); }
+.fb-tabs { background: var(--paper-2); padding: 10px 24px 0; border-bottom: 1px solid var(--line); }
+.fb-tab { display: inline-block; background: var(--paper); border: 1px solid var(--line); border-bottom: 0; border-radius: 10px 10px 0 0; padding: 10px 26px 12px; font-size: 24px; font-weight: 600; margin-bottom: -1px; border-top: 3px solid var(--teal); }
+.fb-note { padding: 26px 30px 20px; }
+.fb-sec { margin-bottom: 20px; }
+.fb-sec-h { font-size: 20px; font-weight: 800; letter-spacing: 0.11em; color: var(--teal-deep); margin-bottom: 6px; }
+.fb-sec-b { font-size: 25px; line-height: 1.5; color: #26393e; }
+.fb-assess { position: relative; }
+.fb-wordy { overflow: hidden; will-change: max-height, opacity; }
+.fb-concise { overflow: hidden; max-height: 0; opacity: 0; will-change: max-height, opacity; }
+.fb-concise .fb-sec-b { color: var(--teal-deep); font-weight: 600; }
+.fb-shimmer { position: absolute; inset: -6px -10px; border-radius: 10px; background: linear-gradient(105deg, transparent 30%, rgba(20,81,92,0.16) 50%, transparent 70%); background-size: 300% 100%; opacity: 0; pointer-events: none; }
+.fb-inputrow { display: flex; gap: 16px; padding: 20px 30px 26px; border-top: 1px solid var(--line); background: var(--warm-white); align-items: center; }
+.fb-input { position: relative; white-space: nowrap; flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 18px 22px; font-size: 27px; color: var(--ink); min-height: 68px; display: flex; align-items: center; }
+.fb-input.focus { border-color: var(--teal); box-shadow: 0 0 0 5px rgba(20,81,92,0.12); }
+.fb-input .ph { color: #9aa5a0; position: absolute; left: 22px; top: 50%; transform: translateY(-50%); }
+.fb-caret { display: inline-block; width: 3px; height: 33px; background: var(--teal-deep); margin-left: 3px; vertical-align: -6px; opacity: 0; }
+.fb-btn { flex: 0 0 auto; background: var(--teal-deep); color: #fff; font-size: 26px; font-weight: 700; border-radius: 14px; padding: 20px 32px; will-change: transform; }
+.fb-under {
+  position: absolute;
+  left: 60px; right: 60px; bottom: 74px;
+  text-align: center;
+  font-size: 50px; font-weight: 800; letter-spacing: -0.03em;
+  will-change: transform, opacity;
+}
+
+/* ---------- CTA ---------- */
+#b9 .cta-word { font-size: 148px; font-weight: 600; letter-spacing: -0.045em; color: #173D47; line-height: 1; margin-top: 46px; }
+#b9 .cta-tag { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; font-size: 52px; color: var(--teal-deep); margin-top: 30px; }
+#b9 .cta-free { font-size: 38px; font-weight: 600; color: var(--muted); margin-top: 56px; }
+#b9 .cta-url { display: inline-block; margin-top: 26px; background: var(--teal-deep); color: #fff; font-size: 42px; font-weight: 700; border-radius: 999px; padding: 22px 54px; box-shadow: 0 22px 60px rgba(14,61,70,0.32); }
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="canvas">
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+
+  <!-- BEAT 1 · HOOK (0-3) -->
+  <div class="beat centered" id="b1">
+    <div class="kline" id="b1l1" style="font-size:80px;">Tired of <span class="accent-word" id="b1cp">copy-pasting</span></div>
+    <div class="kline" id="b1l2" style="font-size:80px;">your AI scribe&rsquo;s notes</div>
+    <div class="kline" id="b1l3" style="font-size:80px;">into the EMR?</div>
+  </div>
+
+  <!-- BEAT 2 · TURN (3-6) -->
+  <div class="beat centered" id="b2">
+    <div class="hud-pill kline" id="b2pill"><span class="dot"></span> eleanote</div>
+    <div class="kline" id="b2l1"><span class="brandword">eleanote</span> transfers them</div>
+    <div class="kline" id="b2l2"><span class="serif">with one keystroke.</span></div>
+  </div>
+
+  <!-- BEAT 3 · NOTE TRANSFER SCENE (6-12.6) -->
+  <div class="beat" id="b3">
+    <div class="scene-title kline" id="b3title">The whole note &mdash; <span class="serif">one keystroke.</span></div>
+    <div class="emr-win kline" id="b3win">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Today's note</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Orders</span>
+        <span class="emr-tab">Diagnoses</span>
+      </div>
+      <div class="emr-body">
+        <div class="emr-h-row"><h3>Office visit</h3><span class="d">today &middot; unsigned</span></div>
+        <div class="note-field" id="noteField">
+          <span class="note-ph" id="notePh">Click to begin note&hellip;</span>
+          <span class="note-typed" id="noteTyped" style="opacity:0;">S: 64M follow-up of RCC s/p partial nephrectomy. Feels well &mdash; no hematuria, no flank pain.
+O: BP 128/78 &middot; exam unremarkable.
+A/P:
+1) RCC &mdash; stable, no recurrence. MRI abdomen in 1 year.
+2) CKD-3 &mdash; stable. BMP in 1 year.
+3) HTN &mdash; continue lisinopril.</span>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="b3asst">
+      <div class="asst-pill"><span class="dot" id="b3dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="b3queue">
+        <div class="asst-item"><span class="bullet"></span> Clinical note <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <svg id="traceSvg" viewBox="0 0 372 166">
+      <rect id="traceGlowRect" x="7" y="7" width="358" height="152" rx="32"></rect>
+      <rect id="tracePath" x="7" y="7" width="358" height="152" rx="32"></rect>
+    </svg>
+    <div class="fly-chip" id="b3echo"><span class="bullet"></span> Clinical note</div>
+    <div class="fly-chip" id="b3fly"><span class="bullet"></span> Clinical note</div>
+    <div class="phase-chip" id="b3chip">no copy-paste &mdash; <span class="gold">ever</span></div>
+  </div>
+
+  <!-- BEAT 4 · LAPTOP (12.6-15.4) -->
+  <div class="beat centered textbeat" id="b4">
+    <div class="kline" id="b4l1">Runs on your <span class="serif">laptop.</span></div>
+    <div class="sub kline" id="b4l2">No phone propped in the room &mdash; it records with the laptop mic.</div>
+  </div>
+
+  <!-- BEAT 6 · TELL IT (15.4-18.2) -->
+  <div class="beat centered textbeat" id="b6">
+    <div class="kline" id="b6l1">Don&rsquo;t like a note?</div>
+    <div class="kline" id="b6l2"><span class="serif">Tell it.</span></div>
+  </div>
+
+  <!-- BEAT 7 · FEEDBACK (18.2-26.2) -->
+  <div class="beat" id="b7">
+    <div class="fb-cap kline" id="b7cap">Give feedback on <span class="serif">any note.</span></div>
+    <div class="fb-app kline" id="b7app">
+      <div class="fb-titlebar">
+        <span class="fb-mark">e</span>
+        <span class="fb-titletext">eleanote</span>
+        <span class="fb-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="fb-tabs"><span class="fb-tab">Doe, John &middot; 64M</span></div>
+      <div class="fb-note">
+        <div class="fb-sec">
+          <div class="fb-sec-h">SUBJECTIVE</div>
+          <div class="fb-sec-b">64M here for follow-up of RCC s/p partial nephrectomy. Feels well &mdash; no hematuria, no flank pain.</div>
+        </div>
+        <div class="fb-sec">
+          <div class="fb-sec-h">OBJECTIVE</div>
+          <div class="fb-sec-b">BP 128/78 &middot; exam unremarkable.</div>
+        </div>
+        <div class="fb-sec fb-assess">
+          <div class="fb-sec-h">ASSESSMENT</div>
+          <div class="fb-wordy" id="fbWordy">
+            <div class="fb-sec-b">The patient is a 64-year-old male with a history of renal cell carcinoma status post partial nephrectomy in 2023 who presents today for routine oncologic surveillance and is found to be clinically stable without evidence of recurrence, along with chronic kidney disease stage 3 which remains stable, and essential hypertension which is well controlled on current therapy.</div>
+          </div>
+          <div class="fb-concise" id="fbConcise">
+            <div class="fb-sec-b">RCC s/p partial nephrectomy &mdash; stable, no evidence of recurrence. CKD-3 stable. HTN controlled.</div>
+          </div>
+          <div class="fb-shimmer" id="fbShimmer"></div>
+        </div>
+        <div class="fb-sec">
+          <div class="fb-sec-h">PLAN</div>
+          <div class="fb-sec-b">1) MRI abdomen + BMP in 1 year &nbsp; 2) Continue lisinopril.</div>
+        </div>
+      </div>
+      <div class="fb-inputrow">
+        <div class="fb-input" id="fbInput"><span class="ph" id="fbPh">Give feedback on this note&hellip;</span><span id="fbTyped"></span><span class="fb-caret" id="fbCaret"></span></div>
+        <div class="fb-btn" id="fbBtn">Apply feedback</div>
+      </div>
+    </div>
+    <div class="fb-under kline" id="b7under">It <span class="serif">learns.</span> Every note gets better.</div>
+  </div>
+
+  <!-- BEAT 8a · PRECHART SCENE (26.2-31.2) -->
+  <div class="beat" id="b8a">
+    <div class="scene-title kline" id="b8atitle">It also precharts from <span class="serif">prior notes.</span></div>
+    <div class="emr-win kline" id="b8awin">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Notes</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Orders</span>
+        <span class="emr-tab">Diagnoses</span>
+        <span class="emr-tab">Today's note</span>
+      </div>
+      <div class="emr-body">
+        <div class="emr-h-row"><h3>Office visit</h3><span class="d">06/12/2025 &middot; Dr. Carter</span></div>
+        <div class="prior-note" id="priorNote">
+          <span class="pl" id="pl1">64yo M, follow-up. RCC s/p partial nephrectomy 2023.</span><br>
+          <span class="pl" id="pl2">CKD stage 3 stable, baseline Cr 1.5, GFR 48.</span><br>
+          <span class="pl" id="pl3">HTN well-controlled on lisinopril 20 mg daily.</span><br>
+          <span class="pl" id="pl4">No new symptoms today, exam unremarkable.</span><br>
+          <span class="pl" id="pl5">Plan: continue current regimen and lisinopril.</span><br>
+          <span class="pl" id="pl6">Surveillance MRI abdomen and BMP as scheduled.</span>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="b8aasst" style="top: 560px;">
+      <div class="asst-pill"><span class="dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="b8aqueue" style="opacity:0;">
+        <div class="asst-item"><span class="bullet green"></span> Precharted <span class="hint">&#10003;</span></div>
+      </div>
+    </div>
+    <div class="fly-chip purple" id="b8afly"><span class="bullet"></span> prior note</div>
+    <div class="phase-chip" id="b8achip">highlight &rarr; <span class="gold">one key</span></div>
+  </div>
+
+  <!-- BEAT 8b · ORDERS SCENE (31.2-36.8) -->
+  <div class="beat" id="b8b">
+    <div class="scene-title kline" id="b8btitle">And enters diagnoses <span class="serif">&amp; orders.</span></div>
+    <div class="emr-win kline" id="b8bwin">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Orders</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Diagnoses</span>
+        <span class="emr-tab">Today's note</span>
+      </div>
+      <div class="emr-body">
+        <div class="dx-strip">
+          <span class="dx-pill" id="dx1">&#10003; Renal cell carcinoma &middot; C64.9</span>
+          <span class="dx-pill" id="dx2">&#10003; CKD-3 &middot; N18.3</span>
+        </div>
+        <div class="emr-h-row"><h3>New order</h3></div>
+        <div class="order-search" id="orderSearch">
+          <svg class="mag" viewBox="0 0 24 24" fill="none" stroke="#6a7388" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+          <span class="osph" id="osPh">Search order (lab, imaging, med)&hellip;</span>
+          <span class="ostyped" id="osTyped"></span>
+        </div>
+        <div class="order-list">
+          <div class="order-row" id="orderRow">
+            <span class="nm">BMP</span>
+            <span class="mt">Lab &middot; 05/01/2027 &middot; routine</span>
+            <span class="badge" id="orderBadge">&#10003; Placed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="b8basst" style="top: 560px;">
+      <div class="asst-pill"><span class="dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="b8bqueue">
+        <div class="asst-item"><span class="bullet blue"></span> BMP &mdash; in 1 year <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <div class="fly-chip blue" id="b8bfly"><span class="bullet"></span> BMP</div>
+    <div class="phase-chip" id="b8bchip">spoken in the visit &mdash; <span class="gold">entered for you</span></div>
+  </div>
+
+  <!-- BEAT 8c · ANY EHR (36.8-39.0) -->
+  <div class="beat centered textbeat" id="b8c">
+    <div class="kline" id="b8cl1">Works with <span class="serif">any EHR.</span></div>
+    <div class="sub kline" id="b8cl2" style="font-size:52px; font-weight:700; color:var(--ink);">No IT integration needed.</div>
+  </div>
+
+  <!-- BEAT 9 · CTA (39.0-43.2) -->
+  <div class="beat centered" id="b9">
+    <div class="hud-pill kline" id="b9pill"><span class="dot"></span> eleanote</div>
+    <div class="cta-word kline" id="b9word">eleanote</div>
+    <div class="cta-tag kline" id="b9tag">The ambient AI scribe for any EHR</div>
+    <div class="cta-free kline" id="b9free">Free while in testing &middot; Windows &amp; Mac</div>
+    <div class="cta-url kline" id="b9url">eleanote.ai</div>
+  </div>
+
+</div><!-- /#canvas -->
+</div><!-- /#viewport -->
+
+<script>
+/* ================================================================
+   ENGINE v3 — pure function of t. 43.2s.
+   ================================================================ */
+var DUR = 43.2;
+var RENDER = /[?&]render/.test(location.search);
+var FREEZE = (function(){ var m = location.search.match(/[?&]t=([\d.]+)/); return m ? parseFloat(m[1]) : null; })();
+
+var E = {
+  linear:  function(p){ return p; },
+  outCubic:function(p){ return 1 - Math.pow(1 - p, 3); },
+  inCubic: function(p){ return p * p * p; },
+  inOut:   function(p){ return p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2; },
+  outBack: function(p){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); }
+};
+function kv(kfs, t) {
+  if (t <= kfs[0][0]) return kfs[0][1];
+  var last = kfs[kfs.length - 1];
+  if (t >= last[0]) return last[1];
+  for (var i = 1; i < kfs.length; i++) {
+    if (t <= kfs[i][0]) {
+      var a = kfs[i-1], b = kfs[i];
+      return a[1] + (b[1] - a[1]) * E[b[2] || 'inOut']((t - a[0]) / (b[0] - a[0]));
+    }
+  }
+  return last[1];
+}
+var $ = function(id){ return document.getElementById(id); };
+
+var BEATS = [
+  ['b1', 0.0, 3.0], ['b2', 3.0, 6.0], ['b3', 6.0, 12.6], ['b4', 12.6, 15.4],
+  ['b6', 15.4, 18.2], ['b7', 18.2, 26.2],
+  ['b8a', 26.2, 31.2], ['b8b', 31.2, 36.8], ['b8c', 36.8, 39.0], ['b9', 39.0, 43.21]
+];
+
+function inout(el, tIn, tOut, yIn) {
+  return { el: el,
+    o: [[tIn, 0], [tIn + 0.35, 1, 'outCubic'], [tOut - 0.3, 1], [tOut, 0, 'inCubic']],
+    y: [[tIn, yIn], [tIn + 0.4, 0, 'outCubic'], [tOut - 0.3, 0], [tOut, -26, 'inCubic']] };
+}
+
+var TRACKS = [
+  /* B1 hook */
+  { el:'b1l1', o:[[0.05,0],[0.38,1,'outCubic'],[2.65,1],[2.95,0,'inCubic']], y:[[0.05,64],[0.42,0,'outBack'],[2.65,0],[2.95,-44,'inCubic']] },
+  { el:'b1l2', o:[[0.45,0],[0.78,1,'outCubic'],[2.65,1],[2.95,0,'inCubic']], y:[[0.45,64],[0.82,0,'outBack'],[2.65,0],[2.95,-44,'inCubic']] },
+  { el:'b1l3', o:[[0.85,0],[1.18,1,'outCubic'],[2.65,1],[2.95,0,'inCubic']], y:[[0.85,64],[1.22,0,'outBack'],[2.65,0],[2.95,-44,'inCubic']] },
+  { el:'b1cp', r:[[1.30,0],[1.39,-2.6,'linear'],[1.48,2.2,'linear'],[1.57,-1.7,'linear'],[1.66,1.1,'linear'],[1.75,0,'linear']],
+               x:[[1.30,0],[1.39,-5,'linear'],[1.48,4,'linear'],[1.57,-3,'linear'],[1.66,2,'linear'],[1.75,0,'linear']] },
+  /* B2 turn */
+  { el:'b2pill', o:[[3.10,0],[3.45,1,'outCubic'],[5.65,1],[5.95,0,'inCubic']], y:[[3.10,-150],[3.55,0,'outBack'],[5.65,0],[5.95,-30,'inCubic']], s:[[3.10,0.75],[3.55,1,'outBack']] },
+  { el:'b2l1', o:[[3.50,0],[3.85,1,'outCubic'],[5.65,1],[5.95,0,'inCubic']], y:[[3.50,54],[3.90,0,'outBack'],[5.65,0],[5.95,-40,'inCubic']] },
+  { el:'b2l2', o:[[3.75,0],[4.10,1,'outCubic'],[5.65,1],[5.95,0,'inCubic']], y:[[3.75,54],[4.15,0,'outBack'],[5.65,0],[5.95,-40,'inCubic']] },
+  /* B3 note-transfer scene */
+  inout('b3title', 6.05, 12.55, 36),
+  { el:'b3win', o:[[6.25,0],[6.70,1,'outCubic'],[12.25,1],[12.55,0,'inCubic']], y:[[6.25,70],[6.75,0,'outCubic']],
+                s:[[6.25,0.97],[6.75,1,'outCubic'],[10.8,1],[12.3,1.012,'linear']] },
+  { el:'b3asst', o:[[6.75,0],[7.10,1,'outCubic'],[12.25,1],[12.55,0,'inCubic']], y:[[6.75,-70],[7.20,0,'outBack']] },
+  { el:'b3chip', o:[[10.85,0],[11.20,1,'outCubic'],[12.25,1],[12.55,0,'inCubic']], y:[[10.85,34],[11.25,0,'outBack']] },
+  /* B4 laptop */
+  { el:'b4l1', o:[[12.68,0],[13.02,1,'outCubic'],[15.05,1],[15.35,0,'inCubic']], y:[[12.68,54],[13.06,0,'outBack'],[15.05,0],[15.35,-40,'inCubic']] },
+  { el:'b4l2', o:[[12.95,0],[13.30,1,'outCubic'],[15.05,1],[15.35,0,'inCubic']], y:[[12.95,44],[13.34,0,'outCubic'],[15.05,0],[15.35,-34,'inCubic']] },
+  /* B6 tell it */
+  { el:'b6l1', o:[[15.48,0],[15.82,1,'outCubic'],[17.85,1],[18.15,0,'inCubic']], y:[[15.48,54],[15.86,0,'outBack'],[17.85,0],[18.15,-40,'inCubic']] },
+  { el:'b6l2', o:[[15.80,0],[16.15,1,'outCubic'],[17.85,1],[18.15,0,'inCubic']], y:[[15.80,58],[16.20,0,'outBack'],[17.85,0],[18.15,-40,'inCubic']], s:[[15.80,0.9],[16.25,1,'outBack']] },
+  /* B7 feedback */
+  { el:'b7cap', o:[[18.25,0],[18.60,1,'outCubic'],[25.82,1],[26.15,0,'inCubic']], y:[[18.25,40],[18.65,0,'outCubic'],[25.82,0],[26.15,-26,'inCubic']] },
+  { el:'b7app', o:[[18.32,0],[18.72,1,'outCubic'],[25.82,1],[26.15,0,'inCubic']], y:[[18.32,66],[18.78,0,'outCubic'],[25.82,0],[26.15,-26,'inCubic']], s:[[18.32,0.97],[18.78,1,'outCubic'],[24.1,1],[24.6,1.006,'inOut']] },
+  { el:'fbBtn', s:[[21.50,1],[21.66,0.93,'outCubic'],[21.82,1,'outBack']] },
+  { el:'b7under', o:[[23.75,0],[24.15,1,'outCubic'],[25.82,1],[26.15,0,'inCubic']], y:[[23.75,42],[24.20,0,'outBack'],[25.82,0],[26.15,-26,'inCubic']] },
+  /* B8a prechart scene */
+  inout('b8atitle', 26.25, 31.15, 36),
+  { el:'b8awin', o:[[26.40,0],[26.85,1,'outCubic'],[30.85,1],[31.15,0,'inCubic']], y:[[26.40,70],[26.90,0,'outCubic']] },
+  { el:'b8aasst', o:[[26.85,0],[27.20,1,'outCubic'],[30.85,1],[31.15,0,'inCubic']], y:[[26.85,-70],[27.30,0,'outBack']] },
+  { el:'b8achip', o:[[29.95,0],[30.30,1,'outCubic'],[30.85,1],[31.15,0,'inCubic']], y:[[29.95,34],[30.35,0,'outBack']] },
+  /* B8b orders scene */
+  inout('b8btitle', 31.25, 36.75, 36),
+  { el:'b8bwin', o:[[31.40,0],[31.85,1,'outCubic'],[36.45,1],[36.75,0,'inCubic']], y:[[31.40,70],[31.90,0,'outCubic']] },
+  { el:'b8basst', o:[[31.85,0],[32.20,1,'outCubic'],[36.45,1],[36.75,0,'inCubic']], y:[[31.85,-70],[32.30,0,'outBack']] },
+  { el:'b8bchip', o:[[34.95,0],[35.30,1,'outCubic'],[36.45,1],[36.75,0,'inCubic']], y:[[34.95,34],[35.35,0,'outBack']] },
+  /* B8c any EHR */
+  { el:'b8cl1', o:[[36.85,0],[37.18,1,'outCubic'],[38.65,1],[38.95,0,'inCubic']], s:[[36.85,0.88],[37.25,1,'outBack']] },
+  { el:'b8cl2', o:[[37.10,0],[37.45,1,'outCubic'],[38.65,1],[38.95,0,'inCubic']], y:[[37.10,40],[37.50,0,'outBack']] },
+  /* B9 CTA */
+  { el:'b9pill', o:[[39.10,0],[39.50,1,'outCubic']], y:[[39.10,-70],[39.60,0,'outBack']] },
+  { el:'b9word', o:[[39.32,0],[39.72,1,'outCubic']], s:[[39.32,0.955],[39.80,1,'outCubic']] },
+  { el:'b9tag',  o:[[39.60,0],[40.00,1,'outCubic']], y:[[39.60,30],[40.05,0,'outCubic']] },
+  { el:'b9free', o:[[39.88,0],[40.28,1,'outCubic']], y:[[39.88,26],[40.32,0,'outCubic']] },
+  { el:'b9url',  o:[[40.10,0],[40.50,1,'outCubic']], s:[[40.10,0.85],[40.60,1,'outBack'],[41.20,1],[41.55,1.05,'inOut'],[41.95,1,'inOut']] }
+];
+
+/* ---------- straight-line flights ---------- */
+function straightFlight(x0, y0, x1, y1, t0, t1) {
+  return {
+    x: [[t0, x0], [t1, x1, 'inOut']],
+    y: [[t0, y0], [t1, y1, 'inOut']],
+    s: [[t0, 1], [t0 + 0.22, 1.07, 'outCubic'], [t1, 0.86, 'inOut']],
+    t0: t0, t1: t1
+  };
+}
+/* b3: assistant queue (~866, 372) -> note field first line (~300, 520) */
+var F3  = straightFlight(866, 372, 310, 520, 9.4, 10.2);
+/* b8a: highlighted note (~420, 560) -> assistant queue (~880, 682) */
+var F8a = straightFlight(420, 560, 872, 682, 28.7, 29.5);
+/* b8b: assistant queue (~866, 684) -> order search (~420, 500) */
+var F8b = straightFlight(866, 684, 430, 505, 32.4, 33.2);
+
+function applyFlight(el, echoEl, F, t) {
+  var els = [[el, 1.0, 0], [echoEl, 0.26, 0.08]];
+  for (var i = 0; i < els.length; i++) {
+    var e = els[i][0], oMax = els[i][1], dt = els[i][2];
+    var t0 = F.t0 + dt, t1 = F.t1 + dt;
+    var on = t >= t0 && t <= t1 + 0.05;
+    e.style.opacity = on ? (oMax * kv([[t0,0],[t0+0.14,1,'linear'],[t1-0.07,1],[t1+0.02,0,'linear']], t)) : 0;
+    if (on) {
+      var x = kv([[t0, F.x[0][1]],[t1, F.x[1][1],'inOut']], t);
+      var y = kv([[t0, F.y[0][1]],[t1, F.y[1][1],'inOut']], t);
+      var s = kv([[t0,1],[t0+0.22,1.07,'outCubic'],[t1,0.86,'inOut']], t);
+      e.style.transform = 'translate(' + (x - 90) + 'px,' + (y - 26) + 'px) scale(' + s + ')';
+    }
+  }
+}
+
+/* ---------- feedback typing ---------- */
+var TYPE_TEXT = 'Make the assessment more concise';
+/* ---------- trace ---------- */
+var traceEl, traceGlowEl, tracePerim = 0;
+
+function applySpecials(t) {
+  /* ===== B3 note transfer ===== */
+  if (t > 5.8 && t < 13.0) {
+    /* trace loop 7.6-8.8, afterglow to 9.6 */
+    var tp = (t - 7.6) / 1.2;
+    if (tp > 0 && tp < 1.15) {
+      var seg = tracePerim * 0.26;
+      traceEl.style.opacity = kv([[7.6,0],[7.75,1,'linear'],[8.65,1],[8.9,0,'linear']], t);
+      traceEl.setAttribute('stroke-dasharray', seg + ' ' + (tracePerim - seg));
+      traceEl.setAttribute('stroke-dashoffset', String(-(Math.min(tp, 1) * (tracePerim + seg)) + seg));
+    } else { traceEl.style.opacity = 0; }
+    traceGlowEl.style.opacity = kv([[8.65,0],[8.85,0.9,'outCubic'],[9.1,0.55,'inOut'],[9.3,0.8,'inOut'],[9.7,0,'inCubic']], t);
+    applyFlight($('b3fly'), $('b3echo'), F3, t);
+    /* queue leaves as chip lifts */
+    $('b3queue').style.opacity = Math.min(kv([[7.05,0],[7.35,1,'outCubic']], t), kv([[9.35,1],[9.6,0,'inCubic']], t));
+    /* the PASTE: whole note lands at once */
+    var f = $('noteField');
+    f.className = (t >= 10.05 && t < 11.1) ? 'note-field hot' : 'note-field';
+    $('notePh').style.opacity = kv([[10.05,1],[10.2,0,'linear']], t);
+    $('noteTyped').style.opacity = kv([[10.15,0],[10.4,1,'outCubic']], t);
+    $('b3dot').style.background = t < 10.2 ? '#38d27a' : '#9aa1ab';
+    $('b3dot').style.boxShadow = t < 10.2 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+  }
+  /* ===== B7 feedback ===== */
+  if (t > 18.0 && t < 26.4) {
+    $('fbInput').className = (t >= 19.15 && t < 25.8) ? 'fb-input focus' : 'fb-input';
+    $('fbPh').style.opacity = t < 19.25 ? 1 : Math.max(0, 1 - (t - 19.25) / 0.15);
+    var p = Math.min(1, Math.max(0, (t - 19.4) / 1.8));
+    var want = TYPE_TEXT.slice(0, Math.floor(p * TYPE_TEXT.length));
+    var typedEl = $('fbTyped');
+    if (typedEl.textContent !== want) typedEl.textContent = want;
+    var caretOn = (t >= 19.15 && t <= 21.9) && (Math.floor(t * 2.5) % 2 === 0);
+    $('fbCaret').style.opacity = caretOn ? 1 : 0;
+    var btn = $('fbBtn');
+    var label = t < 21.7 ? 'Apply feedback' : (t < 23.2 ? 'Rewriting…' : 'Done ✓');
+    if (btn.textContent !== label) btn.textContent = label;
+    $('fbWordy').style.maxHeight = kv([[22.1,300],[22.95,0,'inOut']], t) + 'px';
+    $('fbWordy').style.opacity = kv([[22.1,1],[22.75,0,'linear']], t);
+    $('fbConcise').style.maxHeight = kv([[22.55,0],[23.15,110,'inOut']], t) + 'px';
+    $('fbConcise').style.opacity = kv([[22.65,0],[23.15,1,'linear']], t);
+    var sh = $('fbShimmer');
+    sh.style.opacity = kv([[22.0,0],[22.25,1,'linear'],[23.3,1],[23.65,0,'linear']], t);
+    sh.style.backgroundPosition = kv([[22.05,140],[23.55,-140,'linear']], t) + '% 0';
+  }
+  /* ===== B8a prechart ===== */
+  if (t > 26.0 && t < 31.4) {
+    /* selection sweeps line by line, 27.0 -> 28.2 */
+    for (var i = 1; i <= 6; i++) {
+      var tOn = 27.0 + (i - 1) * 0.2;
+      var a = kv([[tOn, 0], [tOn + 0.18, 1, 'linear']], t);
+      $('pl' + i).style.background = 'rgba(91, 75, 138, ' + (0.28 * a) + ')';
+    }
+    applyFlight($('b8afly'), $('b8afly'), F8a, t);
+    /* "Precharted ✓" appears in the assistant when the chip arrives */
+    $('b8aqueue').style.opacity = kv([[29.55,0],[29.85,1,'outCubic']], t);
+    $('b8aqueue').style.transform = 'translateY(' + kv([[29.55,-18],[29.9,0,'outBack']], t) + 'px)';
+  }
+  /* ===== B8b orders ===== */
+  if (t > 31.0 && t < 37.0) {
+    /* dx pills appear first — diagnoses already entered */
+    $('dx1').style.opacity = kv([[32.0,0],[32.35,1,'outCubic']], t);
+    $('dx1').style.transform = 'translateY(' + kv([[32.0,14],[32.4,0,'outBack']], t) + 'px)';
+    $('dx2').style.opacity = kv([[32.2,0],[32.55,1,'outCubic']], t);
+    $('dx2').style.transform = 'translateY(' + kv([[32.2,14],[32.6,0,'outBack']], t) + 'px)';
+    applyFlight($('b8bfly'), $('b8bfly'), F8b, t);
+    /* search box takes the value when the chip lands */
+    var os = $('orderSearch');
+    os.className = (t >= 33.1 && t < 34.2) ? 'order-search hot' : 'order-search';
+    $('osPh').style.opacity = kv([[33.15,1],[33.3,0,'linear']], t);
+    var osT = $('osTyped');
+    var osWant = t >= 33.2 ? 'BMP' : '';
+    if (osT.textContent !== osWant) osT.textContent = osWant;
+    /* the order REGISTERS: row slides in, then the Placed badge pops,
+       then a green confirmation flash — slow enough to watch */
+    var row = $('orderRow');
+    row.style.opacity = kv([[33.9,0],[34.3,1,'outCubic']], t);
+    row.style.transform = 'translateY(' + kv([[33.9,26],[34.35,0,'outCubic']], t) + 'px)';
+    var badge = $('orderBadge');
+    badge.style.opacity = kv([[34.7,0],[34.95,1,'outCubic']], t);
+    badge.style.transform = 'scale(' + kv([[34.7,0.6],[35.05,1,'outBack']], t) + ')';
+    var glow = kv([[34.7,0],[34.95,1,'outCubic'],[35.7,1],[36.2,0,'inCubic']], t);
+    row.style.boxShadow = '0 0 0 ' + (5 * glow) + 'px rgba(47, 164, 107, ' + (0.16 * glow) + ')';
+    row.style.borderColor = glow > 0.4 ? 'rgba(47, 164, 107, 0.55)' : '';
+    /* queue item leaves as the chip lifts */
+    $('b8bqueue').style.opacity = Math.min(1, kv([[32.35,1],[32.6,0,'inCubic']], t) + 0);
+  }
+}
+
+function seek(t) {
+  t = Math.max(0, Math.min(DUR, t));
+  for (var i = 0; i < BEATS.length; i++) {
+    var b = BEATS[i];
+    document.getElementById(b[0]).style.visibility = (t >= b[1] && t < b[2]) ? 'visible' : 'hidden';
+  }
+  for (var j = 0; j < TRACKS.length; j++) {
+    var tr = TRACKS[j];
+    var el = tr._el || (tr._el = $(tr.el));
+    if (tr.o) el.style.opacity = kv(tr.o, t);
+    var parts = '';
+    if (tr.x) parts += 'translateX(' + kv(tr.x, t) + 'px) ';
+    if (tr.y) parts += 'translateY(' + kv(tr.y, t) + 'px) ';
+    if (tr.s) parts += 'scale(' + kv(tr.s, t) + ') ';
+    if (tr.r) parts += 'rotate(' + kv(tr.r, t) + 'deg) ';
+    if (parts) {
+      if (tr.el === 'b3chip' || tr.el === 'b8achip' || tr.el === 'b8bchip') parts = 'translateX(-50%) ' + parts;
+      el.style.transform = parts;
+    }
+  }
+  applySpecials(t);
+}
+
+function fitPreview() {
+  if (RENDER) return;
+  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1350) * 0.98;
+  $('canvas').style.transform = 'scale(' + sc + ')';
+}
+function boot() {
+  if (RENDER) document.body.classList.add('render');
+  traceEl = $('tracePath');
+  traceGlowEl = $('traceGlowRect');
+  tracePerim = traceEl.getTotalLength();
+  seek(FREEZE != null ? FREEZE : 0);
+  fitPreview();
+  window.addEventListener('resize', fitPreview);
+  window.__ready = true;
+  if (!RENDER && FREEZE == null) {
+    var start = performance.now();
+    (function loop(now){
+      seek(((now - start) / 1000) % DUR);
+      requestAnimationFrame(loop);
+    })(start);
+  }
+}
+window.__total = DUR;
+window.__seek = function(t){ seek(t); };
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(function(){ setTimeout(boot, 60); });
+} else {
+  window.addEventListener('load', function(){ setTimeout(boot, 120); });
+}
+</script>
+</body>
+</html>
