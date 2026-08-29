@@ -526,7 +526,7 @@ body.render #canvas { transform: none !important; }
 .combo-noteslot .note-typed { white-space: pre-line; font-size: 25px; line-height: 1.6; color: var(--emr-ink); will-change: opacity; }
 
 /* ---------- ad2 v2: CTA leads with FREE ---------- */
-#b9 .cta-free-big { font-size: 100px; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); margin-top: 56px; line-height: 1.05; }
+#b9 .cta-free-big { font-size: 100px; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); line-height: 1.05; }
 #b9 .cta-free-big .goldw { color: var(--gold-bright); }
 #b9 .cta-plat { font-size: 44px; font-weight: 600; color: var(--muted); margin-top: 30px; }
 
@@ -692,7 +692,6 @@ A/P:
 
   <!-- BEAT 9 - CTA (28.7-33.2): FREE leads -->
   <div class="beat centered" id="b9">
-    <div class="hud-pill kline" id="b9pill"><span class="dot"></span> eleanote</div>
     <div class="cta-free-big kline" id="b9big"><span class="goldw">Free</span> while in beta</div>
     <div class="cta-plat kline" id="b9plat">Windows &amp; Mac</div>
     <div class="cta-url kline" id="b9url">eleanote.ai</div>
@@ -703,7 +702,7 @@ A/P:
 
 <script>
 /* ================= ENGINE - ad2 v2, 33.2s ================= */
-var DUR = 33.2;
+var DUR = 30.2;
 var RENDER = /[?&]render/.test(location.search);
 var FREEZE = (function(){ var m = location.search.match(/[?&]t=([0-9.]+)/); return m ? parseFloat(m[1]) : null; })();
 var E = {
@@ -728,8 +727,8 @@ function kv(kfs, t) {
 var $ = function(id){ return document.getElementById(id); };
 
 var BEATS = [
-  ['b12', 0.0, 5.0], ['b3', 5.0, 15.8],
-  ['b7', 15.8, 23.8], ['b8', 23.8, 28.7], ['b9', 28.7, 33.21]
+  ['b12', 0.0, 5.0], ['b3', 5.0, 13.9],
+  ['b7', 13.9, 21.0], ['b8', 21.0, 25.9], ['b9', 25.9, 30.21]
 ];
 function inout(el, tIn, tOut, yIn) {
   return { el: el,
@@ -745,33 +744,32 @@ var TRACKS = [
   { el:'a0', o:[[1.85,0],[2.20,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[1.85,-110],[2.30,0,'outBack'],[4.60,0],[4.92,-26,'inCubic']], s:[[1.85,0.75],[2.30,1,'outBack']] },
   { el:'a1', o:[[2.10,0],[2.45,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[2.10,44],[2.50,0,'outBack'],[4.60,0],[4.92,-30,'inCubic']] },
   { el:'a2', o:[[2.30,0],[2.65,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[2.30,44],[2.70,0,'outBack'],[4.60,0],[4.92,-30,'inCubic']] },
-  inout('b3title', 5.05, 15.75, 36),
-  { el:'dpApp', o:[[5.25,0],[5.70,1,'outCubic'],[15.45,1],[15.75,0,'inCubic']], y:[[5.25,66],[5.75,0,'outCubic']] },
-  { el:'b3chip', o:[[13.80,0],[14.15,1,'outCubic'],[15.45,1],[15.75,0,'inCubic']], y:[[13.80,34],[14.20,0,'outBack']] },
-  { el:'dpSend', s:[[8.85,1],[9.00,0.93,'outCubic'],[9.15,1,'outBack'],[12.15,1],[12.30,0.93,'outCubic'],[12.45,1,'outBack']] },
-  { el:'b7cap', o:[[15.85,0],[16.20,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[15.85,40],[16.25,0,'outCubic'],[23.42,0],[23.75,-26,'inCubic']] },
-  { el:'b7app', o:[[15.92,0],[16.32,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[15.92,66],[16.38,0,'outCubic'],[23.42,0],[23.75,-26,'inCubic']], s:[[15.92,0.97],[16.38,1,'outCubic'],[21.7,1],[22.2,1.006,'inOut']] },
-  { el:'fbBtn', s:[[19.10,1],[19.26,0.93,'outCubic'],[19.42,1,'outBack']] },
-  { el:'b7under', o:[[21.35,0],[21.75,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[21.35,42],[21.80,0,'outBack'],[23.42,0],[23.75,-26,'inCubic']] },
-  inout('b8title', 23.85, 28.65, 36),
-  { el:'b8win', o:[[23.90,0],[24.25,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[23.90,60],[24.30,0,'outCubic']] },
-  { el:'b8asst', o:[[24.15,0],[24.50,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[24.15,-60],[24.60,0,'outBack']] },
-  { el:'b8chip', o:[[27.50,0],[27.85,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[27.50,34],[27.90,0,'outBack']] },
-  { el:'b9pill', o:[[28.80,0],[29.20,1,'outCubic']], y:[[28.80,-70],[29.30,0,'outBack']] },
-  { el:'b9big', o:[[29.05,0],[29.45,1,'outCubic']], y:[[29.05,34],[29.52,0,'outBack']], s:[[29.05,0.94],[29.55,1,'outBack']] },
-  { el:'b9plat', o:[[29.35,0],[29.75,1,'outCubic']], y:[[29.35,26],[29.80,0,'outCubic']] },
-  { el:'b9url',  o:[[29.55,0],[29.95,1,'outCubic']], s:[[29.55,0.85],[30.05,1,'outBack'],[30.60,1],[30.95,1.05,'inOut'],[31.35,1,'inOut']] }
+  inout('b3title', 5.05, 13.85, 36),
+  { el:'dpApp', o:[[5.25,0],[5.70,1,'outCubic'],[13.55,1],[13.85,0,'inCubic']], y:[[5.25,66],[5.75,0,'outCubic']] },
+  { el:'b3chip', o:[[12.15,0],[12.50,1,'outCubic'],[13.55,1],[13.85,0,'inCubic']], y:[[12.15,34],[12.55,0,'outBack']] },
+  { el:'dpSend', s:[[7.82,1],[7.97,0.93,'outCubic'],[8.12,1,'outBack'],[10.50,1],[10.65,0.93,'outCubic'],[10.80,1,'outBack']] },
+  { el:'b7cap', o:[[13.95,0],[14.30,1,'outCubic'],[20.62,1],[20.95,0,'inCubic']], y:[[13.95,40],[14.35,0,'outCubic'],[20.62,0],[20.95,-26,'inCubic']] },
+  { el:'b7app', o:[[14.02,0],[14.42,1,'outCubic'],[20.62,1],[20.95,0,'inCubic']], y:[[14.02,66],[14.48,0,'outCubic'],[20.62,0],[20.95,-26,'inCubic']], s:[[14.02,0.97],[14.48,1,'outCubic'],[18.9,1],[19.4,1.006,'inOut']] },
+  { el:'fbBtn', s:[[16.30,1],[16.46,0.93,'outCubic'],[16.62,1,'outBack']] },
+  { el:'b7under', o:[[18.55,0],[18.95,1,'outCubic'],[20.62,1],[20.95,0,'inCubic']], y:[[18.55,42],[19.00,0,'outBack'],[20.62,0],[20.95,-26,'inCubic']] },
+  inout('b8title', 21.05, 25.85, 36),
+  { el:'b8win', o:[[21.10,0],[21.45,1,'outCubic'],[25.60,1],[25.88,0,'inCubic']], y:[[21.10,60],[21.50,0,'outCubic']] },
+  { el:'b8asst', o:[[21.35,0],[21.70,1,'outCubic'],[25.60,1],[25.88,0,'inCubic']], y:[[21.35,-60],[21.80,0,'outBack']] },
+  { el:'b8chip', o:[[24.70,0],[25.05,1,'outCubic'],[25.60,1],[25.88,0,'inCubic']], y:[[24.70,34],[25.10,0,'outBack']] },
+  { el:'b9big', o:[[26.00,0],[26.40,1,'outCubic']], y:[[26.00,34],[26.47,0,'outBack']], s:[[26.00,0.94],[26.50,1,'outBack']] },
+  { el:'b9plat', o:[[26.30,0],[26.70,1,'outCubic']], y:[[26.30,26],[26.75,0,'outCubic']] },
+  { el:'b9url',  o:[[26.50,0],[26.90,1,'outCubic']], s:[[26.50,0.85],[27.00,1,'outBack'],[27.55,1],[27.90,1.05,'inOut'],[28.30,1,'inOut']] }
 ];
 
 var DP_MSGS = [
-  ['dpM1', 6.0], ['dpU1', 9.15], ['dpM2', 9.9], ['dpU2', 12.45], ['dpM3', 13.2]
+  ['dpM1', 6.0], ['dpU1', 8.12], ['dpM2', 8.85], ['dpU2', 10.80], ['dpM3', 11.55]
 ];
-var DP_T1 = { text: 'Problem-based. Number each problem, short bullet plans.', t0: 6.7, t1: 8.75 };
-var DP_T2 = { text: '2-3 sentences. No fluff.', t0: 10.8, t1: 12.1 };
+var DP_T1 = { text: 'Problem-based. Number each problem, short bullet plans.', t0: 6.7, t1: 7.72 };
+var DP_T2 = { text: '2-3 sentences. No fluff.', t0: 9.75, t1: 10.40 };
 
-var FDX  = { x0: 866, y0: 372, x1: 300, y1: 470, t0: 24.60, t1: 25.05 };
-var FORD = { x0: 866, y0: 372, x1: 300, y1: 610, t0: 25.50, t1: 25.95 };
-var FNOTE= { x0: 866, y0: 372, x1: 320, y1: 790, t0: 26.40, t1: 26.85 };
+var FDX  = { x0: 866, y0: 372, x1: 300, y1: 470, t0: 21.80, t1: 22.25 };
+var FORD = { x0: 866, y0: 372, x1: 300, y1: 610, t0: 22.70, t1: 23.15 };
+var FNOTE= { x0: 866, y0: 372, x1: 320, y1: 790, t0: 23.60, t1: 24.05 };
 function applyF(el, F, t) {
   var on = t >= F.t0 && t <= F.t1 + 0.05;
   el.style.opacity = on ? kv([[F.t0,0],[F.t0+0.10,1,'linear'],[F.t1-0.05,1],[F.t1+0.02,0,'linear']], t) : 0;
@@ -790,15 +788,15 @@ function collapseItem(el, t0, t) {
 
 var TYPE_TEXT = 'Make the assessment more concise';
 function applySpecials(t) {
-  if (t > 4.8 && t < 16.0) {
+  if (t > 4.8 && t < 14.1) {
     for (var i = 0; i < DP_MSGS.length; i++) {
       var m = $(DP_MSGS[i][0]), mt = DP_MSGS[i][1];
       m.style.opacity = kv([[mt,0],[mt+0.35,1,'outCubic']], t);
       m.style.transform = 'translateY(' + kv([[mt,20],[mt+0.4,0,'outCubic']], t) + 'px)';
     }
-    var typing1 = t >= DP_T1.t0 && t < 9.1;
-    var typing2 = t >= DP_T2.t0 && t < 12.4;
-    $('dpInput').className = (t >= 6.5 && t < 12.5) ? 'dp-input focus' : 'dp-input';
+    var typing1 = t >= DP_T1.t0 && t < 8.08;
+    var typing2 = t >= DP_T2.t0 && t < 10.76;
+    $('dpInput').className = (t >= 6.5 && t < 10.85) ? 'dp-input focus' : 'dp-input';
     var want = '';
     if (typing1) {
       var p1 = Math.min(1, (t - DP_T1.t0) / (DP_T1.t1 - DP_T1.t0));
@@ -809,60 +807,60 @@ function applySpecials(t) {
     }
     var te = $('dpTyped');
     if (te.textContent !== want) te.textContent = want;
-    $('dpPh').style.opacity = (t >= 6.5 && t < 12.5) ? (want ? 0 : 0.55) : 1;
-    var caretOn = (t >= 6.5 && t < 12.45) && !(t >= 9.1 && t < 10.75) && (Math.floor(t * 2.5) % 2 === 0);
+    $('dpPh').style.opacity = (t >= 6.5 && t < 10.85) ? (want ? 0 : 0.55) : 1;
+    var caretOn = (t >= 6.5 && t < 10.80) && !(t >= 8.08 && t < 9.70) && (Math.floor(t * 2.5) % 2 === 0);
     $('dpCaret').style.opacity = caretOn ? 1 : 0;
     var sv = $('dpSaved');
-    sv.style.opacity = kv([[13.55,0],[13.85,1,'outCubic']], t);
-    sv.style.transform = 'scale(' + kv([[13.55,0.7],[13.95,1,'outBack']], t) + ')';
+    sv.style.opacity = kv([[11.90,0],[12.20,1,'outCubic']], t);
+    sv.style.transform = 'scale(' + kv([[11.90,0.7],[12.30,1,'outBack']], t) + ')';
   }
-  if (t > 15.6 && t < 24.0) {
-    $('fbInput').className = (t >= 16.75 && t < 23.4) ? 'fb-input focus' : 'fb-input';
-    $('fbPh').style.opacity = t < 16.85 ? 1 : Math.max(0, 1 - (t - 16.85) / 0.15);
-    var p = Math.min(1, Math.max(0, (t - 17.0) / 1.8));
+  if (t > 13.7 && t < 21.2) {
+    $('fbInput').className = (t >= 14.85 && t < 20.6) ? 'fb-input focus' : 'fb-input';
+    $('fbPh').style.opacity = t < 14.95 ? 1 : Math.max(0, 1 - (t - 14.95) / 0.15);
+    var p = Math.min(1, Math.max(0, (t - 15.1) / 0.9));
     var wantF = TYPE_TEXT.slice(0, Math.floor(p * TYPE_TEXT.length));
     var typedEl = $('fbTyped');
     if (typedEl.textContent !== wantF) typedEl.textContent = wantF;
-    var caretOnF = (t >= 16.75 && t <= 19.5) && (Math.floor(t * 2.5) % 2 === 0);
+    var caretOnF = (t >= 14.85 && t <= 16.65) && (Math.floor(t * 2.5) % 2 === 0);
     $('fbCaret').style.opacity = caretOnF ? 1 : 0;
     var btn = $('fbBtn');
-    var label = t < 19.3 ? 'Apply feedback' : (t < 20.8 ? 'Rewriting…' : 'Done ✓');
+    var label = t < 16.5 ? 'Apply feedback' : (t < 18.0 ? 'Rewriting…' : 'Done ✓');
     if (btn.textContent !== label) btn.textContent = label;
-    $('fbWordy').style.maxHeight = kv([[19.7,300],[20.55,0,'inOut']], t) + 'px';
-    $('fbWordy').style.opacity = kv([[19.7,1],[20.35,0,'linear']], t);
-    $('fbConcise').style.maxHeight = kv([[20.15,0],[20.75,110,'inOut']], t) + 'px';
-    $('fbConcise').style.opacity = kv([[20.25,0],[20.75,1,'linear']], t);
+    $('fbWordy').style.maxHeight = kv([[16.9,300],[17.75,0,'inOut']], t) + 'px';
+    $('fbWordy').style.opacity = kv([[16.9,1],[17.55,0,'linear']], t);
+    $('fbConcise').style.maxHeight = kv([[17.35,0],[17.95,110,'inOut']], t) + 'px';
+    $('fbConcise').style.opacity = kv([[17.45,0],[17.95,1,'linear']], t);
     var sh = $('fbShimmer');
-    sh.style.opacity = kv([[19.6,0],[19.85,1,'linear'],[20.9,1],[21.25,0,'linear']], t);
-    sh.style.backgroundPosition = kv([[19.65,140],[21.15,-140,'linear']], t) + '% 0';
+    sh.style.opacity = kv([[16.8,0],[17.05,1,'linear'],[18.1,1],[18.45,0,'linear']], t);
+    sh.style.backgroundPosition = kv([[16.85,140],[18.35,-140,'linear']], t) + '% 0';
   }
-  if (t > 23.6 && t < 28.9) {
+  if (t > 20.8 && t < 26.1) {
     applyF($('flyDx'), FDX, t);
     applyF($('flyOrd'), FORD, t);
     applyF($('flyNote'), FNOTE, t);
-    collapseItem($('qDx'), 24.55, t);
-    collapseItem($('qOrd'), 25.45, t);
-    collapseItem($('qNote'), 26.35, t);
-    $('b8queue').style.opacity = kv([[26.70,1],[27.00,0,'inCubic']], t);
+    collapseItem($('qDx'), 21.75, t);
+    collapseItem($('qOrd'), 22.65, t);
+    collapseItem($('qNote'), 23.55, t);
+    $('b8queue').style.opacity = kv([[23.90,1],[24.20,0,'inCubic']], t);
     var dx = $('cDx');
-    dx.style.opacity = kv([[25.10,0],[25.40,1,'outCubic']], t);
-    dx.style.transform = 'translateY(' + kv([[25.10,14],[25.45,0,'outBack']], t) + 'px)';
-    var g1 = kv([[25.10,0],[25.35,1,'outCubic'],[25.75,1],[26.15,0,'inCubic']], t);
+    dx.style.opacity = kv([[22.30,0],[22.60,1,'outCubic']], t);
+    dx.style.transform = 'translateY(' + kv([[22.30,14],[22.65,0,'outBack']], t) + 'px)';
+    var g1 = kv([[22.30,0],[22.55,1,'outCubic'],[22.95,1],[23.35,0,'inCubic']], t);
     dx.style.boxShadow = '0 0 0 ' + (5 * g1) + 'px rgba(47, 164, 107, ' + (0.16 * g1) + ')';
     var row = $('cOrder');
-    row.style.opacity = kv([[25.98,0],[26.28,1,'outCubic']], t);
-    row.style.transform = 'translateY(' + kv([[25.98,16],[26.32,0,'outCubic']], t) + 'px)';
+    row.style.opacity = kv([[23.18,0],[23.48,1,'outCubic']], t);
+    row.style.transform = 'translateY(' + kv([[23.18,16],[23.52,0,'outCubic']], t) + 'px)';
     var badge = $('cOrderBadge');
-    badge.style.opacity = kv([[26.35,0],[26.58,1,'outCubic']], t);
-    badge.style.transform = 'scale(' + kv([[26.35,0.6],[26.68,1,'outBack']], t) + ')';
-    var g2 = kv([[26.35,0],[26.58,1,'outCubic'],[26.85,1],[27.20,0,'inCubic']], t);
+    badge.style.opacity = kv([[23.55,0],[23.78,1,'outCubic']], t);
+    badge.style.transform = 'scale(' + kv([[23.55,0.6],[23.88,1,'outBack']], t) + ')';
+    var g2 = kv([[23.55,0],[23.78,1,'outCubic'],[24.05,1],[24.40,0,'inCubic']], t);
     row.style.boxShadow = '0 0 0 ' + (5 * g2) + 'px rgba(47, 164, 107, ' + (0.16 * g2) + ')';
     var nf = $('cNoteField');
-    nf.className = (t >= 26.90 && t < 27.90) ? 'combo-noteslot hot' : 'combo-noteslot';
-    $('cNotePh').style.opacity = kv([[26.90,1],[27.02,0,'linear']], t);
-    $('cNoteText').style.opacity = kv([[26.95,0],[27.20,1,'outCubic']], t);
-    $('b8dot').style.background = t < 27.0 ? '#38d27a' : '#9aa1ab';
-    $('b8dot').style.boxShadow = t < 27.0 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+    nf.className = (t >= 24.10 && t < 25.10) ? 'combo-noteslot hot' : 'combo-noteslot';
+    $('cNotePh').style.opacity = kv([[24.10,1],[24.22,0,'linear']], t);
+    $('cNoteText').style.opacity = kv([[24.15,0],[24.40,1,'outCubic']], t);
+    $('b8dot').style.background = t < 24.2 ? '#38d27a' : '#9aa1ab';
+    $('b8dot').style.boxShadow = t < 24.2 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
   }
 }
 
