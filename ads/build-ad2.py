@@ -1,4 +1,7 @@
-"""Build ad2-quality.html from ad1-v3.html: shared chrome kept, beats replaced."""
+"""Build ad2-quality.html (v2) from ad1-v3.html chrome.
+v2 revisions: hook+answer merged into one card (chatbot arrives at 5s),
+transfer scene rapid-fire under 5s, CTA leads with a big 'Free while in
+beta' (wordmark + tagline dropped, hud-pill kept). 33.2s total."""
 from pathlib import Path
 
 src = Path("ad1-v3.html").read_text(encoding="utf-8")
@@ -6,10 +9,15 @@ src = Path("ad1-v3.html").read_text(encoding="utf-8")
 css_end = src.index("</style>")
 head = src[:css_end]
 head = head.replace("<title>eleanote — ad 1 v3 (all-custom scenes) 1080x1350</title>",
-                    "<title>eleanote — ad 2 (quality notes) 1080x1350</title>")
-head = head.replace("ELEANOTE AD #1 v3", "ELEANOTE AD #2 — QUALITY-NOTES ANGLE")
+                    "<title>eleanote — ad 2 v2 (quality notes) 1080x1350</title>")
+head = head.replace("ELEANOTE AD #1 v3", "ELEANOTE AD #2 v2 — QUALITY-NOTES ANGLE")
 
 ad2_css = """
+/* ---------- ad2: merged hook+answer card ---------- */
+#b12 .hook { font-size: 66px; line-height: 1.14; font-weight: 800; letter-spacing: -0.035em; }
+#b12 .ans { font-size: 58px; line-height: 1.18; font-weight: 800; letter-spacing: -0.033em; }
+#b12 .hud-pill { margin-top: 64px; margin-bottom: 26px; }
+
 /* ---------- ad2: Documentation Preferences interview window ---------- */
 .dp-app {
   position: absolute;
@@ -84,6 +92,11 @@ ad2_css = """
 .combo-noteslot.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
 .combo-noteslot .note-ph { position: absolute; left: 26px; top: 22px; font-size: 24px; color: #a2a9ba; font-style: italic; }
 .combo-noteslot .note-typed { white-space: pre-line; font-size: 25px; line-height: 1.6; color: var(--emr-ink); will-change: opacity; }
+
+/* ---------- ad2 v2: CTA leads with FREE ---------- */
+#b9 .cta-free-big { font-size: 100px; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); margin-top: 56px; line-height: 1.05; }
+#b9 .cta-free-big .goldw { color: var(--gold-bright); }
+#b9 .cta-plat { font-size: 44px; font-weight: 600; color: var(--muted); margin-top: 30px; }
 """
 head = head + ad2_css + "\n</style>\n</head>\n"
 
@@ -93,21 +106,17 @@ body = """<body>
   <div class="bg-glow g1"></div>
   <div class="bg-glow g2"></div>
 
-  <!-- BEAT 1 - HOOK (0-3.2) -->
-  <div class="beat centered" id="b1">
-    <div class="kline" id="b1l1" style="font-size:80px;">Is your AI scribe</div>
-    <div class="kline" id="b1l2" style="font-size:80px;"><span class="accent-word" id="b1cp">still</span> not getting</div>
-    <div class="kline" id="b1l3" style="font-size:80px;">your notes right?</div>
+  <!-- BEAT 1+2 MERGED - HOOK AND ANSWER (0-5.0) -->
+  <div class="beat centered" id="b12">
+    <div class="kline hook" id="h1">Is your AI scribe</div>
+    <div class="kline hook" id="h2"><span class="accent-word" id="b1cp">still</span> not getting</div>
+    <div class="kline hook" id="h3">your notes right?</div>
+    <div class="hud-pill kline" id="a0"><span class="dot"></span> eleanote</div>
+    <div class="kline ans" id="a1"><span class="brandword">eleanote</span> writes them</div>
+    <div class="kline ans" id="a2"><span class="serif">exactly the way you want.</span></div>
   </div>
 
-  <!-- BEAT 2 - TURN (3.2-6.6) -->
-  <div class="beat centered" id="b2">
-    <div class="hud-pill kline" id="b2pill"><span class="dot"></span> eleanote</div>
-    <div class="kline" id="b2l1"><span class="brandword">eleanote</span> writes them</div>
-    <div class="kline" id="b2l2"><span class="serif">exactly the way you want.</span></div>
-  </div>
-
-  <!-- BEAT 3 - PREFERENCE INTERVIEW (6.6-17.4) -->
+  <!-- BEAT 3 - PREFERENCE INTERVIEW (5.0-15.8) -->
   <div class="beat" id="b3">
     <div class="scene-title kline" id="b3title">Tell it how <span class="serif">you write.</span></div>
     <div class="dp-app kline" id="dpApp">
@@ -151,7 +160,7 @@ body = """<body>
     <div class="phase-chip" id="b3chip">a short interview &mdash; <span class="gold">your style, learned</span></div>
   </div>
 
-  <!-- BEAT 7 - FEEDBACK (17.4-25.4) -->
+  <!-- BEAT 7 - FEEDBACK (15.8-23.8) -->
   <div class="beat" id="b7">
     <div class="fb-cap kline" id="b7cap">Give feedback on <span class="serif">any note.</span></div>
     <div class="fb-app kline" id="b7app">
@@ -193,7 +202,7 @@ body = """<body>
     <div class="fb-under kline" id="b7under">It <span class="serif">learns.</span> Every note gets better.</div>
   </div>
 
-  <!-- BEAT 8 - ONE-SCREEN TRANSFER (25.4-35.6) -->
+  <!-- BEAT 8 - RAPID ONE-SCREEN TRANSFER (23.8-28.7) -->
   <div class="beat" id="b8">
     <div class="scene-title kline" id="b8title">Then it enters <span class="serif">everything.</span></div>
     <div class="emr-win kline" id="b8win">
@@ -249,12 +258,11 @@ A/P:
     <div class="phase-chip" id="b8chip">into any EHR &mdash; <span class="gold">no IT integration</span></div>
   </div>
 
-  <!-- BEAT 9 - CTA (35.6-40.0) -->
+  <!-- BEAT 9 - CTA (28.7-33.2): FREE leads -->
   <div class="beat centered" id="b9">
     <div class="hud-pill kline" id="b9pill"><span class="dot"></span> eleanote</div>
-    <div class="cta-word kline" id="b9word">eleanote</div>
-    <div class="cta-tag kline" id="b9tag">The ambient AI scribe for any EHR</div>
-    <div class="cta-free kline" id="b9free">Free while in testing &middot; Windows &amp; Mac</div>
+    <div class="cta-free-big kline" id="b9big"><span class="goldw">Free</span> while in beta</div>
+    <div class="cta-plat kline" id="b9plat">Windows &amp; Mac</div>
     <div class="cta-url kline" id="b9url">eleanote.ai</div>
   </div>
 
@@ -264,8 +272,8 @@ A/P:
 
 engine = """
 <script>
-/* ================= ENGINE - ad2, 40.0s ================= */
-var DUR = 40.0;
+/* ================= ENGINE - ad2 v2, 33.2s ================= */
+var DUR = 33.2;
 var RENDER = /[?&]render/.test(location.search);
 var FREEZE = (function(){ var m = location.search.match(/[?&]t=([0-9.]+)/); return m ? parseFloat(m[1]) : null; })();
 var E = {
@@ -290,8 +298,8 @@ function kv(kfs, t) {
 var $ = function(id){ return document.getElementById(id); };
 
 var BEATS = [
-  ['b1', 0.0, 3.2], ['b2', 3.2, 6.6], ['b3', 6.6, 17.4],
-  ['b7', 17.4, 25.4], ['b8', 25.4, 35.6], ['b9', 35.6, 40.01]
+  ['b12', 0.0, 5.0], ['b3', 5.0, 15.8],
+  ['b7', 15.8, 23.8], ['b8', 23.8, 28.7], ['b9', 28.7, 33.21]
 ];
 function inout(el, tIn, tOut, yIn) {
   return { el: el,
@@ -299,69 +307,68 @@ function inout(el, tIn, tOut, yIn) {
     y: [[tIn, yIn], [tIn + 0.4, 0, 'outCubic'], [tOut - 0.3, 0], [tOut, -26, 'inCubic']] };
 }
 var TRACKS = [
-  { el:'b1l1', o:[[0.05,0],[0.38,1,'outCubic'],[2.85,1],[3.15,0,'inCubic']], y:[[0.05,64],[0.42,0,'outBack'],[2.85,0],[3.15,-44,'inCubic']] },
-  { el:'b1l2', o:[[0.45,0],[0.78,1,'outCubic'],[2.85,1],[3.15,0,'inCubic']], y:[[0.45,64],[0.82,0,'outBack'],[2.85,0],[3.15,-44,'inCubic']] },
-  { el:'b1l3', o:[[0.85,0],[1.18,1,'outCubic'],[2.85,1],[3.15,0,'inCubic']], y:[[0.85,64],[1.22,0,'outBack'],[2.85,0],[3.15,-44,'inCubic']] },
-  { el:'b1cp', r:[[1.35,0],[1.44,-2.6,'linear'],[1.53,2.2,'linear'],[1.62,-1.7,'linear'],[1.71,1.1,'linear'],[1.80,0,'linear']],
-               x:[[1.35,0],[1.44,-5,'linear'],[1.53,4,'linear'],[1.62,-3,'linear'],[1.71,2,'linear'],[1.80,0,'linear']] },
-  { el:'b2pill', o:[[3.30,0],[3.65,1,'outCubic'],[6.25,1],[6.55,0,'inCubic']], y:[[3.30,-150],[3.75,0,'outBack'],[6.25,0],[6.55,-30,'inCubic']], s:[[3.30,0.75],[3.75,1,'outBack']] },
-  { el:'b2l1', o:[[3.70,0],[4.05,1,'outCubic'],[6.25,1],[6.55,0,'inCubic']], y:[[3.70,54],[4.10,0,'outBack'],[6.25,0],[6.55,-40,'inCubic']] },
-  { el:'b2l2', o:[[3.95,0],[4.30,1,'outCubic'],[6.25,1],[6.55,0,'inCubic']], y:[[3.95,54],[4.35,0,'outBack'],[6.25,0],[6.55,-40,'inCubic']] },
-  inout('b3title', 6.65, 17.35, 36),
-  { el:'dpApp', o:[[6.85,0],[7.30,1,'outCubic'],[17.05,1],[17.35,0,'inCubic']], y:[[6.85,66],[7.35,0,'outCubic']] },
-  { el:'b3chip', o:[[15.40,0],[15.75,1,'outCubic'],[17.05,1],[17.35,0,'inCubic']], y:[[15.40,34],[15.80,0,'outBack']] },
-  { el:'dpSend', s:[[10.45,1],[10.60,0.93,'outCubic'],[10.75,1,'outBack'],[13.75,1],[13.90,0.93,'outCubic'],[14.05,1,'outBack']] },
-  { el:'b7cap', o:[[17.45,0],[17.80,1,'outCubic'],[25.02,1],[25.35,0,'inCubic']], y:[[17.45,40],[17.85,0,'outCubic'],[25.02,0],[25.35,-26,'inCubic']] },
-  { el:'b7app', o:[[17.52,0],[17.92,1,'outCubic'],[25.02,1],[25.35,0,'inCubic']], y:[[17.52,66],[17.98,0,'outCubic'],[25.02,0],[25.35,-26,'inCubic']], s:[[17.52,0.97],[17.98,1,'outCubic'],[23.3,1],[23.8,1.006,'inOut']] },
-  { el:'fbBtn', s:[[20.70,1],[20.86,0.93,'outCubic'],[21.02,1,'outBack']] },
-  { el:'b7under', o:[[22.95,0],[23.35,1,'outCubic'],[25.02,1],[25.35,0,'inCubic']], y:[[22.95,42],[23.40,0,'outBack'],[25.02,0],[25.35,-26,'inCubic']] },
-  inout('b8title', 25.45, 35.55, 36),
-  { el:'b8win', o:[[25.60,0],[26.05,1,'outCubic'],[35.25,1],[35.55,0,'inCubic']], y:[[25.60,70],[26.10,0,'outCubic']] },
-  { el:'b8asst', o:[[26.05,0],[26.40,1,'outCubic'],[35.25,1],[35.55,0,'inCubic']], y:[[26.05,-70],[26.50,0,'outBack']] },
-  { el:'b8chip', o:[[33.30,0],[33.65,1,'outCubic'],[35.25,1],[35.55,0,'inCubic']], y:[[33.30,34],[33.70,0,'outBack']] },
-  { el:'b9pill', o:[[35.70,0],[36.10,1,'outCubic']], y:[[35.70,-70],[36.20,0,'outBack']] },
-  { el:'b9word', o:[[35.92,0],[36.32,1,'outCubic']], s:[[35.92,0.955],[36.40,1,'outCubic']] },
-  { el:'b9tag',  o:[[36.20,0],[36.60,1,'outCubic']], y:[[36.20,30],[36.65,0,'outCubic']] },
-  { el:'b9free', o:[[36.48,0],[36.88,1,'outCubic']], y:[[36.48,26],[36.92,0,'outCubic']] },
-  { el:'b9url',  o:[[36.70,0],[37.10,1,'outCubic']], s:[[36.70,0.85],[37.20,1,'outBack'],[37.80,1],[38.15,1.05,'inOut'],[38.55,1,'inOut']] }
+  { el:'h1', o:[[0.05,0],[0.38,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[0.05,54],[0.42,0,'outBack'],[4.60,0],[4.92,-36,'inCubic']] },
+  { el:'h2', o:[[0.35,0],[0.68,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[0.35,54],[0.72,0,'outBack'],[4.60,0],[4.92,-36,'inCubic']] },
+  { el:'h3', o:[[0.65,0],[0.98,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[0.65,54],[1.02,0,'outBack'],[4.60,0],[4.92,-36,'inCubic']] },
+  { el:'b1cp', r:[[1.05,0],[1.14,-2.6,'linear'],[1.23,2.2,'linear'],[1.32,-1.7,'linear'],[1.41,1.1,'linear'],[1.50,0,'linear']],
+               x:[[1.05,0],[1.14,-5,'linear'],[1.23,4,'linear'],[1.32,-3,'linear'],[1.41,2,'linear'],[1.50,0,'linear']] },
+  { el:'a0', o:[[1.85,0],[2.20,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[1.85,-110],[2.30,0,'outBack'],[4.60,0],[4.92,-26,'inCubic']], s:[[1.85,0.75],[2.30,1,'outBack']] },
+  { el:'a1', o:[[2.10,0],[2.45,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[2.10,44],[2.50,0,'outBack'],[4.60,0],[4.92,-30,'inCubic']] },
+  { el:'a2', o:[[2.30,0],[2.65,1,'outCubic'],[4.60,1],[4.92,0,'inCubic']], y:[[2.30,44],[2.70,0,'outBack'],[4.60,0],[4.92,-30,'inCubic']] },
+  inout('b3title', 5.05, 15.75, 36),
+  { el:'dpApp', o:[[5.25,0],[5.70,1,'outCubic'],[15.45,1],[15.75,0,'inCubic']], y:[[5.25,66],[5.75,0,'outCubic']] },
+  { el:'b3chip', o:[[13.80,0],[14.15,1,'outCubic'],[15.45,1],[15.75,0,'inCubic']], y:[[13.80,34],[14.20,0,'outBack']] },
+  { el:'dpSend', s:[[8.85,1],[9.00,0.93,'outCubic'],[9.15,1,'outBack'],[12.15,1],[12.30,0.93,'outCubic'],[12.45,1,'outBack']] },
+  { el:'b7cap', o:[[15.85,0],[16.20,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[15.85,40],[16.25,0,'outCubic'],[23.42,0],[23.75,-26,'inCubic']] },
+  { el:'b7app', o:[[15.92,0],[16.32,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[15.92,66],[16.38,0,'outCubic'],[23.42,0],[23.75,-26,'inCubic']], s:[[15.92,0.97],[16.38,1,'outCubic'],[21.7,1],[22.2,1.006,'inOut']] },
+  { el:'fbBtn', s:[[19.10,1],[19.26,0.93,'outCubic'],[19.42,1,'outBack']] },
+  { el:'b7under', o:[[21.35,0],[21.75,1,'outCubic'],[23.42,1],[23.75,0,'inCubic']], y:[[21.35,42],[21.80,0,'outBack'],[23.42,0],[23.75,-26,'inCubic']] },
+  inout('b8title', 23.85, 28.65, 36),
+  { el:'b8win', o:[[23.90,0],[24.25,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[23.90,60],[24.30,0,'outCubic']] },
+  { el:'b8asst', o:[[24.15,0],[24.50,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[24.15,-60],[24.60,0,'outBack']] },
+  { el:'b8chip', o:[[27.50,0],[27.85,1,'outCubic'],[28.40,1],[28.68,0,'inCubic']], y:[[27.50,34],[27.90,0,'outBack']] },
+  { el:'b9pill', o:[[28.80,0],[29.20,1,'outCubic']], y:[[28.80,-70],[29.30,0,'outBack']] },
+  { el:'b9big', o:[[29.05,0],[29.45,1,'outCubic']], y:[[29.05,34],[29.52,0,'outBack']], s:[[29.05,0.94],[29.55,1,'outBack']] },
+  { el:'b9plat', o:[[29.35,0],[29.75,1,'outCubic']], y:[[29.35,26],[29.80,0,'outCubic']] },
+  { el:'b9url',  o:[[29.55,0],[29.95,1,'outCubic']], s:[[29.55,0.85],[30.05,1,'outBack'],[30.60,1],[30.95,1.05,'inOut'],[31.35,1,'inOut']] }
 ];
 
 var DP_MSGS = [
-  ['dpM1', 7.6], ['dpU1', 10.75], ['dpM2', 11.5], ['dpU2', 14.05], ['dpM3', 14.8]
+  ['dpM1', 6.0], ['dpU1', 9.15], ['dpM2', 9.9], ['dpU2', 12.45], ['dpM3', 13.2]
 ];
-var DP_T1 = { text: 'Problem-based. Number each problem, short bullet plans.', t0: 8.3, t1: 10.35 };
-var DP_T2 = { text: '2-3 sentences. No fluff.', t0: 12.4, t1: 13.7 };
+var DP_T1 = { text: 'Problem-based. Number each problem, short bullet plans.', t0: 6.7, t1: 8.75 };
+var DP_T2 = { text: '2-3 sentences. No fluff.', t0: 10.8, t1: 12.1 };
 
-var FDX  = { x0: 866, y0: 372, x1: 300, y1: 470, t0: 26.9, t1: 27.6 };
-var FORD = { x0: 866, y0: 372, x1: 300, y1: 610, t0: 29.4, t1: 30.1 };
-var FNOTE= { x0: 866, y0: 372, x1: 320, y1: 790, t0: 31.6, t1: 32.3 };
+var FDX  = { x0: 866, y0: 372, x1: 300, y1: 470, t0: 24.60, t1: 25.05 };
+var FORD = { x0: 866, y0: 372, x1: 300, y1: 610, t0: 25.50, t1: 25.95 };
+var FNOTE= { x0: 866, y0: 372, x1: 320, y1: 790, t0: 26.40, t1: 26.85 };
 function applyF(el, F, t) {
   var on = t >= F.t0 && t <= F.t1 + 0.05;
-  el.style.opacity = on ? kv([[F.t0,0],[F.t0+0.14,1,'linear'],[F.t1-0.07,1],[F.t1+0.02,0,'linear']], t) : 0;
+  el.style.opacity = on ? kv([[F.t0,0],[F.t0+0.10,1,'linear'],[F.t1-0.05,1],[F.t1+0.02,0,'linear']], t) : 0;
   if (on) {
     var x = kv([[F.t0, F.x0],[F.t1, F.x1,'inOut']], t);
     var y = kv([[F.t0, F.y0],[F.t1, F.y1,'inOut']], t);
-    var s = kv([[F.t0,1],[F.t0+0.22,1.07,'outCubic'],[F.t1,0.86,'inOut']], t);
+    var s = kv([[F.t0,1],[F.t0+0.16,1.07,'outCubic'],[F.t1,0.86,'inOut']], t);
     el.style.transform = 'translate(' + (x - 90) + 'px,' + (y - 26) + 'px) scale(' + s + ')';
   }
 }
 function collapseItem(el, t0, t) {
-  el.style.opacity = kv([[t0,1],[t0+0.3,0,'inCubic']], t);
-  el.style.maxHeight = kv([[t0,60],[t0+0.4,0,'inOut']], t) + 'px';
-  el.style.paddingTop = el.style.paddingBottom = kv([[t0,15],[t0+0.4,0,'inOut']], t) + 'px';
+  el.style.opacity = kv([[t0,1],[t0+0.25,0,'inCubic']], t);
+  el.style.maxHeight = kv([[t0,60],[t0+0.32,0,'inOut']], t) + 'px';
+  el.style.paddingTop = el.style.paddingBottom = kv([[t0,15],[t0+0.32,0,'inOut']], t) + 'px';
 }
 
 var TYPE_TEXT = 'Make the assessment more concise';
 function applySpecials(t) {
-  if (t > 6.4 && t < 17.6) {
+  if (t > 4.8 && t < 16.0) {
     for (var i = 0; i < DP_MSGS.length; i++) {
       var m = $(DP_MSGS[i][0]), mt = DP_MSGS[i][1];
       m.style.opacity = kv([[mt,0],[mt+0.35,1,'outCubic']], t);
       m.style.transform = 'translateY(' + kv([[mt,20],[mt+0.4,0,'outCubic']], t) + 'px)';
     }
-    var typing1 = t >= DP_T1.t0 && t < 10.7;
-    var typing2 = t >= DP_T2.t0 && t < 14.0;
-    $('dpInput').className = (t >= 8.1 && t < 14.1) ? 'dp-input focus' : 'dp-input';
+    var typing1 = t >= DP_T1.t0 && t < 9.1;
+    var typing2 = t >= DP_T2.t0 && t < 12.4;
+    $('dpInput').className = (t >= 6.5 && t < 12.5) ? 'dp-input focus' : 'dp-input';
     var want = '';
     if (typing1) {
       var p1 = Math.min(1, (t - DP_T1.t0) / (DP_T1.t1 - DP_T1.t0));
@@ -372,60 +379,60 @@ function applySpecials(t) {
     }
     var te = $('dpTyped');
     if (te.textContent !== want) te.textContent = want;
-    $('dpPh').style.opacity = (t >= 8.1 && t < 14.1) ? (want ? 0 : 0.55) : 1;
-    var caretOn = (t >= 8.1 && t < 14.05) && !(t >= 10.7 && t < 12.35) && (Math.floor(t * 2.5) % 2 === 0);
+    $('dpPh').style.opacity = (t >= 6.5 && t < 12.5) ? (want ? 0 : 0.55) : 1;
+    var caretOn = (t >= 6.5 && t < 12.45) && !(t >= 9.1 && t < 10.75) && (Math.floor(t * 2.5) % 2 === 0);
     $('dpCaret').style.opacity = caretOn ? 1 : 0;
     var sv = $('dpSaved');
-    sv.style.opacity = kv([[15.15,0],[15.45,1,'outCubic']], t);
-    sv.style.transform = 'scale(' + kv([[15.15,0.7],[15.55,1,'outBack']], t) + ')';
+    sv.style.opacity = kv([[13.55,0],[13.85,1,'outCubic']], t);
+    sv.style.transform = 'scale(' + kv([[13.55,0.7],[13.95,1,'outBack']], t) + ')';
   }
-  if (t > 17.2 && t < 25.6) {
-    $('fbInput').className = (t >= 18.35 && t < 25.0) ? 'fb-input focus' : 'fb-input';
-    $('fbPh').style.opacity = t < 18.45 ? 1 : Math.max(0, 1 - (t - 18.45) / 0.15);
-    var p = Math.min(1, Math.max(0, (t - 18.6) / 1.8));
+  if (t > 15.6 && t < 24.0) {
+    $('fbInput').className = (t >= 16.75 && t < 23.4) ? 'fb-input focus' : 'fb-input';
+    $('fbPh').style.opacity = t < 16.85 ? 1 : Math.max(0, 1 - (t - 16.85) / 0.15);
+    var p = Math.min(1, Math.max(0, (t - 17.0) / 1.8));
     var wantF = TYPE_TEXT.slice(0, Math.floor(p * TYPE_TEXT.length));
     var typedEl = $('fbTyped');
     if (typedEl.textContent !== wantF) typedEl.textContent = wantF;
-    var caretOnF = (t >= 18.35 && t <= 21.1) && (Math.floor(t * 2.5) % 2 === 0);
+    var caretOnF = (t >= 16.75 && t <= 19.5) && (Math.floor(t * 2.5) % 2 === 0);
     $('fbCaret').style.opacity = caretOnF ? 1 : 0;
     var btn = $('fbBtn');
-    var label = t < 20.9 ? 'Apply feedback' : (t < 22.4 ? 'Rewriting…' : 'Done ✓');
+    var label = t < 19.3 ? 'Apply feedback' : (t < 20.8 ? 'Rewriting…' : 'Done ✓');
     if (btn.textContent !== label) btn.textContent = label;
-    $('fbWordy').style.maxHeight = kv([[21.3,300],[22.15,0,'inOut']], t) + 'px';
-    $('fbWordy').style.opacity = kv([[21.3,1],[21.95,0,'linear']], t);
-    $('fbConcise').style.maxHeight = kv([[21.75,0],[22.35,110,'inOut']], t) + 'px';
-    $('fbConcise').style.opacity = kv([[21.85,0],[22.35,1,'linear']], t);
+    $('fbWordy').style.maxHeight = kv([[19.7,300],[20.55,0,'inOut']], t) + 'px';
+    $('fbWordy').style.opacity = kv([[19.7,1],[20.35,0,'linear']], t);
+    $('fbConcise').style.maxHeight = kv([[20.15,0],[20.75,110,'inOut']], t) + 'px';
+    $('fbConcise').style.opacity = kv([[20.25,0],[20.75,1,'linear']], t);
     var sh = $('fbShimmer');
-    sh.style.opacity = kv([[21.2,0],[21.45,1,'linear'],[22.5,1],[22.85,0,'linear']], t);
-    sh.style.backgroundPosition = kv([[21.25,140],[22.75,-140,'linear']], t) + '% 0';
+    sh.style.opacity = kv([[19.6,0],[19.85,1,'linear'],[20.9,1],[21.25,0,'linear']], t);
+    sh.style.backgroundPosition = kv([[19.65,140],[21.15,-140,'linear']], t) + '% 0';
   }
-  if (t > 25.2 && t < 35.8) {
+  if (t > 23.6 && t < 28.9) {
     applyF($('flyDx'), FDX, t);
     applyF($('flyOrd'), FORD, t);
     applyF($('flyNote'), FNOTE, t);
-    collapseItem($('qDx'), 26.85, t);
-    collapseItem($('qOrd'), 29.35, t);
-    collapseItem($('qNote'), 31.55, t);
-    $('b8queue').style.opacity = kv([[31.9,1],[32.2,0,'inCubic']], t);
+    collapseItem($('qDx'), 24.55, t);
+    collapseItem($('qOrd'), 25.45, t);
+    collapseItem($('qNote'), 26.35, t);
+    $('b8queue').style.opacity = kv([[26.70,1],[27.00,0,'inCubic']], t);
     var dx = $('cDx');
-    dx.style.opacity = kv([[27.65,0],[28.0,1,'outCubic']], t);
-    dx.style.transform = 'translateY(' + kv([[27.65,16],[28.05,0,'outBack']], t) + 'px)';
-    var g1 = kv([[27.65,0],[27.95,1,'outCubic'],[28.6,1],[29.1,0,'inCubic']], t);
+    dx.style.opacity = kv([[25.10,0],[25.40,1,'outCubic']], t);
+    dx.style.transform = 'translateY(' + kv([[25.10,14],[25.45,0,'outBack']], t) + 'px)';
+    var g1 = kv([[25.10,0],[25.35,1,'outCubic'],[25.75,1],[26.15,0,'inCubic']], t);
     dx.style.boxShadow = '0 0 0 ' + (5 * g1) + 'px rgba(47, 164, 107, ' + (0.16 * g1) + ')';
     var row = $('cOrder');
-    row.style.opacity = kv([[30.15,0],[30.5,1,'outCubic']], t);
-    row.style.transform = 'translateY(' + kv([[30.15,20],[30.55,0,'outCubic']], t) + 'px)';
+    row.style.opacity = kv([[25.98,0],[26.28,1,'outCubic']], t);
+    row.style.transform = 'translateY(' + kv([[25.98,16],[26.32,0,'outCubic']], t) + 'px)';
     var badge = $('cOrderBadge');
-    badge.style.opacity = kv([[30.7,0],[30.95,1,'outCubic']], t);
-    badge.style.transform = 'scale(' + kv([[30.7,0.6],[31.05,1,'outBack']], t) + ')';
-    var g2 = kv([[30.7,0],[30.95,1,'outCubic'],[31.3,1],[31.8,0,'inCubic']], t);
+    badge.style.opacity = kv([[26.35,0],[26.58,1,'outCubic']], t);
+    badge.style.transform = 'scale(' + kv([[26.35,0.6],[26.68,1,'outBack']], t) + ')';
+    var g2 = kv([[26.35,0],[26.58,1,'outCubic'],[26.85,1],[27.20,0,'inCubic']], t);
     row.style.boxShadow = '0 0 0 ' + (5 * g2) + 'px rgba(47, 164, 107, ' + (0.16 * g2) + ')';
     var nf = $('cNoteField');
-    nf.className = (t >= 32.25 && t < 33.3) ? 'combo-noteslot hot' : 'combo-noteslot';
-    $('cNotePh').style.opacity = kv([[32.25,1],[32.4,0,'linear']], t);
-    $('cNoteText').style.opacity = kv([[32.35,0],[32.6,1,'outCubic']], t);
-    $('b8dot').style.background = t < 32.4 ? '#38d27a' : '#9aa1ab';
-    $('b8dot').style.boxShadow = t < 32.4 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+    nf.className = (t >= 26.90 && t < 27.90) ? 'combo-noteslot hot' : 'combo-noteslot';
+    $('cNotePh').style.opacity = kv([[26.90,1],[27.02,0,'linear']], t);
+    $('cNoteText').style.opacity = kv([[26.95,0],[27.20,1,'outCubic']], t);
+    $('b8dot').style.background = t < 27.0 ? '#38d27a' : '#9aa1ab';
+    $('b8dot').style.boxShadow = t < 27.0 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
   }
 }
 
@@ -484,4 +491,4 @@ if (document.fonts && document.fonts.ready) {
 """
 
 Path("ad2-quality.html").write_text(head + body + engine, encoding="utf-8")
-print("ad2-quality.html written:", len(head + body + engine), "chars")
+print("ad2-quality.html v2 written:", len(head + body + engine), "chars")
