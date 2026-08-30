@@ -31,14 +31,6 @@ s = s.replace("""        /* ---------- SCROLL REVEAL ---------- */""",
                 margin-left: calc(50% - 50vw);
             }
         }
-        .vid-cta { text-align: center; margin-top: clamp(1.8rem, 3.5vw, 2.6rem); }
-        .vid-cta .micro {
-            margin-top: 0.85rem;
-            font-size: 0.92rem;
-            font-weight: 500;
-            color: var(--muted);
-        }
-
         /* ---------- SCROLL REVEAL ---------- */""")
 
 # ---------- 2. remove Why-eleanote + how-it-works + the four chapters ----------
@@ -58,12 +50,7 @@ new_sections = """        <!-- ============== NOTES YOU CONTROL (loop video 1) =
                     <p class="lede">Eleanote is built around one obsession: notes that come out right. You program exactly how yours are written &mdash; structure, tone, phrasing, saved text &mdash; and correct anything in plain language. The goal: notes that need minimal edits, in your voice.</p>
                 </div>
                 <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-notes-sq.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
-                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
-                <div class="vid-cta reveal d2">
-                    <a class="btn" href="/auth/signup.html">Create free account <span class="arr">&rarr;</span></a>
-                    <div class="micro">Free while in beta &middot; no card required</div>
-                </div>
-            </div>
+                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>            </div>
         </section>
 
         <!-- ============== ANY EMR (loop video 2) ============== -->
@@ -72,15 +59,10 @@ new_sections = """        <!-- ============== NOTES YOU CONTROL (loop video 1) =
                 <div class="section-head centered reveal">
                     <p class="eyebrow centered">Any EMR</p>
                     <h2>Works with any EMR &mdash; <span class="accent">even in remote sessions.</span></h2>
-                    <p class="lede">No integration, no IT project &mdash; eleanote types into whatever EHR you already use, including EMRs running in Citrix, VMware, and other remote desktops. It precharts from the chart to add context, enters diagnoses and orders, and pastes the note with your formatting &mdash; whole, or section by section into separate fields.</p>
+                    <p class="lede">No integration, no IT project &mdash; eleanote types into whatever EHR you already use, even remote desktops. It precharts from the chart to add context, enters diagnoses and orders, and pastes the note with your formatting &mdash; whole, or section by section into separate fields.</p>
                 </div>
                 <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-ehr-sq.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
-                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
-                <div class="vid-cta reveal d2">
-                    <a class="btn" href="/auth/signup.html">Create free account <span class="arr">&rarr;</span></a>
-                    <div class="micro">Free while in beta &middot; no card required</div>
-                </div>
-            </div>
+                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>            </div>
         </section>
 
 """
