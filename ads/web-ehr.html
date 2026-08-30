@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>eleanote — web loop 2: any EMR 1080x1350</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
+<style>
+/* ================================================================
+   ELEANOTE WEB LOOP #2 — ANY EMR — every scene custom-built in the approved
+   style: rounded floating windows with soft glow on cream, big
+   readable type, a persistent title above each scene, straight
+   chip flights, whole-note paste. 1080x1350 @30fps · 43.2s.
+   ================================================================ */
+:root {
+  --ink: #0d2b30;
+  --teal: #14515c;
+  --teal-deep: #0e3d46;
+  --paper: #fbf7ec;
+  --paper-2: #f4eedd;
+  --warm-white: #fffdf7;
+  --line: #e5dcc1;
+  --muted: #5d6a66;
+  --gold: #a78449;
+  --gold-bright: #b8934f;
+  --emr-ink: #1f2533;
+  --emr-muted: #6a7388;
+  --emr-accent: #5b4b8a;
+  --emr-accent-soft: #ece9f3;
+  --emr-line: #e3e5ec;
+  --sel: rgba(91, 75, 138, 0.28);
+  --ok: #2fa46b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #111; }
+body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+body.render #viewport { position: static; display: block; }
+#canvas {
+  position: relative;
+  width: 1080px; height: 1350px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  flex: 0 0 auto;
+  transform-origin: center center;
+}
+body.render #canvas { transform: none !important; }
+
+.bg-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+.bg-glow.g1 { width: 760px; height: 760px; left: -240px; top: -260px; background: radial-gradient(circle, rgba(20,81,92,0.16), transparent 65%); }
+.bg-glow.g2 { width: 640px; height: 640px; right: -200px; bottom: -160px; background: radial-gradient(circle, rgba(167,132,73,0.14), transparent 65%); }
+
+.beat { position: absolute; inset: 0; visibility: hidden; }
+.beat.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 90px 60px;
+  text-align: center;
+}
+.kline { will-change: transform, opacity; }
+.serif { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; color: var(--teal-deep); }
+
+/* ---------- text beats ---------- */
+#b1 .kline { font-size: 80px; line-height: 1.12; font-weight: 800; letter-spacing: -0.035em; }
+#b1 .accent-word { color: var(--gold-bright); display: inline-block; }
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.92);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 18px 38px;
+  box-shadow: 0 24px 60px rgba(13,43,48,0.35);
+}
+.hud-pill .dot { width: 15px; height: 15px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 6px rgba(56,210,122,0.22); }
+#b2 .kline { font-size: 84px; line-height: 1.14; font-weight: 800; letter-spacing: -0.035em; margin-top: 54px; }
+#b2 .brandword { font-weight: 600; letter-spacing: -0.045em; color: #173D47; }
+.textbeat .kline { font-size: 84px; line-height: 1.16; font-weight: 800; letter-spacing: -0.035em; }
+.textbeat .sub { font-size: 44px; font-weight: 500; color: var(--muted); margin-top: 34px; letter-spacing: -0.01em; }
+
+/* ---------- shared scene chrome ---------- */
+.scene-title {
+  position: absolute;
+  left: 60px; right: 60px; top: 88px;
+  text-align: center;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  z-index: 50;
+  will-change: transform, opacity;
+}
+.emr-win {
+  position: absolute;
+  left: 70px; top: 232px;
+  width: 940px; height: 1000px;
+  background: #ffffff;
+  border: 1px solid rgba(31, 37, 51, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 46px 120px rgba(13, 43, 48, 0.30);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.emr-titlebar {
+  height: 66px;
+  background: #f2f3f7;
+  border-bottom: 1px solid var(--emr-line);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 26px;
+}
+.emr-mark {
+  background: linear-gradient(135deg, var(--emr-accent) 0%, #7c6aae 100%);
+  color: #fff;
+  font-size: 21px; font-weight: 800; letter-spacing: 0.04em;
+  border-radius: 8px;
+  padding: 7px 14px;
+}
+.emr-patient { font-size: 26px; font-weight: 700; color: var(--emr-ink); }
+.emr-meta { font-size: 22px; color: var(--emr-muted); font-weight: 500; }
+.emr-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.emr-winctl span { width: 15px; height: 15px; border-radius: 50%; background: rgba(31,37,51,0.16); }
+.emr-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 14px 26px 0;
+  background: #f8f8fb;
+  border-bottom: 1px solid var(--emr-line);
+}
+.emr-tab {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--emr-muted);
+  padding: 12px 22px 14px;
+  border-radius: 10px 10px 0 0;
+}
+.emr-tab.active {
+  background: #ffffff;
+  color: var(--emr-accent);
+  border: 1px solid var(--emr-line);
+  border-bottom: 1px solid #ffffff;
+  margin-bottom: -1px;
+  border-top: 3px solid var(--emr-accent);
+  font-weight: 700;
+}
+.emr-body { padding: 24px 30px; }
+.emr-h-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+.emr-h-row h3 { font-size: 27px; font-weight: 700; color: var(--emr-ink); }
+.emr-h-row .d { font-size: 21px; color: var(--emr-muted); font-weight: 500; }
+
+/* the eleanote assistant — sits over the window's right edge, low
+   enough to crowd nothing */
+.asst {
+  position: absolute;
+  right: 26px; top: 248px;
+  width: 330px;
+  z-index: 40;
+  will-change: transform, opacity;
+}
+.asst-pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 16px 26px;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.38);
+}
+.asst-pill .dot { width: 13px; height: 13px; border-radius: 50%; background: #38d27a; box-shadow: 0 0 0 5px rgba(56,210,122,0.22); flex: 0 0 auto; }
+.asst-pill .x { margin-left: auto; color: rgba(255,255,255,0.55); font-size: 26px; font-weight: 400; }
+.asst-queue {
+  margin: 10px 14px 0;
+  background: rgba(28, 30, 34, 0.94);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.34);
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+.asst-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 15px 20px;
+}
+.asst-item .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; flex: 0 0 auto; }
+.asst-item .bullet.blue { background: #4ea3ff; }
+.asst-item .bullet.green { background: #5fc787; }
+.asst-item .hint { margin-left: auto; font-size: 19px; color: rgba(255,255,255,0.55); font-weight: 500; }
+
+/* tracing light (scene 1 only) */
+#traceSvg {
+  position: absolute;
+  right: 6px; top: 232px;
+  width: 372px; height: 166px;
+  z-index: 60;
+  pointer-events: none;
+  overflow: visible;
+}
+#tracePath {
+  fill: none;
+  stroke: #ffd66b;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px rgba(255, 214, 107, 0.85)) drop-shadow(0 0 30px rgba(255, 214, 107, 0.45));
+  opacity: 0;
+}
+#traceGlowRect {
+  fill: none;
+  stroke: rgba(255, 214, 107, 0.55);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 18px rgba(255, 214, 107, 0.6));
+  opacity: 0;
+}
+
+/* flying chips (straight-line flights) */
+.fly-chip {
+  position: absolute;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(28, 30, 34, 0.95);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  border-left: 5px solid #f0a44a;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 14px 22px;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.4);
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.fly-chip .bullet { width: 12px; height: 12px; border-radius: 50%; background: #f0a44a; }
+.fly-chip.blue { border-left-color: #4ea3ff; }
+.fly-chip.blue .bullet { background: #4ea3ff; }
+.fly-chip.purple { border-left-color: #8f7bc4; }
+.fly-chip.purple .bullet { background: #8f7bc4; }
+
+.phase-chip {
+  position: absolute;
+  left: 50%; bottom: 60px;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: rgba(28, 30, 34, 0.88);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  padding: 18px 40px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.phase-chip .gold { color: #ffd66b; }
+
+/* ---------- scene 1: note transfer ---------- */
+.note-field {
+  position: relative;
+  height: 700px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 26px 28px;
+}
+.note-field.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.note-ph { position: absolute; left: 28px; top: 26px; font-size: 25px; color: #a2a9ba; font-style: italic; }
+.note-typed { white-space: pre-line; font-size: 26px; line-height: 1.62; color: var(--emr-ink); will-change: opacity; }
+
+/* ---------- scene: prechart ---------- */
+.prior-note { font-size: 26px; line-height: 1.75; color: var(--emr-ink); }
+.prior-note .pl { display: inline; border-radius: 4px; padding: 2px 4px; margin: 0 -4px; }
+
+/* ---------- scene: orders ---------- */
+.order-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px 24px;
+  font-size: 26px;
+  min-height: 76px;
+}
+.order-search.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.order-search .mag { flex: 0 0 auto; width: 26px; height: 26px; }
+.order-search .osph { position: absolute; left: 64px; color: #a2a9ba; font-style: italic; }
+.order-search .ostyped { color: var(--emr-ink); font-weight: 600; }
+.order-list { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+.order-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--emr-line);
+  border-left: 6px solid #4ea3ff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  font-size: 25px;
+  color: var(--emr-ink);
+  opacity: 0;
+  will-change: transform, opacity, box-shadow;
+}
+.order-row .nm { font-weight: 700; }
+.order-row .mt { color: var(--emr-muted); font-size: 22px; }
+.order-row .badge {
+  margin-left: auto;
+  background: rgba(47, 164, 107, 0.12);
+  color: var(--ok);
+  border: 1.5px solid rgba(47, 164, 107, 0.5);
+  font-size: 21px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 8px 18px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.dx-strip {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.dx-pill {
+  background: var(--emr-accent-soft);
+  color: var(--emr-accent);
+  font-size: 21px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 9px 18px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* order form popup (auto-fills itself) */
+.order-modal {
+  position: absolute;
+  left: 190px; top: 715px;
+  width: 700px;
+  background: #fff;
+  border: 1px solid var(--emr-line);
+  border-radius: 16px;
+  box-shadow: 0 34px 90px rgba(0,0,0,0.30);
+  padding: 22px 28px;
+  z-index: 55;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.om-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--emr-line); padding-bottom: 14px; margin-bottom: 6px; }
+.om-title { font-size: 23px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--emr-accent); }
+.om-auto { font-size: 20px; font-weight: 700; color: var(--emr-muted); background: #f3f4f8; border-radius: 999px; padding: 6px 16px; }
+.om-field { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 13px 0; border-bottom: 1px dashed var(--emr-line); align-items: center; }
+.om-field:last-child { border-bottom: 0; }
+.om-field .k { font-size: 20px; font-weight: 700; color: var(--emr-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.om-field .v { font-size: 25px; font-weight: 600; color: var(--emr-ink); min-height: 34px; display: flex; align-items: center; }
+.om-field .v.muted { color: var(--emr-muted); font-weight: 500; font-style: italic; }
+.om-field .v.paste { background: var(--emr-accent-soft); border-radius: 6px; padding: 4px 12px; justify-self: start; opacity: 0; will-change: opacity, transform; }
+
+/* ---------- feedback scene (approved in v1/v2, kept) ---------- */
+.fb-cap {
+  position: absolute;
+  left: 60px; right: 60px; top: 88px;
+  text-align: center;
+  font-size: 54px; font-weight: 800; letter-spacing: -0.03em;
+  z-index: 50;
+  will-change: transform, opacity;
+}
+.fb-app {
+  position: absolute;
+  left: 70px; top: 210px;
+  width: 940px;
+  background: var(--paper);
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 18px;
+  box-shadow: 0 40px 110px rgba(13,43,48,0.28);
+  overflow: hidden;
+  text-align: left;
+  will-change: transform, opacity;
+}
+.fb-titlebar { background: var(--paper-2); border-bottom: 1px solid var(--line); height: 64px; display: flex; align-items: center; gap: 16px; padding: 0 24px; position: relative; }
+.fb-mark { width: 34px; height: 34px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.06em; display: inline-flex; align-items: center; justify-content: center; }
+.fb-titletext { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; color: var(--ink); }
+.fb-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.fb-winctl span { width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.16); }
+.fb-tabs { background: var(--paper-2); padding: 10px 24px 0; border-bottom: 1px solid var(--line); }
+.fb-tab { display: inline-block; background: var(--paper); border: 1px solid var(--line); border-bottom: 0; border-radius: 10px 10px 0 0; padding: 10px 26px 12px; font-size: 24px; font-weight: 600; margin-bottom: -1px; border-top: 3px solid var(--teal); }
+.fb-note { padding: 26px 30px 20px; }
+.fb-sec { margin-bottom: 20px; }
+.fb-sec-h { font-size: 20px; font-weight: 800; letter-spacing: 0.11em; color: var(--teal-deep); margin-bottom: 6px; }
+.fb-sec-b { font-size: 25px; line-height: 1.5; color: #26393e; }
+.fb-assess { position: relative; }
+.fb-wordy { overflow: hidden; will-change: max-height, opacity; }
+.fb-concise { overflow: hidden; max-height: 0; opacity: 0; will-change: max-height, opacity; }
+.fb-concise .fb-sec-b { color: var(--teal-deep); font-weight: 600; }
+.fb-shimmer { position: absolute; inset: -6px -10px; border-radius: 10px; background: linear-gradient(105deg, transparent 30%, rgba(20,81,92,0.16) 50%, transparent 70%); background-size: 300% 100%; opacity: 0; pointer-events: none; }
+.fb-inputrow { display: flex; gap: 16px; padding: 20px 30px 26px; border-top: 1px solid var(--line); background: var(--warm-white); align-items: center; }
+.fb-input { position: relative; white-space: nowrap; flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 18px 22px; font-size: 27px; color: var(--ink); min-height: 68px; display: flex; align-items: center; }
+.fb-input.focus { border-color: var(--teal); box-shadow: 0 0 0 5px rgba(20,81,92,0.12); }
+.fb-input .ph { color: #9aa5a0; position: absolute; left: 22px; top: 50%; transform: translateY(-50%); }
+.fb-caret { display: inline-block; width: 3px; height: 33px; background: var(--teal-deep); margin-left: 3px; vertical-align: -6px; opacity: 0; }
+.fb-btn { flex: 0 0 auto; background: var(--teal-deep); color: #fff; font-size: 26px; font-weight: 700; border-radius: 14px; padding: 20px 32px; will-change: transform; }
+.fb-under {
+  position: absolute;
+  left: 60px; right: 60px; bottom: 74px;
+  text-align: center;
+  font-size: 50px; font-weight: 800; letter-spacing: -0.03em;
+  will-change: transform, opacity;
+}
+
+/* ---------- CTA ---------- */
+#b9 .cta-word { font-size: 148px; font-weight: 600; letter-spacing: -0.045em; color: #173D47; line-height: 1; margin-top: 46px; }
+#b9 .cta-tag { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 500; font-size: 52px; color: var(--teal-deep); margin-top: 30px; }
+#b9 .cta-free { font-size: 38px; font-weight: 600; color: var(--muted); margin-top: 56px; }
+#b9 .cta-url { display: inline-block; margin-top: 26px; background: var(--teal-deep); color: #fff; font-size: 42px; font-weight: 700; border-radius: 999px; padding: 22px 54px; box-shadow: 0 22px 60px rgba(14,61,70,0.32); }
+
+/* ---------- ad2: merged hook+answer card ---------- */
+#b12 .hook { font-size: 66px; line-height: 1.14; font-weight: 800; letter-spacing: -0.035em; }
+#b12 .ans { font-size: 58px; line-height: 1.18; font-weight: 800; letter-spacing: -0.033em; }
+#b12 .hud-pill { margin-top: 64px; margin-bottom: 26px; }
+
+/* ---------- ad2: Documentation Preferences interview window ---------- */
+.dp-app {
+  position: absolute;
+  left: 70px; top: 205px;
+  width: 940px;
+  background: var(--paper);
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 18px;
+  box-shadow: 0 40px 110px rgba(13,43,48,0.28);
+  overflow: hidden;
+  text-align: left;
+  will-change: transform, opacity;
+}
+.dp-titlebar { background: var(--paper-2); border-bottom: 1px solid var(--line); height: 64px; display: flex; align-items: center; gap: 16px; padding: 0 24px; position: relative; }
+.dp-mark { width: 34px; height: 34px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.06em; display: inline-flex; align-items: center; justify-content: center; }
+.dp-titletext { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.dp-winctl { margin-left: auto; display: inline-flex; gap: 9px; }
+.dp-winctl span { width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.16); }
+.dp-chat { padding: 26px 30px 12px; height: 640px; }
+.dp-msg { margin-bottom: 24px; opacity: 0; will-change: transform, opacity; }
+.dp-who { font-size: 20px; font-weight: 800; letter-spacing: 0.11em; color: var(--teal-deep); margin-bottom: 6px; }
+.dp-text { font-size: 26px; line-height: 1.5; color: #26393e; }
+.dp-msg.user .dp-inner { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+.dp-msg.user .dp-who { color: var(--muted); }
+.dp-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  background: rgba(47, 164, 107, 0.12);
+  color: var(--ok);
+  border: 1.5px solid rgba(47, 164, 107, 0.5);
+  font-size: 22px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 9px 20px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.dp-inputrow { display: flex; gap: 16px; padding: 18px 30px 22px; border-top: 1px solid var(--line); background: var(--warm-white); align-items: center; }
+.dp-input { position: relative; white-space: nowrap; overflow: hidden; flex: 1; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 18px 22px; font-size: 25px; color: var(--ink); min-height: 66px; display: flex; align-items: center; }
+.dp-input.focus { border-color: var(--teal); box-shadow: 0 0 0 5px rgba(20,81,92,0.12); }
+.dp-input .ph { color: #9aa5a0; position: absolute; left: 22px; top: 50%; transform: translateY(-50%); }
+.dp-caret { display: inline-block; width: 3px; height: 31px; background: var(--teal-deep); margin-left: 3px; flex: 0 0 auto; opacity: 0; }
+.dp-send { flex: 0 0 auto; background: var(--teal-deep); color: #fff; font-size: 25px; font-weight: 700; border-radius: 14px; padding: 19px 34px; will-change: transform; }
+
+/* ---------- ad2: combined transfer scene ---------- */
+.combo-label { font-size: 20px; font-weight: 800; letter-spacing: 0.11em; color: var(--emr-muted); margin: 0 0 10px; }
+.combo-sec { margin-bottom: 22px; }
+.combo-dxslot { min-height: 64px; }
+.dx-pill-big {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--emr-accent-soft);
+  color: var(--emr-accent);
+  font-size: 24px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 14px 24px;
+  opacity: 0;
+  will-change: transform, opacity, box-shadow;
+}
+.combo-noteslot {
+  position: relative;
+  height: 420px;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 22px 26px;
+}
+.combo-noteslot.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.combo-noteslot .note-ph { position: absolute; left: 26px; top: 22px; font-size: 24px; color: #a2a9ba; font-style: italic; }
+.combo-noteslot .note-typed { white-space: pre-line; font-size: 25px; line-height: 1.6; color: var(--emr-ink); will-change: opacity; }
+
+/* ---------- ad2 v2: CTA leads with FREE ---------- */
+#b9 .cta-free-big { font-size: 100px; font-weight: 800; letter-spacing: -0.035em; color: var(--ink); line-height: 1.05; }
+#b9 .cta-free-big .goldw { color: var(--gold-bright); }
+#b9 .cta-plat { font-size: 44px; font-weight: 600; color: var(--muted); margin-top: 30px; }
+
+
+/* ---------- prechart scene (prior note with highlight sweep) ---------- */
+.prior-note { font-size: 26px; line-height: 1.75; color: var(--emr-ink); }
+.prior-note .pl { display: inline; border-radius: 4px; padding: 2px 4px; margin: 0 -4px; }
+
+/* ---------- split-into-sections scene ---------- */
+.chunk-field {
+  position: relative;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.chunk-field.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.chunk-field .cf-ph { position: absolute; left: 24px; top: 20px; font-size: 23px; color: #a2a9ba; font-style: italic; }
+.chunk-field .cf-text { white-space: pre-line; font-size: 24px; line-height: 1.6; color: var(--emr-ink); opacity: 0; will-change: opacity; }
+#cfHpi { height: 220px; }
+#cfAp { height: 300px; }
+
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="canvas">
+
+  <!-- SCENE 1 - PRECHART (0-6.4) -->
+  <div class="beat" id="s1">
+    <div class="scene-title kline" id="s1title">It precharts from <span class="serif">prior notes.</span></div>
+    <div class="emr-win kline" id="s1win" style="height: 900px;">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Notes</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Orders</span>
+        <span class="emr-tab">Diagnoses</span>
+      </div>
+      <div class="emr-body">
+        <div class="emr-h-row"><h3>Office visit</h3><span class="d">06/12/2025 &middot; Dr. Carter</span></div>
+        <div class="prior-note" id="priorNote">
+          <span class="pl" id="pl1">64yo M, follow-up. RCC s/p partial nephrectomy 2023.</span><br>
+          <span class="pl" id="pl2">CKD stage 3 stable, baseline Cr 1.5, GFR 48.</span><br>
+          <span class="pl" id="pl3">HTN well-controlled on lisinopril 20 mg daily.</span><br>
+          <span class="pl" id="pl4">No new symptoms today, exam unremarkable.</span><br>
+          <span class="pl" id="pl5">Plan: continue current regimen and lisinopril.</span><br>
+          <span class="pl" id="pl6">Surveillance MRI abdomen and BMP as scheduled.</span>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="s1asst" style="top: 520px;">
+      <div class="asst-pill"><span class="dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s1queue" style="opacity:0;">
+        <div class="asst-item"><span class="bullet green"></span> Precharted <span class="hint">&#10003;</span></div>
+      </div>
+    </div>
+    <div class="fly-chip purple" id="s1fly"><span class="bullet"></span> prior note</div>
+    <div class="phase-chip" id="s1chip">context added &mdash; <span class="gold">even in remote sessions</span></div>
+  </div>
+
+  <!-- SCENE 2 - EVERYTHING ENTERED (6.4-13.2) -->
+  <div class="beat" id="s2">
+    <div class="scene-title kline" id="s2title">Then it enters <span class="serif">everything.</span></div>
+    <div class="emr-win kline" id="s2win">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Encounter</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Orders</span>
+      </div>
+      <div class="emr-body">
+        <div class="combo-sec">
+          <div class="combo-label">DIAGNOSES</div>
+          <div class="combo-dxslot"><span class="dx-pill-big" id="cDx">&#10003; Renal cell carcinoma &middot; C64.9</span></div>
+        </div>
+        <div class="combo-sec">
+          <div class="combo-label">ORDERS</div>
+          <div class="order-row" id="cOrder" style="margin-top:0;">
+            <span class="nm">BMP</span>
+            <span class="mt">Lab &middot; 05/01/2027</span>
+            <span class="badge" id="cOrderBadge">&#10003; Placed</span>
+          </div>
+        </div>
+        <div class="combo-sec">
+          <div class="combo-label">TODAY'S NOTE</div>
+          <div class="combo-noteslot" id="cNoteField">
+            <span class="note-ph" id="cNotePh">Click to begin note&hellip;</span>
+            <span class="note-typed" id="cNoteText" style="opacity:0;"><b>SUBJECTIVE:</b> 64M RCC follow-up &mdash; feels well, no hematuria.
+<b>OBJECTIVE:</b> BP 128/78 &middot; exam unremarkable.
+<b>A/P:</b>
+1) RCC &mdash; stable. MRI abdomen in 1 year.
+2) CKD-3 &mdash; stable. BMP in 1 year.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="s2asst" style="top: 560px;">
+      <div class="asst-pill"><span class="dot" id="s2dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s2queue">
+        <div class="asst-item" id="qDx"><span class="bullet green"></span> RCC &middot; C64.9 <span class="hint">F6</span></div>
+        <div class="asst-item" id="qOrd"><span class="bullet blue"></span> BMP &mdash; in 1 year <span class="hint">F6</span></div>
+        <div class="asst-item" id="qNote"><span class="bullet"></span> Clinical note <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <div class="fly-chip" id="flyDx" style="border-left-color:#5fc787;"><span class="bullet" style="background:#5fc787;"></span> RCC &middot; C64.9</div>
+    <div class="fly-chip blue" id="flyOrd"><span class="bullet"></span> BMP</div>
+    <div class="fly-chip" id="flyNote"><span class="bullet"></span> Clinical note</div>
+    <div class="phase-chip" id="s2chip">with your formatting &mdash; <span class="gold">bold and all</span></div>
+  </div>
+
+  <!-- SCENE 3 - SPLIT INTO SECTIONS (13.2-22.4) -->
+  <div class="beat" id="s3">
+    <div class="scene-title kline" id="s3title">Or split the note <span class="serif">into sections.</span></div>
+    <div class="emr-win kline" id="s3win" style="height: 940px;">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
+      </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Encounter</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Orders</span>
+      </div>
+      <div class="emr-body">
+        <div class="combo-label">HPI</div>
+        <div class="chunk-field" id="cfHpi">
+          <span class="cf-ph" id="cfHpiPh">Click to enter HPI&hellip;</span>
+          <span class="cf-text" id="cfHpiText">64M with h/o RCC s/p partial nephrectomy presents for surveillance. Feels well &mdash; no hematuria, no flank pain.</span>
+        </div>
+        <div class="combo-label">ASSESSMENT &amp; PLAN</div>
+        <div class="chunk-field" id="cfAp">
+          <span class="cf-ph" id="cfApPh">Click to enter assessment &amp; plan&hellip;</span>
+          <span class="cf-text" id="cfApText">1) RCC &mdash; stable, no recurrence. MRI abdomen in 1 year.
+2) CKD-3 &mdash; stable. BMP in 1 year.
+3) HTN &mdash; continue lisinopril.</span>
+        </div>
+      </div>
+    </div>
+    <div class="asst kline" id="s3asst" style="top: 640px;">
+      <div class="asst-pill"><span class="dot" id="s3dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s3queue">
+        <div class="asst-item" id="qHpi"><span class="bullet"></span> Note &mdash; HPI <span class="hint">F6</span></div>
+        <div class="asst-item" id="qAp"><span class="bullet"></span> Note &mdash; A/P <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <div class="fly-chip" id="flyHpi"><span class="bullet"></span> HPI</div>
+    <div class="fly-chip" id="flyAp"><span class="bullet"></span> Assessment &amp; Plan</div>
+    <div class="phase-chip" id="s3chip">each section &mdash; <span class="gold">pasted into the right field</span></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+/* ================= ENGINE - web loop 2, 22.4s ================= */
+var DUR = 22.4;
+var RENDER = /[?&]render/.test(location.search);
+var FREEZE = (function(){ var m = location.search.match(/[?&]t=([0-9.]+)/); return m ? parseFloat(m[1]) : null; })();
+var E = {
+  linear:  function(p){ return p; },
+  outCubic:function(p){ return 1 - Math.pow(1 - p, 3); },
+  inCubic: function(p){ return p * p * p; },
+  inOut:   function(p){ return p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2; },
+  outBack: function(p){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); }
+};
+function kv(kfs, t) {
+  if (t <= kfs[0][0]) return kfs[0][1];
+  var last = kfs[kfs.length - 1];
+  if (t >= last[0]) return last[1];
+  for (var i = 1; i < kfs.length; i++) {
+    if (t <= kfs[i][0]) {
+      var a = kfs[i-1], b = kfs[i];
+      return a[1] + (b[1] - a[1]) * E[b[2] || 'inOut']((t - a[0]) / (b[0] - a[0]));
+    }
+  }
+  return last[1];
+}
+var $ = function(id){ return document.getElementById(id); };
+
+var BEATS = [ ['s1', 0.0, 6.4], ['s2', 6.4, 13.2], ['s3', 13.2, 22.41] ];
+function inout(el, tIn, tOut, yIn) {
+  return { el: el,
+    o: [[tIn, 0], [tIn + 0.35, 1, 'outCubic'], [tOut - 0.3, 1], [tOut, 0, 'inCubic']],
+    y: [[tIn, yIn], [tIn + 0.4, 0, 'outCubic'], [tOut - 0.3, 0], [tOut, -26, 'inCubic']] };
+}
+var TRACKS = [
+  /* s1 prechart */
+  inout('s1title', 0.05, 6.35, 36),
+  { el:'s1win', o:[[0.20,0],[0.60,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[0.20,60],[0.65,0,'outCubic']] },
+  { el:'s1asst', o:[[0.55,0],[0.90,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[0.55,-60],[1.00,0,'outBack']] },
+  { el:'s1chip', o:[[3.85,0],[4.20,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[3.85,34],[4.25,0,'outBack']] },
+  /* s2 combo */
+  inout('s2title', 6.45, 13.15, 36),
+  { el:'s2win', o:[[6.55,0],[6.90,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[6.55,60],[6.95,0,'outCubic']] },
+  { el:'s2asst', o:[[6.80,0],[7.15,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[6.80,-60],[7.25,0,'outBack']] },
+  { el:'s2chip', o:[[11.05,0],[11.40,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[11.05,34],[11.45,0,'outBack']] },
+  /* s3 chunks */
+  inout('s3title', 13.25, 22.05, 36),
+  { el:'s3win', o:[[13.40,0],[13.80,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[13.40,60],[13.85,0,'outCubic']] },
+  { el:'s3asst', o:[[13.75,0],[14.10,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[13.75,-60],[14.20,0,'outBack']] },
+  { el:'s3chip', o:[[19.35,0],[19.70,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[19.35,34],[19.75,0,'outBack']] }
+];
+
+function straight(x0, y0, x1, y1, t0, t1) { return {x0:x0, y0:y0, x1:x1, y1:y1, t0:t0, t1:t1}; }
+function applyF(el, F, t) {
+  var on = t >= F.t0 && t <= F.t1 + 0.05;
+  el.style.opacity = on ? kv([[F.t0,0],[F.t0+0.12,1,'linear'],[F.t1-0.06,1],[F.t1+0.02,0,'linear']], t) : 0;
+  if (on) {
+    var x = kv([[F.t0, F.x0],[F.t1, F.x1,'inOut']], t);
+    var y = kv([[F.t0, F.y0],[F.t1, F.y1,'inOut']], t);
+    var s = kv([[F.t0,1],[F.t0+0.18,1.07,'outCubic'],[F.t1,0.87,'inOut']], t);
+    el.style.transform = 'translate(' + (x - 100) + 'px,' + (y - 26) + 'px) scale(' + s + ')';
+  }
+}
+function collapseItem(el, t0, t) {
+  el.style.opacity = kv([[t0,1],[t0+0.25,0,'inCubic']], t);
+  el.style.maxHeight = kv([[t0,60],[t0+0.32,0,'inOut']], t) + 'px';
+  el.style.paddingTop = el.style.paddingBottom = kv([[t0,15],[t0+0.32,0,'inOut']], t) + 'px';
+}
+
+/* s1: prior note (~420, 520) -> assistant queue (~880, 640) */
+var F1  = straight(420, 520, 872, 640, 2.5, 3.3);
+/* s2: assistant (~866, 700) -> dx slot / order row / note field */
+var FDX  = straight(866, 700, 300, 470, 7.4, 7.85);
+var FORD = straight(866, 700, 300, 610, 8.3, 8.75);
+var FNOTE= straight(866, 700, 320, 790, 9.2, 9.65);
+/* s3: assistant (~866, 610) -> HPI field / A&P field */
+var FHPI = straight(866, 700, 330, 500, 14.9, 15.5);
+var FAP  = straight(866, 700, 360, 800, 17.3, 17.9);
+
+function applySpecials(t) {
+  /* ===== s1 prechart ===== */
+  if (t < 6.6) {
+    for (var i = 1; i <= 6; i++) {
+      var tOn = 0.9 + (i - 1) * 0.2;
+      var a = kv([[tOn, 0], [tOn + 0.18, 1, 'linear']], t);
+      $('pl' + i).style.background = 'rgba(91, 75, 138, ' + (0.28 * a) + ')';
+    }
+    applyF($('s1fly'), F1, t);
+    $('s1queue').style.opacity = kv([[3.35,0],[3.65,1,'outCubic']], t);
+    $('s1queue').style.transform = 'translateY(' + kv([[3.35,-18],[3.70,0,'outBack']], t) + 'px)';
+  }
+  /* ===== s2 combo ===== */
+  if (t > 6.2 && t < 13.4) {
+    applyF($('flyDx'), FDX, t);
+    applyF($('flyOrd'), FORD, t);
+    applyF($('flyNote'), FNOTE, t);
+    collapseItem($('qDx'), 7.35, t);
+    collapseItem($('qOrd'), 8.25, t);
+    collapseItem($('qNote'), 9.15, t);
+    $('s2queue').style.opacity = kv([[9.5,1],[9.8,0,'inCubic']], t);
+    var dx = $('cDx');
+    dx.style.opacity = kv([[7.9,0],[8.2,1,'outCubic']], t);
+    dx.style.transform = 'translateY(' + kv([[7.9,14],[8.25,0,'outBack']], t) + 'px)';
+    var g1 = kv([[7.9,0],[8.15,1,'outCubic'],[8.55,1],[8.95,0,'inCubic']], t);
+    dx.style.boxShadow = '0 0 0 ' + (5 * g1) + 'px rgba(47, 164, 107, ' + (0.16 * g1) + ')';
+    var row = $('cOrder');
+    row.style.opacity = kv([[8.78,0],[9.08,1,'outCubic']], t);
+    row.style.transform = 'translateY(' + kv([[8.78,16],[9.12,0,'outCubic']], t) + 'px)';
+    var badge = $('cOrderBadge');
+    badge.style.opacity = kv([[9.15,0],[9.38,1,'outCubic']], t);
+    badge.style.transform = 'scale(' + kv([[9.15,0.6],[9.48,1,'outBack']], t) + ')';
+    var g2 = kv([[9.15,0],[9.38,1,'outCubic'],[9.65,1],[10.0,0,'inCubic']], t);
+    row.style.boxShadow = '0 0 0 ' + (5 * g2) + 'px rgba(47, 164, 107, ' + (0.16 * g2) + ')';
+    var nf = $('cNoteField');
+    nf.className = (t >= 9.7 && t < 10.7) ? 'combo-noteslot hot' : 'combo-noteslot';
+    $('cNotePh').style.opacity = kv([[9.7,1],[9.82,0,'linear']], t);
+    $('cNoteText').style.opacity = kv([[9.75,0],[10.0,1,'outCubic']], t);
+    $('s2dot').style.background = t < 9.8 ? '#38d27a' : '#9aa1ab';
+    $('s2dot').style.boxShadow = t < 9.8 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+  }
+  /* ===== s3 chunks ===== */
+  if (t > 13.0) {
+    applyF($('flyHpi'), FHPI, t);
+    applyF($('flyAp'), FAP, t);
+    collapseItem($('qHpi'), 14.85, t);
+    collapseItem($('qAp'), 17.25, t);
+    $('s3queue').style.opacity = kv([[17.6,1],[17.9,0,'inCubic']], t);
+    var h = $('cfHpi');
+    h.className = (t >= 15.5 && t < 16.5) ? 'chunk-field hot' : 'chunk-field';
+    $('cfHpiPh').style.opacity = kv([[15.5,1],[15.62,0,'linear']], t);
+    $('cfHpiText').style.opacity = kv([[15.55,0],[15.8,1,'outCubic']], t);
+    var a2 = $('cfAp');
+    a2.className = (t >= 17.9 && t < 18.9) ? 'chunk-field hot' : 'chunk-field';
+    $('cfApPh').style.opacity = kv([[17.9,1],[18.02,0,'linear']], t);
+    $('cfApText').style.opacity = kv([[17.95,0],[18.2,1,'outCubic']], t);
+    $('s3dot').style.background = t < 18.0 ? '#38d27a' : '#9aa1ab';
+    $('s3dot').style.boxShadow = t < 18.0 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
+  }
+  var veil = $('loopVeil');
+  veil.style.opacity = kv([[21.95,0],[22.38,1,'linear']], t);
+}
+
+function seek(t) {
+  t = Math.max(0, Math.min(DUR, t));
+  for (var i = 0; i < BEATS.length; i++) {
+    var b = BEATS[i];
+    document.getElementById(b[0]).style.visibility = (t >= b[1] && t < b[2]) ? 'visible' : 'hidden';
+  }
+  for (var j = 0; j < TRACKS.length; j++) {
+    var tr = TRACKS[j];
+    var el = tr._el || (tr._el = $(tr.el));
+    if (tr.o) el.style.opacity = kv(tr.o, t);
+    var parts = '';
+    if (tr.x) parts += 'translateX(' + kv(tr.x, t) + 'px) ';
+    if (tr.y) parts += 'translateY(' + kv(tr.y, t) + 'px) ';
+    if (tr.s) parts += 'scale(' + kv(tr.s, t) + ') ';
+    if (parts) {
+      if (tr.el === 's1chip' || tr.el === 's2chip' || tr.el === 's3chip') parts = 'translateX(-50%) ' + parts;
+      el.style.transform = parts;
+    }
+  }
+  applySpecials(t);
+}
+
+function fitPreview() {
+  if (RENDER) return;
+  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1350) * 0.98;
+  $('canvas').style.transform = 'scale(' + sc + ')';
+}
+function boot() {
+  if (RENDER) document.body.classList.add('render');
+  var veil = document.createElement('div');
+  veil.id = 'loopVeil';
+  veil.style.cssText = 'position:absolute;inset:0;background:var(--paper);opacity:0;pointer-events:none;z-index:200;';
+  $('canvas').appendChild(veil);
+  seek(FREEZE != null ? FREEZE : 0);
+  fitPreview();
+  window.addEventListener('resize', fitPreview);
+  window.__ready = true;
+  if (!RENDER && FREEZE == null) {
+    var start = performance.now();
+    (function loop(now){
+      seek(((now - start) / 1000) % DUR);
+      requestAnimationFrame(loop);
+    })(start);
+  }
+}
+window.__total = DUR;
+window.__seek = function(t){ seek(t); };
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(function(){ setTimeout(boot, 60); });
+} else {
+  window.addEventListener('load', function(){ setTimeout(boot, 120); });
+}
+</script>
+</body>
+</html>
