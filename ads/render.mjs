@@ -36,9 +36,11 @@ page.on('console', m => { if (m.type() === 'error') console.error('[page]', m.te
 await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
 await page.waitForFunction('window.__ready === true', { timeout: 60000 });
 const total = await page.evaluate('window.__total');
-console.log(`page ready — total ${total}s`);
+const dims = await page.evaluate('({w: window.__w || 1080, h: window.__h || 1350})');
+await page.setViewport({ width: dims.w, height: dims.h, deviceScaleFactor: 1 });
+console.log(`page ready — total ${total}s @ ${dims.w}x${dims.h}`);
 
-const clip = { x: 0, y: 0, width: W, height: H };
+const clip = { x: 0, y: 0, width: dims.w, height: dims.h };
 
 if (stills) {
   for (const t of stills) {

@@ -384,4 +384,16 @@ if (document.fonts && document.fonts.ready) {
 """
 
 Path("web-ehr.html").write_text(head + body + engine, encoding="utf-8")
+SQ_NAME = "web-ehr-sq.html"
+# ---- square desktop variant (1080x1080): whole 1350 composition x0.8 ----
+html = head + body + engine
+sq = html
+sq = sq.replace("width: 1080px; height: 1350px;", "width: 1080px; height: 1080px;")
+sq = sq.replace('<div id="canvas">', '<div id="canvas"><div id="zoomer" style="position:absolute;left:50%;top:0;width:1080px;height:1350px;transform:translateX(-50%) scale(0.8);transform-origin:top center;">')
+sq = sq.replace("</div>\n</div>\n\n<script>", "</div></div>\n</div>\n\n<script>")
+sq = sq.replace("window.innerHeight / 1350", "window.innerHeight / 1080")
+sq = sq.replace("window.__total = DUR;", "window.__w = 1080; window.__h = 1080;\nwindow.__total = DUR;")
+Path(SQ_NAME).write_text(sq, encoding="utf-8")
+print(SQ_NAME, "written (square)")
+
 print("web-ehr.html written:", len(head + body + engine), "chars")

@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>eleanote — web loop 1: notes your way 1080x1350</title>
+<title>eleanote — web loop 2: any EMR 1080x1350</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500;1,8..60,600&display=swap">
 <style>
 /* ================================================================
-   ELEANOTE WEB LOOP #1 — NOTES YOUR WAY — every scene custom-built in the approved
+   ELEANOTE WEB LOOP #2 — ANY EMR — every scene custom-built in the approved
    style: rounded floating windows with soft glow on cream, big
    readable type, a persistent title above each scene, straight
    chip flights, whole-note paste. 1080x1350 @30fps · 43.2s.
@@ -41,7 +41,7 @@ body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
 body.render #viewport { position: static; display: block; }
 #canvas {
   position: relative;
-  width: 1080px; height: 1350px;
+  width: 1080px; height: 1080px;
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
@@ -525,180 +525,174 @@ body.render #canvas { transform: none !important; }
 #b9 .cta-plat { font-size: 44px; font-weight: 600; color: var(--muted); margin-top: 30px; }
 
 
-/* ---------- saved-text scene (cystoscopy template) ---------- */
-.st-win {
-  position: absolute;
-  left: 70px; top: 230px;
-  width: 940px;
-  background: var(--paper);
-  border: 1px solid rgba(0,0,0,0.16);
-  border-radius: 18px;
-  box-shadow: 0 34px 90px rgba(13,43,48,0.26);
-  overflow: hidden;
-  text-align: left;
-  will-change: transform, opacity;
+/* ---------- prechart scene (prior note with highlight sweep) ---------- */
+.prior-note { font-size: 26px; line-height: 1.75; color: var(--emr-ink); }
+.prior-note .pl { display: inline; border-radius: 4px; padding: 2px 4px; margin: 0 -4px; }
+
+/* ---------- split-into-sections scene ---------- */
+.chunk-field {
+  position: relative;
+  border: 2px solid var(--emr-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px 24px;
+  margin-bottom: 20px;
 }
-.st-titlebar { background: var(--paper-2); border-bottom: 1px solid var(--line); height: 60px; display: flex; align-items: center; gap: 14px; padding: 0 24px; position: relative; }
-.st-mark { width: 32px; height: 32px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 21px; font-weight: 800; letter-spacing: -0.06em; display: inline-flex; align-items: center; justify-content: center; }
-.st-titletext { position: absolute; left: 50%; transform: translateX(-50%); font-size: 25px; font-weight: 700; color: var(--ink); }
-.st-winctl { margin-left: auto; display: inline-flex; gap: 8px; }
-.st-winctl span { width: 15px; height: 15px; border-radius: 50%; background: rgba(0,0,0,0.16); }
-.st-body { padding: 22px 28px 24px; }
-.st-labelrow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.st-label { font-size: 27px; font-weight: 700; color: var(--ink); }
-.st-mode {
-  font-size: 20px; font-weight: 700;
-  color: var(--teal-deep);
-  background: rgba(20,81,92,0.09);
-  border: 1.5px solid rgba(20,81,92,0.28);
-  border-radius: 999px;
-  padding: 8px 18px;
-}
-.st-text { font-size: 25px; line-height: 1.72; color: #26393e; white-space: pre-line; }
-.st-title-swap { position: absolute; left: 50%; transform: translateX(-50%); font-size: 25px; font-weight: 700; color: var(--ink); opacity: 0; }
-.brk {
-  display: inline-block;
-  color: #a06b12;
-  background: rgba(240, 164, 74, 0.14);
-  border: 1.5px dashed rgba(160, 107, 18, 0.5);
-  border-radius: 8px;
-  padding: 1px 12px;
-  font-weight: 600;
-  will-change: transform, box-shadow;
-}
-.brk.filled {
-  color: #1a5fae;
-  background: rgba(78, 163, 255, 0.13);
-  border: 1.5px solid rgba(78, 163, 255, 0.5);
-  border-style: solid;
-  font-weight: 700;
-}
+.chunk-field.hot { border-color: var(--emr-accent); box-shadow: 0 0 0 6px rgba(91, 75, 138, 0.14); }
+.chunk-field .cf-ph { position: absolute; left: 24px; top: 20px; font-size: 23px; color: #a2a9ba; font-style: italic; }
+.chunk-field .cf-text { white-space: pre-line; font-size: 24px; line-height: 1.6; color: var(--emr-ink); opacity: 0; will-change: opacity; }
+#cfHpi { height: 220px; }
+#cfAp { height: 300px; }
 
 </style>
 </head>
 <body>
 <div id="viewport">
-<div id="canvas">
+<div id="canvas"><div id="zoomer" style="position:absolute;left:50%;top:0;width:1080px;height:1350px;transform:translateX(-50%) scale(0.8);transform-origin:top center;">
 
-  <!-- SCENE 1 - INTERVIEW (0-8.8) -->
+  <!-- SCENE 1 - PRECHART (0-6.4) -->
   <div class="beat" id="s1">
-    <div class="scene-title kline" id="s1title">Tell it how <span class="serif">you write.</span></div>
-    <div class="dp-app kline" id="dpApp">
-      <div class="dp-titlebar">
-        <span class="dp-mark">e</span>
-        <span class="dp-titletext">Documentation Preferences</span>
-        <span class="dp-winctl"><span></span><span></span><span></span></span>
+    <div class="scene-title kline" id="s1title">It precharts from <span class="serif">prior notes.</span></div>
+    <div class="emr-win kline" id="s1win" style="height: 900px;">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
       </div>
-      <div class="dp-chat">
-        <div class="dp-msg" id="dpM1">
-          <div class="dp-who">ELEANOTE</div>
-          <div class="dp-text">How do you like your assessment &amp; plan written?</div>
-        </div>
-        <div class="dp-msg user" id="dpU1">
-          <div class="dp-inner">
-            <div class="dp-who">YOU</div>
-            <div class="dp-text">Problem-based. Number each problem, short bullet plans.</div>
-          </div>
-        </div>
-        <div class="dp-msg" id="dpM2">
-          <div class="dp-who">ELEANOTE</div>
-          <div class="dp-text">Got it &mdash; numbered problems, bullet plans. How long should the HPI be?</div>
-        </div>
-        <div class="dp-msg user" id="dpU2">
-          <div class="dp-inner">
-            <div class="dp-who">YOU</div>
-            <div class="dp-text">2&ndash;3 sentences. No fluff.</div>
-          </div>
-        </div>
-        <div class="dp-msg" id="dpM3">
-          <div class="dp-who">ELEANOTE</div>
-          <div class="dp-text">Done &mdash; tight HPIs, problem-based A/P, bullet plans.</div>
-          <div class="dp-saved" id="dpSaved">&#10003; Saved to your preferences</div>
-        </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Notes</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Orders</span>
+        <span class="emr-tab">Diagnoses</span>
       </div>
-      <div class="dp-inputrow">
-        <div class="dp-input" id="dpInput"><span class="ph" id="dpPh">Type your response or paste a sample note&hellip;</span><span id="dpTyped"></span><span class="dp-caret" id="dpCaret"></span></div>
-        <div class="dp-send" id="dpSend">Send</div>
+      <div class="emr-body">
+        <div class="emr-h-row"><h3>Office visit</h3><span class="d">06/12/2025 &middot; Dr. Carter</span></div>
+        <div class="prior-note" id="priorNote">
+          <span class="pl" id="pl1">64yo M, follow-up. RCC s/p partial nephrectomy 2023.</span><br>
+          <span class="pl" id="pl2">CKD stage 3 stable, baseline Cr 1.5, GFR 48.</span><br>
+          <span class="pl" id="pl3">HTN well-controlled on lisinopril 20 mg daily.</span><br>
+          <span class="pl" id="pl4">No new symptoms today, exam unremarkable.</span><br>
+          <span class="pl" id="pl5">Plan: continue current regimen and lisinopril.</span><br>
+          <span class="pl" id="pl6">Surveillance MRI abdomen and BMP as scheduled.</span>
+        </div>
       </div>
     </div>
-    <div class="phase-chip" id="s1chip">a short interview &mdash; <span class="gold">your style, learned</span></div>
+    <div class="asst kline" id="s1asst" style="top: 520px;">
+      <div class="asst-pill"><span class="dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s1queue" style="opacity:0;">
+        <div class="asst-item"><span class="bullet green"></span> Precharted <span class="hint">&#10003;</span></div>
+      </div>
+    </div>
+    <div class="fly-chip purple" id="s1fly"><span class="bullet"></span> prior note</div>
+    <div class="phase-chip" id="s1chip">context added &mdash; <span class="gold">even in remote sessions</span></div>
   </div>
 
-  <!-- SCENE 2 - FEEDBACK (8.8-15.9) -->
+  <!-- SCENE 2 - EVERYTHING ENTERED (6.4-13.2) -->
   <div class="beat" id="s2">
-    <div class="fb-cap kline" id="s2cap">Give feedback on <span class="serif">any note.</span></div>
-    <div class="fb-app kline" id="fbApp">
-      <div class="fb-titlebar">
-        <span class="fb-mark">e</span>
-        <span class="fb-titletext">eleanote</span>
-        <span class="fb-winctl"><span></span><span></span><span></span></span>
+    <div class="scene-title kline" id="s2title">Then it enters <span class="serif">everything.</span></div>
+    <div class="emr-win kline" id="s2win">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
       </div>
-      <div class="fb-tabs"><span class="fb-tab">Doe, John &middot; 64M</span></div>
-      <div class="fb-note">
-        <div class="fb-sec">
-          <div class="fb-sec-h">SUBJECTIVE</div>
-          <div class="fb-sec-b">64M here for follow-up of RCC s/p partial nephrectomy. Feels well &mdash; no hematuria, no flank pain.</div>
-        </div>
-        <div class="fb-sec">
-          <div class="fb-sec-h">OBJECTIVE</div>
-          <div class="fb-sec-b">BP 128/78 &middot; exam unremarkable.</div>
-        </div>
-        <div class="fb-sec fb-assess">
-          <div class="fb-sec-h">ASSESSMENT</div>
-          <div class="fb-wordy" id="fbWordy">
-            <div class="fb-sec-b">The patient is a 64-year-old male with a history of renal cell carcinoma status post partial nephrectomy in 2023 who presents today for routine oncologic surveillance and is found to be clinically stable without evidence of recurrence, along with chronic kidney disease stage 3 which remains stable, and essential hypertension which is well controlled on current therapy.</div>
-          </div>
-          <div class="fb-concise" id="fbConcise">
-            <div class="fb-sec-b">RCC s/p partial nephrectomy &mdash; stable, no evidence of recurrence. CKD-3 stable. HTN controlled.</div>
-          </div>
-          <div class="fb-shimmer" id="fbShimmer"></div>
-        </div>
-        <div class="fb-sec">
-          <div class="fb-sec-h">PLAN</div>
-          <div class="fb-sec-b">1) MRI abdomen + BMP in 1 year &nbsp; 2) Continue lisinopril.</div>
-        </div>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Encounter</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Orders</span>
       </div>
-      <div class="fb-inputrow">
-        <div class="fb-input" id="fbInput"><span class="ph" id="fbPh">Give feedback on this note&hellip;</span><span id="fbTyped"></span><span class="fb-caret" id="fbCaret"></span></div>
-        <div class="fb-btn" id="fbBtn">Apply feedback</div>
+      <div class="emr-body">
+        <div class="combo-sec">
+          <div class="combo-label">DIAGNOSES</div>
+          <div class="combo-dxslot"><span class="dx-pill-big" id="cDx">&#10003; Renal cell carcinoma &middot; C64.9</span></div>
+        </div>
+        <div class="combo-sec">
+          <div class="combo-label">ORDERS</div>
+          <div class="order-row" id="cOrder" style="margin-top:0;">
+            <span class="nm">BMP</span>
+            <span class="mt">Lab &middot; 05/01/2027</span>
+            <span class="badge" id="cOrderBadge">&#10003; Placed</span>
+          </div>
+        </div>
+        <div class="combo-sec">
+          <div class="combo-label">TODAY'S NOTE</div>
+          <div class="combo-noteslot" id="cNoteField">
+            <span class="note-ph" id="cNotePh">Click to begin note&hellip;</span>
+            <span class="note-typed" id="cNoteText" style="opacity:0;"><b>SUBJECTIVE:</b> 64M RCC follow-up &mdash; feels well, no hematuria.
+<b>OBJECTIVE:</b> BP 128/78 &middot; exam unremarkable.
+<b>A/P:</b>
+1) RCC &mdash; stable. MRI abdomen in 1 year.
+2) CKD-3 &mdash; stable. BMP in 1 year.</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="fb-under kline" id="s2under">It <span class="serif">learns.</span> Every note gets better.</div>
+    <div class="asst kline" id="s2asst" style="top: 560px;">
+      <div class="asst-pill"><span class="dot" id="s2dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s2queue">
+        <div class="asst-item" id="qDx"><span class="bullet green"></span> RCC &middot; C64.9 <span class="hint">F6</span></div>
+        <div class="asst-item" id="qOrd"><span class="bullet blue"></span> BMP &mdash; in 1 year <span class="hint">F6</span></div>
+        <div class="asst-item" id="qNote"><span class="bullet"></span> Clinical note <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <div class="fly-chip" id="flyDx" style="border-left-color:#5fc787;"><span class="bullet" style="background:#5fc787;"></span> RCC &middot; C64.9</div>
+    <div class="fly-chip blue" id="flyOrd"><span class="bullet"></span> BMP</div>
+    <div class="fly-chip" id="flyNote"><span class="bullet"></span> Clinical note</div>
+    <div class="phase-chip" id="s2chip">with your formatting &mdash; <span class="gold">bold and all</span></div>
   </div>
 
-  <!-- SCENE 3 - SAVED TEXT: CYSTOSCOPY (15.9-25.9) -->
+  <!-- SCENE 3 - SPLIT INTO SECTIONS (13.2-22.4) -->
   <div class="beat" id="s3">
-    <div class="scene-title kline" id="s3title">Saved text &mdash; <span class="serif">filled in for you.</span></div>
-    <div class="st-win kline" id="stWin">
-      <div class="st-titlebar">
-        <span class="st-mark">e</span>
-        <span class="st-titletext" id="stT1">Saved Text</span>
-        <span class="st-title-swap" id="stT2">Today's note</span>
-        <span class="st-winctl"><span></span><span></span><span></span></span>
+    <div class="scene-title kline" id="s3title">Or split the note <span class="serif">into sections.</span></div>
+    <div class="emr-win kline" id="s3win" style="height: 940px;">
+      <div class="emr-titlebar">
+        <span class="emr-mark">EHR</span>
+        <span class="emr-patient">Doe, John</span>
+        <span class="emr-meta">64M &middot; MRN 10428501</span>
+        <span class="emr-winctl"><span></span><span></span><span></span></span>
       </div>
-      <div class="st-body">
-        <div class="st-labelrow">
-          <span class="st-label">Cystoscopy note</span>
-          <span class="st-mode" id="stMode">AI fills the brackets</span>
+      <div class="emr-tabs">
+        <span class="emr-tab active">Encounter</span>
+        <span class="emr-tab">Chart</span>
+        <span class="emr-tab">Notes</span>
+        <span class="emr-tab">Orders</span>
+      </div>
+      <div class="emr-body">
+        <div class="combo-label">HPI</div>
+        <div class="chunk-field" id="cfHpi">
+          <span class="cf-ph" id="cfHpiPh">Click to enter HPI&hellip;</span>
+          <span class="cf-text" id="cfHpiText">64M with h/o RCC s/p partial nephrectomy presents for surveillance. Feels well &mdash; no hematuria, no flank pain.</span>
         </div>
-        <div class="st-text"><b>Cystoscopy Procedure:</b>
-Patient presents for cystoscopy. <span class="brk" id="bk0">[He, she]</span> was prepped and draped in standard fashion; standard timeout was performed. Findings are as follows:
-
-Urethra: <span class="brk" id="bk1">[ ]</span>
-<span class="brk" id="bk2">[Prostate findings]</span>
-Ureteral orifices: <span class="brk" id="bk3">[ ]</span>
-Bladder: <span class="brk" id="bk4">[ ]</span></div>
+        <div class="combo-label">ASSESSMENT &amp; PLAN</div>
+        <div class="chunk-field" id="cfAp">
+          <span class="cf-ph" id="cfApPh">Click to enter assessment &amp; plan&hellip;</span>
+          <span class="cf-text" id="cfApText">1) RCC &mdash; stable, no recurrence. MRI abdomen in 1 year.
+2) CKD-3 &mdash; stable. BMP in 1 year.
+3) HTN &mdash; continue lisinopril.</span>
+        </div>
       </div>
     </div>
-    <div class="phase-chip" id="s3chip">your template &mdash; <span class="gold">AI fills every blank at once</span></div>
+    <div class="asst kline" id="s3asst" style="top: 640px;">
+      <div class="asst-pill"><span class="dot" id="s3dot"></span> eleanote <span class="x">&times;</span></div>
+      <div class="asst-queue" id="s3queue">
+        <div class="asst-item" id="qHpi"><span class="bullet"></span> Note &mdash; HPI <span class="hint">F6</span></div>
+        <div class="asst-item" id="qAp"><span class="bullet"></span> Note &mdash; A/P <span class="hint">F6</span></div>
+      </div>
+    </div>
+    <div class="fly-chip" id="flyHpi"><span class="bullet"></span> HPI</div>
+    <div class="fly-chip" id="flyAp"><span class="bullet"></span> Assessment &amp; Plan</div>
+    <div class="phase-chip" id="s3chip">each section &mdash; <span class="gold">pasted into the right field</span></div>
   </div>
 
-</div>
+</div></div>
 </div>
 
 <script>
-/* ================= ENGINE - web loop 1, 25.9s ================= */
-var DUR = 25.9;
+/* ================= ENGINE - web loop 2, 22.4s ================= */
+var DUR = 22.4;
 var RENDER = /[?&]render/.test(location.search);
 var FREEZE = (function(){ var m = location.search.match(/[?&]t=([0-9.]+)/); return m ? parseFloat(m[1]) : null; })();
 var E = {
@@ -722,113 +716,118 @@ function kv(kfs, t) {
 }
 var $ = function(id){ return document.getElementById(id); };
 
-var BEATS = [ ['s1', 0.0, 8.8], ['s2', 8.8, 15.9], ['s3', 15.9, 25.91] ];
+var BEATS = [ ['s1', 0.0, 6.4], ['s2', 6.4, 13.2], ['s3', 13.2, 22.41] ];
 function inout(el, tIn, tOut, yIn) {
   return { el: el,
     o: [[tIn, 0], [tIn + 0.35, 1, 'outCubic'], [tOut - 0.3, 1], [tOut, 0, 'inCubic']],
     y: [[tIn, yIn], [tIn + 0.4, 0, 'outCubic'], [tOut - 0.3, 0], [tOut, -26, 'inCubic']] };
 }
 var TRACKS = [
-  /* scene 1 interview (ad2-v3 timings shifted -5.0) */
-  inout('s1title', 0.05, 8.75, 36),
-  { el:'dpApp', o:[[0.25,0],[0.70,1,'outCubic'],[8.45,1],[8.75,0,'inCubic']], y:[[0.25,66],[0.75,0,'outCubic']] },
-  { el:'s1chip', o:[[7.15,0],[7.50,1,'outCubic'],[8.45,1],[8.75,0,'inCubic']], y:[[7.15,34],[7.55,0,'outBack']] },
-  { el:'dpSend', s:[[2.82,1],[2.97,0.93,'outCubic'],[3.12,1,'outBack'],[5.50,1],[5.65,0.93,'outCubic'],[5.80,1,'outBack']] },
-  /* scene 2 feedback (ad2-v3 timings shifted -5.1) */
-  { el:'s2cap', o:[[8.85,0],[9.20,1,'outCubic'],[15.52,1],[15.85,0,'inCubic']], y:[[8.85,40],[9.25,0,'outCubic'],[15.52,0],[15.85,-26,'inCubic']] },
-  { el:'fbApp', o:[[8.92,0],[9.32,1,'outCubic'],[15.52,1],[15.85,0,'inCubic']], y:[[8.92,66],[9.38,0,'outCubic'],[15.52,0],[15.85,-26,'inCubic']], s:[[8.92,0.97],[9.38,1,'outCubic'],[13.8,1],[14.3,1.006,'inOut']] },
-  { el:'fbBtn', s:[[11.20,1],[11.36,0.93,'outCubic'],[11.52,1,'outBack']] },
-  { el:'s2under', o:[[13.45,0],[13.85,1,'outCubic'],[15.52,1],[15.85,0,'inCubic']], y:[[13.45,42],[13.90,0,'outBack'],[15.52,0],[15.85,-26,'inCubic']] },
-  /* scene 3 saved text */
-  inout('s3title', 15.95, 25.55, 36),
-  { el:'stWin', o:[[16.15,0],[16.60,1,'outCubic'],[25.25,1],[25.55,0,'inCubic']], y:[[16.15,60],[16.65,0,'outCubic']] },
-  { el:'s3chip', o:[[21.60,0],[21.95,1,'outCubic'],[25.25,1],[25.55,0,'inCubic']], y:[[21.60,34],[22.00,0,'outBack']] }
+  /* s1 prechart */
+  inout('s1title', 0.05, 6.35, 36),
+  { el:'s1win', o:[[0.20,0],[0.60,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[0.20,60],[0.65,0,'outCubic']] },
+  { el:'s1asst', o:[[0.55,0],[0.90,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[0.55,-60],[1.00,0,'outBack']] },
+  { el:'s1chip', o:[[3.85,0],[4.20,1,'outCubic'],[6.05,1],[6.35,0,'inCubic']], y:[[3.85,34],[4.25,0,'outBack']] },
+  /* s2 combo */
+  inout('s2title', 6.45, 13.15, 36),
+  { el:'s2win', o:[[6.55,0],[6.90,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[6.55,60],[6.95,0,'outCubic']] },
+  { el:'s2asst', o:[[6.80,0],[7.15,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[6.80,-60],[7.25,0,'outBack']] },
+  { el:'s2chip', o:[[11.05,0],[11.40,1,'outCubic'],[12.85,1],[13.15,0,'inCubic']], y:[[11.05,34],[11.45,0,'outBack']] },
+  /* s3 chunks */
+  inout('s3title', 13.25, 22.05, 36),
+  { el:'s3win', o:[[13.40,0],[13.80,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[13.40,60],[13.85,0,'outCubic']] },
+  { el:'s3asst', o:[[13.75,0],[14.10,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[13.75,-60],[14.20,0,'outBack']] },
+  { el:'s3chip', o:[[19.35,0],[19.70,1,'outCubic'],[21.75,1],[22.05,0,'inCubic']], y:[[19.35,34],[19.75,0,'outBack']] }
 ];
 
-var DP_MSGS = [ ['dpM1', 1.0], ['dpU1', 3.12], ['dpM2', 3.85], ['dpU2', 5.80], ['dpM3', 6.55] ];
-var DP_T1 = { text: 'Problem-based. Number each problem, short bullet plans.', t0: 1.7, t1: 2.72 };
-var DP_T2 = { text: '2-3 sentences. No fluff.', t0: 4.75, t1: 5.40 };
-var TYPE_TEXT = 'Make the assessment more concise';
+function straight(x0, y0, x1, y1, t0, t1) { return {x0:x0, y0:y0, x1:x1, y1:y1, t0:t0, t1:t1}; }
+function applyF(el, F, t) {
+  var on = t >= F.t0 && t <= F.t1 + 0.05;
+  el.style.opacity = on ? kv([[F.t0,0],[F.t0+0.12,1,'linear'],[F.t1-0.06,1],[F.t1+0.02,0,'linear']], t) : 0;
+  if (on) {
+    var x = kv([[F.t0, F.x0],[F.t1, F.x1,'inOut']], t);
+    var y = kv([[F.t0, F.y0],[F.t1, F.y1,'inOut']], t);
+    var s = kv([[F.t0,1],[F.t0+0.18,1.07,'outCubic'],[F.t1,0.87,'inOut']], t);
+    el.style.transform = 'translate(' + (x - 100) + 'px,' + (y - 26) + 'px) scale(' + s + ')';
+  }
+}
+function collapseItem(el, t0, t) {
+  el.style.opacity = kv([[t0,1],[t0+0.25,0,'inCubic']], t);
+  el.style.maxHeight = kv([[t0,60],[t0+0.32,0,'inOut']], t) + 'px';
+  el.style.paddingTop = el.style.paddingBottom = kv([[t0,15],[t0+0.32,0,'inOut']], t) + 'px';
+}
 
-/* saved-text fills — ALL at the same moment */
-var ST_FILL_T = 19.8;
-var ST_FILLS = [
-  ['bk0', 'He'],
-  ['bk1', 'no stricture'],
-  ['bk2', 'Prostate: mild BPH'],
-  ['bk3', 'orthotopic position bilaterally'],
-  ['bk4', 'mild trabeculations, no urothelial lesions']
-];
-var ST_EMPTY = ['[He, she]', '[ ]', '[Prostate findings]', '[ ]', '[ ]'];
+/* s1: prior note (~420, 520) -> assistant queue (~880, 640) */
+var F1  = straight(420, 520, 872, 640, 2.5, 3.3);
+/* s2: assistant (~866, 700) -> dx slot / order row / note field */
+var FDX  = straight(866, 700, 300, 470, 7.4, 7.85);
+var FORD = straight(866, 700, 300, 610, 8.3, 8.75);
+var FNOTE= straight(866, 700, 320, 790, 9.2, 9.65);
+/* s3: assistant (~866, 610) -> HPI field / A&P field */
+var FHPI = straight(866, 700, 330, 500, 14.9, 15.5);
+var FAP  = straight(866, 700, 360, 800, 17.3, 17.9);
 
 function applySpecials(t) {
-  /* ===== scene 1 ===== */
-  if (t < 9.0) {
-    for (var i = 0; i < DP_MSGS.length; i++) {
-      var m = $(DP_MSGS[i][0]), mt = DP_MSGS[i][1];
-      m.style.opacity = kv([[mt,0],[mt+0.35,1,'outCubic']], t);
-      m.style.transform = 'translateY(' + kv([[mt,20],[mt+0.4,0,'outCubic']], t) + 'px)';
+  /* ===== s1 prechart ===== */
+  if (t < 6.6) {
+    for (var i = 1; i <= 6; i++) {
+      var tOn = 0.9 + (i - 1) * 0.2;
+      var a = kv([[tOn, 0], [tOn + 0.18, 1, 'linear']], t);
+      $('pl' + i).style.background = 'rgba(91, 75, 138, ' + (0.28 * a) + ')';
     }
-    var typing1 = t >= DP_T1.t0 && t < 3.08;
-    var typing2 = t >= DP_T2.t0 && t < 5.76;
-    $('dpInput').className = (t >= 1.5 && t < 5.85) ? 'dp-input focus' : 'dp-input';
-    var want = '';
-    if (typing1) want = DP_T1.text.slice(0, Math.floor(Math.min(1, (t - DP_T1.t0) / (DP_T1.t1 - DP_T1.t0)) * DP_T1.text.length));
-    else if (typing2) want = DP_T2.text.slice(0, Math.floor(Math.min(1, (t - DP_T2.t0) / (DP_T2.t1 - DP_T2.t0)) * DP_T2.text.length));
-    var te = $('dpTyped');
-    if (te.textContent !== want) te.textContent = want;
-    $('dpPh').style.opacity = (t >= 1.5 && t < 5.85) ? (want ? 0 : 0.55) : 1;
-    var caretOn = (t >= 1.5 && t < 5.80) && !(t >= 3.08 && t < 4.70) && (Math.floor(t * 2.5) % 2 === 0);
-    $('dpCaret').style.opacity = caretOn ? 1 : 0;
-    var sv = $('dpSaved');
-    sv.style.opacity = kv([[6.90,0],[7.20,1,'outCubic']], t);
-    sv.style.transform = 'scale(' + kv([[6.90,0.7],[7.30,1,'outBack']], t) + ')';
+    applyF($('s1fly'), F1, t);
+    $('s1queue').style.opacity = kv([[3.35,0],[3.65,1,'outCubic']], t);
+    $('s1queue').style.transform = 'translateY(' + kv([[3.35,-18],[3.70,0,'outBack']], t) + 'px)';
   }
-  /* ===== scene 2 ===== */
-  if (t > 8.6 && t < 16.1) {
-    $('fbInput').className = (t >= 9.75 && t < 15.5) ? 'fb-input focus' : 'fb-input';
-    $('fbPh').style.opacity = t < 9.85 ? 1 : Math.max(0, 1 - (t - 9.85) / 0.15);
-    var p = Math.min(1, Math.max(0, (t - 10.0) / 0.9));
-    var wantF = TYPE_TEXT.slice(0, Math.floor(p * TYPE_TEXT.length));
-    var typedEl = $('fbTyped');
-    if (typedEl.textContent !== wantF) typedEl.textContent = wantF;
-    var caretOnF = (t >= 9.75 && t <= 11.55) && (Math.floor(t * 2.5) % 2 === 0);
-    $('fbCaret').style.opacity = caretOnF ? 1 : 0;
-    var btn = $('fbBtn');
-    var label = t < 11.4 ? 'Apply feedback' : (t < 12.9 ? 'Rewriting…' : 'Done ✓');
-    if (btn.textContent !== label) btn.textContent = label;
-    $('fbWordy').style.maxHeight = kv([[11.8,300],[12.65,0,'inOut']], t) + 'px';
-    $('fbWordy').style.opacity = kv([[11.8,1],[12.45,0,'linear']], t);
-    $('fbConcise').style.maxHeight = kv([[12.25,0],[12.85,110,'inOut']], t) + 'px';
-    $('fbConcise').style.opacity = kv([[12.35,0],[12.85,1,'linear']], t);
-    var sh = $('fbShimmer');
-    sh.style.opacity = kv([[11.7,0],[11.95,1,'linear'],[13.0,1],[13.35,0,'linear']], t);
-    sh.style.backgroundPosition = kv([[11.75,140],[13.25,-140,'linear']], t) + '% 0';
+  /* ===== s2 combo ===== */
+  if (t > 6.2 && t < 13.4) {
+    applyF($('flyDx'), FDX, t);
+    applyF($('flyOrd'), FORD, t);
+    applyF($('flyNote'), FNOTE, t);
+    collapseItem($('qDx'), 7.35, t);
+    collapseItem($('qOrd'), 8.25, t);
+    collapseItem($('qNote'), 9.15, t);
+    $('s2queue').style.opacity = kv([[9.5,1],[9.8,0,'inCubic']], t);
+    var dx = $('cDx');
+    dx.style.opacity = kv([[7.9,0],[8.2,1,'outCubic']], t);
+    dx.style.transform = 'translateY(' + kv([[7.9,14],[8.25,0,'outBack']], t) + 'px)';
+    var g1 = kv([[7.9,0],[8.15,1,'outCubic'],[8.55,1],[8.95,0,'inCubic']], t);
+    dx.style.boxShadow = '0 0 0 ' + (5 * g1) + 'px rgba(47, 164, 107, ' + (0.16 * g1) + ')';
+    var row = $('cOrder');
+    row.style.opacity = kv([[8.78,0],[9.08,1,'outCubic']], t);
+    row.style.transform = 'translateY(' + kv([[8.78,16],[9.12,0,'outCubic']], t) + 'px)';
+    var badge = $('cOrderBadge');
+    badge.style.opacity = kv([[9.15,0],[9.38,1,'outCubic']], t);
+    badge.style.transform = 'scale(' + kv([[9.15,0.6],[9.48,1,'outBack']], t) + ')';
+    var g2 = kv([[9.15,0],[9.38,1,'outCubic'],[9.65,1],[10.0,0,'inCubic']], t);
+    row.style.boxShadow = '0 0 0 ' + (5 * g2) + 'px rgba(47, 164, 107, ' + (0.16 * g2) + ')';
+    var nf = $('cNoteField');
+    nf.className = (t >= 9.7 && t < 10.7) ? 'combo-noteslot hot' : 'combo-noteslot';
+    $('cNotePh').style.opacity = kv([[9.7,1],[9.82,0,'linear']], t);
+    $('cNoteText').style.opacity = kv([[9.75,0],[10.0,1,'outCubic']], t);
+    $('s2dot').style.background = t < 9.8 ? '#38d27a' : '#9aa1ab';
+    $('s2dot').style.boxShadow = t < 9.8 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
   }
-  /* ===== scene 3 saved text (cystoscopy, simultaneous fill) ===== */
-  if (t > 15.7) {
-    /* titlebar morphs Saved Text -> Today's note just before the fill */
-    $('stT1').style.opacity = kv([[18.7,1],[19.1,0,'linear']], t);
-    $('stT2').style.opacity = kv([[18.7,0],[19.1,1,'linear']], t);
-    var mode = $('stMode');
-    var modeWant = t < 19.0 ? 'AI fills the brackets' : 'inserted ✓';
-    if (mode.textContent !== modeWant) mode.textContent = modeWant;
-    /* every bracket pulses and fills AT ONCE */
-    for (var k = 0; k < ST_FILLS.length; k++) {
-      var el = $(ST_FILLS[k][0]);
-      var pulse = kv([[ST_FILL_T-0.45,0],[ST_FILL_T-0.2,1,'outCubic'],[ST_FILL_T+0.15,0,'inCubic']], t);
-      el.style.boxShadow = '0 0 0 ' + (5 * pulse) + 'px rgba(78, 163, 255, ' + (0.22 * pulse) + ')';
-      var filled = t >= ST_FILL_T;
-      if (filled && el.className !== 'brk filled') { el.className = 'brk filled'; el.textContent = ST_FILLS[k][1]; }
-      if (!filled && el.className !== 'brk') { el.className = 'brk'; el.textContent = ST_EMPTY[k]; }
-      var pop = kv([[ST_FILL_T,0.94],[ST_FILL_T+0.3,1,'outBack']], t);
-      el.style.transform = filled ? ('scale(' + pop + ')') : '';
-    }
+  /* ===== s3 chunks ===== */
+  if (t > 13.0) {
+    applyF($('flyHpi'), FHPI, t);
+    applyF($('flyAp'), FAP, t);
+    collapseItem($('qHpi'), 14.85, t);
+    collapseItem($('qAp'), 17.25, t);
+    $('s3queue').style.opacity = kv([[17.6,1],[17.9,0,'inCubic']], t);
+    var h = $('cfHpi');
+    h.className = (t >= 15.5 && t < 16.5) ? 'chunk-field hot' : 'chunk-field';
+    $('cfHpiPh').style.opacity = kv([[15.5,1],[15.62,0,'linear']], t);
+    $('cfHpiText').style.opacity = kv([[15.55,0],[15.8,1,'outCubic']], t);
+    var a2 = $('cfAp');
+    a2.className = (t >= 17.9 && t < 18.9) ? 'chunk-field hot' : 'chunk-field';
+    $('cfApPh').style.opacity = kv([[17.9,1],[18.02,0,'linear']], t);
+    $('cfApText').style.opacity = kv([[17.95,0],[18.2,1,'outCubic']], t);
+    $('s3dot').style.background = t < 18.0 ? '#38d27a' : '#9aa1ab';
+    $('s3dot').style.boxShadow = t < 18.0 ? '0 0 0 5px rgba(56,210,122,0.22)' : 'none';
   }
-  /* loop fade: whole canvas dips to cream at the very end */
-  var fade = kv([[25.45,0],[25.88,1,'linear']], t);
   var veil = $('loopVeil');
-  veil.style.opacity = fade;
+  veil.style.opacity = kv([[21.95,0],[22.38,1,'linear']], t);
 }
 
 function seek(t) {
@@ -846,7 +845,7 @@ function seek(t) {
     if (tr.y) parts += 'translateY(' + kv(tr.y, t) + 'px) ';
     if (tr.s) parts += 'scale(' + kv(tr.s, t) + ') ';
     if (parts) {
-      if (tr.el === 's1chip' || tr.el === 's3chip') parts = 'translateX(-50%) ' + parts;
+      if (tr.el === 's1chip' || tr.el === 's2chip' || tr.el === 's3chip') parts = 'translateX(-50%) ' + parts;
       el.style.transform = parts;
     }
   }
@@ -855,7 +854,7 @@ function seek(t) {
 
 function fitPreview() {
   if (RENDER) return;
-  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1350) * 0.98;
+  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1080) * 0.98;
   $('canvas').style.transform = 'scale(' + sc + ')';
 }
 function boot() {
@@ -876,6 +875,7 @@ function boot() {
     })(start);
   }
 }
+window.__w = 1080; window.__h = 1080;
 window.__total = DUR;
 window.__seek = function(t){ seek(t); };
 if (document.fonts && document.fonts.ready) {

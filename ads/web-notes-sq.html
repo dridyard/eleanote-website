@@ -41,7 +41,7 @@ body { font-family: "Inter", -apple-system, "Segoe UI", sans-serif; }
 body.render #viewport { position: static; display: block; }
 #canvas {
   position: relative;
-  width: 1080px; height: 1350px;
+  width: 1080px; height: 1080px;
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
@@ -578,7 +578,7 @@ body.render #canvas { transform: none !important; }
 </head>
 <body>
 <div id="viewport">
-<div id="canvas">
+<div id="canvas"><div id="zoomer" style="position:absolute;left:50%;top:0;width:1080px;height:1350px;transform:translateX(-50%) scale(0.8);transform-origin:top center;">
 
   <!-- SCENE 1 - INTERVIEW (0-8.8) -->
   <div class="beat" id="s1">
@@ -693,7 +693,7 @@ Bladder: <span class="brk" id="bk4">[ ]</span></div>
     <div class="phase-chip" id="s3chip">your template &mdash; <span class="gold">AI fills every blank at once</span></div>
   </div>
 
-</div>
+</div></div>
 </div>
 
 <script>
@@ -855,7 +855,7 @@ function seek(t) {
 
 function fitPreview() {
   if (RENDER) return;
-  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1350) * 0.98;
+  var sc = Math.min(window.innerWidth / 1080, window.innerHeight / 1080) * 0.98;
   $('canvas').style.transform = 'scale(' + sc + ')';
 }
 function boot() {
@@ -876,6 +876,7 @@ function boot() {
     })(start);
   }
 }
+window.__w = 1080; window.__h = 1080;
 window.__total = DUR;
 window.__seek = function(t){ seek(t); };
 if (document.fonts && document.fonts.ready) {

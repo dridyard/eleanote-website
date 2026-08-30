@@ -817,8 +817,18 @@
         .loopvid {
             display: block;
             width: 100%;
-            max-width: 540px;
             margin: clamp(2rem, 4vw, 3rem) auto 0;
+        }
+        .vid-desktop { max-width: 640px; }
+        .vid-mobile { display: none; }
+        @media (max-width: 700px) {
+            .vid-desktop { display: none; }
+            .vid-mobile {
+                display: block;
+                width: 100vw;
+                max-width: 100vw;
+                margin-left: calc(50% - 50vw);
+            }
         }
         .vid-cta { text-align: center; margin-top: clamp(1.8rem, 3.5vw, 2.6rem); }
         .vid-cta .micro {
@@ -3023,7 +3033,6 @@
                 <span class="brand-word">eleanote</span>
             </a>
             <div class="nav-links">
-                <a href="#why">Why eleanote</a>
                 <a href="#notes">See it work</a>
                 <a href="#demo">Demo</a>
                 <a href="#security">Security</a>
@@ -3041,7 +3050,6 @@
         </nav>
     </header>
     <div class="menu-panel" id="menuPanel" role="menu" aria-label="Site menu">
-        <a href="#why" role="menuitem">Why eleanote <span class="arrow">&rarr;</span></a>
         <a href="#notes" role="menuitem">See it work <span class="arrow">&rarr;</span></a>
         <a href="#demo" role="menuitem">Demo <span class="arrow">&rarr;</span></a>
         <a href="#security" role="menuitem">Privacy &amp; security <span class="arrow">&rarr;</span></a>
@@ -3095,14 +3103,15 @@
         </section>
 
         <!-- ============== NOTES YOU CONTROL (loop video 1) ============== -->
-        <section class="block band-white band-edge" id="notes">
+        <section class="block band-paper band-edge" id="notes">
             <div class="container">
                 <div class="section-head centered reveal">
                     <p class="eyebrow centered">Quality notes</p>
                     <h2>Notes you control, <span class="accent">completely.</span></h2>
                     <p class="lede">Eleanote is built around one obsession: notes that come out right. You program exactly how yours are written &mdash; structure, tone, phrasing, saved text &mdash; and correct anything in plain language. The goal: notes that need minimal edits, in your voice.</p>
                 </div>
-                <video class="loopvid reveal d1" autoplay muted loop playsinline preload="metadata" src="videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
+                <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-notes-sq.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
+                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
                 <div class="vid-cta reveal d2">
                     <a class="btn" href="/auth/signup.html">Create free account <span class="arr">&rarr;</span></a>
                     <div class="micro">Free while in beta &middot; no card required</div>
@@ -3118,53 +3127,11 @@
                     <h2>Works with any EMR &mdash; <span class="accent">even in remote sessions.</span></h2>
                     <p class="lede">No integration, no IT project &mdash; eleanote types into whatever EHR you already use, including EMRs running in Citrix, VMware, and other remote desktops. It precharts from the chart to add context, enters diagnoses and orders, and pastes the note with your formatting &mdash; whole, or section by section into separate fields.</p>
                 </div>
-                <video class="loopvid reveal d1" autoplay muted loop playsinline preload="metadata" src="videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
+                <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-ehr-sq.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
+                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
                 <div class="vid-cta reveal d2">
                     <a class="btn" href="/auth/signup.html">Create free account <span class="arr">&rarr;</span></a>
                     <div class="micro">Free while in beta &middot; no card required</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============== WHY ELEANOTE ============== -->
-        <section class="block band-white band-edge" id="why">
-            <div class="container">
-                <div class="section-head centered reveal">
-                    <p class="eyebrow centered">Why eleanote</p>
-                    <h2>Built around how you <span class="accent">already practice.</span></h2>
-                    <p class="lede">Integrated AI scribes exist &mdash; behind enterprise contracts and heavy IT setup. Eleanote gives independent practices the same workflow advantages with nothing to set up but a desktop app.</p>
-                </div>
-                <div class="features">
-                    <div class="feature-card reveal">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></div>
-                        <h3>Any EHR, zero integration</h3>
-                        <p>Eleanote transfers text the way you would &mdash; through the keyboard. If you can type into your EHR, Eleanote can write into it. No integration project, no IT setup.</p>
-                    </div>
-                    <div class="feature-card reveal d1">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></div>
-                        <h3>No more copy-paste</h3>
-                        <p>Eleanote types the finished note into the EMR for you &mdash; your formatting included, bold and all &mdash; and can place each section into the EMR's separate fields at the tap of a button.</p>
-                    </div>
-                    <div class="feature-card reveal d2">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></div>
-                        <h3>Learns from your feedback</h3>
-                        <p>Give feedback on any note and Eleanote rewrites it on the spot. The AI learns from your feedback over time, so your notes keep getting better.</p>
-                    </div>
-                    <div class="feature-card reveal">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></div>
-                        <h3>Notes in your style</h3>
-                        <p>Templates, saved text, phrasing, format &mdash; personalize all of it. The note that lands in the chart reads like you wrote it, because it's written your way.</p>
-                    </div>
-                    <div class="feature-card reveal d1">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></div>
-                        <h3>Frontier-quality AI</h3>
-                        <p>Notes are drafted by the same class of frontier models behind today's best AI assistants &mdash; with automatic failover so a provider outage never stops your clinic.</p>
-                    </div>
-                    <div class="feature-card reveal d2">
-                        <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
-                        <h3>Real-time order capture</h3>
-                        <p>Orders are staged during the conversation, not reconstructed after it &mdash; so they're ready to enter before the visit ends, dates and indications included.</p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -3527,5 +3494,22 @@
             }
         })();
     </script>
+<script>
+(function () {
+    var mq = window.matchMedia("(max-width: 700px)");
+    function loadVids(sel) {
+        document.querySelectorAll(sel).forEach(function (v) {
+            if (!v.getAttribute("src")) { v.src = v.dataset.src; }
+            var p = v.play(); if (p && p.catch) { p.catch(function () {}); }
+        });
+    }
+    loadVids(mq.matches ? ".vid-mobile" : ".vid-desktop");
+    if (mq.addEventListener) {
+        mq.addEventListener("change", function (e) {
+            loadVids(e.matches ? ".vid-mobile" : ".vid-desktop");
+        });
+    }
+})();
+</script>
 </body>
 </html>
