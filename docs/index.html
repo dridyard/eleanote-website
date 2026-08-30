@@ -3103,8 +3103,8 @@
                     <h2>Notes you control, <span class="accent">completely.</span></h2>
                     <p class="lede">Eleanote is built around one obsession: notes that come out right. You program exactly how yours are written &mdash; structure, tone, phrasing, saved text &mdash; and correct anything in plain language. The goal: notes that need minimal edits, in your voice.</p>
                 </div>
-                <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="/videos/web-notes-sq.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
-                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="/videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
+                <video class="loopvid vid-desktop reveal d1" autoplay muted loop playsinline preload="metadata" data-src="/videos/web-notes-sq.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
+                <video class="loopvid vid-mobile reveal d1" autoplay muted loop playsinline preload="metadata" data-src="/videos/web-notes.mp4" aria-label="Eleanote personalization: the preference interview, feedback on a note, and saved text filled in by AI"></video>
             </div>
         </section>
 
@@ -3116,8 +3116,8 @@
                     <h2>Works with any EMR &mdash; <span class="accent">even in remote sessions.</span></h2>
                     <p class="lede">No integration, no IT project &mdash; eleanote types into whatever EHR you already use, even remote desktops. It precharts from the chart to add context, enters diagnoses and orders, and pastes the note with your formatting &mdash; whole, or section by section into separate fields.</p>
                 </div>
-                <video class="loopvid vid-desktop reveal d1" muted loop playsinline preload="metadata" data-src="/videos/web-ehr-sq.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
-                <video class="loopvid vid-mobile reveal d1" muted loop playsinline preload="metadata" data-src="/videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
+                <video class="loopvid vid-desktop reveal d1" autoplay muted loop playsinline preload="metadata" data-src="/videos/web-ehr-sq.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
+                <video class="loopvid vid-mobile reveal d1" autoplay muted loop playsinline preload="metadata" data-src="/videos/web-ehr.mp4" aria-label="Eleanote EMR automation: precharting, diagnoses, orders and the note entered, and the note split into sections"></video>
             </div>
         </section>
 
@@ -3481,17 +3481,21 @@
     </script>
 <script>
 (function () {
+    // Only the visible variant (square on desktop, portrait on phone) gets
+    // its src, so the other never downloads. Playback itself is left to the
+    // autoplay attribute — muted attribute-autoplay is exempt from gesture
+    // policies, and the browser pauses/resumes it with visibility on its
+    // own (script-driven play/pause would break that auto-resume).
     var mq = window.matchMedia("(max-width: 700px)");
-    function loadVids(sel) {
+    function load(sel) {
         document.querySelectorAll(sel).forEach(function (v) {
             if (!v.getAttribute("src")) { v.src = v.dataset.src; }
-            var p = v.play(); if (p && p.catch) { p.catch(function () {}); }
         });
     }
-    loadVids(mq.matches ? ".vid-mobile" : ".vid-desktop");
+    load(mq.matches ? ".vid-mobile" : ".vid-desktop");
     if (mq.addEventListener) {
         mq.addEventListener("change", function (e) {
-            loadVids(e.matches ? ".vid-mobile" : ".vid-desktop");
+            load(e.matches ? ".vid-mobile" : ".vid-desktop");
         });
     }
 })();
