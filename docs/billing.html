@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing — Eleanote</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#14515c">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/auth/auth-style.css">
+    <style>
+        body.auth-loading .dashboard { display: none; }
+        .nav-actions { display: flex; align-items: center; gap: 1.25rem; }
+        .bill-row {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+        }
+        .bill-row:last-child { border-bottom: none; }
+        .bill-label { font-weight: 600; color: var(--ink); }
+        .bill-value { color: var(--muted); text-align: right; }
+        .bill-value.good { color: #1c7a4d; font-weight: 600; }
+        .bill-value.warn { color: #a05c12; font-weight: 600; }
+        .bill-actions { margin-top: 1.4rem; display: flex; gap: 0.9rem; flex-wrap: wrap; }
+        .bill-note { margin-top: 1rem; font-size: 0.88rem; color: var(--muted); line-height: 1.55; }
+        @media (max-width: 540px) {
+            .bill-row { flex-direction: column; align-items: flex-start; }
+            .bill-value { text-align: left; }
+        }
+    </style>
+</head>
+<body class="auth-loading">
+    <header class="site-header">
+        <nav class="nav">
+            <a class="brand" href="/" aria-label="Eleanote home">
+                <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <circle cx="16" cy="16" r="15" fill="#173D47"/>
+                    <text x="16" y="22.5" text-anchor="middle"
+                        font-family="Inter, sans-serif" font-size="20" font-weight="600"
+                        letter-spacing="-1" fill="#ffffff">e</text>
+                </svg>
+                <span class="brand-word">eleanote</span>
+            </a>
+            <div class="nav-actions">
+                <a class="nav-back" href="/auth/dashboard.html">Your account</a>
+                <a class="nav-back" href="/">&larr; Back to site</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>Billing</h1>
+            <p class="subtitle" id="subtitle">&nbsp;</p>
+        </div>
+
+        <div class="tab-card">
+            <div id="billAlert" class="alert"></div>
+
+            <!-- Signed out -->
+            <div id="signedOut" hidden>
+                <h2>Sign in to manage billing</h2>
+                <p class="tab-card-subtitle">Sign in with your Eleanote account, then open this page again from the link in your email or at eleanote.ai/billing.html.</p>
+                <div class="bill-actions">
+                    <a class="btn" href="/auth/login.html">Sign in</a>
+                </div>
+            </div>
+
+            <!-- Billing not open yet (pre-launch) -->
+            <div id="notOpen" hidden>
+                <h2>Eleanote is free while in beta</h2>
+                <p class="tab-card-subtitle">There's nothing to pay right now. When commercial launch begins, your free month and subscription options will appear here.</p>
+            </div>
+
+            <!-- Live billing state -->
+            <div id="billingBody" hidden>
+                <h2>Your plan</h2>
+                <div id="rows"></div>
+                <div class="bill-actions">
+                    <button class="btn" id="subscribeBtn" hidden>Subscribe</button>
+                    <button class="btn btn-secondary" id="portalBtn" hidden>Manage billing</button>
+                </div>
+                <p class="bill-note" id="billNote"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/auth/auth.js"></script>
+    <script>
+    (function () {
+        const alertId = 'billAlert';
+
+        function show(id) { document.getElementById(id).hidden = false; }
+        function row(label, value, cls) {
+            return '<div class="bill-row"><span class="bill-label">' + label +
+                   '</span><span class="bill-value' + (cls ? ' ' + cls : '') + '">' + value + '</span></div>';
+        }
+        function fmtDate(iso) {
+            try {
+                return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch { return iso; }
+        }
+
+        async function init() {
+            document.body.classList.remove('auth-loading');
+
+            if (!isLoggedIn()) { show('signedOut'); return; }
+            document.getElementById('subtitle').textContent = 'Signed in as ' + getStoredEmail();
+
+            // Stripe Checkout / Portal round-trip banners
+            const checkout = getParam('checkout');
+            if (checkout === 'success') {
+                showAlert(alertId, 'success', "You're all set — your subscription is active. A receipt is on its way to your email.");
+            } else if (checkout === 'canceled') {
+                showAlert(alertId, 'info', 'Checkout was canceled — nothing was charged.');
+            }
+
+            let status;
+            try {
+                status = await apiCall('/billing/status', { method: 'GET' });
+            } catch (err) {
+                // Expired/invalid session -> ask for a fresh sign-in.
+                if (err.status === 401) { show('signedOut'); return; }
+                // Anything else on this read-only call means the billing endpoints
+                // aren't reachable: API Gateway answers 403 for routes that don't
+                // exist yet, and the CORS preflight on an undeployed route fails
+                // with no status at all ("Failed to fetch"). All of it = the calm
+                // pre-launch card, never a scary error for a read.
+                show('notOpen'); return;
+            }
+
+            if (!status.configured) { show('notOpen'); return; }
+
+            const rows = [];
+            const price = status.priceDisplay || '';
+            const trialLive = status.trialEndsAt && Date.parse(status.trialEndsAt) > Date.now();
+
+            if (status.subscribed) {
+                const label = status.subStatus === 'trialing' ? 'Subscribed — free month in progress'
+                            : status.subStatus === 'past_due' ? 'Payment problem — please update your card'
+                            : 'Active';
+                rows.push(row('Subscription', label, status.subStatus === 'past_due' ? 'warn' : 'good'));
+                if (price) rows.push(row('Plan', price));
+                if (status.subStatus === 'trialing' && status.trialEndsAt) {
+                    rows.push(row('First charge', fmtDate(status.trialEndsAt)));
+                } else if (status.subCurrentPeriodEnd) {
+                    rows.push(row('Renews', fmtDate(status.subCurrentPeriodEnd)));
+                }
+                document.getElementById('portalBtn').hidden = false;
+                document.getElementById('billNote').textContent =
+                    'Manage billing opens a secure Stripe page where you can update your card, view invoices, or cancel.';
+            } else {
+                if (trialLive) {
+                    rows.push(row('Free month', 'Runs through ' + fmtDate(status.trialEndsAt), 'good'));
+                    document.getElementById('billNote').textContent =
+                        'Subscribe now and your card is only charged when the free month ends — subscribing early never shortens it.';
+                } else if (status.trialEndsAt) {
+                    rows.push(row('Free month', 'Ended ' + fmtDate(status.trialEndsAt), 'warn'));
+                    document.getElementById('billNote').textContent =
+                        'Subscribe to keep using Eleanote — your setup, preferences, and training carry over exactly as they are.';
+                }
+                if (price) rows.push(row('Plan', price + ' &mdash; flat, no per-note charges, cancel anytime'));
+                document.getElementById('subscribeBtn').hidden = false;
+            }
+
+            document.getElementById('rows').innerHTML = rows.join('');
+            show('billingBody');
+        }
+
+        document.getElementById('subscribeBtn').addEventListener('click', async function () {
+            hideAlert(alertId);
+            setButtonLoading(this, true);
+            try {
+                const res = await apiCall('/billing/checkout-session', { method: 'POST', body: '{}' });
+                window.location.href = res.url;
+            } catch (err) {
+                setButtonLoading(this, false);
+                showAlert(alertId, 'error', err.message);
+            }
+        });
+
+        document.getElementById('portalBtn').addEventListener('click', async function () {
+            hideAlert(alertId);
+            setButtonLoading(this, true);
+            try {
+                const res = await apiCall('/billing/portal-session', { method: 'POST', body: '{}' });
+                window.location.href = res.url;
+            } catch (err) {
+                setButtonLoading(this, false);
+                showAlert(alertId, 'error', err.message);
+            }
+        });
+
+        init();
+    })();
+    </script>
+</body>
+</html>
