@@ -58,7 +58,11 @@
   }
 
   /* Push every button to the same baseline regardless of text length above. */
-  .dl-action { margin-top: auto; }
+  /* Buttons sit at the same height in both cards (anchored below the
+     requirements text, not pushed to the card's bottom edge); any
+     fallback text flows beneath its button. */
+  .dl-action { margin-top: 1.25rem; }
+  .dl-action p.dl-req { margin: .85rem 0 0; }
 
   .legal-doc a.dl-btn {
     display: inline-flex;
