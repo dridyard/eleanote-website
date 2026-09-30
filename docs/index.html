@@ -666,9 +666,10 @@
         .security-band .section-head .lede { color: rgba(255, 255, 255, 0.72); }
         .sec-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.1rem;
-            margin-top: clamp(2.4rem, 5vw, 3.4rem);
+            max-width: 960px;
+            margin: clamp(2.4rem, 5vw, 3.4rem) auto 0;
         }
         .sec-card {
             background: rgba(255, 255, 255, 0.045);
@@ -686,7 +687,10 @@
         .sec-actions .btn:hover { background: rgba(255, 255, 255, 0.92); box-shadow: 0 14px 30px rgba(0,0,0,0.3); }
         .sec-actions .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.32); }
         .sec-actions .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); }
-        @media (max-width: 940px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 940px) {
+            .sec-grid { grid-template-columns: repeat(2, 1fr); }
+            .sec-grid .sec-card:last-child { grid-column: 1 / -1; }
+        }
         @media (max-width: 560px) { .sec-grid { grid-template-columns: 1fr; } }
 
         /* ---------- FAQ ---------- */
@@ -3150,16 +3154,11 @@
                         <p>Every transcription and AI partner is bound by a Business Associate Agreement to handle PHI only to provide their service, protected in accordance with HIPAA.</p>
                     </div>
                     <div class="sec-card reveal d1">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                        <h3>Never used for AI training</h3>
-                        <p>Patient information is never used to train AI models and never used for research. Full stop &mdash; it's in every agreement.</p>
-                    </div>
-                    <div class="sec-card reveal d2">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
                         <h3>No clinical content stored</h3>
                         <p>Audio and notes pass through transiently. Eleanote's servers keep account and usage records &mdash; never patient charts.</p>
                     </div>
-                    <div class="sec-card reveal d3">
+                    <div class="sec-card reveal d2">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>
                         <h3>Independently attested</h3>
                         <p>A third party has reviewed the safeguards protecting this information. The HIPAA security attestation is public &mdash; read it yourself.</p>
@@ -3186,7 +3185,7 @@
                     </details>
                     <details class="faq-item">
                         <summary>Is patient information safe?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
-                        <div class="faq-body">Every transcription and AI partner is bound by a Business Associate Agreement, PHI is never used to train AI models or for research, and Eleanote's servers store account and usage records &mdash; never clinical content. An independent third party has reviewed these safeguards; the <a href="/eleanote-hipaa-security-attestation.pdf" target="_blank" rel="noopener">HIPAA security attestation</a> is public.</div>
+                        <div class="faq-body">Every transcription and AI partner is bound by a Business Associate Agreement. An independent third party has reviewed these safeguards; the <a href="/eleanote-hipaa-security-attestation.pdf" target="_blank" rel="noopener">HIPAA security attestation</a> is public.</div>
                     </details>
                     <details class="faq-item">
                         <summary>What does it cost?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary>
