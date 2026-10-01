@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Download Eleanote — Windows and Mac</title>
-<meta name="description" content="Download Eleanote, the ambient AI medical scribe, for Windows or Mac. Both are code-signed by Eleanote LLC.">
+<meta name="description" content="Download Eleanote, the ambient AI medical scribe. Get the Windows version from the Microsoft Store, or download the Mac version directly. Both are code-signed by Eleanote LLC.">
 <link rel="canonical" href="https://eleanote.ai/download">
 <meta property="og:title" content="Download Eleanote — Windows and Mac">
-<meta property="og:description" content="Download Eleanote for Windows or Mac.">
+<meta property="og:description" content="Get Eleanote for Windows from the Microsoft Store, or download the Mac version directly.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://eleanote.ai/download">
 <link rel="stylesheet" href="/legal/legal.css">
@@ -18,14 +18,17 @@
 
   .legal-doc p.dl-lede { margin-bottom: 2.2rem; }
 
+  /* Two columns. Both cards share row 1, so they stay the same height; the
+     Windows-only fallback note sits in row 2, under whichever column holds
+     the Windows card. */
   .dl-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 0.8rem;
     margin-bottom: 2.4rem;
   }
   .dl-card {
-    flex: 1 1 300px;
     display: flex;
     flex-direction: column;
     background: #fffdf7;
@@ -57,12 +60,22 @@
     margin-bottom: 1.25rem;
   }
 
-  /* Push every button to the same baseline regardless of text length above. */
   /* Buttons sit at the same height in both cards (anchored below the
-     requirements text, not pushed to the card's bottom edge); any
-     fallback text flows beneath its button. */
+     requirements text, not pushed to the card's bottom edge). */
   .dl-action { margin-top: 1.25rem; }
-  .dl-action p.dl-req { margin: .85rem 0 0; }
+
+  /* Outside the Windows card: the direct-installer fallback for anyone the
+     Microsoft Store doesn't work for (no Store on clinic-managed laptops,
+     protocol link blocked, etc.). */
+  .legal-doc p.dl-under {
+    margin: 0;
+    padding: 0 0.4rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .legal-doc p.dl-under a { text-decoration: underline; text-underline-offset: 2px; }
 
   .legal-doc a.dl-btn {
     display: inline-flex;
@@ -89,9 +102,30 @@
     margin-bottom: 0;
   }
 
-  /* Lead with the visitor's own platform. Silent — no badge, nothing announced. */
-  body[data-os="mac"] #card-mac,
-  body[data-os="windows"] #card-windows { order: -1; }
+  #card-windows { grid-column: 1; grid-row: 1; }
+  #note-windows { grid-column: 1; grid-row: 2; }
+  #card-mac     { grid-column: 2; grid-row: 1; }
+
+  /* Lead with the visitor's own platform. Silent — no badge, nothing announced.
+     (Windows already leads by default.) */
+  body[data-os="mac"] #card-mac { grid-column: 1; }
+  body[data-os="mac"] #card-windows,
+  body[data-os="mac"] #note-windows { grid-column: 2; }
+
+  /* Too narrow for two cards side by side (the old flex layout wrapped at the
+     same point): stack them, keeping the note directly under the Windows card. */
+  @media (max-width: 667px) {
+    .dl-grid { grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
+    body #card-windows, body #note-windows, body #card-mac,
+    body[data-os="mac"] #card-windows,
+    body[data-os="mac"] #note-windows { grid-column: 1; }
+    #card-windows { grid-row: 1; }
+    #note-windows { grid-row: 2; margin-top: -0.45rem; }
+    #card-mac     { grid-row: 3; }
+    body[data-os="mac"] #card-mac     { grid-row: 1; }
+    body[data-os="mac"] #card-windows { grid-row: 2; }
+    body[data-os="mac"] #note-windows { grid-row: 3; }
+  }
 
   @media (max-width: 600px) {
     .dl-card { padding: 1.35rem 1.2rem 1.25rem; }
@@ -115,11 +149,13 @@
         <path d="M3 5.6l7.4-1.02v7.15H3V5.6zm0 12.8l7.4 1.02v-7.06H3v6.04zm8.22 1.13L21 20.9v-8.58h-9.78v7.21zM11.22 3.1v7.33H21V1.76L11.22 3.1z"/>
       </svg>
       <h2>Windows</h2>
-      <p class="dl-req">Windows 10 or 11.<br>Code-signed by Eleanote LLC.</p>
+      <p class="dl-req">Windows 10 or 11.<br>Installs from the Microsoft Store.</p>
       <div class="dl-action">
-        <a class="dl-btn" href="https://github.com/dridyard/eleanote-releases/releases/download/windows-0.5.4/EleanoteSetup-0.5.4.exe">Download for Windows</a>
+        <a class="dl-btn" href="ms-windows-store://pdp/?ProductId=XPDCS2GXGXBSSF">Get it from the Microsoft Store</a>
       </div>
     </div>
+
+    <p class="dl-under" id="note-windows">Trouble downloading from the Microsoft Store? <a href="https://github.com/dridyard/eleanote-releases/releases/download/windows-0.5.4/EleanoteSetup-0.5.4.exe">Download here</a> or contact support at <a href="mailto:support@eleanote.ai">support@eleanote.ai</a>.</p>
 
     <div class="dl-card" id="card-mac">
       <svg class="dl-icon" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

@@ -142,7 +142,7 @@
                 <h2>Get Eleanote</h2>
                 <p class="tab-card-subtitle">Install Eleanote on your clinic laptop, then open it and sign in with this same email and password.</p>
                 <div class="btn-row">
-                    <a href="https://github.com/dridyard/eleanote-releases/releases/download/windows-0.5.4/EleanoteSetup-0.5.4.exe" class="btn btn-inline">Download for Windows</a>
+                    <a href="ms-windows-store://pdp/?ProductId=XPDCS2GXGXBSSF" class="btn btn-inline">Get it from the Microsoft Store</a>
                     <a href="https://github.com/dridyard/eleanote-releases/releases/download/macos-0.6.10/Eleanote-0.6.10.dmg" class="btn btn-inline">Download for Mac</a>
                 </div>
                 <p class="tab-card-subtitle" style="margin-top: 1rem; margin-bottom: 0;">
@@ -284,8 +284,8 @@
             }
         });
 
-        // ----- Download: direct links to the installers -----
-        // The Download tab links straight to the installers (external), so
+        // ----- Download: now handled by the Microsoft Store -----
+        // The Download tab links straight to the Store listing (external), so
         // there's no in-page download flow to wire up here anymore. The old
         // presigned-S3 path (/download-url) still exists server-side as a
         // support fallback, but the UI no longer calls it.
