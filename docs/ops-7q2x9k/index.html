@@ -490,6 +490,45 @@ async function api(path){
   if(!r.ok) throw new Error((d && d.error) || ('Request failed (' + r.status + ')'));
   return d;
 }
+async function apiPost(path, body){
+  var id = sessionStorage.getItem(SS.ID);
+  var r = await fetch(API + path, { method:'POST', headers:{ 'Authorization':'Bearer ' + id, 'Content-Type':'application/json' }, body: JSON.stringify(body) });
+  if(r.status === 401 || r.status === 403){ var e = new Error('auth'); e.status = r.status; throw e; }
+  var d = null; try{ d = await r.json(); }catch(_){}
+  if(!r.ok) throw new Error((d && (d.message || d.error)) || ('Request failed (' + r.status + ')'));
+  return d;
+}
+// Billing cell: paying / free until / ended, the founding price, referrals.
+function billingCell(u){
+  var b = u.billing || {}, parts = [];
+  if(b.paying){
+    parts.push('<span class="pill pill-ok">paying</span>' + (b.subStatus === 'past_due' ? ' <span class="pill pill-warn">card problem</span>' : '')
+      + (b.renews ? '<div class="u-name">renews ' + fmtDate(b.renews) + '</div>' : ''));
+  } else if(b.freeUntil){
+    var live = new Date(b.freeUntil).getTime() > Date.now();
+    parts.push('<span class="pill ' + (live ? 'pill-info' : 'pill-warn') + '">' + (live ? 'free until ' : 'free ended ') + fmtDate(b.freeUntil) + '</span>');
+  } else {
+    parts.push('<span class="u-name">—</span>');
+  }
+  if(b.plan === 'founding') parts.push('<div class="u-name">$50 × 6 founding price</div>');
+  if(b.referredBy) parts.push('<div class="u-name">referred by ' + esc(b.referredBy) + (b.referralCredited ? ' ✓ credited' : b.referralOutcome ? ' (no such user)' : ' (waiting for first note)') + '</div>');
+  if(b.referralsCredited) parts.push('<div class="u-name">referred ' + b.referralsCredited + ' ✓</div>');
+  if(!b.paying) parts.push('<button class="winbtn set-free" data-uid="' + esc(u.userId) + '" data-email="' + esc(u.email) + '">Set free until</button>');
+  return parts.join('');
+}
+async function setFreeUntil(uid, email){
+  var v = prompt('Free until (YYYY-MM-DD) for ' + email + ':\n\nThey can use Eleanote free through the end of that day. A past date ends their free time.');
+  if(v === null) return;
+  v = v.trim();
+  try{
+    var r = await apiPost('/admin/users/' + encodeURIComponent(uid) + '/free-until', { freeUntil: v });
+    alert(email + ' is now free until ' + fmtDate(r.freeUntil) + '.');
+    usersCache = null; renderUsers(await loadUsers());
+  }catch(e){
+    if(e.status) return sessionExpired(e);
+    alert('Not saved: ' + e.message);
+  }
+}
 function num(n){ return (n === null || n === undefined) ? '—' : String(n); }
 function money(n){
   if(n === null || n === undefined) return '—';
@@ -621,7 +660,7 @@ function renderUsers(data){
   var h = toggle + '<table class="dt sheet"><thead><tr>'
     + '<th class="num">#</th>'
     + th('email','User')
-    + '<th>Status</th><th>Version</th>'
+    + '<th>Status</th><th>Version</th><th>Billing</th>'
     + th('signedUp','Signed up')
     + th('calls','Calls', true)
     + th('notes','Notes', true)
@@ -636,6 +675,7 @@ function renderUsers(data){
       + '<td><div class="u-email">' + esc(u.email) + '</div>' + (u.name ? '<div class="u-name">' + esc(u.name) + (u.specialty ? ' &middot; ' + esc(u.specialty) : '') + '</div>' : '') + '</td>'
       + '<td>' + badge(u) + '</td>'
       + '<td>' + esc(u.appVersion || '—') + '</td>'
+      + '<td>' + billingCell(u) + '</td>'
       + '<td>' + fmtDate(u.signedUpAt) + '</td>'
       + '<td class="num">' + (w.calls||0) + '</td>'
       + '<td class="num">' + (w.notes||0) + '</td>'
@@ -653,6 +693,9 @@ function renderUsers(data){
   });
   Array.prototype.forEach.call($('users-body').querySelectorAll('.rowlink'), function(tr){
     tr.addEventListener('click', function(){ loadUserDetail(tr.dataset.uid); });
+  });
+  Array.prototype.forEach.call($('users-body').querySelectorAll('.set-free'), function(b){
+    b.addEventListener('click', function(e){ e.stopPropagation(); setFreeUntil(b.dataset.uid, b.dataset.email); });
   });
 }
 
