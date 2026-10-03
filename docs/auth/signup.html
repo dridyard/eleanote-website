@@ -54,7 +54,7 @@
                     <input type="password" id="passwordConfirm" name="passwordConfirm" required
                         autocomplete="new-password" minlength="8">
                 </div>
-                <div class="field">
+                <div class="field" id="referralField" hidden>
                     <label for="referredBy">Referred by <span style="font-weight:400">(optional)</span></label>
                     <input type="email" id="referredBy" name="referredBy" autocomplete="off"
                         placeholder="colleague@clinic.com">
@@ -81,6 +81,12 @@
         // A shared referral link (signup.html?ref=colleague@clinic.com) fills the box in.
         const refParam = EleanoteAuth.getParam('ref');
         if (refParam) document.getElementById('referredBy').value = refParam.trim().toLowerCase();
+        // LAUNCH-DAY SWITCH: set to true on announcement day. Until then the box
+        // only shows for a referral link or ?preview=1.
+        const REFERRALS_OPEN = false;
+        if (REFERRALS_OPEN || refParam || EleanoteAuth.getParam('preview')) {
+            document.getElementById('referralField').hidden = false;
+        }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
