@@ -109,11 +109,14 @@ async function signUp(email, password) {
 }
 
 // ----- Confirm sign-up with email code -----
-async function confirmSignUp(email, code) {
+// clientMetadata (optional) reaches the server's sign-up hook — used to pass
+// "referred by" from the sign-up page.
+async function confirmSignUp(email, code, clientMetadata) {
     return cognitoCall('ConfirmSignUp', {
         ClientId: COGNITO_CLIENT_ID,
         Username: email,
         ConfirmationCode: code,
+        ...(clientMetadata ? { ClientMetadata: clientMetadata } : {}),
     });
 }
 

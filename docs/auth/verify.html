@@ -75,7 +75,11 @@
             EleanoteAuth.setButtonLoading(submitBtn, true);
 
             try {
-                await EleanoteAuth.confirmSignUp(email, code);
+                // "Referred by" saved by the sign-up page in this browser, if any.
+                let referredBy = null;
+                try { referredBy = localStorage.getItem('eleanote.referredBy.' + email); } catch { /* blocked */ }
+                await EleanoteAuth.confirmSignUp(email, code, referredBy ? { referredBy } : undefined);
+                try { localStorage.removeItem('eleanote.referredBy.' + email); } catch { /* blocked */ }
                 // Email verified — redirect to login with the email pre-filled
                 window.location.href = `login.html?email=${encodeURIComponent(email)}&verified=1`;
             } catch (err) {

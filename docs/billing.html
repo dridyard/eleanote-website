@@ -82,6 +82,28 @@
                     <button class="btn btn-secondary" id="portalBtn" hidden>Manage billing</button>
                 </div>
                 <p class="bill-note" id="billNote"></p>
+
+                <h2 style="margin-top:2rem">Referrals</h2>
+                <!-- Who referred you (shown until one is on file) -->
+                <div id="referredByForm" hidden>
+                    <p class="tab-card-subtitle">Did an Eleanote user tell you about us? Enter their email. Once you've generated your first note, you each get an extra free month.</p>
+                    <div class="field" style="margin-top:0.8rem">
+                        <input type="email" id="referrerEmail" placeholder="colleague@clinic.com" autocomplete="off">
+                    </div>
+                    <div class="bill-actions" style="margin-top:0.6rem">
+                        <button class="btn btn-secondary" id="referrerSave">Save referral</button>
+                    </div>
+                </div>
+                <p class="bill-note" id="referredByNote" hidden></p>
+                <!-- Refer a colleague -->
+                <p class="bill-note" style="margin-top:1.2rem">
+                    <strong>Refer a colleague:</strong> send them your link. When they sign up and generate their
+                    first note, you both get a free month.
+                </p>
+                <div class="bill-actions" style="margin-top:0.6rem">
+                    <input type="text" id="shareLink" readonly style="flex:1;min-width:16rem" aria-label="Your referral link">
+                    <button class="btn btn-secondary" id="copyLink">Copy link</button>
+                </div>
             </div>
         </div>
     </div>
@@ -151,22 +173,70 @@
                 document.getElementById('billNote').textContent =
                     'Manage billing opens a secure Stripe page where you can update your card, view invoices, or cancel.';
             } else {
+                // A referral credit makes it a "free credit period" rather than the trial.
+                const period = status.referralCredited ? 'Free credit period' : 'Free trial';
                 if (trialLive) {
-                    rows.push(row('Free month', 'Runs through ' + fmtDate(status.trialEndsAt), 'good'));
+                    rows.push(row(period, 'Ends ' + fmtDate(status.trialEndsAt), 'good'));
                     document.getElementById('billNote').textContent =
-                        'Subscribe now and your card is only charged when the free month ends — subscribing early never shortens it.';
+                        'Your ' + period.toLowerCase() + ' ends on ' + fmtDate(status.trialEndsAt) +
+                        '. Register for payments now so your service does not lapse — your card is not charged until then.';
                 } else if (status.trialEndsAt) {
-                    rows.push(row('Free month', 'Ended ' + fmtDate(status.trialEndsAt), 'warn'));
+                    rows.push(row(period, 'Ended ' + fmtDate(status.trialEndsAt), 'warn'));
                     document.getElementById('billNote').textContent =
                         'Subscribe to keep using Eleanote — your setup, preferences, and training carry over exactly as they are.';
                 }
-                if (price) rows.push(row('Plan', price + ' &mdash; flat, no per-note charges, cancel anytime'));
+                if (status.pricingPlan === 'founding') {
+                    rows.push(row('Plan', '$50/month for your first 6 months, then ' + (price || 'the standard price') +
+                        ' &mdash; thank you for being an early user'));
+                } else if (price) {
+                    rows.push(row('Plan', price + ' &mdash; flat, no per-note charges, cancel anytime'));
+                }
                 document.getElementById('subscribeBtn').hidden = false;
             }
 
             document.getElementById('rows').innerHTML = rows.join('');
+            showReferrals(status);
             show('billingBody');
         }
+
+        function showReferrals(status) {
+            const me = (getStoredEmail() || '').trim().toLowerCase();
+            document.getElementById('shareLink').value =
+                'https://eleanote.ai/auth/signup.html?ref=' + encodeURIComponent(me);
+            const note = document.getElementById('referredByNote');
+            if (status.referredBy) {
+                note.textContent = 'Referred by ' + status.referredBy + '. ' + (status.referralCredited
+                    ? 'Your extra free month has been added.'
+                    : 'Your extra free month is added after you generate your first note (if that email belongs to an Eleanote user).');
+                note.hidden = false;
+            } else {
+                document.getElementById('referredByForm').hidden = false;
+            }
+        }
+
+        document.getElementById('referrerSave').addEventListener('click', async function () {
+            hideAlert(alertId);
+            const email = document.getElementById('referrerEmail').value.trim().toLowerCase();
+            setButtonLoading(this, true);
+            try {
+                const res = await apiCall('/billing/referral', { method: 'POST', body: JSON.stringify({ email }) });
+                document.getElementById('referredByForm').hidden = true;
+                const note = document.getElementById('referredByNote');
+                note.textContent = res.message || 'Referral saved.';
+                note.hidden = false;
+            } catch (err) {
+                setButtonLoading(this, false);
+                showAlert(alertId, 'error', err.message);
+            }
+        });
+
+        document.getElementById('copyLink').addEventListener('click', async function () {
+            const input = document.getElementById('shareLink');
+            try { await navigator.clipboard.writeText(input.value); }
+            catch { input.select(); document.execCommand('copy'); }
+            this.textContent = 'Copied';
+            setTimeout(() => { this.textContent = 'Copy link'; }, 2000);
+        });
 
         document.getElementById('subscribeBtn').addEventListener('click', async function () {
             hideAlert(alertId);

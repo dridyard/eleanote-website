@@ -54,6 +54,15 @@
                     <input type="password" id="passwordConfirm" name="passwordConfirm" required
                         autocomplete="new-password" minlength="8">
                 </div>
+                <div class="field">
+                    <label for="referredBy">Referred by <span style="font-weight:400">(optional)</span></label>
+                    <input type="email" id="referredBy" name="referredBy" autocomplete="off"
+                        placeholder="colleague@clinic.com">
+                    <div class="field-hint">
+                        The email of the Eleanote user who told you about us. Once you've generated your
+                        first note, you each get an extra free month.
+                    </div>
+                </div>
 
                 <button type="submit" class="btn" id="submitBtn">Create account</button>
             </form>
@@ -69,6 +78,10 @@
         const form = document.getElementById('signupForm');
         const submitBtn = document.getElementById('submitBtn');
 
+        // A shared referral link (signup.html?ref=colleague@clinic.com) fills the box in.
+        const refParam = EleanoteAuth.getParam('ref');
+        if (refParam) document.getElementById('referredBy').value = refParam.trim().toLowerCase();
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             EleanoteAuth.hideAlert('alert');
@@ -82,10 +95,25 @@
                 return;
             }
 
+            const referredBy = document.getElementById('referredBy').value.trim().toLowerCase();
+            if (referredBy && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(referredBy)) {
+                EleanoteAuth.showAlert('alert', 'error', 'The "Referred by" email doesn\'t look right — fix it or leave it blank.');
+                return;
+            }
+            if (referredBy && referredBy === email) {
+                EleanoteAuth.showAlert('alert', 'error', "You can't refer yourself — leave \"Referred by\" blank.");
+                return;
+            }
+
             EleanoteAuth.setButtonLoading(submitBtn, true);
 
             try {
                 await EleanoteAuth.signUp(email, password);
+                // Kept in this browser until the email is verified; the verify page
+                // sends it along with the confirmation (that's where it's recorded).
+                try {
+                    if (referredBy) localStorage.setItem('eleanote.referredBy.' + email, referredBy);
+                } catch { /* storage blocked: the billing page can still record it later */ }
                 // Account created. Now navigate to verify page with email pre-filled.
                 window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
             } catch (err) {
