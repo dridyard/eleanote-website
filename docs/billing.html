@@ -35,6 +35,8 @@
         .back-link { background: none; border: 0; padding: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: 0.92rem; }
         .back-link:hover { color: var(--ink); }
         #checkoutBox { margin-top: 0.8rem; min-height: 420px; }
+        /* Update card is a single-column form: fit it, so no wide white box around it */
+        body.narrow-form .dashboard { max-width: 640px; }
         @media (max-width: 540px) {
             .bill-row { flex-direction: column; align-items: flex-start; }
             .bill-value { text-align: left; }
@@ -183,7 +185,7 @@
         }
 
         // Stripe's secure form in the wide on-page view (subscribe, or update card).
-        async function openStripeForm(btn, path, title) {
+        async function openStripeForm(btn, path, title, narrow) {
             hideAlert(alertId);
             setButtonLoading(btn, true);
             try {
@@ -194,6 +196,7 @@
                 setButtonLoading(btn, false);
                 $('checkoutTitle').textContent = title;
                 document.body.classList.add('checkout-view');
+                document.body.classList.toggle('narrow-form', !!narrow);
                 show('checkoutView');
                 window.scrollTo(0, 0);
                 checkout.mount('#checkoutBox');
@@ -282,7 +285,7 @@
             openStripeForm(this, '/billing/checkout-session', 'Add payment details');
         });
         $('updateCardBtn').addEventListener('click', function () {
-            openStripeForm(this, '/billing/update-card', 'Update card');
+            openStripeForm(this, '/billing/update-card', 'Update card', true);
         });
 
         async function setCancel(resume, btn) {
