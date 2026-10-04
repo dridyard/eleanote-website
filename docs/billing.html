@@ -27,10 +27,14 @@
         .bill-actions { margin-top: 1.4rem; display: flex; gap: 0.9rem; flex-wrap: wrap; }
         .bill-note { margin-top: 1rem; font-size: 0.88rem; color: var(--muted); line-height: 1.55; }
         .secure-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); margin: 0.4rem 0 1rem; }
-        #checkoutBox { margin-top: 1.2rem; min-height: 120px; }
-        .referral-toggle { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; font-size: 0.88rem; }
-        .referral-form { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.7rem; }
-        .referral-form input { flex: 1; min-width: 14rem; }
+        /* Checkout view: wide enough for Stripe's two-column layout (summary | card form) */
+        body.checkout-view .dashboard { max-width: 1120px; }
+        body.checkout-view .dashboard-header, body.checkout-view #planCard { display: none; }
+        .checkout-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+        .checkout-head h1 { margin: 0; }
+        .back-link { background: none; border: 0; padding: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: 0.92rem; }
+        .back-link:hover { color: var(--ink); }
+        #checkoutBox { margin-top: 0.8rem; min-height: 420px; }
         @media (max-width: 540px) {
             .bill-row { flex-direction: column; align-items: flex-start; }
             .bill-value { text-align: left; }
@@ -62,7 +66,7 @@
             <p class="subtitle" id="subtitle">&nbsp;</p>
         </div>
 
-        <div class="tab-card">
+        <div class="tab-card" id="planCard">
             <div id="billAlert" class="alert"></div>
 
             <!-- Signed out -->
@@ -91,27 +95,19 @@
                     <button class="btn btn-secondary" id="portalBtn" hidden>Update card or cancel</button>
                 </div>
 
-                <!-- Payment form: Stripe's secure form, shown right here on the page -->
-                <div id="checkoutWrap" hidden>
-                    <h2 style="margin-top:1.8rem">Payment details</h2>
-                    <p class="secure-note">&#128274; Secured by Stripe &mdash; your card details go straight to Stripe and are never stored by Eleanote.</p>
-                    <div id="checkoutBox"></div>
-                </div>
-
-                <!-- Referred by (only until one is on file) -->
-                <div id="referralArea" hidden style="margin-top:1.6rem">
-                    <button class="referral-toggle" id="referralToggle" type="button">Were you referred by a colleague?</button>
-                    <div id="referralForm" hidden>
-                        <p class="bill-note" style="margin-top:0.6rem">Enter their email. Once you've generated your first note, you each get an extra free month.</p>
-                        <div class="referral-form">
-                            <input type="email" id="referrerEmail" placeholder="colleague@clinic.com" autocomplete="off">
-                            <button class="btn btn-secondary" id="referrerSave" type="button">Save</button>
-                        </div>
-                    </div>
-                </div>
                 <p class="bill-note" id="referredByNote" hidden></p>
             </div>
         </div>
+
+        <!-- Checkout view: Stripe's secure form, on this page, two columns when there's room -->
+        <section id="checkoutView" hidden>
+            <div class="checkout-head">
+                <h1>Add payment details</h1>
+                <button class="back-link" id="backBtn" type="button">&larr; Back to billing</button>
+            </div>
+            <p class="secure-note">&#128274; Secured by Stripe &mdash; your card details go straight to Stripe and are never stored by Eleanote.</p>
+            <div id="checkoutBox"></div>
+        </section>
     </div>
 
     <script src="https://js.stripe.com/endive/stripe.js"></script>
@@ -171,15 +167,12 @@
             }
             $('rows').innerHTML = rows.join('');
 
-            // Referral: a quiet link until one is on file, then a single line.
+            // Referrals are entered at sign-up; here we only show the outcome.
             if (status.referredBy) {
-                $('referralArea').hidden = true;
                 $('referredByNote').textContent = 'Referred by ' + status.referredBy + '. ' + (status.referralCredited
                     ? 'Your extra free month has been added.'
                     : 'Your extra free month is added after you generate your first note.');
                 $('referredByNote').hidden = false;
-            } else {
-                $('referralArea').hidden = false;
             }
         }
 
@@ -224,10 +217,11 @@
                 if (!res.clientSecret || !res.publishableKey) throw new Error('The payment form is not available yet. Please try again shortly.');
                 const stripe = Stripe(res.publishableKey);
                 const checkout = await stripe.createEmbeddedCheckoutPage({ fetchClientSecret: async () => res.clientSecret });
-                this.hidden = true;
-                show('checkoutWrap');
+                setButtonLoading(this, false);
+                document.body.classList.add('checkout-view');
+                show('checkoutView');
+                window.scrollTo(0, 0);
                 checkout.mount('#checkoutBox');
-                $('checkoutWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
             } catch (err) {
                 setButtonLoading(this, false);
                 showAlert(alertId, 'error', err.message);
@@ -246,24 +240,7 @@
             }
         });
 
-        $('referralToggle').addEventListener('click', function () {
-            $('referralForm').hidden = !$('referralForm').hidden;
-        });
-
-        $('referrerSave').addEventListener('click', async function () {
-            hideAlert(alertId);
-            const email = $('referrerEmail').value.trim().toLowerCase();
-            setButtonLoading(this, true);
-            try {
-                const res = await apiCall('/billing/referral', { method: 'POST', body: JSON.stringify({ email }) });
-                $('referralArea').hidden = true;
-                $('referredByNote').textContent = res.message || 'Referral saved.';
-                $('referredByNote').hidden = false;
-            } catch (err) {
-                setButtonLoading(this, false);
-                showAlert(alertId, 'error', err.message);
-            }
-        });
+        $('backBtn').addEventListener('click', function () { location.reload(); });
 
         init();
     })();
