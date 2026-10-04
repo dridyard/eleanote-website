@@ -11,11 +11,13 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="/auth/auth-style.css">
     <style>
+        /* .btn sets display:inline-flex, which would otherwise beat the hidden attribute */
+        [hidden] { display: none !important; }
         body.auth-loading .dashboard { display: none; }
         .nav-actions { display: flex; align-items: center; gap: 1.25rem; }
         .bill-row {
             display: flex; justify-content: space-between; align-items: center;
-            gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+            gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line);
         }
         .bill-row:last-child { border-bottom: none; }
         .bill-label { font-weight: 600; color: var(--ink); }
@@ -24,6 +26,11 @@
         .bill-value.warn { color: #a05c12; font-weight: 600; }
         .bill-actions { margin-top: 1.4rem; display: flex; gap: 0.9rem; flex-wrap: wrap; }
         .bill-note { margin-top: 1rem; font-size: 0.88rem; color: var(--muted); line-height: 1.55; }
+        .secure-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); margin: 0.4rem 0 1rem; }
+        #checkoutBox { margin-top: 1.2rem; min-height: 120px; }
+        .referral-toggle { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; font-size: 0.88rem; }
+        .referral-form { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.7rem; }
+        .referral-form input { flex: 1; min-width: 14rem; }
         @media (max-width: 540px) {
             .bill-row { flex-direction: column; align-items: flex-start; }
             .bill-value { text-align: left; }
@@ -61,201 +68,197 @@
             <!-- Signed out -->
             <div id="signedOut" hidden>
                 <h2>Sign in to manage billing</h2>
-                <p class="tab-card-subtitle">Sign in with your Eleanote account, then open this page again from the link in your email or at eleanote.ai/billing.html.</p>
+                <p class="tab-card-subtitle">Sign in with your Eleanote account, then come back to this page.</p>
                 <div class="bill-actions">
                     <a class="btn" href="/auth/login.html">Sign in</a>
                 </div>
             </div>
 
-            <!-- Billing not open yet (pre-launch) -->
+            <!-- Billing not open yet (before launch, for everyone not previewing) -->
             <div id="notOpen" hidden>
                 <h2>Eleanote is free while in beta</h2>
                 <p class="tab-card-subtitle">There's nothing to pay right now. When commercial launch begins, your free month and subscription options will appear here.</p>
             </div>
 
-            <!-- Live billing state -->
+            <!-- Live billing -->
             <div id="billingBody" hidden>
                 <h2>Your plan</h2>
                 <div id="rows"></div>
-                <div class="bill-actions">
-                    <button class="btn" id="subscribeBtn" hidden>Subscribe</button>
-                    <button class="btn btn-secondary" id="portalBtn" hidden>Manage billing</button>
-                </div>
                 <p class="bill-note" id="billNote"></p>
 
-                <h2 style="margin-top:2rem">Referrals</h2>
-                <!-- Who referred you (shown until one is on file) -->
-                <div id="referredByForm" hidden>
-                    <p class="tab-card-subtitle">Did an Eleanote user tell you about us? Enter their email. Once you've generated your first note, you each get an extra free month.</p>
-                    <div class="field" style="margin-top:0.8rem">
-                        <input type="email" id="referrerEmail" placeholder="colleague@clinic.com" autocomplete="off">
-                    </div>
-                    <div class="bill-actions" style="margin-top:0.6rem">
-                        <button class="btn btn-secondary" id="referrerSave">Save referral</button>
+                <div class="bill-actions">
+                    <button class="btn" id="subscribeBtn" hidden>Add payment details</button>
+                    <button class="btn btn-secondary" id="portalBtn" hidden>Update card or cancel</button>
+                </div>
+
+                <!-- Payment form: Stripe's secure form, shown right here on the page -->
+                <div id="checkoutWrap" hidden>
+                    <h2 style="margin-top:1.8rem">Payment details</h2>
+                    <p class="secure-note">&#128274; Secured by Stripe &mdash; your card details go straight to Stripe and are never stored by Eleanote.</p>
+                    <div id="checkoutBox"></div>
+                </div>
+
+                <!-- Referred by (only until one is on file) -->
+                <div id="referralArea" hidden style="margin-top:1.6rem">
+                    <button class="referral-toggle" id="referralToggle" type="button">Were you referred by a colleague?</button>
+                    <div id="referralForm" hidden>
+                        <p class="bill-note" style="margin-top:0.6rem">Enter their email. Once you've generated your first note, you each get an extra free month.</p>
+                        <div class="referral-form">
+                            <input type="email" id="referrerEmail" placeholder="colleague@clinic.com" autocomplete="off">
+                            <button class="btn btn-secondary" id="referrerSave" type="button">Save</button>
+                        </div>
                     </div>
                 </div>
                 <p class="bill-note" id="referredByNote" hidden></p>
-                <!-- Refer a colleague -->
-                <p class="bill-note" style="margin-top:1.2rem">
-                    <strong>Refer a colleague:</strong> send them your link. When they sign up and generate their
-                    first note, you both get a free month.
-                </p>
-                <div class="bill-actions" style="margin-top:0.6rem">
-                    <input type="text" id="shareLink" readonly style="flex:1;min-width:16rem" aria-label="Your referral link">
-                    <button class="btn btn-secondary" id="copyLink">Copy link</button>
-                </div>
             </div>
         </div>
     </div>
 
+    <script src="https://js.stripe.com/endive/stripe.js"></script>
     <script src="/auth/auth.js"></script>
     <script>
     (function () {
         const alertId = 'billAlert';
-
-        function show(id) { document.getElementById(id).hidden = false; }
+        const $ = (id) => document.getElementById(id);
+        function show(id) { $(id).hidden = false; }
         function row(label, value, cls) {
             return '<div class="bill-row"><span class="bill-label">' + label +
                    '</span><span class="bill-value' + (cls ? ' ' + cls : '') + '">' + value + '</span></div>';
         }
         function fmtDate(iso) {
-            try {
-                return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-            } catch { return iso; }
+            try { return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); }
+            catch { return iso; }
+        }
+        function planText(status) {
+            const price = status.priceDisplay || '$75/month';
+            return status.pricingPlan === 'founding'
+                ? '$50/month for your first 6 months, then ' + price
+                : price;
+        }
+
+        async function loadStatus() {
+            return apiCall('/billing/status', { method: 'GET' });
+        }
+
+        function render(status) {
+            const rows = [];
+            $('subscribeBtn').hidden = true;
+            $('portalBtn').hidden = true;
+            if (status.subscribed) {
+                const pastDue = status.subStatus === 'past_due';
+                const freeNow = status.subStatus === 'trialing';
+                rows.push(row('Status', pastDue ? 'Payment problem — please update your card'
+                    : freeNow ? 'Payment details saved — free period in progress' : 'Active',
+                    pastDue ? 'warn' : 'good'));
+                rows.push(row('Plan', planText(status)));
+                if (freeNow && status.trialEndsAt) rows.push(row('First charge', fmtDate(status.trialEndsAt)));
+                else if (status.subCurrentPeriodEnd) rows.push(row('Next charge', fmtDate(status.subCurrentPeriodEnd)));
+                $('billNote').textContent = 'You can update your card, see invoices, or cancel at any time.';
+                $('portalBtn').hidden = false;
+            } else {
+                const period = status.referralCredited ? 'Free credit period' : 'Free trial';
+                const live = status.trialEndsAt && Date.parse(status.trialEndsAt) > Date.now();
+                if (live) {
+                    rows.push(row(period, 'Ends ' + fmtDate(status.trialEndsAt), 'good'));
+                    $('billNote').textContent = 'Your ' + period.toLowerCase() + ' ends on ' + fmtDate(status.trialEndsAt) +
+                        '. Add your payment details now so your service does not lapse — you will not be charged until then.';
+                } else if (status.trialEndsAt) {
+                    rows.push(row(period, 'Ended ' + fmtDate(status.trialEndsAt), 'warn'));
+                    $('billNote').textContent = 'Add your payment details to keep using Eleanote — your setup, preferences, and training carry over exactly as they are.';
+                }
+                rows.push(row('Plan', planText(status)));
+                $('subscribeBtn').hidden = false;
+            }
+            $('rows').innerHTML = rows.join('');
+
+            // Referral: a quiet link until one is on file, then a single line.
+            if (status.referredBy) {
+                $('referralArea').hidden = true;
+                $('referredByNote').textContent = 'Referred by ' + status.referredBy + '. ' + (status.referralCredited
+                    ? 'Your extra free month has been added.'
+                    : 'Your extra free month is added after you generate your first note.');
+                $('referredByNote').hidden = false;
+            } else {
+                $('referralArea').hidden = false;
+            }
         }
 
         async function init() {
             document.body.classList.remove('auth-loading');
-
             if (!isLoggedIn()) { show('signedOut'); return; }
-            document.getElementById('subtitle').textContent = 'Signed in as ' + getStoredEmail();
-
-            // Stripe Checkout / Portal round-trip banners
-            const checkout = getParam('checkout');
-            if (checkout === 'success') {
-                showAlert(alertId, 'success', "You're all set — your subscription is active. A receipt is on its way to your email.");
-            } else if (checkout === 'canceled') {
-                showAlert(alertId, 'info', 'Checkout was canceled — nothing was charged.');
-            }
+            $('subtitle').textContent = 'Signed in as ' + getStoredEmail();
 
             let status;
             try {
-                status = await apiCall('/billing/status', { method: 'GET' });
+                status = await loadStatus();
             } catch (err) {
-                // Expired/invalid session -> ask for a fresh sign-in.
                 if (err.status === 401) { show('signedOut'); return; }
-                // Anything else on this read-only call means the billing endpoints
-                // aren't reachable: API Gateway answers 403 for routes that don't
-                // exist yet, and the CORS preflight on an undeployed route fails
-                // with no status at all ("Failed to fetch"). All of it = the calm
-                // pre-launch card, never a scary error for a read.
-                show('notOpen'); return;
+                show('notOpen'); return; // billing endpoints not reachable = calm beta card
             }
-
             if (!status.configured) { show('notOpen'); return; }
 
-            const rows = [];
-            const price = status.priceDisplay || '';
-            const trialLive = status.trialEndsAt && Date.parse(status.trialEndsAt) > Date.now();
-
-            if (status.subscribed) {
-                const label = status.subStatus === 'trialing' ? 'Subscribed — free month in progress'
-                            : status.subStatus === 'past_due' ? 'Payment problem — please update your card'
-                            : 'Active';
-                rows.push(row('Subscription', label, status.subStatus === 'past_due' ? 'warn' : 'good'));
-                if (price) rows.push(row('Plan', price));
-                if (status.subStatus === 'trialing' && status.trialEndsAt) {
-                    rows.push(row('First charge', fmtDate(status.trialEndsAt)));
-                } else if (status.subCurrentPeriodEnd) {
-                    rows.push(row('Renews', fmtDate(status.subCurrentPeriodEnd)));
+            // Back from the payment form: the subscription is confirmed by Stripe
+            // a moment later, so re-read the status once or twice.
+            if (getParam('checkout') === 'done') {
+                for (let i = 0; i < 4 && !status.subscribed; i++) {
+                    await new Promise((r) => setTimeout(r, 1500));
+                    try { status = await loadStatus(); } catch { break; }
                 }
-                document.getElementById('portalBtn').hidden = false;
-                document.getElementById('billNote').textContent =
-                    'Manage billing opens a secure Stripe page where you can update your card, view invoices, or cancel.';
-            } else {
-                // A referral credit makes it a "free credit period" rather than the trial.
-                const period = status.referralCredited ? 'Free credit period' : 'Free trial';
-                if (trialLive) {
-                    rows.push(row(period, 'Ends ' + fmtDate(status.trialEndsAt), 'good'));
-                    document.getElementById('billNote').textContent =
-                        'Your ' + period.toLowerCase() + ' ends on ' + fmtDate(status.trialEndsAt) +
-                        '. Register for payments now so your service does not lapse — your card is not charged until then.';
-                } else if (status.trialEndsAt) {
-                    rows.push(row(period, 'Ended ' + fmtDate(status.trialEndsAt), 'warn'));
-                    document.getElementById('billNote').textContent =
-                        'Subscribe to keep using Eleanote — your setup, preferences, and training carry over exactly as they are.';
+                if (status.subscribed) {
+                    showAlert(alertId, 'success', status.subStatus === 'trialing' && status.trialEndsAt
+                        ? "You're all set — your payment details are saved. You won't be charged until " + fmtDate(status.trialEndsAt) + '.'
+                        : "You're all set — thank you for subscribing.");
                 }
-                if (status.pricingPlan === 'founding') {
-                    rows.push(row('Plan', '$50/month for your first 6 months, then ' + (price || 'the standard price') +
-                        ' &mdash; thank you for being an early user'));
-                } else if (price) {
-                    rows.push(row('Plan', price + ' &mdash; flat, no per-note charges, cancel anytime'));
-                }
-                document.getElementById('subscribeBtn').hidden = false;
+                history.replaceState(null, '', location.pathname);
             }
-
-            document.getElementById('rows').innerHTML = rows.join('');
-            showReferrals(status);
+            render(status);
             show('billingBody');
         }
 
-        function showReferrals(status) {
-            const me = (getStoredEmail() || '').trim().toLowerCase();
-            document.getElementById('shareLink').value =
-                'https://eleanote.ai/auth/signup.html?ref=' + encodeURIComponent(me);
-            const note = document.getElementById('referredByNote');
-            if (status.referredBy) {
-                note.textContent = 'Referred by ' + status.referredBy + '. ' + (status.referralCredited
-                    ? 'Your extra free month has been added.'
-                    : 'Your extra free month is added after you generate your first note (if that email belongs to an Eleanote user).');
-                note.hidden = false;
-            } else {
-                document.getElementById('referredByForm').hidden = false;
-            }
-        }
-
-        document.getElementById('referrerSave').addEventListener('click', async function () {
-            hideAlert(alertId);
-            const email = document.getElementById('referrerEmail').value.trim().toLowerCase();
-            setButtonLoading(this, true);
-            try {
-                const res = await apiCall('/billing/referral', { method: 'POST', body: JSON.stringify({ email }) });
-                document.getElementById('referredByForm').hidden = true;
-                const note = document.getElementById('referredByNote');
-                note.textContent = res.message || 'Referral saved.';
-                note.hidden = false;
-            } catch (err) {
-                setButtonLoading(this, false);
-                showAlert(alertId, 'error', err.message);
-            }
-        });
-
-        document.getElementById('copyLink').addEventListener('click', async function () {
-            const input = document.getElementById('shareLink');
-            try { await navigator.clipboard.writeText(input.value); }
-            catch { input.select(); document.execCommand('copy'); }
-            this.textContent = 'Copied';
-            setTimeout(() => { this.textContent = 'Copy link'; }, 2000);
-        });
-
-        document.getElementById('subscribeBtn').addEventListener('click', async function () {
+        // "Add payment details": Stripe's secure form appears right here.
+        $('subscribeBtn').addEventListener('click', async function () {
             hideAlert(alertId);
             setButtonLoading(this, true);
             try {
                 const res = await apiCall('/billing/checkout-session', { method: 'POST', body: '{}' });
-                window.location.href = res.url;
+                if (!res.clientSecret || !res.publishableKey) throw new Error('The payment form is not available yet. Please try again shortly.');
+                const stripe = Stripe(res.publishableKey);
+                const checkout = await stripe.createEmbeddedCheckoutPage({ fetchClientSecret: async () => res.clientSecret });
+                this.hidden = true;
+                show('checkoutWrap');
+                checkout.mount('#checkoutBox');
+                $('checkoutWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
             } catch (err) {
                 setButtonLoading(this, false);
                 showAlert(alertId, 'error', err.message);
             }
         });
 
-        document.getElementById('portalBtn').addEventListener('click', async function () {
+        $('portalBtn').addEventListener('click', async function () {
             hideAlert(alertId);
             setButtonLoading(this, true);
             try {
                 const res = await apiCall('/billing/portal-session', { method: 'POST', body: '{}' });
                 window.location.href = res.url;
+            } catch (err) {
+                setButtonLoading(this, false);
+                showAlert(alertId, 'error', err.message);
+            }
+        });
+
+        $('referralToggle').addEventListener('click', function () {
+            $('referralForm').hidden = !$('referralForm').hidden;
+        });
+
+        $('referrerSave').addEventListener('click', async function () {
+            hideAlert(alertId);
+            const email = $('referrerEmail').value.trim().toLowerCase();
+            setButtonLoading(this, true);
+            try {
+                const res = await apiCall('/billing/referral', { method: 'POST', body: JSON.stringify({ email }) });
+                $('referralArea').hidden = true;
+                $('referredByNote').textContent = res.message || 'Referral saved.';
+                $('referredByNote').hidden = false;
             } catch (err) {
                 setButtonLoading(this, false);
                 showAlert(alertId, 'error', err.message);
