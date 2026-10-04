@@ -36,7 +36,9 @@
         .back-link:hover { color: var(--ink); }
         #checkoutBox { margin-top: 0.8rem; min-height: 420px; }
         /* Update card is a single-column form: fit it, so no wide white box around it */
-        body.narrow-form .dashboard { max-width: 640px; }
+        body.narrow-form .dashboard { max-width: 600px; }
+        /* Stripe paints its form white: frame it as a card so the white reads as intentional */
+        #checkoutBox { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.2rem 0.6rem; box-shadow: var(--shadow-sm); overflow: hidden; }
         @media (max-width: 540px) {
             .bill-row { flex-direction: column; align-items: flex-start; }
             .bill-value { text-align: left; }
