@@ -92,7 +92,22 @@
 
                 <div class="bill-actions">
                     <button class="btn" id="subscribeBtn" hidden>Add payment details</button>
-                    <button class="btn btn-secondary" id="portalBtn" hidden>Update card or cancel</button>
+                </div>
+
+                <!-- Subscribed: manage everything here (no trip to Stripe's site) -->
+                <div id="manageArea" hidden>
+                    <div id="manageRows"></div>
+                    <div class="bill-actions">
+                        <button class="btn btn-secondary" id="updateCardBtn" type="button">Update card</button>
+                    </div>
+                    <div id="receipts" hidden>
+                        <h2 style="margin-top:1.8rem">Receipts</h2>
+                        <div id="receiptRows"></div>
+                    </div>
+                    <p class="bill-note" style="margin-top:1.6rem">
+                        <button class="back-link" id="cancelBtn" type="button" style="text-decoration:underline">Cancel subscription</button>
+                        <button class="back-link" id="resumeBtn" type="button" style="text-decoration:underline" hidden>Keep my subscription</button>
+                    </p>
                 </div>
 
                 <p class="bill-note" id="referredByNote" hidden></p>
@@ -102,7 +117,7 @@
         <!-- Checkout view: Stripe's secure form, on this page, two columns when there's room -->
         <section id="checkoutView" hidden>
             <div class="checkout-head">
-                <h1>Add payment details</h1>
+                <h1 id="checkoutTitle">Add payment details</h1>
                 <button class="back-link" id="backBtn" type="button">&larr; Back to billing</button>
             </div>
             <p class="secure-note">&#128274; Secured by Stripe &mdash; your card details go straight to Stripe and are never stored by Eleanote.</p>
@@ -136,10 +151,62 @@
             return apiCall('/billing/status', { method: 'GET' });
         }
 
+        function money(cents) { return '$' + (cents / 100).toFixed(2); }
+        function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+
+        // Card, next charge, discount, receipts, cancel — straight from Stripe via our server.
+        async function loadDetails() {
+            let d;
+            try { d = await apiCall('/billing/details', { method: 'GET' }); }
+            catch (err) { $('manageRows').innerHTML = ''; return; }
+            if (!d.hasSubscription) return;
+            const rows = [];
+            if (d.cancelAtPeriodEnd) {
+                rows.push(row('Ends', fmtDate(d.endsAt || d.nextChargeAt) + ' — you won\'t be charged again', 'warn'));
+            } else if (d.nextChargeAt) {
+                rows.push(row(d.status === 'trialing' ? 'First charge' : 'Next charge',
+                    fmtDate(d.nextChargeAt) + (d.nextAmountCents != null ? ' &middot; ' + money(d.nextAmountCents) : '')));
+            }
+            if (d.discountEndsAt) rows.push(row('Early-user price', 'Until ' + fmtDate(d.discountEndsAt)));
+            rows.push(row('Card', d.card
+                ? esc(d.card.brand.charAt(0).toUpperCase() + d.card.brand.slice(1)) + ' &bull;&bull;&bull;&bull; ' + esc(d.card.last4) +
+                  ' &middot; expires ' + d.card.expMonth + '/' + String(d.card.expYear).slice(-2)
+                : 'None on file', d.card ? '' : 'warn'));
+            $('manageRows').innerHTML = rows.join('');
+            if (d.invoices && d.invoices.length) {
+                $('receiptRows').innerHTML = d.invoices.map((inv) => row(fmtDate(inv.date),
+                    money(inv.amountCents) + (inv.url ? ' &middot; <a href="' + esc(inv.url) + '" target="_blank" rel="noopener">view</a>' : ''))).join('');
+                $('receipts').hidden = false;
+            }
+            $('cancelBtn').hidden = d.cancelAtPeriodEnd;
+            $('resumeBtn').hidden = !d.cancelAtPeriodEnd;
+        }
+
+        // Stripe's secure form in the wide on-page view (subscribe, or update card).
+        async function openStripeForm(btn, path, title) {
+            hideAlert(alertId);
+            setButtonLoading(btn, true);
+            try {
+                const res = await apiCall(path, { method: 'POST', body: '{}' });
+                if (!res.clientSecret || !res.publishableKey) throw new Error('The payment form is not available yet. Please try again shortly.');
+                const stripe = Stripe(res.publishableKey);
+                const checkout = await stripe.createEmbeddedCheckoutPage({ fetchClientSecret: async () => res.clientSecret });
+                setButtonLoading(btn, false);
+                $('checkoutTitle').textContent = title;
+                document.body.classList.add('checkout-view');
+                show('checkoutView');
+                window.scrollTo(0, 0);
+                checkout.mount('#checkoutBox');
+            } catch (err) {
+                setButtonLoading(btn, false);
+                showAlert(alertId, 'error', err.message);
+            }
+        }
+
         function render(status) {
             const rows = [];
             $('subscribeBtn').hidden = true;
-            $('portalBtn').hidden = true;
+            $('manageArea').hidden = true;
             if (status.subscribed) {
                 const pastDue = status.subStatus === 'past_due';
                 const freeNow = status.subStatus === 'trialing';
@@ -147,10 +214,9 @@
                     : freeNow ? 'Payment details saved — free period in progress' : 'Active',
                     pastDue ? 'warn' : 'good'));
                 rows.push(row('Plan', planText(status)));
-                if (freeNow && status.trialEndsAt) rows.push(row('First charge', fmtDate(status.trialEndsAt)));
-                else if (status.subCurrentPeriodEnd) rows.push(row('Next charge', fmtDate(status.subCurrentPeriodEnd)));
-                $('billNote').textContent = 'You can update your card, see invoices, or cancel at any time.';
-                $('portalBtn').hidden = false;
+                $('billNote').textContent = '';
+                $('manageArea').hidden = false;
+                loadDetails();
             } else {
                 const period = status.referralCredited ? 'Free credit period' : 'Free trial';
                 const live = status.trialEndsAt && Date.parse(status.trialEndsAt) > Date.now();
@@ -204,43 +270,42 @@
                 }
                 history.replaceState(null, '', location.pathname);
             }
+            if (getParam('card') === 'updated') {
+                showAlert(alertId, 'success', 'Your card has been updated.');
+                history.replaceState(null, '', location.pathname);
+            }
             render(status);
             show('billingBody');
         }
 
-        // "Add payment details": Stripe's secure form appears right here.
-        $('subscribeBtn').addEventListener('click', async function () {
-            hideAlert(alertId);
-            setButtonLoading(this, true);
-            try {
-                const res = await apiCall('/billing/checkout-session', { method: 'POST', body: '{}' });
-                if (!res.clientSecret || !res.publishableKey) throw new Error('The payment form is not available yet. Please try again shortly.');
-                const stripe = Stripe(res.publishableKey);
-                const checkout = await stripe.createEmbeddedCheckoutPage({ fetchClientSecret: async () => res.clientSecret });
-                setButtonLoading(this, false);
-                document.body.classList.add('checkout-view');
-                show('checkoutView');
-                window.scrollTo(0, 0);
-                checkout.mount('#checkoutBox');
-            } catch (err) {
-                setButtonLoading(this, false);
-                showAlert(alertId, 'error', err.message);
-            }
+        $('subscribeBtn').addEventListener('click', function () {
+            openStripeForm(this, '/billing/checkout-session', 'Add payment details');
+        });
+        $('updateCardBtn').addEventListener('click', function () {
+            openStripeForm(this, '/billing/update-card', 'Update card');
         });
 
-        $('portalBtn').addEventListener('click', async function () {
+        async function setCancel(resume, btn) {
+            if (!resume && !confirm('Cancel your Eleanote subscription?\n\nYou keep full access until the end of the time you have already (free or paid), and you won\'t be charged again. You can change your mind any time before then.')) return;
             hideAlert(alertId);
-            setButtonLoading(this, true);
+            btn.disabled = true;
             try {
-                const res = await apiCall('/billing/portal-session', { method: 'POST', body: '{}' });
-                window.location.href = res.url;
+                await apiCall('/billing/cancel', { method: 'POST', body: JSON.stringify(resume ? { resume: true } : {}) });
+                showAlert(alertId, 'success', resume ? 'Your subscription will continue as normal.' : 'Your subscription is canceled — you keep access until the date shown, and you won\'t be charged again.');
+                await loadDetails();
             } catch (err) {
-                setButtonLoading(this, false);
                 showAlert(alertId, 'error', err.message);
             }
-        });
+            btn.disabled = false;
+        }
+        $('cancelBtn').addEventListener('click', function () { setCancel(false, this); });
+        $('resumeBtn').addEventListener('click', function () { setCancel(true, this); });
 
         $('backBtn').addEventListener('click', function () { location.reload(); });
+
+        // Coming back with the browser's Back button can restore a frozen copy of
+        // this page (a button stuck on "Working…"): load it fresh instead.
+        window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
 
         init();
     })();
