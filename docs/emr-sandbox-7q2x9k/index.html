@@ -863,6 +863,17 @@
         .result-row .r-accept:hover { background: var(--accent-strong); }
         .result-empty { padding: 10px 14px; color: var(--muted); font-size: 12px; }
 
+        /* diagnosis search popup: a pick-list with the top row pre-highlighted */
+        .dx-list { border: 1px solid var(--line-strong); border-radius: var(--radius); max-height: 46vh; overflow-y: auto; outline: none; }
+        .dx-list:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91, 75, 138, 0.14); }
+        .dx-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--pane); cursor: pointer; user-select: none; }
+        .dx-option:first-child { border-top: none; }
+        .dx-option:hover { background: var(--accent-soft); }
+        .dx-option .d-name { font-weight: 600; color: var(--ink); }
+        .dx-option .d-code { color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; white-space: nowrap; }
+        .dx-option.selected, .dx-option.selected:hover { background: var(--accent); }
+        .dx-option.selected .d-name, .dx-option.selected .d-code { color: #fff; }
+
         /* document viewer (open a note / report to read & copy) */
         .doc-text { white-space: pre-wrap; font-size: 13px; line-height: 1.6; color: var(--ink); background: var(--note-bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; max-height: 62vh; overflow-y: auto; user-select: text; }
         .row a { cursor: pointer; }
@@ -992,7 +1003,6 @@
                     <div class="search">
                         <input type="text" id="dxSearch" placeholder="Add a diagnosis — type a name or ICD-10…">
                     </div>
-                    <div class="search-results" id="dxResults"></div>
                     <p class="helptext">Selected for this visit</p>
                     <div class="chip-row" id="dxChips">
                         <span class="result-empty" id="dxEmpty" style="padding:0;">No diagnoses added yet.</span>
@@ -1162,6 +1172,19 @@
         </div>
     </div>
 
+    <!-- ===== DIAGNOSIS SEARCH POPUP (Enter in the visit-diagnosis box) ===== -->
+    <div class="modal-backdrop" id="dxModal">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dxModalTitle">
+            <h3 id="dxModalTitle">Diagnosis search</h3>
+            <p class="sub" id="dxModalSub"></p>
+            <div class="dx-list" id="dxList" role="listbox" tabindex="0" aria-labelledby="dxModalTitle"></div>
+            <div class="modal-actions">
+                <button type="button" id="dxCancel">Cancel</button>
+                <button type="button" class="primary" id="dxAccept">Accept</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== DOCUMENT VIEWER (open a note / report to read &amp; copy) ===== -->
     <div class="modal-backdrop" id="docModal">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="docTitle" style="width:min(720px,94vw);">
@@ -1254,36 +1277,103 @@
               fields: [{ label: 'Date', key: 'date', ph: 'e.g. 06/12/2026' }, { label: 'Indication', key: 'indication', ph: 'e.g. RCC surveillance' }] },
         ];
 
-        // ===== visit diagnoses: type -> result -> Accept =====
-        const dxSearch  = document.getElementById('dxSearch');
-        const dxResults = document.getElementById('dxResults');
-        const dxChips   = document.getElementById('dxChips');
-        const dxCount   = document.getElementById('dxCount');
-        function setDxCount(){ dxCount.textContent = dxChips.querySelectorAll('.chip').length; }
-        function renderDxResults() {
-            const hit = lookup(DX_DB, dxSearch.value);
-            if (!hit) { dxResults.classList.remove('open'); dxResults.innerHTML = ''; return; }
-            dxResults.innerHTML =
-                '<div class="result-row"><div><span class="r-name">' + hit.name + '</span>' +
-                '<span class="r-code">' + hit.code + '</span></div>' +
-                '<button class="r-accept" type="button">Accept</button></div>';
-            dxResults.classList.add('open');
-            dxResults.querySelector('.r-accept').onclick = () => addDx(hit);
+        // ===== visit diagnoses: type anything -> Enter -> pick-list popup -> Enter =====
+        // Works like a real EHR's diagnosis search (and what Eleanote's keystroke
+        // recipes send): paste a diagnosis, Enter opens a search popup with the
+        // top row already highlighted, Enter again adds it to the visit. ANY text
+        // is accepted — the typed diagnosis is itself the highlighted top row;
+        // coded matches from DX_DB are listed beneath it (arrow keys to pick one).
+        const dxSearch   = document.getElementById('dxSearch');
+        const dxChips    = document.getElementById('dxChips');
+        const dxCount    = document.getElementById('dxCount');
+        const dxModal    = document.getElementById('dxModal');
+        const dxList     = document.getElementById('dxList');
+        const dxModalSub = document.getElementById('dxModalSub');
+        let dxOptions = [];
+        let dxSel = 0;
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
         }
-        function addDx(hit) {
+        function setDxCount(){ dxCount.textContent = dxChips.querySelectorAll('.chip').length; }
+        function lookupAll(db, q) {
+            q = (q || '').trim().toLowerCase();
+            if (q.length < 2) return [];
+            return db.filter(it => it.match.some(m =>
+                m === q || m.startsWith(q) || q.startsWith(m) || m.includes(q)
+            ));
+        }
+        function openDxSearch() {
+            const typed = dxSearch.value.replace(/\s+/g, ' ').trim();
+            if (!typed) return;
+            const exact = DX_DB.find(it => it.name.toLowerCase() === typed.toLowerCase());
+            const others = lookupAll(DX_DB, typed).filter(it => it !== exact);
+            dxOptions = [exact || { name: typed, code: '' }].concat(others);
+            dxSel = 0;
+            dxModalSub.textContent = 'Results for “' + typed + '” — press Enter to add the highlighted diagnosis.';
+            renderDxList();
+            dxModal.classList.add('open');
+            dxList.focus();
+        }
+        function renderDxList() {
+            dxList.innerHTML = dxOptions.map((o, i) =>
+                '<div class="dx-option' + (i === dxSel ? ' selected' : '') + '" role="option" aria-selected="' + (i === dxSel) + '" data-i="' + i + '">' +
+                '<span class="d-name">' + escapeHtml(o.name) + '</span>' +
+                '<span class="d-code">' + escapeHtml(o.code) + '</span></div>'
+            ).join('');
+            const sel = dxList.querySelector('.dx-option.selected');
+            if (sel) sel.scrollIntoView({ block: 'nearest' });
+        }
+        function closeDxSearch() {
+            dxModal.classList.remove('open');
+            dxOptions = [];
+            dxSearch.focus();   // ready for the next diagnosis
+        }
+        function acceptDx() {
+            const pick = dxOptions[dxSel];
+            if (pick) addDx(pick);
+            closeDxSearch();
+        }
+        function addDx(dx) {
             const empty = document.getElementById('dxEmpty'); if (empty) empty.remove();
             const chip = document.createElement('span');
             chip.className = 'chip';
-            chip.innerHTML = hit.name + ' <span class="code">' + hit.code + '</span><span class="x" data-x>×</span>';
+            chip.innerHTML = escapeHtml(dx.name) + ' ' +
+                (dx.code ? '<span class="code">' + escapeHtml(dx.code) + '</span>' : '') +
+                '<span class="x" data-x>×</span>';
             dxChips.appendChild(chip);
             dxSearch.value = '';
-            dxResults.classList.remove('open'); dxResults.innerHTML = '';
             setDxCount();
         }
-        dxSearch.addEventListener('input', renderDxResults);
         dxSearch.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); const hit = lookup(DX_DB, dxSearch.value); if (hit) addDx(hit); }
+            if (e.key !== 'Enter' || e.isComposing) return;
+            e.preventDefault();
+            if (e.repeat) return;   // a held Enter is one press, not two
+            openDxSearch();
         });
+        // While the popup is open it owns the keyboard (capture phase), so the
+        // second Enter accepts no matter where focus happens to be.
+        document.addEventListener('keydown', (e) => {
+            if (!dxModal.classList.contains('open')) return;
+            if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) return;
+            // Enter on a focused Cancel/Accept button means that button.
+            if (e.key === 'Enter' && e.target.closest && e.target.closest('#dxModal button')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.key === 'Enter' && e.repeat) return;
+            if (e.key === 'ArrowDown') { dxSel = Math.min(dxSel + 1, dxOptions.length - 1); renderDxList(); }
+            else if (e.key === 'ArrowUp') { dxSel = Math.max(dxSel - 1, 0); renderDxList(); }
+            else if (e.key === 'Enter') acceptDx();
+            else closeDxSearch();
+        }, true);
+        dxList.addEventListener('click', (e) => {
+            const opt = e.target.closest('.dx-option'); if (!opt) return;
+            dxSel = +opt.dataset.i; renderDxList(); dxList.focus();
+        });
+        dxList.addEventListener('dblclick', (e) => { if (e.target.closest('.dx-option')) acceptDx(); });
+        document.getElementById('dxCancel').addEventListener('click', closeDxSearch);
+        document.getElementById('dxAccept').addEventListener('click', acceptDx);
+        dxModal.addEventListener('click', (e) => { if (e.target === dxModal) closeDxSearch(); });
         dxChips.addEventListener('click', (e) => {
             if (e.target.matches('[data-x]')) { e.target.closest('.chip').remove(); setDxCount(); }
         });
@@ -1469,8 +1559,8 @@ Comment: No sarcomatoid or rhabdoid features. No tumor necrosis identified.`
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && !e.altKey && e.code === 'KeyO') {
                 e.preventDefault();
-                // Don't yank focus out of an open popup (order fields / document viewer)
-                if (orderModal.classList.contains('open') || docModal.classList.contains('open')) return;
+                // Don't yank focus out of an open popup (order fields / diagnosis search / document viewer)
+                if (orderModal.classList.contains('open') || dxModal.classList.contains('open') || docModal.classList.contains('open')) return;
                 showView('visit', 'block-orders');
                 navItems.forEach(x => x.classList.remove('active'));
                 const ordersNav = document.querySelector('.nav-item[data-scroll="block-orders"]');
